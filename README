@@ -1,0 +1,46 @@
+Webgazer
+
+    A client side only gaze tracking library using the user's webcam.
+
+Operation
+    webgazer.js contains the top level api commands which control the state of webgazer. At a high level, webgazer's flow of operation is
+
+        (set parameters like tracker)
+        \/
+        isReady()
+        \/
+   |--->begin()
+   |         ||                             
+   |        (load global parameters)        
+   |         ||                             
+   |        loop()
+   |            || 
+   |           getPrediction()     
+   |
+   |
+   |    (move or click listener)
+   |        ||
+   |       (training data is given to regression module via addData) 
+   |
+   |    getPrediction()
+   |        ||
+   |       tracker.getEyePatches()
+   |            ||
+   |           blickDetector.detectBlink()
+   |                ||
+   |               pupil.getPupils()
+   |
+   |    pause()
+   |    \/
+   |<---resume()
+        \/
+        end()
+            ||
+           (save global parameters)
+            
+
+
+Development Tooling
+
+
+Bugs

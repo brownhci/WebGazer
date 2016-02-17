@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+    <HEAD>
+        <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+        <TITLE>Gaze Tracker Study</TITLE>
+        <script src="../../clmtrackr/js/numeric-1.2.6.min.js"></script>
+        <script src="../../clmtrackr/js/mosse.js"></script>
+        <script src="../../clmtrackr/js/jsfeat-min.js"></script>
+        <script src="../../clmtrackr/js/frontalface.js"></script>
+        <script src="../../clmtrackr/js/jsfeat_detect.js"></script>
+        <script src="../../clmtrackr/js/left_eye_filter.js"></script>
+        <script src="../../clmtrackr/js/right_eye_filter.js"></script>
+        <script src="../../clmtrackr/js/nose_filter.js"></script>
+        <script src="../../clmtrackr/models/model_pca_20_svm.js"></script>
+        <script src="../../clmtrackr/js/clm.js"></script>
+        <script src="../../clmtrackr/js/svmfilter_webgl.js"></script>
+        <script src="../../clmtrackr/js/svmfilter_fft.js"></script>
+        <script src="../../clmtrackr/js/mossefilter.js"></script>
+		<script src="../../tracking.js/build/tracking.js"></script>
+		<script src="../../js-objectdetect/js/objectdetect.js"></script>
+        <script src="../regression.js"></script>
+        <script src="../util.js"></script>
+        <script src="../mat.js"></script>
+        <script src="../blinkDetector.js"></script>
+        <script src="../pupil.js"></script>
+        <script src="../clmGaze.js"></script>
+        <script src="../linearReg.js"></script>
+        <script src="../ridgeReg.js"></script>
+        <script src="../webgazer.js"></script>
+
+
+    </HEAD>
+    <BODY LANG="en-US" LINK="#0000ff" DIR="LTR">
+        <script>
+window.onload = function() {
+    gazer.setRegression('interaction') /* currently must set regression and tracker */
+        .setTracker('clmtrackr')
+        .setGazeListener(function(data, clock) {
+            console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
+            console.log(clock); /* elapsed time in milliseconds since gazer.begin() was called */
+        })
+        .begin()
+        .showPredictionPoints(true); /* shows a square every 100 milliseconds where current prediction is */
+
+    //gets a single prediction result for the current moment
+    var prediction = gazer.getCurrentPrediction();
+    //prediction may be null until gazer has finished initializing or if there was an error
+    //can use gazer.isReady() to check if finished initializing
+    console.log(prediction ? prediction.x : null);
+    console.log(prediction ? prediction.y : null);
+    //cleanup if needed
+    //gazer.end();
+};
+        </script>
+
+    </BODY>
+</HTML>
