@@ -1,2 +1,12 @@
 #!/bin/bash
-cat toCombine | xargs cat > gazer.js
+
+FILENAME='gazer.js'
+
+echo '' > $FILENAME
+for FILE in $(cat toCombine)
+do
+    echo $FILE
+    cat $FILE >> $FILENAME
+    echo -e ';\n' >> $FILENAME
+done
+

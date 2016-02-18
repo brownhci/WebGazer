@@ -1,5 +1,5 @@
 (function(window, undefined) {
-
+    console.log('initializing webgazer')
     //strict mode for type safety
     "use strict"
 
@@ -115,6 +115,21 @@
         var elapsedTime = performance.now() - clockStart;
 
         callback(gazeData, elapsedTime);
+
+        if (gazeData && showGazeDot) {
+            smoothingVals.push(gazeData);
+            var x = 0;
+            var y = 0;
+            var len = smoothingVals.length;
+            for (var d in smoothingVals.data) {
+                x += smoothingVals.get(d).x;
+                y += smoothingVals.get(d).y;
+            }
+            var pred = gazer.util.bound({'x':x/len, 'y':y/len});
+            gazeDot.style.top = pred.y + 'px';
+            gazeDot.style.left = pred.x + 'px';
+        }
+
         if (!paused) {
             //setTimeout(loop, dataTimestep);
             requestAnimationFrame(loop);
@@ -216,6 +231,7 @@
                         document.addEventListener('click', clickListener, true);
                         document.addEventListener('mousemove', moveListener, true);
 
+                        document.body.appendChild(gazeDot);
 
                         //BEGIN CALLBACK LOOP
                         paused = false;
@@ -306,7 +322,7 @@
     //GETTERS
     gazer.getTracker = function() {
         //TODO decide if this should return the tracker object or just the string, tracker.name
-        return tracker.name;
+        return tracker;
     }
 
     gazer.getRegression = function() {
