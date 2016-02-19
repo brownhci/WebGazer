@@ -5794,10 +5794,10 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
 }(window));
 ;
 
-(function(window) {
+(function() {
     "use strict"
 
-    window.gazer = window.gazer || {};
+    gazer = gazer || {};
     gazer.mat = gazer.mat || {};
 
 /**
@@ -6093,7 +6093,7 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
                 }
                 return gazer.mat.getSubMatrix(X,0,n-1,0,nx-1);
             }
-}(window));
+}());
 
 ;
 
@@ -6460,78 +6460,9 @@ if (typeof exports !== 'undefined') {
     var dataWindow = 700;
     var trailDataWindow = 10; //TODO perhaps more? less?;
 
-    /**
-     * Performs ridge regression, according to the Weka code.
-     * @param {array} y corresponds to screen coordinates (either x or y) for each of n click events
-     * @param {array of arrays} X corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
-     * @param {array} ridge ridge parameter
-     * @return{array} regression coefficients
-     */
-    function ridge(y, X, k){
-        var nc = X[0].length;
-        var m_Coefficients = new Array(nc);
-        var xt = gazer.mat.transpose(X);
-        var solution = new Array();
-        var success = true;
-        do{
-            var ss = gazer.mat.mult(xt,X);
-            // Set ridge regression adjustment
-            for (var i = 0; i < nc; i++) {
-                ss[i][i] = ss[i][i] + k;
-            }
-
-            // Carry out the regression
-            var bb = gazer.mat.mult(xt,y);
-            for(var i = 0; i < nc; i++) {
-                m_Coefficients[i] = bb[i][0];
-            }
-            try{
-                var n = (m_Coefficients.length != 0 ? m_Coefficients.length/m_Coefficients.length: 0);
-                if (m_Coefficients.length*n != m_Coefficients.length){
-                    console.log("Array length must be a multiple of m")
-                }
-                solution = (ss.length == ss[0].length ? (gazer.mat.LUDecomposition(ss,bb)) : (gazer.mat.QRDecomposition(ss,bb)));
-
-                for (var i = 0; i < nc; i++){
-                    m_Coefficients[i] = solution[i][0];
-                }
-                success = true;
-            } 
-            catch (ex){
-                k *= 10;
-                console.log(ex);
-                success = false;
-            }
-        } while (!success);
-        return m_Coefficients;
-    }
-
-    //TODO consider moving this into utils as a general resizing operation
-    function resizeEye(eye) {
-
-        //TODO this seems like it could be done in just one painting to a canvas
-
-        var canvas = document.createElement('canvas');
-        canvas.width = eye.width;
-        canvas.height = eye.height;
-
-        canvas.getContext('2d').putImageData(eye.patch,0,0);
-
-        var tempCanvas = document.createElement('canvas');
-
-        tempCanvas.width = resizeWidth;
-        tempCanvas.height = resizeWidth;
-
-        // save your canvas into temp canvas
-        tempCanvas.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, resizeWidth, resizeHeight);
-
-        return tempCanvas.getContext('2d').getImageData(0, 0, resizeWidth, resizeHeight);
-    }
-
-
     function getEyeFeats(eyes) {
-        var resizedLeft = resizeEye(eyes.left);
-        var resizedright = resizeEye(eyes.right);
+        var resizedLeft = gazer.util.resizeEye(eyes.left);
+        var resizedright = gazer.util.resizeEye(eyes.right);
 
         var leftGray = gazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
         var rightGray = gazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
@@ -6561,19 +6492,11 @@ if (typeof exports !== 'undefined') {
         return leftGrayArray.concat(rightGrayArray).concat(headVals);
     }
 
-    function getCurrentFixationIndex() {
-        var index = 0;
-        var recentX = this.screenXTrailArray.get(0);
-        var recentY = this.screenYTrailArray.get(0);
-        for (var i = this.screenXTrailArray.length - 1; i >= 0; i--) {
-            var currX = this.screenXTrailArray.get(i);
-            var currY = this.screenYTrailArray.get(i);
-            var euclideanDistance = Math.sqrt(Math.pow((currX-recentX),2)+Math.pow((currY-recentY),2));
-            if (euclideanDistance > 72){
-                return i+1;
-            }
-        }
-        return i;
+    
+    function updateWeights(event) {
+        console.log(event.data);
+        this.weights = event.data;
+        console.log('weights updated');
     }
 
     gazer.reg.RidgeReg = function() {
@@ -6587,6 +6510,11 @@ if (typeof exports !== 'undefined') {
 
         this.dataClicks = new gazer.util.DataWindow(dataWindow);
         this.dataTrail = new gazer.util.DataWindow(dataWindow);
+
+        this.worker = new Worker('../src/ridgeWorker.js');
+        this.worker.onmessage = updateWeights;
+        this.worker.onerror = function(err) { console.log(err.message); };
+        this.weights = [0];
     }
 
     gazer.reg.RidgeReg.prototype.addData = function(eyes, screenPos, type) {
@@ -6596,34 +6524,16 @@ if (typeof exports !== 'undefined') {
         if (eyes.left.blink || eyes.right.blink) {
             return;
         }
-        if (type === 'click') {
-            this.screenXClicksArray.push([screenPos[0]]);
-            this.screenYClicksArray.push([screenPos[1]]);
-
-            this.eyeFeaturesClicks.push(getEyeFeats(eyes));
-            this.dataClicks.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
-        } else if (type === 'move') {
-            this.screenXTrailArray.push([screenPos[0]]);
-            this.screenYTrailArray.push([screenPos[1]]);
-
-            this.eyeFeaturesTrail.push(getEyeFeats(eyes));
-            this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
-        }
-       
-        eyes.left.patch = Array.from(eyes.left.patch.data);
-        eyes.right.patch = Array.from(eyes.right.patch.data);
+        console.log('sending data');
+        this.worker.postMessage({'eyes':eyes, 'screenPos':screenPos, 'type':type})
     }
 
     gazer.reg.RidgeReg.prototype.predict = function(eyesObj) {
         if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
             return null;
         }
-        var screenXArray = this.screenXClicksArray.data.concat(this.screenXTrailArray.data);
-        var screenYArray = this.screenYClicksArray.data.concat(this.screenYTrailArray.data);
-        var eyeFeatures = this.eyeFeaturesClicks.data.concat(this.eyeFeaturesTrail.data);
-
-        var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
-        var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter); 	
+        var coefficientsX = this.weights.X;
+        var coefficientsY = this.weights.Y;
 
         var eyeFeats = getEyeFeats(eyesObj);
         var predictedX = 0;
@@ -6663,9 +6573,9 @@ if (typeof exports !== 'undefined') {
 }(window));
 ;
 
-(function(window) {
+(function() {
 
-window.gazer = window.gazer || {};
+gazer = gazer || {};
 gazer.util = gazer.util || {};
 gazer.mat = gazer.mat || {};
 
@@ -6731,6 +6641,29 @@ gazer.util.grayscale = function(imageData, imageWidth, imageHeight){
     return tracking.Image.grayscale(imageData, imageWidth, imageHeight, false);
 }
 
+gazer.util.resizeEye = function(eye) {
+
+    //TODO this seems like it could be done in just one painting to a canvas
+
+    var canvas = document.createElement('canvas');
+    canvas.width = eye.width;
+    canvas.height = eye.height;
+
+    canvas.getContext('2d').putImageData(eye.patch,0,0);
+
+    var tempCanvas = document.createElement('canvas');
+
+    tempCanvas.width = resizeWidth;
+    tempCanvas.height = resizeWidth;
+
+    // save your canvas into temp canvas
+    tempCanvas.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, resizeWidth, resizeHeight);
+
+    return tempCanvas.getContext('2d').getImageData(0, 0, resizeWidth, resizeHeight);
+}
+
+
+
 /**
  * Checks if the prediction is within the boundaries of the viewport and constrains it
  * @param  {array} prediction [x,y] predicted gaze coordinates
@@ -6754,7 +6687,7 @@ gazer.util.bound = function(prediction){
     return prediction;
 }
 
-}(window));
+}());
 ;
 
 (function(window, undefined) {
@@ -6812,7 +6745,6 @@ gazer.util.bound = function(prediction){
         'js_objectdetect': function() { return new gazer.tracker.Js_objectdetectGaze(); }
     };
     var regressionMap = {
-        'simple': function() { return new gazer.reg.LinearReg(); },
         'interaction': function() { return new gazer.reg.RidgeReg(); }
     };
 
@@ -6837,7 +6769,7 @@ gazer.util.bound = function(prediction){
         }
         paintCurrentFrame(canvas);
         try {
-            return gazer.pupil.getPupils(blinkDetector.detectBlink(tracker.getEyePatches(canvas, width, height)));
+            return blinkDetector.detectBlink(tracker.getEyePatches(canvas, width, height));
         } catch(err) {
             console.log(err);
             return null;
