@@ -53,7 +53,6 @@
         'js_objectdetect': function() { return new gazer.tracker.Js_objectdetectGaze(); }
     };
     var regressionMap = {
-        'simple': function() { return new gazer.reg.LinearReg(); },
         'interaction': function() { return new gazer.reg.RidgeReg(); }
     };
 
