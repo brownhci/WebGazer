@@ -57,32 +57,10 @@
         return m_Coefficients;
     }
 
-    //TODO consider moving this into utils as a general resizing operation
-    function resizeEye(eye) {
-
-        //TODO this seems like it could be done in just one painting to a canvas
-
-        var canvas = document.createElement('canvas');
-        canvas.width = eye.width;
-        canvas.height = eye.height;
-
-        canvas.getContext('2d').putImageData(eye.patch,0,0);
-
-        var tempCanvas = document.createElement('canvas');
-
-        tempCanvas.width = resizeWidth;
-        tempCanvas.height = resizeWidth;
-
-        // save your canvas into temp canvas
-        tempCanvas.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, resizeWidth, resizeHeight);
-
-        return tempCanvas.getContext('2d').getImageData(0, 0, resizeWidth, resizeHeight);
-    }
-
 
     function getEyeFeats(eyes) {
-        var resizedLeft = resizeEye(eyes.left);
-        var resizedright = resizeEye(eyes.right);
+        var resizedLeft = gazer.util.resizeEye(eyes.left);
+        var resizedright = gazer.util.resizeEye(eyes.right);
 
         var leftGray = gazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
         var rightGray = gazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
