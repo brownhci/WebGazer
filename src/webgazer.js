@@ -78,7 +78,7 @@
         }
         paintCurrentFrame(canvas);
         try {
-            return gazer.pupil.getPupils(blinkDetector.detectBlink(tracker.getEyePatches(canvas, width, height)));
+            return blinkDetector.detectBlink(tracker.getEyePatches(canvas, width, height));
         } catch(err) {
             console.log(err);
             return null;
