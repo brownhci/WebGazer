@@ -45,6 +45,7 @@
 
     
     function updateWeights(event) {
+        console.log(event.data);
         this.weights = event.data;
         console.log('weights updated');
     }
@@ -61,7 +62,9 @@
         this.dataClicks = new gazer.util.DataWindow(dataWindow);
         this.dataTrail = new gazer.util.DataWindow(dataWindow);
 
-        this.worker = new Worker('ridgeWorker.js');
+        this.worker = new Worker('../src/ridgeWorker.js');
+        this.worker.onmessage = updateWeights;
+        this.worker.onerror = function(err) { console.log(err.message); };
         this.weights = [0];
     }
 
@@ -72,6 +75,7 @@
         if (eyes.left.blink || eyes.right.blink) {
             return;
         }
+        console.log('sending data');
         this.worker.postMessage({'eyes':eyes, 'screenPos':screenPos, 'type':type})
     }
 
