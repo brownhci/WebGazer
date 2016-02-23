@@ -1,15 +1,15 @@
-(function(window) {
+(function() {
     "use strict"
 
-    window.gazer = window.gazer || {};
-    gazer.mat = gazer.mat || {};
+    self.self.gazer = self.self.gazer || {};
+    self.self.gazer.mat = self.self.gazer.mat || {};
 
 /**
      * Transposes a mxn array
      * @param {array of arrays} matrix mxn
      * @return{array of arrays} transposed matrix
      */
-    gazer.mat.transpose = function(matrix){
+    self.gazer.mat.transpose = function(matrix){
         var m = matrix.length;
         var n = matrix[0].length;
         var transposedMatrix = new Array(n);
@@ -32,7 +32,7 @@
      * @param [number] j1   Final column index
      * @return [array of arrays] X is the submatrix matrix(r(:),j0:j1)
      */
-    gazer.mat.getMatrix = function(matrix, r, j0, j1){
+    self.gazer.mat.getMatrix = function(matrix, r, j0, j1){
         var X = new Array(r.length);
         for(var i=0; i<r.length; i++){
             X[i] = new Array(j1-j0+1);
@@ -55,7 +55,7 @@
      * @return     A(i0:i1,j0:j1)
      * @throws  ArrayIndexOutOfBoundsException Submatrix indices
      */
-    gazer.mat.getSubMatrix = function(matrix, i0, i1, j0, j1){
+    self.gazer.mat.getSubMatrix = function(matrix, i0, i1, j0, j1){
         var X = new Array(i1-i0+1);
         for(var i=0; i<i1-i0+1; i++){
             X[i] = new Array(j1-j0+1);
@@ -74,7 +74,7 @@
      * @param {array of arrays} matrix2
      * @return {array of arrays} Matrix product, matrix1 * matrix2
      */
-    gazer.mat.mult = function(matrix1, matrix2){	
+    self.gazer.mat.mult = function(matrix1, matrix2){	
         if (matrix2.length != matrix1[0].length){
             console.log("Matrix inner dimensions must agree.");
         }
@@ -106,7 +106,7 @@
      * @param{array of arrays} B right matrix of equation to be solved
      * @return {array of arrays} X so that L*U*X = B(piv,:)
      */
-    gazer.mat.LUDecomposition = function(A,B){
+    self.gazer.mat.LUDecomposition = function(A,B){
         var LU = new Array(A.length);
         for(var i=0; i<A.length; i++){
             LU[i] = new Array(A[0].length);
@@ -176,7 +176,7 @@
             }
         }
         var nx = B[0].length;
-        var X = gazer.mat.getMatrix(B,piv,0,nx-1);
+        var X = self.gazer.mat.getMatrix(B,piv,0,nx-1);
         // Solve L*Y = B(piv,:)
         for (var k = 0; k < n; k++){
             for (var i = k+1; i < n; i++){
@@ -206,7 +206,7 @@
      * @return [array of arrays] X that minimizes the two norm of QR*X-B.
      * @param[array of arrays] Matrix A [description]
      */
-            gazer.mat.QRDecomposition = function(A, B){
+            self.gazer.mat.QRDecomposition = function(A, B){
                 // Initialize.
                 QR = new Array(A.length);
                 for(var i=0; i<A.length; i++){
@@ -295,7 +295,7 @@
                         }
                     }
                 }
-                return gazer.mat.getSubMatrix(X,0,n-1,0,nx-1);
+                return self.gazer.mat.getSubMatrix(X,0,n-1,0,nx-1);
             }
-}(window));
+}());
 

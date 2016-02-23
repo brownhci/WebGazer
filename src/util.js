@@ -1,19 +1,19 @@
-(function(window) {
+(function() {
 
-window.gazer = window.gazer || {};
-gazer.util = gazer.util || {};
-gazer.mat = gazer.mat || {};
+self.gazer = self.gazer || {};
+self.gazer.util = self.gazer.util || {};
+self.gazer.mat = self.gazer.mat || {};
 
 //Type test functions
-gazer.util.isInt;
+self.gazer.util.isInt;
 
-gazer.util.isNaN;
+self.gazer.util.isNaN;
 
-gazer.util.isString;
+self.gazer.util.isString;
 
 //Eye class
 
-gazer.util.Eye = function(patch, imagex, imagey, width, height) {
+self.gazer.util.Eye = function(patch, imagex, imagey, width, height) {
     this.patch = patch;
     this.imagex = imagex;
     this.imagey = imagey;
@@ -24,14 +24,14 @@ gazer.util.Eye = function(patch, imagex, imagey, width, height) {
 
 //Data Window class
 //operates like an array but 'wraps' data around to keep the array at a fixed windowSize
-gazer.util.DataWindow = function(windowSize) {
+self.gazer.util.DataWindow = function(windowSize) {
     this.data = [];
     this.windowSize = windowSize;
     this.index = 0;
     this.length = 0;
 }
 
-gazer.util.DataWindow.prototype.push = function(entry) {
+self.gazer.util.DataWindow.prototype.push = function(entry) {
     if (this.data.length < this.windowSize) {
         this.data.push(entry);
         this.length = this.data.length;
@@ -43,7 +43,7 @@ gazer.util.DataWindow.prototype.push = function(entry) {
     this.index = (this.index + 1) % this.windowSize;
 }
 
-gazer.util.DataWindow.prototype.get = function(ind) {
+self.gazer.util.DataWindow.prototype.get = function(ind) {
     if (this.data.length < this.windowSize) {
         return this.data[ind];
     } else {
@@ -52,7 +52,7 @@ gazer.util.DataWindow.prototype.get = function(ind) {
     }
 }
 
-gazer.util.DataWindow.prototype.addAll = function(data) {
+self.gazer.util.DataWindow.prototype.addAll = function(data) {
     //TODO use slice instead?
     for (var i = 0; i < data.length; i++) {
         this.push(data[i]);
@@ -61,12 +61,12 @@ gazer.util.DataWindow.prototype.addAll = function(data) {
 
 
 //Helper functions
-gazer.util.grayscale = function(imageData, imageWidth, imageHeight){
-    //TODO either move tracking into gazer namespace or re-implement function
+self.gazer.util.grayscale = function(imageData, imageWidth, imageHeight){
+    //TODO either move tracking into self.gazer namespace or re-implement function
     return tracking.Image.grayscale(imageData, imageWidth, imageHeight, false);
 }
 
-gazer.util.resizeEye = function(eye) {
+self.gazer.util.resizeEye = function(eye) {
 
     //TODO this seems like it could be done in just one painting to a canvas
 
@@ -94,7 +94,7 @@ gazer.util.resizeEye = function(eye) {
  * @param  {array} prediction [x,y] predicted gaze coordinates
  * @return {array} constrained coordinates
  */
-gazer.util.bound = function(prediction){
+self.gazer.util.bound = function(prediction){
     if(prediction.x < 0)
         prediction.x = 0;
     if(prediction.y < 0)
@@ -112,4 +112,4 @@ gazer.util.bound = function(prediction){
     return prediction;
 }
 
-}(window));
+}());
