@@ -71,6 +71,9 @@
     /**
      * gets the pupil features by following the pipeline which threads an eyes object through each call:
      * tracker gets eye patches -> blink detector -> pupil detection 
+     * @param {Canvas} canvas - a canvas which will have the video drawn onto it
+     * @param {number} width - the width of canvas
+     * @param {number} height - the height of canvas
      */
     function getPupilFeatures(canvas, width, height) {
         if (!canvas) {
@@ -87,6 +90,7 @@
 
     /**
      * gets the most current frame of video and paints it to the canvas
+     * @param {canvas} - the canvas to paint the video on to
      */
     function paintCurrentFrame(canvas) {
         imgWidth = videoElement.videoWidth * videoScale;
@@ -99,6 +103,9 @@
         ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
     }
 
+    /**
+     *  paints the video to a canvas and runs the prediction pipeline to get a prediction
+     */
     function getPrediction() {
         var prediction = reg.predict(getPupilFeatures(videoElementCanvas, imgWidth, imgHeight));
         return prediction == null ? null : {
@@ -106,6 +113,7 @@
             y : prediction.y
         };
     }
+
     /**
      * runs every dataTimestep milliseconds if gazer is not paused
      */
@@ -137,7 +145,7 @@
     }
 
     /**
-     * records click data
+     * records click data and passes it to the regression model
      */
     var clickListener = function(event) {
         if (paused) {
@@ -147,7 +155,7 @@
     }
 
     /**
-     * records click data
+     * records mouse movement data and passes it to the regression model
      */
     var moveListener = function(event) {
         if (paused) {
@@ -172,7 +180,10 @@
         settings = storage.settings;
         reg.setData(storage.data);
     }
-    
+   
+   /**
+    * constructs the global storage object and adds it to localstorage
+    */
     function setGlobalData() {
         //TODO set localstorage to combined dataset
         var storage = {
@@ -184,6 +195,9 @@
         //     -> requires duplication of data, but is likely easier on regression model implementors
     }
 
+    /*
+     * clears data from model and global storage
+     */
     function clearData() {
         window.localStorage.set(localstorageLabel, undefined);
         reg.setData([]);
@@ -218,6 +232,7 @@
 
                         //turn the stream into a magic URL 
                         videoElement.src = window.URL.createObjectURL(stream); 
+                        //TODO check to see if we actually need to add the element to the dom
                         document.body.appendChild(videoElement);
 
                         videoElementCanvas = document.createElement('canvas'); 
@@ -246,6 +261,10 @@
         return gazer;
     }
 
+    /*
+     * checks if gazer has finished initializing after calling begin()
+     * @return {boolean} if gazer is ready
+     */
     gazer.isReady = function() {
         if (videoElementCanvas == null) {
             return false;
@@ -254,17 +273,32 @@
         return videoElementCanvas.width > 0;
     }
 
+    /*
+     * stops collection of data and predictions
+     * @return {gazer} this
+     */
     gazer.pause = function() {
         paused = true;
         return gazer;
     }
 
+    /*
+     * resumes collection of data and predictions if paused
+     * @return {gazer} this
+     */
     gazer.resume = function() {
+        if (!paused) {
+            return gazer;
+        }
         paused = false;
         loop();
         return gazer;
     }
 
+    /**
+     * stops collection of data and removes dom modifications, must call begin() to reset up
+     * @return {gazer} this
+     */
     gazer.end = function() {
         //loop may run an extra time and fail due to removed elements
         paused = true;
@@ -278,15 +312,26 @@
 
     //PUBLIC FUNCTIONS - DEBUG
 
+    /**
+     * returns if the browser is compatible with gazer
+     * @return {boolean} if browser is compatible
+     */
     gazer.detectCompatibility = function() {
         //TODO detectCompatibility
         return true;
     }
 
+    /**
+     * runs an initial calibration page/step
+     */
     gazer.performCalibration = function(desiredAccuracy) {
         //TODO performCalibration
     }
 
+    /**
+     * displays the calibration point for debugging
+     * @return {gazer} this
+     */
     gazer.showPredictionPoints = function(bool) {
         showGazeDot = bool;
         gazeDot.style.left = '-999em';
@@ -294,12 +339,22 @@
     }
 
     //SETTERS
+    /**
+     * sets the tracking module
+     * @param {string} the name of the tracking module to use
+     * @return {gazer} this
+     */
     gazer.setTracker = function(name) {
         //TODO validate name
         tracker = trackerMap[name]();    
         return gazer;
     }
 
+    /**
+     * sets the regression module
+     * @param {string} the name of the regression module to use
+     * @return {gazer} this
+     */
     gazer.setRegression = function(name) {
         //TODO validate name
         var data = reg.getData();
@@ -308,28 +363,51 @@
         return gazer;
     }
 
+    /**
+     * sets a callback to be executed on every gaze event (currently all time steps)
+     * @param {function}
+     *      @param {data} - the prediction data
+     *      @param {elapsedTime} - the elapsed time since begin() was called
+     * @return {gazer} this
+     */
     gazer.setGazeListener = function(listener) {
         //TODO validate listener
         callback = listener;
         return gazer;
     }
 
+    /**
+     * removes the callback set by setGazeListener
+     * @return {gazer} this
+     */
     gazer.clearGazeListener = function() {
         callback = nopCallback;
         return gazer;
     }
 
     //GETTERS
+    /**
+     * returns the tracker currently in use
+     * @return {tracker} an object following the tracker interface
+     */
     gazer.getTracker = function() {
         //TODO decide if this should return the tracker object or just the string, tracker.name
         return tracker;
     }
-
+    
+    /**
+     * returns the regression currently in use
+     * @return {regression} an object following the regression interface
+     */
     gazer.getRegression = function() {
         //TODO decide if this should return the regression object or just the string, reg.name
         return reg;
     }
 
+    /**
+     * requests an immediate prediction
+     * @return {object} prediction data object
+     */
     gazer.getCurrentPrediction = function() {
         return getPrediction(); 
     }
