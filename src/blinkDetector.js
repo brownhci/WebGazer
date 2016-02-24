@@ -2,10 +2,11 @@
 
     window.gazer = window.gazer || {};
 
-gazer.BlinkDetector = function() {
+gazer.BlinkDetector = function(blinkWindow) {
+    //TODO use DataWindow instead
     this.blinkData = [];
     //determines number of previous eyeObj to hold onto
-    this.blinkWindow = 8;
+    this.blinkWindow = blinkWindow || 8;
 
     //cycles through to replace oldest entry
     this.blinkWindowIndex = 0;

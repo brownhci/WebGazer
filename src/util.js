@@ -66,7 +66,7 @@ gazer.util.grayscale = function(imageData, imageWidth, imageHeight){
     return tracking.Image.grayscale(imageData, imageWidth, imageHeight, false);
 }
 
-gazer.util.resizeEye = function(eye) {
+gazer.util.resizeEye = function(eye, resizeWidth, resizeHeight) {
 
     //TODO this seems like it could be done in just one painting to a canvas
 
@@ -79,7 +79,7 @@ gazer.util.resizeEye = function(eye) {
     var tempCanvas = document.createElement('canvas');
 
     tempCanvas.width = resizeWidth;
-    tempCanvas.height = resizeWidth;
+    tempCanvas.height = resizeHeight;
 
     // save your canvas into temp canvas
     tempCanvas.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, resizeWidth, resizeHeight);
