@@ -22,7 +22,7 @@ window.onload = function() {
     var topDist = '0px';
     var leftDist = '0px';
     
-    setTimeout(function() {
+    var setup = function() {
         var video = document.getElementById('webgazerVideoFeed');
         video.style.display = 'block';
         video.style.position = 'absolute';
@@ -53,7 +53,16 @@ window.onload = function() {
             }
         }
         drawLoop();
-    }, 600);
+    };
+
+    function checkIfReady() {
+        if (gazer.isReady()) {
+            setup();
+        } else {
+            setTimeout(checkIfReady, 100);
+        }
+    }
+    setTimeout(checkIfReady,100);
 };
 
 window.onbeforeunload = function() {
