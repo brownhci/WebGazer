@@ -28,6 +28,7 @@ var dataTrail = new self.gazer.util.DataWindow(dataWindow);
  * @return{array} regression coefficients
  */
 function ridge(y, X, k){
+    console.log(X);
     var nc = X[0].length;
     var m_Coefficients = new Array(nc);
     var xt = self.gazer.mat.transpose(X);
@@ -84,41 +85,39 @@ function getCurrentFixationIndex() {
 
 self.onmessage = function(event) {
     var data = event.data;
-    console.log('receiving data');
+    console.log(event.data);
     var screenPos = data['screenPos'];
     var eyes = data['eyes'];
     var type = data['type'];
     if (type === 'click') {
-        screenXClicksArray.push([screenPos[0]]);
-        screenYClicksArray.push([screenPos[1]]);
+        self.screenXClicksArray.push([screenPos[0]]);
+        self.screenYClicksArray.push([screenPos[1]]);
 
-        eyeFeaturesClicks.push(eyes);
-        dataClicks.push();
+        self.eyeFeaturesClicks.push(eyes);
     } else if (type === 'move') {
-        screenXTrailArray.push([screenPos[0]]);
-        screenYTrailArray.push([screenPos[1]]);
+        self.screenXTrailArray.push([screenPos[0]]);
+        self.screenYTrailArray.push([screenPos[1]]);
 
-        eyeFeaturesTrail.push(eyes);
-        dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
+        self.eyeFeaturesTrail.push(eyes);
+        self.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
     }
 
-    eyes.left.patch = Array.from(eyes.left.patch.data);
-    eyes.right.patch = Array.from(eyes.right.patch.data);
+    console.log(self.eyeFeaturesClicks.data);
 }
 
 function retrain() {
     console.log('here');
-    if (screenXClicksArray.length == 0) {
+    if (self.screenXClicksArray.length == 0) {
         return;
     }
     console.log('retraining');
-    var screenXArray = screenXClicksArray.data.concat(screenXTrailArray.data);
-    var screenYArray = screenYClicksArray.data.concat(screenYTrailArray.data);
-    var eyeFeatures = eyeFeaturesClicks.data.concat(eyeFeaturesTrail.data);
+    var screenXArray = self.screenXClicksArray.data.concat(self.screenXTrailArray.data);
+    var screenYArray = self.screenYClicksArray.data.concat(self.screenYTrailArray.data);
+    var eyeFeatures = self.eyeFeaturesClicks.data.concat(self.eyeFeaturesTrail.data);
 
     var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
     var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter); 
-    postMessage({'X':coefficientsX, 'Y': coefficientsY});
+    self.postMessage({'X':coefficientsX, 'Y': coefficientsY});
 }
 
 setInterval(retrain, trainInterval);

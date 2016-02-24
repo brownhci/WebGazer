@@ -76,7 +76,7 @@
             return;
         }
         console.log('sending data');
-        this.worker.postMessage({'eyes':eyes, 'screenPos':screenPos, 'type':type})
+        this.worker.postMessage({'eyes':getEyeFeats(eyes), 'screenPos':screenPos, 'type':type})
     }
 
     gazer.reg.RidgeReg.prototype.predict = function(eyesObj) {
