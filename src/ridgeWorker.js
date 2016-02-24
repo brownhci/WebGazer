@@ -28,7 +28,6 @@ var dataTrail = new self.gazer.util.DataWindow(dataWindow);
  * @return{array} regression coefficients
  */
 function ridge(y, X, k){
-    console.log(X);
     var nc = X[0].length;
     var m_Coefficients = new Array(nc);
     var xt = self.gazer.mat.transpose(X);
@@ -85,7 +84,6 @@ function getCurrentFixationIndex() {
 
 self.onmessage = function(event) {
     var data = event.data;
-    console.log(event.data);
     var screenPos = data['screenPos'];
     var eyes = data['eyes'];
     var type = data['type'];
@@ -101,23 +99,25 @@ self.onmessage = function(event) {
         self.eyeFeaturesTrail.push(eyes);
         self.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
     }
-
-    console.log(self.eyeFeaturesClicks.data);
+    self.needsTraining = true;
 }
 
 function retrain() {
-    console.log('here');
     if (self.screenXClicksArray.length == 0) {
         return;
     }
-    console.log('retraining');
+    if (!self.needsTraining) {
+        return;
+    }
     var screenXArray = self.screenXClicksArray.data.concat(self.screenXTrailArray.data);
     var screenYArray = self.screenYClicksArray.data.concat(self.screenYTrailArray.data);
     var eyeFeatures = self.eyeFeaturesClicks.data.concat(self.eyeFeaturesTrail.data);
 
     var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
     var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter); 
+    console.log(coefficientsX);
     self.postMessage({'X':coefficientsX, 'Y': coefficientsY});
+    self.needsTraining = false;
 }
 
 setInterval(retrain, trainInterval);

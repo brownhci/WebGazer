@@ -5608,10 +5608,11 @@ var mosseFilterResponses = function() {
 
     window.gazer = window.gazer || {};
 
-gazer.BlinkDetector = function() {
+gazer.BlinkDetector = function(blinkWindow) {
+    //TODO use DataWindow instead
     this.blinkData = [];
     //determines number of previous eyeObj to hold onto
-    this.blinkWindow = 8;
+    this.blinkWindow = blinkWindow || 8;
 
     //cycles through to replace oldest entry
     this.blinkWindowIndex = 0;
@@ -6458,11 +6459,12 @@ if (typeof exports !== 'undefined') {
     var resizeWidth = 10;
     var resizeHeight = 6;
     var dataWindow = 700;
+    var weights = {'X':[0],'Y':[0]};
     var trailDataWindow = 10; //TODO perhaps more? less?;
 
     function getEyeFeats(eyes) {
-        var resizedLeft = gazer.util.resizeEye(eyes.left);
-        var resizedright = gazer.util.resizeEye(eyes.right);
+        var resizedLeft = gazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+        var resizedright = gazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
         var leftGray = gazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
         var rightGray = gazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
@@ -6496,7 +6498,6 @@ if (typeof exports !== 'undefined') {
     function updateWeights(event) {
         console.log(event.data);
         this.weights = event.data;
-        console.log('weights updated');
     }
 
     gazer.reg.RidgeReg = function() {
@@ -6511,10 +6512,12 @@ if (typeof exports !== 'undefined') {
         this.dataClicks = new gazer.util.DataWindow(dataWindow);
         this.dataTrail = new gazer.util.DataWindow(dataWindow);
 
+
         this.worker = new Worker('../src/ridgeWorker.js');
-        this.worker.onmessage = updateWeights;
         this.worker.onerror = function(err) { console.log(err.message); };
-        this.weights = [0];
+        this.worker.onmessage = function(event) {
+            weights = event.data;   
+        };
     }
 
     gazer.reg.RidgeReg.prototype.addData = function(eyes, screenPos, type) {
@@ -6524,16 +6527,17 @@ if (typeof exports !== 'undefined') {
         if (eyes.left.blink || eyes.right.blink) {
             return;
         }
-        console.log('sending data');
         this.worker.postMessage({'eyes':getEyeFeats(eyes), 'screenPos':screenPos, 'type':type})
     }
 
     gazer.reg.RidgeReg.prototype.predict = function(eyesObj) {
-        if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
+        console.log('in predict1');
+        if (!eyesObj) {
             return null;
         }
-        var coefficientsX = this.weights.X;
-        var coefficientsY = this.weights.Y;
+        console.log(weights);
+        var coefficientsX = weights.X;
+        var coefficientsY = weights.Y;
 
         var eyeFeats = getEyeFeats(eyesObj);
         var predictedX = 0;
@@ -6641,7 +6645,7 @@ self.gazer.util.grayscale = function(imageData, imageWidth, imageHeight){
     return tracking.Image.grayscale(imageData, imageWidth, imageHeight, false);
 }
 
-self.gazer.util.resizeEye = function(eye) {
+gazer.util.resizeEye = function(eye, resizeWidth, resizeHeight) {
 
     //TODO this seems like it could be done in just one painting to a canvas
 
@@ -6654,13 +6658,14 @@ self.gazer.util.resizeEye = function(eye) {
     var tempCanvas = document.createElement('canvas');
 
     tempCanvas.width = resizeWidth;
-    tempCanvas.height = resizeWidth;
+    tempCanvas.height = resizeHeight;
 
     // save your canvas into temp canvas
     tempCanvas.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, resizeWidth, resizeHeight);
 
     return tempCanvas.getContext('2d').getImageData(0, 0, resizeWidth, resizeHeight);
 }
+
 
 
 
