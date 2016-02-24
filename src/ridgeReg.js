@@ -12,8 +12,8 @@
     var trailDataWindow = 10; //TODO perhaps more? less?;
 
     function getEyeFeats(eyes) {
-        var resizedLeft = gazer.util.resizeEye(eyes.left);
-        var resizedright = gazer.util.resizeEye(eyes.right);
+        var resizedLeft = gazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+        var resizedright = gazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
         var leftGray = gazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
         var rightGray = gazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
