@@ -5797,15 +5797,15 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
 (function() {
     "use strict"
 
-    gazer = gazer || {};
-    gazer.mat = gazer.mat || {};
+    self.self.gazer = self.self.gazer || {};
+    self.self.gazer.mat = self.self.gazer.mat || {};
 
 /**
      * Transposes a mxn array
      * @param {array of arrays} matrix mxn
      * @return{array of arrays} transposed matrix
      */
-    gazer.mat.transpose = function(matrix){
+    self.gazer.mat.transpose = function(matrix){
         var m = matrix.length;
         var n = matrix[0].length;
         var transposedMatrix = new Array(n);
@@ -5828,7 +5828,7 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
      * @param [number] j1   Final column index
      * @return [array of arrays] X is the submatrix matrix(r(:),j0:j1)
      */
-    gazer.mat.getMatrix = function(matrix, r, j0, j1){
+    self.gazer.mat.getMatrix = function(matrix, r, j0, j1){
         var X = new Array(r.length);
         for(var i=0; i<r.length; i++){
             X[i] = new Array(j1-j0+1);
@@ -5851,7 +5851,7 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
      * @return     A(i0:i1,j0:j1)
      * @throws  ArrayIndexOutOfBoundsException Submatrix indices
      */
-    gazer.mat.getSubMatrix = function(matrix, i0, i1, j0, j1){
+    self.gazer.mat.getSubMatrix = function(matrix, i0, i1, j0, j1){
         var X = new Array(i1-i0+1);
         for(var i=0; i<i1-i0+1; i++){
             X[i] = new Array(j1-j0+1);
@@ -5870,7 +5870,7 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
      * @param {array of arrays} matrix2
      * @return {array of arrays} Matrix product, matrix1 * matrix2
      */
-    gazer.mat.mult = function(matrix1, matrix2){	
+    self.gazer.mat.mult = function(matrix1, matrix2){	
         if (matrix2.length != matrix1[0].length){
             console.log("Matrix inner dimensions must agree.");
         }
@@ -5902,7 +5902,7 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
      * @param{array of arrays} B right matrix of equation to be solved
      * @return {array of arrays} X so that L*U*X = B(piv,:)
      */
-    gazer.mat.LUDecomposition = function(A,B){
+    self.gazer.mat.LUDecomposition = function(A,B){
         var LU = new Array(A.length);
         for(var i=0; i<A.length; i++){
             LU[i] = new Array(A[0].length);
@@ -5972,7 +5972,7 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             }
         }
         var nx = B[0].length;
-        var X = gazer.mat.getMatrix(B,piv,0,nx-1);
+        var X = self.gazer.mat.getMatrix(B,piv,0,nx-1);
         // Solve L*Y = B(piv,:)
         for (var k = 0; k < n; k++){
             for (var i = k+1; i < n; i++){
@@ -6002,7 +6002,7 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
      * @return [array of arrays] X that minimizes the two norm of QR*X-B.
      * @param[array of arrays] Matrix A [description]
      */
-            gazer.mat.QRDecomposition = function(A, B){
+            self.gazer.mat.QRDecomposition = function(A, B){
                 // Initialize.
                 QR = new Array(A.length);
                 for(var i=0; i<A.length; i++){
@@ -6091,7 +6091,7 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
                         }
                     }
                 }
-                return gazer.mat.getSubMatrix(X,0,n-1,0,nx-1);
+                return self.gazer.mat.getSubMatrix(X,0,n-1,0,nx-1);
             }
 }());
 
@@ -6525,7 +6525,7 @@ if (typeof exports !== 'undefined') {
             return;
         }
         console.log('sending data');
-        this.worker.postMessage({'eyes':eyes, 'screenPos':screenPos, 'type':type})
+        this.worker.postMessage({'eyes':getEyeFeats(eyes), 'screenPos':screenPos, 'type':type})
     }
 
     gazer.reg.RidgeReg.prototype.predict = function(eyesObj) {
@@ -6575,20 +6575,20 @@ if (typeof exports !== 'undefined') {
 
 (function() {
 
-gazer = gazer || {};
-gazer.util = gazer.util || {};
-gazer.mat = gazer.mat || {};
+self.gazer = self.gazer || {};
+self.gazer.util = self.gazer.util || {};
+self.gazer.mat = self.gazer.mat || {};
 
 //Type test functions
-gazer.util.isInt;
+self.gazer.util.isInt;
 
-gazer.util.isNaN;
+self.gazer.util.isNaN;
 
-gazer.util.isString;
+self.gazer.util.isString;
 
 //Eye class
 
-gazer.util.Eye = function(patch, imagex, imagey, width, height) {
+self.gazer.util.Eye = function(patch, imagex, imagey, width, height) {
     this.patch = patch;
     this.imagex = imagex;
     this.imagey = imagey;
@@ -6599,14 +6599,14 @@ gazer.util.Eye = function(patch, imagex, imagey, width, height) {
 
 //Data Window class
 //operates like an array but 'wraps' data around to keep the array at a fixed windowSize
-gazer.util.DataWindow = function(windowSize) {
+self.gazer.util.DataWindow = function(windowSize) {
     this.data = [];
     this.windowSize = windowSize;
     this.index = 0;
     this.length = 0;
 }
 
-gazer.util.DataWindow.prototype.push = function(entry) {
+self.gazer.util.DataWindow.prototype.push = function(entry) {
     if (this.data.length < this.windowSize) {
         this.data.push(entry);
         this.length = this.data.length;
@@ -6618,7 +6618,7 @@ gazer.util.DataWindow.prototype.push = function(entry) {
     this.index = (this.index + 1) % this.windowSize;
 }
 
-gazer.util.DataWindow.prototype.get = function(ind) {
+self.gazer.util.DataWindow.prototype.get = function(ind) {
     if (this.data.length < this.windowSize) {
         return this.data[ind];
     } else {
@@ -6627,7 +6627,7 @@ gazer.util.DataWindow.prototype.get = function(ind) {
     }
 }
 
-gazer.util.DataWindow.prototype.addAll = function(data) {
+self.gazer.util.DataWindow.prototype.addAll = function(data) {
     //TODO use slice instead?
     for (var i = 0; i < data.length; i++) {
         this.push(data[i]);
@@ -6636,12 +6636,12 @@ gazer.util.DataWindow.prototype.addAll = function(data) {
 
 
 //Helper functions
-gazer.util.grayscale = function(imageData, imageWidth, imageHeight){
-    //TODO either move tracking into gazer namespace or re-implement function
+self.gazer.util.grayscale = function(imageData, imageWidth, imageHeight){
+    //TODO either move tracking into self.gazer namespace or re-implement function
     return tracking.Image.grayscale(imageData, imageWidth, imageHeight, false);
 }
 
-gazer.util.resizeEye = function(eye) {
+self.gazer.util.resizeEye = function(eye) {
 
     //TODO this seems like it could be done in just one painting to a canvas
 
@@ -6669,7 +6669,7 @@ gazer.util.resizeEye = function(eye) {
  * @param  {array} prediction [x,y] predicted gaze coordinates
  * @return {array} constrained coordinates
  */
-gazer.util.bound = function(prediction){
+self.gazer.util.bound = function(prediction){
     if(prediction.x < 0)
         prediction.x = 0;
     if(prediction.y < 0)
