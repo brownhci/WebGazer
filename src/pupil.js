@@ -17,7 +17,7 @@ var getValue = function (pixels, x, y, width){
 
 /**
  * Computes summation area table/integral image of a pixel matrix
- * @param{pixels} pixels value of eye area
+ * @param{array} pixels value of eye area
  * @param{number} width - of image in 'pixels'
  * @param{number} height - of image in 'pixels'
  * @returns{2d array} -integral image
@@ -46,7 +46,13 @@ var getSumTable = function (pixels, width, height){
     return integralImage;
 }
 
-
+/**
+ * Detects a pupil in a set of pixels
+ * @param  {array} pixels - patch of pixels to look for pupil into
+ * @param  {number} width  - of pixel patch
+ * @param  {number} height - of pixel patch
+ * @return {array} coordinate of the bottom right corner and width of the best fitted pupil
+ */
 var getSinglePupil = function (pixels, width, height){
     var summedAreaTable = getSumTable(pixels, width, height);
     var bestAvgScore = 999999; //want to minimize this score
@@ -79,6 +85,11 @@ var getSinglePupil = function (pixels, width, height){
     return [bestPoint, bestHalfWidth];
 }
 
+/**
+ * Given an object with two eye patches it finds the location of the detected pupils
+ * @param  {Object} eyesObj - left and right detected eye patches
+ * @return {Object} eyesObj - updated eye patches with information about pupils' locations
+ */
 gazer.pupil.getPupils = function(eyesObj) {
     if (!eyesObj) {
         return eyesObj;
