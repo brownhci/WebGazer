@@ -10,16 +10,26 @@
 
     gazer.tracker.Js_objectdetectGaze = Js_objectdetectGaze;
 
+    /**
+     * Isolates the two patches that correspond to the user's eyes
+     * @param  {Canvas} imageCanvas - canvas corresponding to the webcam stream
+     * @param  {number} width - of imageCanvas
+     * @param  {number} height - of imageCanvas
+     * @return {Object} the two eye-patches, first left, then right eye
+     */
     Js_objectdetectGaze.prototype.getEyePatches = function(imageCanvas, width, height) {
 
         if (imageCanvas.width == 0) {
             return null;
         }
 
+        //current ImageData that correspond to the working image. 
+        //It can be the whole canvas if the face detection failed or only the upper half of the face to avoid unnecessary computations
         var workingImage = imageCanvas.getContext('2d').getImageData(0,0,width,height);
 
         var face = this.detectFace(imageCanvas, width, height);
 
+        //offsets of the working image from the top left corner of the video canvas
         var offsetX = 0;
         var offsetY = 0;
 
@@ -35,7 +45,6 @@
         }
 
         var eyes = this.detectEyes(workingImage, width, height);
-        console.log(eyes);
         if (eyes == null){
             return null;
         }
@@ -64,13 +73,11 @@
             return null;
         }
 
-        //TODO: If we end up using the head we would need some kind of positions. eyeObjs.positions = positions;
-
         return eyeObjs;
     }
 
     /**
-     * Performs eye detection on the passed canvas, given the library
+     * Performs eye detection on the passed workingImage
      * @param {ImageData} workingImage - either the whole canvas or the upper half of the head
      * @param {number} width - width of working image
      * @param {number} height - height of working image
@@ -82,7 +89,8 @@
         tempCanvas.width = workingImageWidth;
         tempCanvas.height = workingImageHeight;
         tempCanvas.getContext('2d').putImageData(workingImage,0,0);
-     
+        
+        //Following js_objectdetect conventions resize workingImage
         var eyes = [];
         var intermediateEyes = [];
         var width = ~~(60 * workingImageWidth / workingImageHeight);
@@ -108,7 +116,7 @@
 
     /**
      * Performs face detection on the passed canvas
-     * @param {canvas} imageCanvas - whole canvas
+     * @param {canvas} imageCanvas - whole video canvas
      * @param {number} width - width of imageCanvas
      * @param {number} height - height of imageCanvas
      * @return{array} face - array of rectangle information
@@ -121,10 +129,6 @@
         var detector = new objectdetect.detector(width, height, 1.1, objectdetect.frontalface_alt);
         intermediateFaces = detector.detect(imageCanvas, 1);
         face = this.findLargestRectangle(intermediateFaces);
-        // smoothit = smoother.smooth(face);
-        // if (!isNaN(smoothit[0])){
-        //     face = smoothit;
-        // }
         // Rescale coordinates from detector to video coordinate space:
         face[0] *= workingImageWidth / detector.canvas.width;
         face[1] *= workingImageHeight / detector.canvas.height;
@@ -153,7 +157,8 @@
     }
 
     /**
-     * Taken from trackingjs and modified slightly to reflect that rectangles are arrays and not objects*
+     * Merges detected rectangles in clusters
+     * Taken from trackingjs and modified slightly to reflect that rectangles are arrays and not objects
      * @param  {array of arrays} rects rectangles to me clustered
      * @return {array of arrays} result merged rectangles
      */

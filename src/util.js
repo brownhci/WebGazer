@@ -20,7 +20,6 @@ gazer.util.Eye = function(patch, imagex, imagey, width, height) {
     this.height = height;
 }
 
-
 /**
  * DataWindow class - Operates like an array, but 'wraps' data around to keep the array at a fixed windowSize
  * @param {number} windowSize - defines the maximum size of the window
@@ -121,8 +120,6 @@ gazer.util.resizeEye = function(eye, resizeWidth, resizeHeight) {
 
     return tempCanvas.getContext('2d').getImageData(0, 0, resizeWidth, resizeHeight);
 }
-
-
 
 /**
  * Checks if the prediction is within the boundaries of the viewport and constrains it

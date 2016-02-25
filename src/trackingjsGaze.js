@@ -10,16 +10,26 @@
 
     gazer.tracker.TrackingjsGaze = TrackingjsGaze;
 
+    /**
+     * Isolates the two patches that correspond to the user's eyes
+     * @param  {Canvas} imageCanvas - canvas corresponding to the webcam stream
+     * @param  {number} width - of imageCanvas
+     * @param  {number} height - of imageCanvas
+     * @return {Object} the two eye-patches, first left, then right eye
+     */
     TrackingjsGaze.prototype.getEyePatches = function(imageCanvas, width, height) {
 
         if (imageCanvas.width == 0) {
             return null;
         }
 
+        //current ImageData that correspond to the working image. 
+        //It can be the whole canvas if the face detection failed or only the upper half of the face to avoid unnecessary computations
         var workingImage = imageCanvas.getContext('2d').getImageData(0,0,width,height);
 
         var face = this.detectFace(workingImage, width, height);
 
+        //offsets of the working image from the top left corner of the video canvas
         var offsetX = 0;
         var offsetY = 0;
 
@@ -64,13 +74,11 @@
             return null;
         }
 
-        //TODO: If we end up using the head we would need some kind of positions. eyeObjs.positions = positions;
-
         return eyeObjs;
     }
 
     /**
-     * Performs eye detection on the passed canvas, given the library
+     * Performs eye detection on the passed working image
      * @param {ImageData} workingImage - either the whole canvas or the upper half of the head
      * @param {number} width - width of working image
      * @param {number} height - height of working image
@@ -109,7 +117,7 @@
 
     /**
      * Performs face detection on the passed canvas
-     * @param {ImageData} workingImage - whole canvas
+     * @param {ImageData} workingImage - whole video canvas
      * @param {number} width - width of imageCanvas
      * @param {number} height - height of imageCanvas
      * @return{array} face - array of rectangle information
