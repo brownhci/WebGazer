@@ -46,7 +46,7 @@
 
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
     var tracker = new gazer.tracker.ClmGaze();
-    var reg = new gazer.reg.LinearReg();
+    var regs = [new gazer.reg.RidgeReg()];
     var blinkDetector = new gazer.BlinkDetector();
 
     //lookup tables
@@ -110,10 +110,15 @@
      *  paints the video to a canvas and runs the prediction pipeline to get a prediction
      */
     function getPrediction() {
-        var prediction = reg.predict(getPupilFeatures(videoElementCanvas, imgWidth, imgHeight));
+        var predictions = [];
+        var features = getPupilFeatures(videoElementCanvas, imgWidth, imgHeight);
+        for (var reg in regs) {
+            preditions.push(regs[reg].predict(features));
+        }
         return prediction == null ? null : {
-            x : prediction.x,
-            y : prediction.y
+            'x' : prediction[0].x,
+            'y' : prediction[0].y,
+            'all' : predictions
         };
     }
 
@@ -154,7 +159,11 @@
         if (paused) {
             return;
         }
-        reg.addData(getPupilFeatures(videoElementCanvas, imgWidth, imgHeight), [event.clientX, event.clientY], 'click');
+        var features = getPupilFeatures(videoElementCanvas, imgWidth, imgHeight);
+        for (var reg in regs) {
+            //TODO setup enum for event types
+            regs[reg].addData(features, [event.clientX, event.clientY], 'click');
+        }
     }
 
     /**
@@ -171,8 +180,11 @@
         } else {
             moveClock = now;
         }
-
-        reg.addData(getPupilFeatures(videoElementCanvas, imgWidth, imgHeight), [event.clientX, event.clientY], 'move');
+        var features = getPupilFeatures(videoElementCanvas, imgWidth, imgHeight);
+        for (var reg in regs) {
+            //TODO setup enum for event types
+            regs[reg].addData(features, [event.clientX, event.clientY], 'move');
+        }
     }
 
     /** loads the global data and passes it to the regression model 
@@ -181,7 +193,9 @@
     function loadGlobalData() {
         var storage = JSON.parse(window.localStorage.getItem(localstorageLabel)) || defaults;
         settings = storage.settings;
-        reg.setData(storage.data);
+        for (var reg in regs) {
+            regs[reg].setData(storage.data);
+        }
     }
    
    /**
@@ -191,7 +205,7 @@
         //TODO set localstorage to combined dataset
         var storage = {
             'settings': settings,
-            'data': reg.getData()
+            'data': regs[0].getData()
         };
         window.localStorage.setItem(localstorageLabel, JSON.stringify(storage));
         //TODO data should probably be stored in webgazer object instead of each regression model
@@ -203,7 +217,9 @@
      */
     function clearData() {
         window.localStorage.set(localstorageLabel, undefined);
-        reg.setData([]);
+        for (var reg in regs) {
+            regs[reg].setData([]);
+        }
     }
 
 
@@ -377,15 +393,29 @@
     }
 
     /**
-     * sets the regression module
+     * sets the regression module and clears any other regression modules
      * @param {string} the name of the regression module to use
      * @return {gazer} this
      */
     gazer.setRegression = function(name) {
         //TODO validate name
-        var data = reg.getData();
-        reg = regressionMap[name]();
-        reg.setData(data);
+        //TODO make robust to adding regression after calling begin
+        var data = regs[0].getData();
+        regs = [regressionMap[name]()];
+        regs[0].setData(data);
+        return gazer;
+    }
+
+    /**
+     * adds a new regression module to the list of regression modules, seeding its data from the first regression module
+     * @param {string} name - the string name of the regression module to add
+     * @return {gazer} this
+     */
+    gazer.addRegression = function(name) {
+        var newReg = regressionMap[name]();
+        var data = regs[0].getData();
+        newReg.setData(data);
+        regs.push(newReg);
         return gazer;
     }
 
