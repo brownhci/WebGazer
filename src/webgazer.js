@@ -19,6 +19,7 @@
     var imgWidth = 0;
     var imgHeight = 0;
 
+    //DEBUG variables
     //debug control boolean
     var showGazeDot = false;
     //debug element (starts offscreen)
@@ -28,6 +29,8 @@
     gazeDot.style.width = '10px';
     gazeDot.style.height = '10px';
     gazeDot.style.background = 'red';
+
+    var debugVideoLoc = '';
         
     // loop parameters
     var clockStart = performance.now();
@@ -203,6 +206,40 @@
         reg.setData([]);
     }
 
+
+    /**
+     * initializes all needed dom elements and begins the loop
+     */
+    function init(videoSrc) {
+        videoElement = document.createElement('video');
+        videoElement.id = 'webgazerVideoFeed'; 
+        videoElement.autoplay = true;
+        console.log(videoElement);
+        videoElement.style.display = 'none';
+
+        //turn the stream into a magic URL 
+        videoElement.src = videoSrc;  
+        //TODO check to see if we actually need to add the element to the dom
+        document.body.appendChild(videoElement);
+
+        videoElementCanvas = document.createElement('canvas'); 
+        videoElementCanvas.id = 'webgazerVideoCanvas';
+        videoElementCanvas.style.display = 'none';
+        document.body.appendChild(videoElementCanvas);
+
+
+        //third argument set to true so that we get event on 'capture' instead of 'bubbling'
+        //this prevents a client using event.stopPropagation() preventing our access to the click
+        document.addEventListener('click', clickListener, true);
+        document.addEventListener('mousemove', moveListener, true);
+
+        document.body.appendChild(gazeDot);
+
+        //BEGIN CALLBACK LOOP
+        paused = false;
+        loop();
+    }
+
     //PUBLIC FUNCTIONS - CONTROL
 
     /**
@@ -210,6 +247,11 @@
      */
     gazer.begin = function() {
         loadGlobalData();
+
+        if (debugVideoLoc) {
+            init(debugVideoLoc);
+            return gazer;
+        }
 
         //SETUP VIDEO ELEMENTS
         navigator.getUserMedia = navigator.getUserMedia ||
@@ -224,33 +266,7 @@
             navigator.getUserMedia(options, 
                     function(stream){
                         console.log('video stream created');
-                        videoElement = document.createElement('video');
-                        videoElement.id = 'webgazerVideoFeed'; 
-                        videoElement.autoplay = true;
-                        console.log(videoElement);
-                        videoElement.style.display = 'none';
-
-                        //turn the stream into a magic URL 
-                        videoElement.src = window.URL.createObjectURL(stream); 
-                        //TODO check to see if we actually need to add the element to the dom
-                        document.body.appendChild(videoElement);
-
-                        videoElementCanvas = document.createElement('canvas'); 
-                        videoElementCanvas.id = 'webgazerVideoCanvas';
-                        videoElementCanvas.style.display = 'none';
-                        document.body.appendChild(videoElementCanvas);
-
-        
-                        //third argument set to true so that we get event on 'capture' instead of 'bubbling'
-                        //this prevents a client using event.stopPropagation() preventing our access to the click
-                        document.addEventListener('click', clickListener, true);
-                        document.addEventListener('mousemove', moveListener, true);
-
-                        document.body.appendChild(gazeDot);
-
-                        //BEGIN CALLBACK LOOP
-                        paused = false;
-                        loop();
+                        init(window.URL.createObjectURL(stream));                    
                     }, 
                     function(e){ 
                         console.log("No stream"); 
@@ -336,6 +352,16 @@
         showGazeDot = bool;
         gazeDot.style.left = '-999em';
         return gazer;
+    }
+
+    /**
+     *  set a static video file to be used instead of webcam video
+     *  @param {string} videoLoc - video file location
+     *  @return {gazer} this
+     */
+    gazer.setStaticVideo(videoLoc) {
+       debugVideoLoc = videoLoc;
+       return gazer;
     }
 
     //SETTERS
