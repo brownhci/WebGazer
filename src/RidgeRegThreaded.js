@@ -50,7 +50,7 @@
         this.weights = event.data;
     }
 
-    gazer.reg.RidgeReg = function() {
+    gazer.reg.RidgeRegThreaded = function() {
         this.screenXClicksArray = new gazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new gazer.util.DataWindow(dataWindow);
         this.eyeFeaturesClicks = new gazer.util.DataWindow(dataWindow);
@@ -70,7 +70,7 @@
         };
     }
 
-    gazer.reg.RidgeReg.prototype.addData = function(eyes, screenPos, type) {
+    gazer.reg.RidgeRegThreaded.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
         }
@@ -80,7 +80,7 @@
         this.worker.postMessage({'eyes':getEyeFeats(eyes), 'screenPos':screenPos, 'type':type})
     }
 
-    gazer.reg.RidgeReg.prototype.predict = function(eyesObj) {
+    gazer.reg.RidgeRegThreaded.prototype.predict = function(eyesObj) {
         console.log('in predict1');
         if (!eyesObj) {
             return null;
@@ -108,7 +108,7 @@
         };
     }
 
-    gazer.reg.RidgeReg.prototype.setData = function(data) {
+    gazer.reg.RidgeRegThreaded.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             //TODO this is a kludge, needs to be fixed
             data[i].eyes.left.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.left.patch), data[i].eyes.left.width, data[i].eyes.left.height);
@@ -117,11 +117,11 @@
         }
     }
 
-    gazer.reg.RidgeReg.prototype.getData = function() {
+    gazer.reg.RidgeRegThreaded.prototype.getData = function() {
         //TODO move data storage to webgazer object level
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 
 
-    gazer.reg.RidgeReg.prototype.name = 'ridge';
+    gazer.reg.RidgeRegThreaded.prototype.name = 'ridge';
 }(window));
