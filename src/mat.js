@@ -1,13 +1,13 @@
 (function() {
     "use strict"
 
-    self.self.gazer = self.self.gazer || {};
-    self.self.gazer.mat = self.self.gazer.mat || {};
+    self.gazer = self.gazer || {};
+    self.gazer.mat = self.gazer.mat || {};
 
-/**
-     * Transposes a mxn array
-     * @param {array of arrays} matrix mxn
-     * @return{array of arrays} transposed matrix
+    /**
+     * Transposes an mxn array
+     * @param {array of arrays} matrix - of mxn dimensionality
+     * @return {array of arrays} transposed matrix
      */
     self.gazer.mat.transpose = function(matrix){
         var m = matrix.length;
@@ -26,10 +26,10 @@
 
     /** 
      * Get a submatrix of matrix
-     * @param [array of arrays] matrix original matrix
-     * @param [array] r    Array of row indices.
-     * @param [number] j0   Initial column index
-     * @param [number] j1   Final column index
+     * @param [array of arrays] matrix - original matrix
+     * @param [array] r - Array of row indices.
+     * @param [number] j0 - Initial column index
+     * @param [number] j1 - Final column index
      * @return [array of arrays] X is the submatrix matrix(r(:),j0:j1)
      */
     self.gazer.mat.getMatrix = function(matrix, r, j0, j1){
@@ -47,13 +47,12 @@
 
     /** 
      * Get a submatrix of matrix
-     * @param [array of arrays] matrix original matrix
-     * @param [number] i0   Initial row index
-     * @param [number] 1   Final row index
-     * @param [number] j0   Initial column index
-     * @param [number] j1   Final column index
-     * @return     A(i0:i1,j0:j1)
-     * @throws  ArrayIndexOutOfBoundsException Submatrix indices
+     * @param [array of arrays] matrix - original matrix
+     * @param [number] i0 - Initial row index
+     * @param [number] i1 - Final row index
+     * @param [number] j0 - Initial column index
+     * @param [number] j1 - Final column index
+     * @return matrix(i0:i1,j0:j1)
      */
     self.gazer.mat.getSubMatrix = function(matrix, i0, i1, j0, j1){
         var X = new Array(i1-i0+1);
@@ -101,9 +100,9 @@
 
 
     /**
-     * Solves A*X = B, based on WEKA code
-     * @param{array of arrays} A left matrix of equation to be solved
-     * @param{array of arrays} B right matrix of equation to be solved
+     * LUDecomposition to solve A*X = B, based on WEKA code
+     * @param{array of arrays} A - left matrix of equation to be solved
+     * @param{array of arrays} B - right matrix of equation to be solved
      * @return {array of arrays} X so that L*U*X = B(piv,:)
      */
     self.gazer.mat.LUDecomposition = function(A,B){
@@ -201,101 +200,100 @@
 
     /**
      * Least squares solution of A*X = B, based on WEKA code
-     * @param [array of arrays] A left side matrix to be solved
-     * @param [array of arrays] B a matrix with as many rows as A and any number of columns.
-     * @return [array of arrays] X that minimizes the two norm of QR*X-B.
-     * @param[array of arrays] Matrix A [description]
+     * @param [array of arrays] A - left side matrix to be solved
+     * @param [array of arrays] B - a matrix with as many rows as A and any number of columns.
+     * @return [array of arrays] X - that minimizes the two norms of QR*X-B.
      */
-            self.gazer.mat.QRDecomposition = function(A, B){
-                // Initialize.
-                QR = new Array(A.length);
-                for(var i=0; i<A.length; i++){
-                    QR[i] = new Array(A[0].length);
-                }
-                for (var i = 0; i < A.length; i++){
-                    for (var j = 0; j < A[0].length; j++){
-                        QR[i][j] = A[i][j];
-                    }
-                }
-                var m = A.length;
-                var n = A[0].length;
-                var Rdiag = new Array(n);
-                var nrm;
-
-                // Main loop.
-                for (var k = 0; k < n; k++){
-                    // Compute 2-norm of k-th column without under/overflow.
-                    nrm = 0;
-                    for (var i = k; i < m; i++){
-                        nrm = Math.hypot(nrm,QR[i][k]);
-                    }
-                    if (nrm != 0){
-                        // Form k-th Householder vector.
-                        if (QR[k][k] < 0){
-                            nrm = -nrm;
-                        }
-                        for (var i = k; i < m; i++){
-                            QR[i][k] /= nrm;
-                        }
-                        QR[k][k] += 1;
-
-                        // Apply transformation to remaining columns.
-                        for (var j = k+1; j < n; j++){
-                            var s = 0; 
-                            for (var i = k; i < m; i++){
-                                s += QR[i][k]*QR[i][j];
-                            }
-                            s = -s/QR[k][k];
-                            for (var i = k; i < m; i++){
-                                QR[i][j] += s*QR[i][k];
-                            }
-                        }
-                    }
-                    Rdiag[k] = -nrm;
-                }
-                if (B.length != m){
-                    console.log("Matrix row dimensions must agree.");
-                }
-                for (var j = 0; j < n; j++){
-                    if (Rdiag[j] == 0)
-                        console.log("Matrix is rank deficient");
-                }
-                // Copy right hand side
-                var nx = B[0].length;
-                X = new Array(B.length);
-                for(var i=0; i<B.length; i++){
-                    X[i] = new Array(B[0].length);
-                }
-                for (var i = 0; i < B.length; i++){
-                    for (var j = 0; j < B[0].length; j++){
-                        X[i][j] = B[i][j];
-                    }
-                }
-                // Compute Y = transpose(Q)*B
-                for (var k = 0; k < n; k++){
-                    for (var j = 0; j < nx; j++){
-                        var s = 0.0; 
-                        for (var i = k; i < m; i++){
-                            s += QR[i][k]*X[i][j];
-                        }
-                        s = -s/QR[k][k];
-                        for (var i = k; i < m; i++){
-                            X[i][j] += s*QR[i][k];
-                        }
-                    }
-                }
-                // Solve R*X = Y;
-                for (var k = n-1; k >= 0; k--){
-                    for (var j = 0; j < nx; j++){
-                        X[k][j] /= Rdiag[k];
-                    }
-                    for (var i = 0; i < k; i++){
-                        for (var j = 0; j < nx; j++){
-                            X[i][j] -= X[k][j]*QR[i][k];
-                        }
-                    }
-                }
-                return self.gazer.mat.getSubMatrix(X,0,n-1,0,nx-1);
+    self.gazer.mat.QRDecomposition = function(A, B){
+        // Initialize.
+        QR = new Array(A.length);
+        for(var i=0; i<A.length; i++){
+            QR[i] = new Array(A[0].length);
+        }
+        for (var i = 0; i < A.length; i++){
+            for (var j = 0; j < A[0].length; j++){
+                QR[i][j] = A[i][j];
             }
+        }
+        var m = A.length;
+        var n = A[0].length;
+        var Rdiag = new Array(n);
+        var nrm;
+
+        // Main loop.
+        for (var k = 0; k < n; k++){
+            // Compute 2-norm of k-th column without under/overflow.
+            nrm = 0;
+            for (var i = k; i < m; i++){
+                nrm = Math.hypot(nrm,QR[i][k]);
+            }
+            if (nrm != 0){
+                // Form k-th Householder vector.
+                if (QR[k][k] < 0){
+                    nrm = -nrm;
+                }
+                for (var i = k; i < m; i++){
+                    QR[i][k] /= nrm;
+                }
+                QR[k][k] += 1;
+
+                // Apply transformation to remaining columns.
+                for (var j = k+1; j < n; j++){
+                    var s = 0; 
+                    for (var i = k; i < m; i++){
+                        s += QR[i][k]*QR[i][j];
+                    }
+                    s = -s/QR[k][k];
+                    for (var i = k; i < m; i++){
+                        QR[i][j] += s*QR[i][k];
+                    }
+                }
+            }
+            Rdiag[k] = -nrm;
+        }
+        if (B.length != m){
+            console.log("Matrix row dimensions must agree.");
+        }
+        for (var j = 0; j < n; j++){
+            if (Rdiag[j] == 0)
+                console.log("Matrix is rank deficient");
+        }
+        // Copy right hand side
+        var nx = B[0].length;
+        X = new Array(B.length);
+        for(var i=0; i<B.length; i++){
+            X[i] = new Array(B[0].length);
+        }
+        for (var i = 0; i < B.length; i++){
+            for (var j = 0; j < B[0].length; j++){
+                X[i][j] = B[i][j];
+            }
+        }
+        // Compute Y = transpose(Q)*B
+        for (var k = 0; k < n; k++){
+            for (var j = 0; j < nx; j++){
+                var s = 0.0; 
+                for (var i = k; i < m; i++){
+                    s += QR[i][k]*X[i][j];
+                }
+                s = -s/QR[k][k];
+                for (var i = k; i < m; i++){
+                    X[i][j] += s*QR[i][k];
+                }
+            }
+        }
+        // Solve R*X = Y;
+        for (var k = n-1; k >= 0; k--){
+            for (var j = 0; j < nx; j++){
+                X[k][j] /= Rdiag[k];
+            }
+            for (var i = 0; i < k; i++){
+                for (var j = 0; j < nx; j++){
+                    X[i][j] -= X[k][j]*QR[i][k];
+                }
+            }
+        }
+        return self.gazer.mat.getSubMatrix(X,0,n-1,0,nx-1);
+    }
 }());
 

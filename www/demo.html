@@ -9,7 +9,7 @@
         <script>
 window.onload = function() {
     gazer.setRegression('interaction') /* currently must set regression and tracker */
-        .setTracker('clmtrackr')
+        .setTracker('js_objectdetect')
         .setGazeListener(function(data, clock) {
          //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
          //   console.log(clock); /* elapsed time in milliseconds since gazer.begin() was called */
@@ -22,7 +22,7 @@ window.onload = function() {
     var topDist = '0px';
     var leftDist = '0px';
     
-    setTimeout(function() {
+    var setup = function() {
         var video = document.getElementById('webgazerVideoFeed');
         video.style.display = 'block';
         video.style.position = 'absolute';
@@ -43,17 +43,26 @@ window.onload = function() {
 
         document.body.appendChild(overlay);
 
-        var cl = gazer.getTracker().clm;
+        // var cl = gazer.getTracker().clm;
 
-        function drawLoop() {
-            requestAnimFrame(drawLoop);
-            overlay.getContext('2d').clearRect(0,0,width,height);
-            if (cl.getCurrentPosition()) {
-                cl.draw(overlay);
-            }
+        // function drawLoop() {
+        //     requestAnimFrame(drawLoop);
+        //     overlay.getContext('2d').clearRect(0,0,width,height);
+        //     if (cl.getCurrentPosition()) {
+        //         cl.draw(overlay);
+        //     }
+        // }
+        // drawLoop();
+    };
+
+    function checkIfReady() {
+        if (gazer.isReady()) {
+            setup();
+        } else {
+            setTimeout(checkIfReady, 100);
         }
-        drawLoop();
-    }, 600);
+    }
+    setTimeout(checkIfReady,100);
 };
 
 window.onbeforeunload = function() {

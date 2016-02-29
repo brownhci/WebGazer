@@ -1,2 +1,0 @@
-#!/bin/bash
-cat toCombine | xargs cat > gazer.js

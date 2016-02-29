@@ -4,6 +4,9 @@
     window.gazer = window.gazer || {};
     gazer.tracker = gazer.tracker || {};
 
+    /**
+     * Initialize clmtrackr object
+     */
     var ClmGaze = function() {
         this.clm = new clm.tracker({useWebGL : true});
         this.clm.init(pModel);
@@ -11,6 +14,13 @@
 
     gazer.tracker.ClmGaze = ClmGaze;
 
+    /**
+     * Isolates the two patches that correspond to the user's eyes
+     * @param  {Canvas} imageCanvas - canvas corresponding to the webcam stream
+     * @param  {number} width - of imageCanvas
+     * @param  {number} height - of imageCanvas
+     * @return {Object} the two eye-patches, first left, then right eye
+     */
     ClmGaze.prototype.getEyePatches = function(imageCanvas, width, height) {
 
         if (imageCanvas.width == 0) {
@@ -23,6 +33,8 @@
         if (!positions) {
             return false;
         }
+
+        //Fit the detected eye in a rectangle
         var leftOriginX = Math.floor(positions[23][0]);
         var leftOriginY = Math.floor(positions[24][1]);
         var leftWidth = Math.floor(positions[25][0] - positions[23][0]);

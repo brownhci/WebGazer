@@ -19,6 +19,7 @@
     var imgWidth = 0;
     var imgHeight = 0;
 
+    //DEBUG variables
     //debug control boolean
     var showGazeDot = false;
     //debug element (starts offscreen)
@@ -28,6 +29,8 @@
     gazeDot.style.width = '10px';
     gazeDot.style.height = '10px';
     gazeDot.style.background = 'red';
+
+    var debugVideoLoc = '';
         
     // loop parameters
     var clockStart = performance.now();
@@ -43,7 +46,7 @@
 
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
     var tracker = new gazer.tracker.ClmGaze();
-    var reg = new gazer.reg.LinearReg();
+    var regs = [new gazer.reg.RidgeReg()];
     var blinkDetector = new gazer.BlinkDetector();
 
     //lookup tables
@@ -106,10 +109,15 @@
      *  paints the video to a canvas and runs the prediction pipeline to get a prediction
      */
     function getPrediction() {
-        var prediction = reg.predict(getPupilFeatures(videoElementCanvas, imgWidth, imgHeight));
+        var predictions = [];
+        var features = getPupilFeatures(videoElementCanvas, imgWidth, imgHeight);
+        for (var reg in regs) {
+            preditions.push(regs[reg].predict(features));
+        }
         return prediction == null ? null : {
-            x : prediction.x,
-            y : prediction.y
+            'x' : prediction[0].x,
+            'y' : prediction[0].y,
+            'all' : predictions
         };
     }
 
@@ -150,7 +158,11 @@
         if (paused) {
             return;
         }
-        reg.addData(getPupilFeatures(videoElementCanvas, imgWidth, imgHeight), [event.clientX, event.clientY], 'click');
+        var features = getPupilFeatures(videoElementCanvas, imgWidth, imgHeight);
+        for (var reg in regs) {
+            //TODO setup enum for event types
+            regs[reg].addData(features, [event.clientX, event.clientY], 'click');
+        }
     }
 
     /**
@@ -167,8 +179,11 @@
         } else {
             moveClock = now;
         }
-
-        reg.addData(getPupilFeatures(videoElementCanvas, imgWidth, imgHeight), [event.clientX, event.clientY], 'move');
+        var features = getPupilFeatures(videoElementCanvas, imgWidth, imgHeight);
+        for (var reg in regs) {
+            //TODO setup enum for event types
+            regs[reg].addData(features, [event.clientX, event.clientY], 'move');
+        }
     }
 
     /** loads the global data and passes it to the regression model 
@@ -177,7 +192,9 @@
     function loadGlobalData() {
         var storage = JSON.parse(window.localStorage.getItem(localstorageLabel)) || defaults;
         settings = storage.settings;
-        reg.setData(storage.data);
+        for (var reg in regs) {
+            regs[reg].setData(storage.data);
+        }
     }
    
    /**
@@ -187,7 +204,7 @@
         //TODO set localstorage to combined dataset
         var storage = {
             'settings': settings,
-            'data': reg.getData()
+            'data': regs[0].getData()
         };
         window.localStorage.setItem(localstorageLabel, JSON.stringify(storage));
         //TODO data should probably be stored in webgazer object instead of each regression model
@@ -199,7 +216,43 @@
      */
     function clearData() {
         window.localStorage.set(localstorageLabel, undefined);
-        reg.setData([]);
+        for (var reg in regs) {
+            regs[reg].setData([]);
+        }
+    }
+
+
+    /**
+     * initializes all needed dom elements and begins the loop
+     */
+    function init(videoSrc) {
+        videoElement = document.createElement('video');
+        videoElement.id = 'webgazerVideoFeed'; 
+        videoElement.autoplay = true;
+        console.log(videoElement);
+        videoElement.style.display = 'none';
+
+        //turn the stream into a magic URL 
+        videoElement.src = videoSrc;  
+        //TODO check to see if we actually need to add the element to the dom
+        document.body.appendChild(videoElement);
+
+        videoElementCanvas = document.createElement('canvas'); 
+        videoElementCanvas.id = 'webgazerVideoCanvas';
+        videoElementCanvas.style.display = 'none';
+        document.body.appendChild(videoElementCanvas);
+
+
+        //third argument set to true so that we get event on 'capture' instead of 'bubbling'
+        //this prevents a client using event.stopPropagation() preventing our access to the click
+        document.addEventListener('click', clickListener, true);
+        document.addEventListener('mousemove', moveListener, true);
+
+        document.body.appendChild(gazeDot);
+
+        //BEGIN CALLBACK LOOP
+        paused = false;
+        loop();
     }
 
     //PUBLIC FUNCTIONS - CONTROL
@@ -209,6 +262,11 @@
      */
     gazer.begin = function() {
         loadGlobalData();
+
+        if (debugVideoLoc) {
+            init(debugVideoLoc);
+            return gazer;
+        }
 
         //SETUP VIDEO ELEMENTS
         navigator.getUserMedia = navigator.getUserMedia ||
@@ -223,6 +281,7 @@
             navigator.getUserMedia(options, 
                     function(stream){
                         console.log('video stream created');
+<<<<<<< HEAD
                         videoElement = document.createElement('video');
                         videoElement.id = 'webgazerVideoFeed'; 
                         videoElement.autoplay = true;
@@ -250,6 +309,9 @@
                         //BEGIN CALLBACK LOOP
                         paused = false;
                         loop();
+=======
+                        init(window.URL.createObjectURL(stream));                    
+>>>>>>> 9358d7e68ccf5a13692b3b67338dda097eb96a58
                     }, 
                     function(e){ 
                         console.log("No stream"); 
@@ -337,6 +399,16 @@
         return gazer;
     }
 
+    /**
+     *  set a static video file to be used instead of webcam video
+     *  @param {string} videoLoc - video file location
+     *  @return {gazer} this
+     */
+    gazer.setStaticVideo(videoLoc) {
+       debugVideoLoc = videoLoc;
+       return gazer;
+    }
+
     //SETTERS
     /**
      * sets the tracking module
@@ -350,15 +422,29 @@
     }
 
     /**
-     * sets the regression module
+     * sets the regression module and clears any other regression modules
      * @param {string} the name of the regression module to use
      * @return {gazer} this
      */
     gazer.setRegression = function(name) {
         //TODO validate name
-        var data = reg.getData();
-        reg = regressionMap[name]();
-        reg.setData(data);
+        //TODO make robust to adding regression after calling begin
+        var data = regs[0].getData();
+        regs = [regressionMap[name]()];
+        regs[0].setData(data);
+        return gazer;
+    }
+
+    /**
+     * adds a new regression module to the list of regression modules, seeding its data from the first regression module
+     * @param {string} name - the string name of the regression module to add
+     * @return {gazer} this
+     */
+    gazer.addRegression = function(name) {
+        var newReg = regressionMap[name]();
+        var data = regs[0].getData();
+        newReg.setData(data);
+        regs.push(newReg);
         return gazer;
     }
 
