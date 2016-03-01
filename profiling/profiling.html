@@ -13,7 +13,7 @@
             width: 100%;
             height: 100%;
         }
-        #myVideo {
+        #webgazerVideoFeed {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -25,9 +25,9 @@
     </head>
     <BODY LANG="en-US" LINK="#0000ff" DIR="LTR">
         <canvas id="myCanvas" width="578" height="200"></canvas>
-        <video id="myVideo" width="320" height="176" controls="controls">
+        <!--<video id="webgazerVideoFeed" width="320" height="176" controls="controls">
             <source src="mymovie.mp4" type="video/mp4">
-        </video>
+        </video>-->
         <script src="/build/gazer.js"></script>
         <script>
             var localstorageLabel = 'webgazerGlobalData';
@@ -103,14 +103,9 @@
             };
 
             var setup = function() {
-
-
-
-
-                //play video
-                console.log("video setup")
-                var vid = document.getElementById("myVideo");
-                vid.autoplay = true;
+                var vid = document.getElementById("webgazerVideoFeed");
+                vid.style.display = "block";
+                //vid.autoplay = true;
                 vid.load();
 
                 var coordinates = genCoords(3, 3, canvas.width, canvas.height, 30, false);
@@ -120,8 +115,9 @@
             };
 
             //setup();
-            document.getElementById('myVideo').addEventListener('ended',myHandler,false);
+            document.getElementById('webgazerVideoFeed').addEventListener('ended',myHandler,false);
             function myHandler(e) {
+                console.log("Entire video was shown")
                 console.profileEnd();    
             }
 
