@@ -1,0 +1,22 @@
+/*
+ * Copyright (c) 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+label {
+    margin: 12px 0 0 0;
+    padding: 0 4px 0 12px;
+    flex: none;
+}
+
+.media-row {
+    display: flex;
+    align-items: center;
+    margin-top: 9px;
+    flex: none;
+}
+
+.media-row > label {
+    margin: 0 5px 0 0;
+}

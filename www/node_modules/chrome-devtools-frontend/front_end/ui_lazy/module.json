@@ -1,0 +1,29 @@
+{
+    "dependencies": [
+        "platform",
+        "common",
+        "host",
+        "ui",
+        "diff"
+    ],
+    "scripts": [
+        "DataGrid.js",
+        "ViewportDataGrid.js",
+        "SortableDataGrid.js",
+        "ShowMoreDataGridNode.js",
+        "FilteredListWidget.js",
+        "FlameChart.js",
+        "OverviewGrid.js",
+        "PieChart.js",
+        "TimelineGrid.js",
+        "TimelineOverviewPane.js"
+    ],
+    "resources": [
+        "dataGrid.css",
+        "filteredListWidget.css",
+        "flameChart.css",
+        "overviewGrid.css",
+        "pieChart.css",
+        "timelineGrid.css"
+    ]
+}

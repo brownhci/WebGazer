@@ -1,0 +1,15 @@
+{
+  "name": "automated-chrome-profiling",
+  "version": "1.0.0",
+  "description": "A few scripts to get started",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "repository": "https://github.com/paulirish/automated-chrome-profiling",
+  "dependencies": {
+    "chrome-remote-interface": "^0.11.0",
+    "devtools-timeline-model": "^1.0.1"
+  }
+}

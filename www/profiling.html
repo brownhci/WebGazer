@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+    <head>
+        <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+        <TITLE>Profiling</TITLE>
+        <style>
+        #myCanvas {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #myVideo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin: -180px 0 0 -240px;
+        }
+        </style>
+
+
+    </head>
+    <BODY LANG="en-US" LINK="#0000ff" DIR="LTR">
+        <canvas id="myCanvas" width="578" height="200"></canvas>
+        <video id="myVideo" width="320" height="176" controls="controls">
+            <source src="mymovie.mp4" type="video/mp4">
+        </video>
+        <script src="/build/gazer.js"></script>
+        <script>
+            var localstorageLabel = 'webgazerGlobalData';
+            window.localStorage.setItem(localstorageLabel, null);
+            gazer.setRegression('interaction') /* currently must set regression and tracker */
+                .setTracker('clmtrackr')
+                .setGazeListener(function(gazeData, elapsedTime) {
+                    if (gazeData == null) {
+                        return;
+                    }
+                    saveData(studyId, gazeData['x'], gazeData['y'], [], null, null, false);
+                })
+                .setStaticVideo("mymovie.mp4")
+                .begin();
+
+
+            var canvas = document.getElementById('myCanvas');
+            var context = canvas.getContext('2d');
+            canvas.width  = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            var drawCircle = function(x,y, radius, color) {
+                context.beginPath();
+                context.arc(x, y, radius, 0, 2 * Math.PI, false);
+                context.fillStyle = color || 'green';
+                context.fill();
+            }   
+
+            var genRow = function(numPoints, y, width, padding) {
+                var row = [];
+                var spacing = (width - (2 * padding)) / (numPoints - 1);
+                for (var i = 0; i < numPoints; i++) {
+                    row.push([padding + (i * spacing), y]);
+                }
+                return row;
+            };
+
+
+            var genCoords = function(xNum, yNum, width, height, padding, stagger, staggerXNum) {
+                var rows = [];
+                var spacing = (height - (2 * padding)) / (yNum - 1);
+                for (var i = 0; i < yNum; i++) {
+                    var y = padding + (i * spacing);
+                    if (stagger && (i % 2 == 1)) {
+                        rows.push(genRow(staggerXNum, y, width, padding + (spacing / 2)));
+                    } else {
+                        rows.push(genRow(xNum, y, width, padding));
+                    }
+                }
+                return [].concat.apply([], rows);
+            };
+
+            var randomizer = function(coordinates){
+                var counter = 0;
+                var caliRadius = 20;
+                centerX = coordinates[counter][0];
+                centerY = coordinates[counter][1];
+                drawCircle(centerX, centerY, caliRadius); 
+                counter++;
+
+                var timerID = setInterval(function() {
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    if (counter<coordinates.length){
+                        centerX = coordinates[counter][0];
+                        centerY = coordinates[counter][1];
+                        drawCircle(centerX, centerY, caliRadius); 
+                        counter++;
+                    }
+                    else{
+                        clearInterval(timerID);
+                    }
+                }, 1000); 
+            };
+
+            var setup = function() {
+
+
+
+
+                //play video
+                console.log("video setup")
+                var vid = document.getElementById("myVideo");
+                vid.autoplay = true;
+                vid.load();
+
+                var coordinates = genCoords(3, 3, canvas.width, canvas.height, 30, false);
+
+                randomizer(coordinates);
+
+            };
+
+            //setup();
+            document.getElementById('myVideo').addEventListener('ended',myHandler,false);
+            function myHandler(e) {
+                console.profileEnd();    
+            }
+
+        </script>
+    </BODY>
+</HTML>
