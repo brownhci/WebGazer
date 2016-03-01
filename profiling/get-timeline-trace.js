@@ -15,7 +15,7 @@ Chrome(function (chrome) {
         });
         Profiler.enable();
         
-        Page.navigate({'url': 'http://localhost:8000/www/profiling.html'});
+        Page.navigate({'url': 'http://localhost:8000/profiling/profiling.html'});
 
         //Page.navigate({'url': 'http://localhost:8000/demo/demo2.html'})
         Page.loadEventFired(function () {
