@@ -9776,8 +9776,8 @@ if (typeof exports !== 'undefined') {
         }
         //TODO make better api for this
         return predictions[0] == null ? null : {
-            'x' : prediction[0].x,
-            'y' : prediction[0].y,
+            'x' : predictions[0].x,
+            'y' : predictions[0].y,
             'all' : predictions
         };
     }
