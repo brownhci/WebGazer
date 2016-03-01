@@ -281,37 +281,7 @@
             navigator.getUserMedia(options, 
                     function(stream){
                         console.log('video stream created');
-<<<<<<< HEAD
-                        videoElement = document.createElement('video');
-                        videoElement.id = 'webgazerVideoFeed'; 
-                        videoElement.autoplay = true;
-                        console.log(videoElement);
-                        videoElement.style.display = 'none';
-
-                        //turn the stream into a magic URL 
-                        videoElement.src = window.URL.createObjectURL(stream); 
-                        //TODO check to see if we actually need to add the element to the dom
-                        document.body.appendChild(videoElement);
-
-                        videoElementCanvas = document.createElement('canvas'); 
-                        videoElementCanvas.id = 'webgazerVideoCanvas';
-                        videoElementCanvas.style.display = 'none';
-                        document.body.appendChild(videoElementCanvas);
-
-        
-                        //third argument set to true so that we get event on 'capture' instead of 'bubbling'
-                        //this prevents a client using event.stopPropagation() preventing our access to the click
-                        document.addEventListener('click', clickListener, true);
-                        document.addEventListener('mousemove', moveListener, true);
-
-                        document.body.appendChild(gazeDot);
-
-                        //BEGIN CALLBACK LOOP
-                        paused = false;
-                        loop();
-=======
                         init(window.URL.createObjectURL(stream));                    
->>>>>>> 9358d7e68ccf5a13692b3b67338dda097eb96a58
                     }, 
                     function(e){ 
                         console.log("No stream"); 
