@@ -112,9 +112,10 @@
         var predictions = [];
         var features = getPupilFeatures(videoElementCanvas, imgWidth, imgHeight);
         for (var reg in regs) {
-            preditions.push(regs[reg].predict(features));
+            predictions.push(regs[reg].predict(features));
         }
-        return prediction == null ? null : {
+        //TODO make better api for this
+        return predictions[0] == null ? null : {
             'x' : prediction[0].x,
             'y' : prediction[0].y,
             'all' : predictions
@@ -374,7 +375,7 @@
      *  @param {string} videoLoc - video file location
      *  @return {gazer} this
      */
-    gazer.setStaticVideo(videoLoc) {
+    gazer.setStaticVideo = function(videoLoc) {
        debugVideoLoc = videoLoc;
        return gazer;
     }
