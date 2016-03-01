@@ -1,8 +1,10 @@
-(function(window) {
+(function() {
 
-window.gazer = window.gazer || {};
-gazer.util = gazer.util || {};
-gazer.mat = gazer.mat || {};
+self.gazer = self.gazer || {};
+self.gazer.util = self.gazer.util || {};
+self.gazer.mat = self.gazer.mat || {};
+
+self.gazer.util.Eye = function(patch, imagex, imagey, width, height) {
 
 /**
  * Eye class, represents an eye patch detected in the video stream
@@ -12,7 +14,7 @@ gazer.mat = gazer.mat || {};
  * @param {number} width  - width of the eye patch
  * @param {number} height - height of the eye patch
  */
-gazer.util.Eye = function(patch, imagex, imagey, width, height) {
+self.gazer.util.Eye = function(patch, imagex, imagey, width, height) {
     this.patch = patch;
     this.imagex = imagex;
     this.imagey = imagey;
@@ -20,12 +22,15 @@ gazer.util.Eye = function(patch, imagex, imagey, width, height) {
     this.height = height;
 }
 
+
+//Data Window class
+//operates like an array but 'wraps' data around to keep the array at a fixed windowSize
 /**
  * DataWindow class - Operates like an array, but 'wraps' data around to keep the array at a fixed windowSize
  * @param {number} windowSize - defines the maximum size of the window
  * @param {data} [data] - optional data to seed the DataWindow with
 **/
-gazer.util.DataWindow = function(windowSize, data) {
+self.gazer.util.DataWindow = function(windowSize, data) {
     this.data = [];
     this.windowSize = windowSize;
     this.index = 0;
@@ -41,7 +46,7 @@ gazer.util.DataWindow = function(windowSize, data) {
  * @param  {Any} entry - item to be inserted. It either grows the DataWindow or replaces the oldest item
  * @return {DataWindow} this
  */
-gazer.util.DataWindow.prototype.push = function(entry) {
+self.gazer.util.DataWindow.prototype.push = function(entry) {
     if (this.data.length < this.windowSize) {
         this.data.push(entry);
         this.length = this.data.length;
@@ -59,7 +64,7 @@ gazer.util.DataWindow.prototype.push = function(entry) {
  * @param  {number} ind index of desired entry
  * @return {Any} 
  */
-gazer.util.DataWindow.prototype.get = function(ind) {
+self.gazer.util.DataWindow.prototype.get = function(ind) {
     if (this.data.length < this.windowSize) {
         return this.data[ind];
     } else {
@@ -72,7 +77,7 @@ gazer.util.DataWindow.prototype.get = function(ind) {
  * Append all the contents of data
  * @param {array} data - to be inserted 
  */
-gazer.util.DataWindow.prototype.addAll = function(data) {
+self.gazer.util.DataWindow.prototype.addAll = function(data) {
     for (var i = 0; i < data.length; i++) {
         this.push(data[i]);
     }
@@ -80,7 +85,6 @@ gazer.util.DataWindow.prototype.addAll = function(data) {
 
 
 //Helper functions
-
 /**
  * Grayscales an image patch. Can be used for the whole canvas, detected face, detected eye, etc.
  * @param  {ImageData} imageData - image data to be grayscaled
@@ -88,7 +92,7 @@ gazer.util.DataWindow.prototype.addAll = function(data) {
  * @param  {number} imageHeight - height of image data to be grayscaled
  * @return {ImageData} grayscaledImage 
  */
-gazer.util.grayscale = function(imageData, imageWidth, imageHeight){
+self.gazer.util.grayscale = function(imageData, imageWidth, imageHeight){
     //TODO either move tracking into gazer namespace or re-implement function
     return tracking.Image.grayscale(imageData, imageWidth, imageHeight, false);
 }
@@ -100,7 +104,7 @@ gazer.util.grayscale = function(imageData, imageWidth, imageHeight){
  * @param  {number} resizeHeight - desired height
  * @return {gazer.util.Eye} resized eye patch
  */
-gazer.util.resizeEye = function(eye, resizeWidth, resizeHeight) {
+self.gazer.util.resizeEye = function(eye, resizeWidth, resizeHeight) {
 
     //TODO this seems like it could be done in just one painting to a canvas
 
@@ -121,12 +125,15 @@ gazer.util.resizeEye = function(eye, resizeWidth, resizeHeight) {
     return tempCanvas.getContext('2d').getImageData(0, 0, resizeWidth, resizeHeight);
 }
 
+
+
+
 /**
  * Checks if the prediction is within the boundaries of the viewport and constrains it
  * @param  {array} prediction [x,y] predicted gaze coordinates
  * @return {array} constrained coordinates
  */
-gazer.util.bound = function(prediction){
+self.gazer.util.bound = function(prediction){
     if(prediction.x < 0)
         prediction.x = 0;
     if(prediction.y < 0)
@@ -144,4 +151,4 @@ gazer.util.bound = function(prediction){
     return prediction;
 }
 
-}(window));
+}());
