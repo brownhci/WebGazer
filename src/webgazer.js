@@ -9,6 +9,7 @@
     window.gazer = window.gazer || {};
     gazer.tracker = gazer.tracker || {};
     gazer.reg = gazer.reg || {};
+    gazer.params = gazer.params || {};
 
     //PRIVATE VARIABLES
     
@@ -16,6 +17,8 @@
     var videoScale = .5;
     var videoElement = null;
     var videoElementCanvas = null;
+    gazer.params.videoElementId = 'webgazerVideoFeed'; 
+    gazer.params.videoElementCanvasId = 'webgazerVideoCanvas';
     var imgWidth = 0;
     var imgHeight = 0;
 
@@ -34,7 +37,7 @@
         
     // loop parameters
     var clockStart = performance.now();
-    var dataTimestep = 50; //TODO either make this a settable parameter or otherwise determine best value
+    gazer.params.dataTimestep = 50; //TODO either make this a settable parameter or otherwise determine best value
     var paused = false;
     //registered callback for loop
     var nopCallback = function(data, time) {};
@@ -42,7 +45,7 @@
 
     //movelistener timeout clock parameters
     var moveClock = performance.now();
-    var moveTickSize = 50; //milliseconds
+    gazer.params.moveTickSize = 50; //milliseconds
 
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
     var tracker = new gazer.tracker.ClmGaze();
@@ -123,7 +126,7 @@
     }
 
     /**
-     * runs every dataTimestep milliseconds if gazer is not paused
+     * runs every available animation frame if gazer is not paused
      */
     var smoothingVals = new gazer.util.DataWindow(4);
     function loop() {
@@ -147,7 +150,7 @@
         }
 
         if (!paused) {
-            //setTimeout(loop, dataTimestep);
+            //setTimeout(loop, gazer.params.dataTimestep);
             requestAnimationFrame(loop);
         }
     }
@@ -175,7 +178,7 @@
         }
 
         var now = performance.now();
-        if (now < moveClock + moveTickSize) {
+        if (now < moveClock + gazer.params.moveTickSize) {
             return;
         } else {
             moveClock = now;
@@ -228,7 +231,7 @@
      */
     function init(videoSrc) {
         videoElement = document.createElement('video');
-        videoElement.id = 'webgazerVideoFeed'; 
+        videoElement.id = gazer.params.videoElementId; 
         videoElement.autoplay = true;
         console.log(videoElement);
         videoElement.style.display = 'none';
@@ -239,7 +242,7 @@
         document.body.appendChild(videoElement);
 
         videoElementCanvas = document.createElement('canvas'); 
-        videoElementCanvas.id = 'webgazerVideoCanvas';
+        videoElementCanvas.id = gazer.params.videoElementCanvasId;
         videoElementCanvas.style.display = 'none';
         document.body.appendChild(videoElementCanvas);
 
