@@ -4,6 +4,7 @@
     gazer.reg = gazer.reg || {};
     gazer.mat = gazer.mat || {};
     gazer.util = gazer.util || {};
+    gazer.params = gazer.params || {};
 
     var ridgeParameter = Math.pow(10,-5);
     var resizeWidth = 10;
@@ -110,9 +111,13 @@
         this.screenYClicksArray = new gazer.util.DataWindow(dataWindow);
         this.eyeFeaturesClicks = new gazer.util.DataWindow(dataWindow);
 
+        //sets to one second worth of cursor trail
+        this.trailTime = 1000;
+        this.trailDataWindow = this.trailTime / gazer.params.moveTickSize;
         this.screenXTrailArray = new gazer.util.DataWindow(trailDataWindow);
         this.screenYTrailArray = new gazer.util.DataWindow(trailDataWindow);
         this.eyeFeaturesTrail = new gazer.util.DataWindow(trailDataWindow);
+        this.trailTimes = new gazer.util.DataWindow(trailDataWindow);
 
         this.dataClicks = new gazer.util.DataWindow(dataWindow);
         this.dataTrail = new gazer.util.DataWindow(dataWindow);
@@ -136,6 +141,7 @@
             this.screenYTrailArray.push([screenPos[1]]);
 
             this.eyeFeaturesTrail.push(getEyeFeats(eyes));
+            this.trailTimes.push(performance.now());
             this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         }
        
@@ -147,9 +153,21 @@
         if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
             return null;
         }
-        var screenXArray = this.screenXClicksArray.data.concat(this.screenXTrailArray.data);
-        var screenYArray = this.screenYClicksArray.data.concat(this.screenYTrailArray.data);
-        var eyeFeatures = this.eyeFeaturesClicks.data.concat(this.eyeFeaturesTrail.data);
+        var acceptTime = performance.now() - this.trailTime;
+        var trailX = [];
+        var trailY = [];
+        var trailFeat = [];
+        for (var i in this.trailDataWindow) {
+            if (this.trailTimes.get(i) > acceptTime) {
+                trailX.push(this.screenXTrailArray.get(i));
+                trailY.push(this.screenYTrailArray.get(i));
+                trailFeat.push(this.eyeFeaturesTrail.get(i));
+            }
+        }
+
+        var screenXArray = this.screenXClicksArray.data.concat(trailX);
+        var screenYArray = this.screenYClicksArray.data.concat(trailY);
+        var eyeFeatures = this.eyeFeaturesClicks.data.concat(trailFeat);
 
         var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
         var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter); 	
