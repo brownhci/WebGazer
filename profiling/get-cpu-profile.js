@@ -26,7 +26,7 @@ Chrome(function (chrome) {
             // 2. Use the JSON file, open Chrome DevTools, Profiles tab,
             //    select CPU Profile radio button, click `load` and view the
             //    profile data in the full devtools UI.
-            var file = 'profile-' + Date.now() + '.cpuprofile';
+            var file = 'cpuprofiles/profile-' + Date.now() + '.cpuprofile';
             var data = JSON.stringify(params.profile, null, 2);
             fs.writeFileSync(file, data);
             console.log('Done! See ' + file);

@@ -18,6 +18,20 @@
             top: 50%;
             left: 50%;
             margin: -180px 0 0 -240px;
+        }        
+
+        #overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin: -180px 0 0 -240px;
+        }
+
+        #liveVideoFeed {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin: -180px 0 0 -240px;
         }
         </style>
 
@@ -25,24 +39,50 @@
     </head>
     <BODY LANG="en-US" LINK="#0000ff" DIR="LTR">
         <canvas id="myCanvas" width="578" height="200"></canvas>
-        <!--<video id="webgazerVideoFeed" width="320" height="176" controls="controls">
-            <source src="mymovie.mp4" type="video/mp4">
-        </video>-->
+        <!--<video autoplay="true" id="liveVideoFeed"></video>-->
         <script src="/build/gazer.js"></script>
         <script>
+            
+            //for live video feed from webcam
+            //var video = document.querySelector("#liveVideoFeed");
+            // navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mediaDevices.getUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+            // if (navigator.getUserMedia) {       
+            //     navigator.getUserMedia({video: true}, handleVideo, videoError);
+            // }
+            // function handleVideo(stream) {
+            //     video.src = window.URL.createObjectURL(stream);
+            // }
+            // function videoError(e) {
+            //     console.log("Something went wrong")
+            // }
+
+            // var overlay = document.createElement('canvas');
+            // overlay.id = 'overlay';
+            // overlay.style.width = "400px";
+            // overlay.style.height = "400px";
+            // document.body.appendChild(overlay);
+
+            // var cl = gazer.getTracker().clm;
+
+            // function drawLoop() {
+            //     requestAnimFrame(drawLoop);
+            //     overlay.getContext('2d').clearRect(0,0,overlay.width,overlay.height);
+            //     if (cl.getCurrentPosition()) {
+            //         cl.draw(overlay);
+            //     }
+            // }
+            // drawLoop();
+
+
             var localstorageLabel = 'webgazerGlobalData';
             window.localStorage.setItem(localstorageLabel, null);
             gazer.setRegression('interaction') /* currently must set regression and tracker */
                 .setTracker('clmtrackr')
-                .setGazeListener(function(gazeData, elapsedTime) {
-                    if (gazeData == null) {
-                        return;
-                    }
-                    saveData(studyId, gazeData['x'], gazeData['y'], [], null, null, false);
+                .setGazeListener(function(data, clock) {
                 })
-                .setStaticVideo("mymovie.mp4")
-                .begin();
-
+                .setStaticVideo("videos/video12.mp4")
+                .begin()
+                .showPredictionPoints(true); /* shows a square every 100 milliseconds where current prediction is */
 
             var canvas = document.getElementById('myCanvas');
             var context = canvas.getContext('2d');
@@ -86,7 +126,19 @@
                 centerX = coordinates[counter][0];
                 centerY = coordinates[counter][1];
                 drawCircle(centerX, centerY, caliRadius); 
+                simulateClick(centerX, centerY);
                 counter++;
+
+                counter2 = 0;
+                var timerID2 = setInterval(function(){
+                    if(counter2<60){
+                        simulateClick(centerX, centerY);
+                        counter2++;
+                    }
+                    else{
+                        clearInterval(timerID2);
+                    }
+                },100);
 
                 var timerID = setInterval(function() {
                     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -94,25 +146,53 @@
                         centerX = coordinates[counter][0];
                         centerY = coordinates[counter][1];
                         drawCircle(centerX, centerY, caliRadius); 
+
+                        counter2 = 0;
+                        var timerID2 = setInterval(function(){
+                            if(counter2<60){
+                                simulateClick(centerX, centerY);
+                                counter2++;
+                            }
+                            else{
+                                clearInterval(timerID2);
+                            }
+                        },100);
                         counter++;
                     }
                     else{
                         clearInterval(timerID);
                     }
-                }, 1000); 
+                }, 7000); 
             };
 
             var setup = function() {
                 var vid = document.getElementById("webgazerVideoFeed");
                 vid.style.display = "block";
+                vid.style.width = "400px";
+                vid.style.height = "400px";
                 //vid.autoplay = true;
                 vid.load();
 
-                var coordinates = genCoords(3, 3, canvas.width, canvas.height, 30, false);
-
+                //var coordinates = genCoords(3, 3, canvas.width, canvas.height, 30, false);
+                var coordinates =  [[30,30],
+                    [canvas.width - 30,30],
+                    [30,canvas.height - 30],
+                    [canvas.width - 30, canvas.height - 30],
+                    [canvas.width/2, canvas.height/2]
+                ];
                 randomizer(coordinates);
 
             };
+
+            var simulateClick = function(x,y){
+                var clickEvent= document.createEvent('MouseEvents');
+                clickEvent.initMouseEvent(
+                'click', true, true, window, 0,
+                0, 0, x, y, false, false,
+                false, false, 0, null
+                );
+                document.elementFromPoint(x, y).dispatchEvent(clickEvent);
+            }
 
             //setup();
             document.getElementById('webgazerVideoFeed').addEventListener('ended',myHandler,false);
