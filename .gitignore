@@ -23,8 +23,5 @@
 *.out
 *.synctex.gz
 *.zip
-Bad*/
 *.pdf
-queries_interpolated_time/
-/code/Gaze_tracking/nbproject/private/
 *.mp4
