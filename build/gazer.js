@@ -9822,9 +9822,6 @@ if (typeof exports !== 'undefined') {
         var features = getPupilFeatures(videoElementCanvas, imgWidth, imgHeight);
         for (var reg in regs) {
             //TODO setup enum for event types
-            console.log(event.clientX);
-            console.log(event.clientY);
-            console.log("*****");
             regs[reg].addData(features, [event.clientX, event.clientY], 'click');
         }
     }

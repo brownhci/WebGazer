@@ -56,22 +56,7 @@
             //     console.log("Something went wrong")
             // }
 
-            // var overlay = document.createElement('canvas');
-            // overlay.id = 'overlay';
-            // overlay.style.width = "400px";
-            // overlay.style.height = "400px";
-            // document.body.appendChild(overlay);
 
-            // var cl = gazer.getTracker().clm;
-
-            // function drawLoop() {
-            //     requestAnimFrame(drawLoop);
-            //     overlay.getContext('2d').clearRect(0,0,overlay.width,overlay.height);
-            //     if (cl.getCurrentPosition()) {
-            //         cl.draw(overlay);
-            //     }
-            // }
-            // drawLoop();
 
 
             var localstorageLabel = 'webgazerGlobalData';
@@ -80,7 +65,7 @@
                 .setTracker('clmtrackr')
                 .setGazeListener(function(data, clock) {
                 })
-                .setStaticVideo("videos/video12.mp4")
+                .setStaticVideo("videos/video4.mp4")
                 .begin()
                 .showPredictionPoints(true); /* shows a square every 100 milliseconds where current prediction is */
 
@@ -168,10 +153,33 @@
             var setup = function() {
                 var vid = document.getElementById("webgazerVideoFeed");
                 vid.style.display = "block";
-                vid.style.width = "400px";
-                vid.style.height = "400px";
+                vid.width = 400;
+                vid.height = 400;
                 //vid.autoplay = true;
                 vid.load();
+
+
+                var overlay = document.createElement('canvas');
+                overlay.id = 'overlay';
+                overlay.width = 400;
+                overlay.height = 400;
+                document.body.appendChild(overlay);
+
+                var ctrack = new clm.tracker({useWebGL : true});
+                ctrack.init(pModel);
+                ctrack.start(vid);
+                // start loop to draw face
+                drawLoop();
+
+                function drawLoop() {
+                    requestAnimFrame(drawLoop);
+                    overlay.getContext('2d').clearRect(0,0,400,400);
+                    if (ctrack.getCurrentPosition()) {
+                        ctrack.draw(overlay);
+                    }
+                }
+                drawLoop();
+
 
                 //var coordinates = genCoords(3, 3, canvas.width, canvas.height, 30, false);
                 var coordinates =  [[30,30],
@@ -194,7 +202,7 @@
                 document.elementFromPoint(x, y).dispatchEvent(clickEvent);
             }
 
-            //setup();
+            setup();
             document.getElementById('webgazerVideoFeed').addEventListener('ended',myHandler,false);
             function myHandler(e) {
                 console.log("Entire video was shown")
