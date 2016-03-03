@@ -9673,7 +9673,7 @@ if (typeof exports !== 'undefined') {
     //PRIVATE VARIABLES
     
     //video elements
-    var videoScale = .5;
+    var videoScale = 1;
     var videoElement = null;
     var videoElementCanvas = null;
     var imgWidth = 0;
