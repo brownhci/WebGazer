@@ -64,7 +64,7 @@
             window.localStorage.setItem(localstorageLabel, null);
             var eyeElem = document.getElementById('eyeCanvas');
             gazer.setRegression('interaction') /* currently must set regression and tracker */
-                .setTracker('clmtrackr')
+                .setTracker('js_objectdetect')
                 .setGazeListener(function(data, clock) {
                     if (!data) {
                         return;
@@ -166,7 +166,7 @@
                 vid.height = 400;
                 //vid.autoplay = true;
                 vid.load();
-
+                
 
                 var overlay = document.createElement('canvas');
                 overlay.id = 'overlay';
@@ -174,21 +174,25 @@
                 overlay.height = 400;
                 document.body.appendChild(overlay);
 
-                var ctrack = new clm.tracker({useWebGL : true});
-                ctrack.init(pModel);
-                ctrack.start(vid);
-                // start loop to draw face
-                drawLoop();
+                //For clmtrackr
+                // var ctrack = new clm.tracker({useWebGL : true});
+                // ctrack.init(pModel);
+                // ctrack.start(vid);
+                // // start loop to draw face
 
                 function drawLoop() {
                     requestAnimFrame(drawLoop);
-                    overlay.getContext('2d').clearRect(0,0,400,400);
-                    if (ctrack.getCurrentPosition()) {
-                        ctrack.draw(overlay);
-                    }
-                }
-                drawLoop();
+                    overlay.getContext('2d').clearRect(0,0,overlay.width,overlay.height);
+                    // if (ctrack.getCurrentPosition()) {
+                    //     ctrack.draw(overlay);
+                    // }
+                    var face = gazer.getTracker().detectFace(vid,400,400);
+                    overlay.getContext("2d").rect(face[0],face[1],face[2],face[3]);
+                    overlay.getContext("2d").stroke();
+                }   
 
+                 drawLoop();
+               
 
                 //var coordinates = genCoords(3, 3, canvas.width, canvas.height, 30, false);
                 var coordinates =  [[30,30],
