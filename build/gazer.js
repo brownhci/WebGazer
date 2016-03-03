@@ -9315,6 +9315,7 @@ if (typeof exports !== 'undefined') {
     gazer.reg = gazer.reg || {};
     gazer.mat = gazer.mat || {};
     gazer.util = gazer.util || {};
+    gazer.params = gazer.params || {};
 
     var ridgeParameter = Math.pow(10,-5);
     var resizeWidth = 10;
@@ -9421,9 +9422,13 @@ if (typeof exports !== 'undefined') {
         this.screenYClicksArray = new gazer.util.DataWindow(dataWindow);
         this.eyeFeaturesClicks = new gazer.util.DataWindow(dataWindow);
 
+        //sets to one second worth of cursor trail
+        this.trailTime = 1000;
+        this.trailDataWindow = this.trailTime / gazer.params.moveTickSize;
         this.screenXTrailArray = new gazer.util.DataWindow(trailDataWindow);
         this.screenYTrailArray = new gazer.util.DataWindow(trailDataWindow);
         this.eyeFeaturesTrail = new gazer.util.DataWindow(trailDataWindow);
+        this.trailTimes = new gazer.util.DataWindow(trailDataWindow);
 
         this.dataClicks = new gazer.util.DataWindow(dataWindow);
         this.dataTrail = new gazer.util.DataWindow(dataWindow);
@@ -9447,6 +9452,7 @@ if (typeof exports !== 'undefined') {
             this.screenYTrailArray.push([screenPos[1]]);
 
             this.eyeFeaturesTrail.push(getEyeFeats(eyes));
+            this.trailTimes.push(performance.now());
             this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         }
        
@@ -9458,9 +9464,21 @@ if (typeof exports !== 'undefined') {
         if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
             return null;
         }
-        var screenXArray = this.screenXClicksArray.data.concat(this.screenXTrailArray.data);
-        var screenYArray = this.screenYClicksArray.data.concat(this.screenYTrailArray.data);
-        var eyeFeatures = this.eyeFeaturesClicks.data.concat(this.eyeFeaturesTrail.data);
+        var acceptTime = performance.now() - this.trailTime;
+        var trailX = [];
+        var trailY = [];
+        var trailFeat = [];
+        for (var i in this.trailDataWindow) {
+            if (this.trailTimes.get(i) > acceptTime) {
+                trailX.push(this.screenXTrailArray.get(i));
+                trailY.push(this.screenYTrailArray.get(i));
+                trailFeat.push(this.eyeFeaturesTrail.get(i));
+            }
+        }
+
+        var screenXArray = this.screenXClicksArray.data.concat(trailX);
+        var screenYArray = this.screenYClicksArray.data.concat(trailY);
+        var eyeFeatures = this.eyeFeaturesClicks.data.concat(trailFeat);
 
         var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
         var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter); 	
@@ -9480,8 +9498,7 @@ if (typeof exports !== 'undefined') {
 
         return {
             x: predictedX,
-            y: predictedY,
-            'eyes': eyesObj
+            y: predictedY
         };
     }
 
@@ -9670,13 +9687,16 @@ if (typeof exports !== 'undefined') {
     window.gazer = window.gazer || {};
     gazer.tracker = gazer.tracker || {};
     gazer.reg = gazer.reg || {};
+    gazer.params = gazer.params || {};
 
     //PRIVATE VARIABLES
     
     //video elements
-    var videoScale = 1;
+    var videoScale = .5;
     var videoElement = null;
     var videoElementCanvas = null;
+    gazer.params.videoElementId = 'webgazerVideoFeed'; 
+    gazer.params.videoElementCanvasId = 'webgazerVideoCanvas';
     var imgWidth = 0;
     var imgHeight = 0;
 
@@ -9695,7 +9715,7 @@ if (typeof exports !== 'undefined') {
         
     // loop parameters
     var clockStart = performance.now();
-    var dataTimestep = 50; //TODO either make this a settable parameter or otherwise determine best value
+    gazer.params.dataTimestep = 50; //TODO either make this a settable parameter or otherwise determine best value
     var paused = false;
     //registered callback for loop
     var nopCallback = function(data, time) {};
@@ -9703,7 +9723,7 @@ if (typeof exports !== 'undefined') {
 
     //movelistener timeout clock parameters
     var moveClock = performance.now();
-    var moveTickSize = 50; //milliseconds
+    gazer.params.moveTickSize = 50; //milliseconds
 
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
     var tracker = new gazer.tracker.ClmGaze();
@@ -9780,12 +9800,11 @@ if (typeof exports !== 'undefined') {
             'x' : predictions[0].x,
             'y' : predictions[0].y,
             'all' : predictions
-
         };
     }
 
     /**
-     * runs every dataTimestep milliseconds if gazer is not paused
+     * runs every available animation frame if gazer is not paused
      */
     var smoothingVals = new gazer.util.DataWindow(4);
     function loop() {
@@ -9809,7 +9828,7 @@ if (typeof exports !== 'undefined') {
         }
 
         if (!paused) {
-            //setTimeout(loop, dataTimestep);
+            //setTimeout(loop, gazer.params.dataTimestep);
             requestAnimationFrame(loop);
         }
     }
@@ -9837,7 +9856,7 @@ if (typeof exports !== 'undefined') {
         }
 
         var now = performance.now();
-        if (now < moveClock + moveTickSize) {
+        if (now < moveClock + gazer.params.moveTickSize) {
             return;
         } else {
             moveClock = now;
@@ -9890,7 +9909,7 @@ if (typeof exports !== 'undefined') {
      */
     function init(videoSrc) {
         videoElement = document.createElement('video');
-        videoElement.id = 'webgazerVideoFeed'; 
+        videoElement.id = gazer.params.videoElementId; 
         videoElement.autoplay = true;
         console.log(videoElement);
         videoElement.style.display = 'none';
@@ -9901,7 +9920,7 @@ if (typeof exports !== 'undefined') {
         document.body.appendChild(videoElement);
 
         videoElementCanvas = document.createElement('canvas'); 
-        videoElementCanvas.id = 'webgazerVideoCanvas';
+        videoElementCanvas.id = gazer.params.videoElementCanvasId;
         videoElementCanvas.style.display = 'none';
         document.body.appendChild(videoElementCanvas);
 
