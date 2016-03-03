@@ -64,7 +64,7 @@
                     rightEyeElem.getContext('2d').scale(4,4);
                     rightEyeElem.getContext('2d').putImageData(rightEye,0,0);
                 })
-                .setStaticVideo("videos/video12.mp4")
+                //.setStaticVideo("videos/video4.mp4")
                 .begin()
                 .showPredictionPoints(true); /* shows a square every 100 milliseconds where current prediction is */
 
@@ -154,7 +154,7 @@
                 vid.style.display = "block";
                 vid.width = 400;
                 vid.height = 400;
-                vid.load();
+                vid.play();
                 
                 // //For clmtrackr
                 var ctrack = new clm.tracker({useWebGL : true});
@@ -196,7 +196,8 @@
                 if (gazer.isReady()) {
                     setup();
                 } else {
-                    document.getElementById("webgazerVideoFeed").pause();
+                    if(document.getElementById("webgazerVideoFeed"))
+                        document.getElementById("webgazerVideoFeed").pause();
                     setTimeout(checkIfReady, 100);
                 }
             }
