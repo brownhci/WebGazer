@@ -27,11 +27,9 @@
             margin: -180px 0 0 -240px;
         }
 
-        #liveVideoFeed {
+        #rightEyeCanvas {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            margin: -180px 0 0 -240px;
+            left: 100;
         }
         </style>
 
@@ -39,40 +37,29 @@
     </head>
     <BODY LANG="en-US" LINK="#0000ff" DIR="LTR">
         <canvas id="myCanvas" width="578" height="200"></canvas>
-        <canvas id="eyeCanvas" width="300px" height="180px"></canvas>
-        <!--<video autoplay="true" id="liveVideoFeed"></video>-->
+        <canvas id="leftEyeCanvas" width="100px" height="90px"></canvas>
+        <canvas id="rightEyeCanvas" width="100px" height="90px"></canvas>
         <script src="/build/gazer.js"></script>
         <script>
-            
-            //for live video feed from webcam
-            //var video = document.querySelector("#liveVideoFeed");
-            // navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mediaDevices.getUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
-            // if (navigator.getUserMedia) {       
-            //     navigator.getUserMedia({video: true}, handleVideo, videoError);
-            // }
-            // function handleVideo(stream) {
-            //     video.src = window.URL.createObjectURL(stream);
-            // }
-            // function videoError(e) {
-            //     console.log("Something went wrong")
-            // }
-
-
-
 
             var localstorageLabel = 'webgazerGlobalData';
             window.localStorage.setItem(localstorageLabel, null);
-            var eyeElem = document.getElementById('eyeCanvas');
+            var leftEyeElem = document.getElementById('leftEyeCanvas');
+            var rightEyeElem = document.getElementById('rightEyeCanvas');
             gazer.setRegression('interaction') /* currently must set regression and tracker */
-                .setTracker('js_objectdetect')
+                .setTracker('clmtrackr')
                 .setGazeListener(function(data, clock) {
                     if (!data) {
                         return;
                     }
 
-                    var eye = data.all[0].eyes.left.patch;
-                    eyeElem.getContext('2d').scale(4,4);
-                    eyeElem.getContext('2d').putImageData(eye,0,0);
+                    var leftEye = data.all[0].eyes.left.patch;
+                    leftEyeElem.getContext('2d').scale(4,4);
+                    leftEyeElem.getContext('2d').putImageData(leftEye,0,0);
+
+                    var rightEye = data.all[0].eyes.right.patch;
+                    rightEyeElem.getContext('2d').scale(4,4);
+                    rightEyeElem.getContext('2d').putImageData(rightEye,0,0);
                 })
                 .setStaticVideo("videos/video2.mp4")
                 .begin()
@@ -175,23 +162,23 @@
                 document.body.appendChild(overlay);
 
                 //For clmtrackr
-                // var ctrack = new clm.tracker({useWebGL : true});
-                // ctrack.init(pModel);
-                // ctrack.start(vid);
+                var ctrack = new clm.tracker({useWebGL : true});
+                ctrack.init(pModel);
+                ctrack.start(vid);
                 // // start loop to draw face
 
-                function drawLoop() {
-                    requestAnimFrame(drawLoop);
-                    overlay.getContext('2d').clearRect(0,0,overlay.width,overlay.height);
-                    // if (ctrack.getCurrentPosition()) {
-                    //     ctrack.draw(overlay);
-                    // }
-                    var face = gazer.getTracker().detectFace(vid,400,400);
-                    overlay.getContext("2d").rect(face[0],face[1],face[2],face[3]);
-                    overlay.getContext("2d").stroke();
-                }   
+                // function drawLoop() {
+                //     requestAnimFrame(drawLoop);
+                //     overlay.getContext('2d').clearRect(0,0,overlay.width,overlay.height);
+                //     if (ctrack.getCurrentPosition()) {
+                //         ctrack.draw(overlay);
+                //     }
+                //     // var face = gazer.getTracker().detectFace(vid,400,400);
+                //     // overlay.getContext("2d").rect(face[0],face[1],face[2],face[3]);
+                //     // overlay.getContext("2d").stroke();
+                // }   
 
-                 drawLoop();
+                //  drawLoop();
                
 
                 //var coordinates = genCoords(3, 3, canvas.width, canvas.height, 30, false);
