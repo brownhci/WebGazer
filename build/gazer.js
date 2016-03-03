@@ -9480,7 +9480,8 @@ if (typeof exports !== 'undefined') {
 
         return {
             x: predictedX,
-            y: predictedY
+            y: predictedY,
+            'eyes': eyesObj
         };
     }
 
@@ -9779,6 +9780,7 @@ if (typeof exports !== 'undefined') {
             'x' : predictions[0].x,
             'y' : predictions[0].y,
             'all' : predictions
+
         };
     }
 

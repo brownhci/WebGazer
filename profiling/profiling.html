@@ -39,6 +39,7 @@
     </head>
     <BODY LANG="en-US" LINK="#0000ff" DIR="LTR">
         <canvas id="myCanvas" width="578" height="200"></canvas>
+        <canvas id="eyeCanvas" width="300px" height="180px"></canvas>
         <!--<video autoplay="true" id="liveVideoFeed"></video>-->
         <script src="/build/gazer.js"></script>
         <script>
@@ -61,11 +62,19 @@
 
             var localstorageLabel = 'webgazerGlobalData';
             window.localStorage.setItem(localstorageLabel, null);
+            var eyeElem = document.getElementById('eyeCanvas');
             gazer.setRegression('interaction') /* currently must set regression and tracker */
                 .setTracker('clmtrackr')
                 .setGazeListener(function(data, clock) {
+                    if (!data) {
+                        return;
+                    }
+
+                    var eye = data.all[0].eyes.left.patch;
+                    eyeElem.getContext('2d').scale(4,4);
+                    eyeElem.getContext('2d').putImageData(eye,0,0);
                 })
-                .setStaticVideo("videos/video4.mp4")
+                .setStaticVideo("videos/video2.mp4")
                 .begin()
                 .showPredictionPoints(true); /* shows a square every 100 milliseconds where current prediction is */
 
