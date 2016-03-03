@@ -18,7 +18,7 @@
             top: 50%;
             left: 50%;
             margin: -180px 0 0 -240px;
-        }        
+        }   
 
         #overlay {
             position: absolute;
@@ -46,6 +46,7 @@
             window.localStorage.setItem(localstorageLabel, null);
             var leftEyeElem = document.getElementById('leftEyeCanvas');
             var rightEyeElem = document.getElementById('rightEyeCanvas');
+            
             gazer.setRegression('interaction') /* currently must set regression and tracker */
                 .setTracker('clmtrackr')
                 .setGazeListener(function(data, clock) {
@@ -54,10 +55,12 @@
                     }
 
                     var leftEye = data.all[0].eyes.left.patch;
+                    leftEyeCanvas.width = 300;
                     leftEyeElem.getContext('2d').scale(4,4);
                     leftEyeElem.getContext('2d').putImageData(leftEye,0,0);
 
                     var rightEye = data.all[0].eyes.right.patch;
+                    rightEyeCanvas.width = 300;
                     rightEyeElem.getContext('2d').scale(4,4);
                     rightEyeElem.getContext('2d').putImageData(rightEye,0,0);
                 })
@@ -151,21 +154,12 @@
                 vid.style.display = "block";
                 vid.width = 400;
                 vid.height = 400;
-                //vid.autoplay = true;
                 vid.load();
                 
-
-                var overlay = document.createElement('canvas');
-                overlay.id = 'overlay';
-                overlay.width = 400;
-                overlay.height = 400;
-                document.body.appendChild(overlay);
-
-                //For clmtrackr
+                // //For clmtrackr
                 var ctrack = new clm.tracker({useWebGL : true});
                 ctrack.init(pModel);
                 ctrack.start(vid);
-                // // start loop to draw face
 
                 //var coordinates = genCoords(3, 3, canvas.width, canvas.height, 30, false);
                 coordinates =  [[30,30],
@@ -179,15 +173,10 @@
 
                 function drawLoop() {
                     requestAnimFrame(drawLoop);
-                    //overlay.getContext('2d').clearRect(0,0,overlay.width,overlay.height);
                     if (ctrack.getCurrentPosition() && !found) {
-                        //ctrack.draw(overlay);
                         randomizer(coordinates);
                         found = true;
                     }
-                    // var face = gazer.getTracker().detectFace(vid,400,400);
-                    // overlay.getContext("2d").rect(face[0],face[1],face[2],face[3]);
-                    // overlay.getContext("2d").stroke();
                 }   
 
                 drawLoop();             
@@ -203,12 +192,20 @@
                 document.elementFromPoint(x, y).dispatchEvent(clickEvent);
             }
 
-            setup();
-            document.getElementById('webgazerVideoFeed').addEventListener('ended',myHandler,false);
-            function myHandler(e) {
-                console.log("Entire video was shown")
-                console.profileEnd();    
+            function checkIfReady() {
+                if (gazer.isReady()) {
+                    setup();
+                } else {
+                    document.getElementById("webgazerVideoFeed").pause();
+                    setTimeout(checkIfReady, 100);
+                }
             }
+            setTimeout(checkIfReady,100);
+            // document.getElementById('webgazerVideoFeed').addEventListener('ended',myHandler,false);
+            // function myHandler(e) {
+            //     console.log("Entire video was shown")
+            //     console.profileEnd();    
+            // }
 
         </script>
     </BODY>
