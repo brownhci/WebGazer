@@ -37,8 +37,8 @@
     </head>
     <BODY LANG="en-US" LINK="#0000ff" DIR="LTR">
         <canvas id="myCanvas" width="578" height="200"></canvas>
-        <canvas id="leftEyeCanvas" width="100px" height="90px"></canvas>
-        <canvas id="rightEyeCanvas" width="100px" height="90px"></canvas>
+        <canvas id="leftEyeCanvas" width="300px" height="180px"></canvas>
+        <canvas id="rightEyeCanvas" width="300px" height="180px"></canvas>
         <script src="/build/gazer.js"></script>
         <script>
 
@@ -61,7 +61,7 @@
                     rightEyeElem.getContext('2d').scale(4,4);
                     rightEyeElem.getContext('2d').putImageData(rightEye,0,0);
                 })
-                .setStaticVideo("videos/video2.mp4")
+                .setStaticVideo("videos/video12.mp4")
                 .begin()
                 .showPredictionPoints(true); /* shows a square every 100 milliseconds where current prediction is */
 
@@ -167,29 +167,30 @@
                 ctrack.start(vid);
                 // // start loop to draw face
 
-                // function drawLoop() {
-                //     requestAnimFrame(drawLoop);
-                //     overlay.getContext('2d').clearRect(0,0,overlay.width,overlay.height);
-                //     if (ctrack.getCurrentPosition()) {
-                //         ctrack.draw(overlay);
-                //     }
-                //     // var face = gazer.getTracker().detectFace(vid,400,400);
-                //     // overlay.getContext("2d").rect(face[0],face[1],face[2],face[3]);
-                //     // overlay.getContext("2d").stroke();
-                // }   
-
-                //  drawLoop();
-               
-
                 //var coordinates = genCoords(3, 3, canvas.width, canvas.height, 30, false);
-                var coordinates =  [[30,30],
+                coordinates =  [[30,30],
                     [canvas.width - 30,30],
                     [30,canvas.height - 30],
                     [canvas.width - 30, canvas.height - 30],
                     [canvas.width/2, canvas.height/2]
                 ];
-                randomizer(coordinates);
 
+                found = false;
+
+                function drawLoop() {
+                    requestAnimFrame(drawLoop);
+                    //overlay.getContext('2d').clearRect(0,0,overlay.width,overlay.height);
+                    if (ctrack.getCurrentPosition() && !found) {
+                        //ctrack.draw(overlay);
+                        randomizer(coordinates);
+                        found = true;
+                    }
+                    // var face = gazer.getTracker().detectFace(vid,400,400);
+                    // overlay.getContext("2d").rect(face[0],face[1],face[2],face[3]);
+                    // overlay.getContext("2d").stroke();
+                }   
+
+                drawLoop();             
             };
 
             var simulateClick = function(x,y){
