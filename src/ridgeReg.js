@@ -169,7 +169,8 @@
 
         return {
             x: predictedX,
-            y: predictedY
+            y: predictedY,
+            'eyes': eyesObj
         };
     }
 

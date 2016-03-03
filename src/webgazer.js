@@ -119,6 +119,7 @@
             'x' : predictions[0].x,
             'y' : predictions[0].y,
             'all' : predictions
+
         };
     }
 
