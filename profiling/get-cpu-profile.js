@@ -7,7 +7,7 @@ Chrome(function (chrome) {
         Page.loadEventFired(function () {
             // on load we'll start profiling, kick off the test, and finish
             // alternatively, Profiler.start(), Profiler.stop() are accessible via chrome-remote-interface
-            Runtime.evaluate({ "expression": "console.profile(); setup(); " });
+            Runtime.evaluate({ "expression": "console.profile(); checkIfReady(); " });
         });
 
         Profiler.enable();

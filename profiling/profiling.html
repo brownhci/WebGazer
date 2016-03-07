@@ -31,6 +31,11 @@
             position: absolute;
             left: 100;
         }
+
+        #statistics {
+            position: absolute;
+            text-align:right;
+        }
         </style>
 
 
@@ -39,7 +44,11 @@
         <canvas id="myCanvas" width="578" height="200"></canvas>
         <canvas id="leftEyeCanvas" width="300px" height="180px"></canvas>
         <canvas id="rightEyeCanvas" width="300px" height="180px"></canvas>
+        <div id="chartContainer" style="height: 300px; width:300px;">
+
+        <script type="text/javascript" src="canvasjs.min.js"></script>
         <script src="/build/gazer.js"></script>
+
         <script>
 
             var localstorageLabel = 'webgazerGlobalData';
@@ -64,7 +73,7 @@
                     rightEyeElem.getContext('2d').scale(4,4);
                     rightEyeElem.getContext('2d').putImageData(rightEye,0,0);
                 })
-                //.setStaticVideo("videos/video4.mp4")
+                .setStaticVideo("videos/video10.mp4")
                 .begin()
                 .showPredictionPoints(true); /* shows a square every 100 milliseconds where current prediction is */
 
@@ -105,6 +114,38 @@
             };
 
             var randomizer = function(coordinates){
+
+                var dps = []; // dataPoints
+
+                var chart = new CanvasJS.Chart("chartContainer",{
+                    title :{
+                        text: "Error"
+                    },          
+                    data: [{
+                        type: "line",
+                        dataPoints: dps 
+                    }]
+                });
+
+                var xVal = 0;
+                var yVal = 100; 
+                var updateInterval = 100;
+                var dataLength = 500; // number of dataPoints visible at any point
+
+                var updateChart = function (error) {
+                        dps.push({
+                            x: xVal,
+                            y: error
+                        });
+                        xVal++;
+                    if (dps.length > dataLength)
+                    {
+                        dps.shift();                
+                    }
+                    chart.render();     
+
+                };
+
                 var counter = 0;
                 var caliRadius = 20;
                 centerX = coordinates[counter][0];
@@ -117,6 +158,19 @@
                 var timerID2 = setInterval(function(){
                     if(counter2<60){
                         simulateClick(centerX, centerY);
+                        var boundedPrediction = gazer.util.bound(gazer.getCurrentPrediction());
+                        var x = boundedPrediction.x;
+                        var y = boundedPrediction.y;
+                        var error = Math.sqrt(Math.pow((x - centerX),2) + Math.pow((y - centerY),2));
+                        if(error>1200){
+                            console.log(error);
+                            console.log(x);
+                            console.log(centerX);
+                            console.log(y);
+                            console.log(centerY);
+                            console.log("***")
+                        }                        
+                        updateChart(error); 
                         counter2++;
                     }
                     else{
@@ -136,6 +190,19 @@
                             if(counter2<60){
                                 simulateClick(centerX, centerY);
                                 counter2++;
+                                var boundedPrediction = gazer.util.bound(gazer.getCurrentPrediction());
+                                var x = boundedPrediction.x;
+                                var y = boundedPrediction.y;
+                                var error = Math.sqrt(Math.pow((x - centerX),2) + Math.pow((y - centerY),2));
+                                if(error>1200){
+                                    console.log(error);
+                                    console.log(x);
+                                    console.log(centerX);
+                                    console.log(y);
+                                    console.log(centerY);
+                                    console.log("***")
+                                }
+                                updateChart(error); 
                             }
                             else{
                                 clearInterval(timerID2);
@@ -202,11 +269,11 @@
                 }
             }
             setTimeout(checkIfReady,100);
-            // document.getElementById('webgazerVideoFeed').addEventListener('ended',myHandler,false);
-            // function myHandler(e) {
-            //     console.log("Entire video was shown")
-            //     console.profileEnd();    
-            // }
+            document.getElementById('webgazerVideoFeed').addEventListener('ended',myHandler,false);
+            function myHandler(e) {
+                console.log("Entire video was shown")
+                console.profileEnd();    
+            }
 
         </script>
     </BODY>

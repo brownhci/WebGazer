@@ -9,7 +9,6 @@
     window.gazer = window.gazer || {};
     gazer.tracker = gazer.tracker || {};
     gazer.reg = gazer.reg || {};
-    gazer.params = gazer.params || {};
 
     //PRIVATE VARIABLES
     
@@ -17,8 +16,6 @@
     var videoScale = .5;
     var videoElement = null;
     var videoElementCanvas = null;
-    gazer.params.videoElementId = 'webgazerVideoFeed'; 
-    gazer.params.videoElementCanvasId = 'webgazerVideoCanvas';
     var imgWidth = 0;
     var imgHeight = 0;
 
@@ -37,7 +34,7 @@
         
     // loop parameters
     var clockStart = performance.now();
-    gazer.params.dataTimestep = 50; //TODO either make this a settable parameter or otherwise determine best value
+    var dataTimestep = 50; //TODO either make this a settable parameter or otherwise determine best value
     var paused = false;
     //registered callback for loop
     var nopCallback = function(data, time) {};
@@ -45,7 +42,7 @@
 
     //movelistener timeout clock parameters
     var moveClock = performance.now();
-    gazer.params.moveTickSize = 50; //milliseconds
+    var moveTickSize = 50; //milliseconds
 
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
     var tracker = new gazer.tracker.ClmGaze();
@@ -122,11 +119,12 @@
             'x' : predictions[0].x,
             'y' : predictions[0].y,
             'all' : predictions
+
         };
     }
 
     /**
-     * runs every available animation frame if gazer is not paused
+     * runs every dataTimestep milliseconds if gazer is not paused
      */
     var smoothingVals = new gazer.util.DataWindow(4);
     function loop() {
@@ -150,7 +148,7 @@
         }
 
         if (!paused) {
-            //setTimeout(loop, gazer.params.dataTimestep);
+            //setTimeout(loop, dataTimestep);
             requestAnimationFrame(loop);
         }
     }
@@ -178,7 +176,7 @@
         }
 
         var now = performance.now();
-        if (now < moveClock + gazer.params.moveTickSize) {
+        if (now < moveClock + moveTickSize) {
             return;
         } else {
             moveClock = now;
@@ -231,7 +229,7 @@
      */
     function init(videoSrc) {
         videoElement = document.createElement('video');
-        videoElement.id = gazer.params.videoElementId; 
+        videoElement.id = 'webgazerVideoFeed'; 
         videoElement.autoplay = true;
         console.log(videoElement);
         videoElement.style.display = 'none';
@@ -242,7 +240,7 @@
         document.body.appendChild(videoElement);
 
         videoElementCanvas = document.createElement('canvas'); 
-        videoElementCanvas.id = gazer.params.videoElementCanvasId;
+        videoElementCanvas.id = 'webgazerVideoCanvas';
         videoElementCanvas.style.display = 'none';
         document.body.appendChild(videoElementCanvas);
 

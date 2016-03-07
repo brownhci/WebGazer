@@ -17,9 +17,8 @@ Chrome(function (chrome) {
         
         Page.navigate({'url': 'http://localhost:8000/profiling/profiling.html'});
 
-        //Page.navigate({'url': 'http://localhost:8000/demo/demo2.html'})
         Page.loadEventFired(function () {
-            Runtime.evaluate({ "expression": "console.profile(); setup(); " });
+            Runtime.evaluate({ "expression": "console.profile(); checkIfReady(); " });
         });
         
         Profiler.consoleProfileFinished(function (params) {
@@ -49,5 +48,4 @@ Chrome(function (chrome) {
 }).on('error', function (e) {
     console.error('Cannot connect to Chrome', e);
 });
-
 
