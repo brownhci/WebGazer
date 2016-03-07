@@ -106,7 +106,7 @@
         return i;
     }
 
-    gazer.reg.RidgeReg = function() {
+    gazer.reg.WeightedRidgeReg = function() {
         this.screenXClicksArray = new gazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new gazer.util.DataWindow(dataWindow);
         this.eyeFeaturesClicks = new gazer.util.DataWindow(dataWindow);
@@ -123,7 +123,7 @@
         this.dataTrail = new gazer.util.DataWindow(dataWindow);
     }
 
-    gazer.reg.RidgeReg.prototype.addData = function(eyes, screenPos, type) {
+    gazer.reg.WeightedRidgeReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
         }
@@ -149,7 +149,7 @@
         eyes.right.patch = Array.from(eyes.right.patch.data);
     }
 
-    gazer.reg.RidgeReg.prototype.predict = function(eyesObj) {
+    gazer.reg.WeightedRidgeReg.prototype.predict = function(eyesObj) {
         if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
             return null;
         }
@@ -157,7 +157,7 @@
         var trailX = [];
         var trailY = [];
         var trailFeat = [];
-        for (var i = 0; i < this.trailDataWindow; i++) {
+        for (var i in this.trailDataWindow) {
             if (this.trailTimes.get(i) > acceptTime) {
                 trailX.push(this.screenXTrailArray.get(i));
                 trailY.push(this.screenYTrailArray.get(i));
@@ -187,12 +187,11 @@
 
         return {
             x: predictedX,
-            y: predictedY,
-            'eyes': eyesObj
+            y: predictedY
         };
     }
 
-    gazer.reg.RidgeReg.prototype.setData = function(data) {
+    gazer.reg.WeightedRidgeReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             //TODO this is a kludge, needs to be fixed
             data[i].eyes.left.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.left.patch), data[i].eyes.left.width, data[i].eyes.left.height);
@@ -201,11 +200,11 @@
         }
     }
 
-    gazer.reg.RidgeReg.prototype.getData = function() {
+    gazer.reg.WeightedRidgeReg.prototype.getData = function() {
         //TODO move data storage to webgazer object level
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 
 
-    gazer.reg.RidgeReg.prototype.name = 'ridge';
+    gazer.reg.WeightedRidgeReg.prototype.name = 'ridge';
 }(window));
