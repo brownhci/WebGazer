@@ -57,7 +57,7 @@
             var rightEyeElem = document.getElementById('rightEyeCanvas');
             
             gazer.setRegression('interaction') /* currently must set regression and tracker */
-                .setTracker('clmtrackr')
+                .setTracker('trackingjs')
                 .setGazeListener(function(data, clock) {
                     if (!data) {
                         return;
@@ -73,7 +73,7 @@
                     rightEyeElem.getContext('2d').scale(4,4);
                     rightEyeElem.getContext('2d').putImageData(rightEye,0,0);
                 })
-                .setStaticVideo("videos/video10.mp4")
+                .setStaticVideo("videos/video1.mp4")
                 .begin()
                 .showPredictionPoints(true); /* shows a square every 100 milliseconds where current prediction is */
 
@@ -161,15 +161,7 @@
                         var boundedPrediction = gazer.util.bound(gazer.getCurrentPrediction());
                         var x = boundedPrediction.x;
                         var y = boundedPrediction.y;
-                        var error = Math.sqrt(Math.pow((x - centerX),2) + Math.pow((y - centerY),2));
-                        if(error>1200){
-                            console.log(error);
-                            console.log(x);
-                            console.log(centerX);
-                            console.log(y);
-                            console.log(centerY);
-                            console.log("***")
-                        }                        
+                        var error = Math.sqrt(Math.pow((x - centerX),2) + Math.pow((y - centerY),2));                  
                         updateChart(error); 
                         counter2++;
                     }
@@ -194,14 +186,6 @@
                                 var x = boundedPrediction.x;
                                 var y = boundedPrediction.y;
                                 var error = Math.sqrt(Math.pow((x - centerX),2) + Math.pow((y - centerY),2));
-                                if(error>1200){
-                                    console.log(error);
-                                    console.log(x);
-                                    console.log(centerX);
-                                    console.log(y);
-                                    console.log(centerY);
-                                    console.log("***")
-                                }
                                 updateChart(error); 
                             }
                             else{
