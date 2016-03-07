@@ -9468,7 +9468,7 @@ if (typeof exports !== 'undefined') {
         var trailX = [];
         var trailY = [];
         var trailFeat = [];
-        for (var i in this.trailDataWindow) {
+        for (var i = 0; i < this.trailDataWindow; i++) {
             if (this.trailTimes.get(i) > acceptTime) {
                 trailX.push(this.screenXTrailArray.get(i));
                 trailY.push(this.screenYTrailArray.get(i));
