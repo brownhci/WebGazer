@@ -8239,7 +8239,7 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         }
 
         var eyeObjs = {};
-        var leftImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[0][0]), Math.floor(eyes[0][1]), Math.floor(eyes[0][2]), Math.floor(eyes[0][3]));
+        var leftImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[0][0])+offsetX, Math.floor(eyes[0][1])+offsetY, Math.floor(eyes[0][2]), Math.floor(eyes[0][3]));
         eyeObjs.left = {
             patch: leftImageData,
             imagex: eyes[0][0]+offsetX,
@@ -8248,7 +8248,7 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             height: eyes[0][3]
         };
  
-        var rightImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[1][0]), Math.floor(eyes[1][1]), Math.floor(eyes[1][2]), Math.floor(eyes[1][3]));
+        var rightImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[1][0])+offsetX, Math.floor(eyes[1][1])+offsetY, Math.floor(eyes[1][2]), Math.floor(eyes[1][3]));
         eyeObjs.right = {
             patch: rightImageData,
             imagex: eyes[1][0]+offsetX,
@@ -8295,6 +8295,10 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
                     }                       
                 }
             }
+
+            eyes.sort(function(a,b) {
+              return a[0]-b[0]
+            });
             return eyes;
         }
         else{
@@ -8399,7 +8403,7 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         }
 
         var eyeObjs = {};
-        var leftImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[0][0]), Math.floor(eyes[0][1]), Math.floor(eyes[0][2]), Math.floor(eyes[0][3]));
+        var leftImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[0][0])+offsetX, Math.floor(eyes[0][1])+offsetY, Math.floor(eyes[0][2]), Math.floor(eyes[0][3]));
         eyeObjs.left = {
             patch: leftImageData,
             imagex: eyes[0][0]+offsetX,
@@ -8408,7 +8412,7 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             height: eyes[0][3]
         };
  
-        var rightImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[1][0]), Math.floor(eyes[1][1]), Math.floor(eyes[1][2]), Math.floor(eyes[1][3]));
+        var rightImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[1][0])+offsetX, Math.floor(eyes[1][1])+offsetY, Math.floor(eyes[1][2]), Math.floor(eyes[1][3]));
         eyeObjs.right = {
             patch: rightImageData,
             imagex: eyes[1][0]+offsetX,
@@ -8455,6 +8459,10 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
                 eyes[i][2] *= workingImageWidth / detector.canvas.width;
                 eyes[i][3] *= workingImageHeight / detector.canvas.height;
             }
+
+            eyes.sort(function(a,b) {
+              return a[0]-b[0]
+            });
             return eyes;    
         }       
         else{
@@ -9587,11 +9595,20 @@ if (typeof exports !== 'undefined') {
      * @return {Any} 
      */
     self.gazer.util.DataWindow.prototype.get = function(ind) {
+        return this.data[this.getTrueIndex(ind)];
+    }
+
+    /**
+     * Gets the true this.data array index given an index for a desired element
+     * @param {number} ind - index of desired entry
+     * @return {number} index of desired entry in this.data
+     */
+    self.gazer.util.DataWindow.prototype.getTrueIndex = function(ind) {
         if (this.data.length < this.windowSize) {
-            return this.data[ind];
+            return ind;
         } else {
             //wrap around ind so that we can traverse from oldest to newest
-            return this.data[(ind + this.index) % this.windowSize];
+            return (ind + this.index) % this.windowSize;
         }
     }
 
@@ -9692,13 +9709,13 @@ if (typeof exports !== 'undefined') {
     //PRIVATE VARIABLES
     
     //video elements
-    var videoScale = .5;
+    gazer.params.videoScale = 1;
     var videoElement = null;
     var videoElementCanvas = null;
     gazer.params.videoElementId = 'webgazerVideoFeed'; 
     gazer.params.videoElementCanvasId = 'webgazerVideoCanvas';
-    var imgWidth = 0;
-    var imgHeight = 0;
+    gazer.params.imgWidth = 1280;
+    gazer.params.imgHeight = 720;
 
     //DEBUG variables
     //debug control boolean
@@ -9762,7 +9779,7 @@ if (typeof exports !== 'undefined') {
         if (!canvas) {
             return;
         }
-        paintCurrentFrame(canvas);
+        paintCurrentFrame(canvas, width, height);
         try {
             return blinkDetector.detectBlink(tracker.getEyePatches(canvas, width, height));
         } catch(err) {
@@ -9772,15 +9789,20 @@ if (typeof exports !== 'undefined') {
     }
 
     /**
-     * gets the most current frame of video and paints it to the canvas
+     * gets the most current frame of video and paints it to a resized version of the canvas with width and height
      * @param {canvas} - the canvas to paint the video on to
+     * @param {integer} width - the new width of the canvas
+     * @param {integer} height - the new height of the canvas
      */
-    function paintCurrentFrame(canvas) {
-        imgWidth = videoElement.videoWidth * videoScale;
-        imgHeight = videoElement.videoHeight * videoScale;
-
-        videoElementCanvas.width = imgWidth;
-        videoElementCanvas.height = imgHeight;
+    function paintCurrentFrame(canvas, width, height) {
+        //imgWidth = videoElement.videoWidth * videoScale;
+        //imgHeight = videoElement.videoHeight * videoScale;
+        if (canvas.width != width) { 
+            canvas.width = width;
+        }
+        if (canvas.height != height) {
+            canvas.height = height;
+        }
 
         var ctx = canvas.getContext('2d');
         ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
@@ -9791,7 +9813,7 @@ if (typeof exports !== 'undefined') {
      */
     function getPrediction() {
         var predictions = [];
-        var features = getPupilFeatures(videoElementCanvas, imgWidth, imgHeight);
+        var features = getPupilFeatures(videoElementCanvas, gazer.params.imgWidth, gazer.params.imgHeight);
         for (var reg in regs) {
             predictions.push(regs[reg].predict(features));
         }
@@ -9840,7 +9862,7 @@ if (typeof exports !== 'undefined') {
         if (paused) {
             return;
         }
-        var features = getPupilFeatures(videoElementCanvas, imgWidth, imgHeight);
+        var features = getPupilFeatures(videoElementCanvas, gazer.params.imgWidth, gazer.params.imgHeight);
         for (var reg in regs) {
             //TODO setup enum for event types
             regs[reg].addData(features, [event.clientX, event.clientY], 'click');
@@ -9861,7 +9883,7 @@ if (typeof exports !== 'undefined') {
         } else {
             moveClock = now;
         }
-        var features = getPupilFeatures(videoElementCanvas, imgWidth, imgHeight);
+        var features = getPupilFeatures(videoElementCanvas, gazer.params.imgWidth, gazer.params.imgHeight);
         for (var reg in regs) {
             //TODO setup enum for event types
             regs[reg].addData(features, [event.clientX, event.clientY], 'move');
@@ -9953,7 +9975,7 @@ if (typeof exports !== 'undefined') {
         //SETUP VIDEO ELEMENTS
         navigator.getUserMedia = navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||
-            navigator.mozGetUserMedia;
+            navigator.mediaDevices.getUserMedia;
 
         if(navigator.getUserMedia != null){ 
             var options = { 

@@ -106,7 +106,7 @@
         return i;
     }
 
-    gazer.reg.WeightedRidgeReg = function() {
+    gazer.reg.RidgeReg = function() {
         this.screenXClicksArray = new gazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new gazer.util.DataWindow(dataWindow);
         this.eyeFeaturesClicks = new gazer.util.DataWindow(dataWindow);
@@ -123,7 +123,7 @@
         this.dataTrail = new gazer.util.DataWindow(dataWindow);
     }
 
-    gazer.reg.WeightedRidgeReg.prototype.addData = function(eyes, screenPos, type) {
+    gazer.reg.RidgeReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
         }
@@ -149,7 +149,7 @@
         eyes.right.patch = Array.from(eyes.right.patch.data);
     }
 
-    gazer.reg.WeightedRidgeReg.prototype.predict = function(eyesObj) {
+    gazer.reg.RidgeReg.prototype.predict = function(eyesObj) {
         if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
             return null;
         }
@@ -157,7 +157,7 @@
         var trailX = [];
         var trailY = [];
         var trailFeat = [];
-        for (var i in this.trailDataWindow) {
+        for (var i = 0; i < this.trailDataWindow; i++) {
             if (this.trailTimes.get(i) > acceptTime) {
                 trailX.push(this.screenXTrailArray.get(i));
                 trailY.push(this.screenYTrailArray.get(i));
@@ -165,9 +165,33 @@
             }
         }
 
-        var screenXArray = this.screenXClicksArray.data.concat(trailX);
-        var screenYArray = this.screenYClicksArray.data.concat(trailY);
-        var eyeFeatures = this.eyeFeaturesClicks.data.concat(trailFeat);
+        var len = this.eyeFeaturesClicks.data.length;
+        var weightedEyeFeats = Array(len);
+        var weightedXArray = Array(len);
+        var weightedYArray = Array(len);
+        for (var i = 0; i < len; i++) {
+            var weight = Math.sqrt( 1 / (len - i) ); // access from oldest to newest so should start with low weight and increase steadily
+            //TODO my abstraction is leaking...
+            var trueIndex = this.eyeFeaturesClicks.getTrueIndex(i);
+            for (var j = 0; j < this.eyeFeaturesClicks.data[i].length; j++) {
+                var val = this.eyeFeaturesClicks.data[trueIndex] * weight;
+                if (weightedEyeFeats[trueIndex] != undefined){
+                    weightedEyeFeats[trueIndex].push(val);
+                } else {
+                    weightedEyeFeats[trueIndex] = [val];
+                }
+            }
+            weightedXArray.push(this.screenXClicksArray.get(i).slice(0, this.screenXClicksArray.get(i).length))
+                weightedYArray.push(this.screenYClicksArray.get(i).slice(0, this.screenYClicksArray.get(i).length));
+            weightedXArray[i][0] = weightedXArray[i][0] * weight;
+            weightedYArray[i][0] = weightedYArray[i][0] * weight;
+        }
+
+        var screenXArray = weightedXArray.concat(trailX);
+        var screenYArray = weightedYArray.concat(trailY);
+        var eyeFeatures = weightedEyeFeats.concat(trailFeat);
+
+
 
         var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
         var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter); 	
@@ -191,7 +215,7 @@
         };
     }
 
-    gazer.reg.WeightedRidgeReg.prototype.setData = function(data) {
+    gazer.reg.RidgeReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             //TODO this is a kludge, needs to be fixed
             data[i].eyes.left.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.left.patch), data[i].eyes.left.width, data[i].eyes.left.height);
@@ -200,11 +224,11 @@
         }
     }
 
-    gazer.reg.WeightedRidgeReg.prototype.getData = function() {
+    gazer.reg.RidgeReg.prototype.getData = function() {
         //TODO move data storage to webgazer object level
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 
 
-    gazer.reg.WeightedRidgeReg.prototype.name = 'ridge';
+    gazer.reg.RidgeReg.prototype.name = 'ridge';
 }(window));

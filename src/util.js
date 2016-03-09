@@ -64,11 +64,20 @@
      * @return {Any} 
      */
     self.gazer.util.DataWindow.prototype.get = function(ind) {
+        return this.data[this.getTrueIndex(ind)];
+    }
+
+    /**
+     * Gets the true this.data array index given an index for a desired element
+     * @param {number} ind - index of desired entry
+     * @return {number} index of desired entry in this.data
+     */
+    self.gazer.util.DataWindow.prototype.getTrueIndex = function(ind) {
         if (this.data.length < this.windowSize) {
-            return this.data[ind];
+            return ind;
         } else {
             //wrap around ind so that we can traverse from oldest to newest
-            return this.data[(ind + this.index) % this.windowSize];
+            return (ind + this.index) % this.windowSize;
         }
     }
 
