@@ -14,13 +14,13 @@
     //PRIVATE VARIABLES
     
     //video elements
-    var videoScale = .5;
+    gazer.params.videoScale = 1;
     var videoElement = null;
     var videoElementCanvas = null;
     gazer.params.videoElementId = 'webgazerVideoFeed'; 
     gazer.params.videoElementCanvasId = 'webgazerVideoCanvas';
-    var imgWidth = 0;
-    var imgHeight = 0;
+    gazer.params.imgWidth = 1280;
+    gazer.params.imgHeight = 720;
 
     //DEBUG variables
     //debug control boolean
@@ -84,7 +84,7 @@
         if (!canvas) {
             return;
         }
-        paintCurrentFrame(canvas);
+        paintCurrentFrame(canvas, width, height);
         try {
             return blinkDetector.detectBlink(tracker.getEyePatches(canvas, width, height));
         } catch(err) {
@@ -94,15 +94,20 @@
     }
 
     /**
-     * gets the most current frame of video and paints it to the canvas
+     * gets the most current frame of video and paints it to a resized version of the canvas with width and height
      * @param {canvas} - the canvas to paint the video on to
+     * @param {integer} width - the new width of the canvas
+     * @param {integer} height - the new height of the canvas
      */
-    function paintCurrentFrame(canvas) {
-        imgWidth = videoElement.videoWidth * videoScale;
-        imgHeight = videoElement.videoHeight * videoScale;
-
-        videoElementCanvas.width = imgWidth;
-        videoElementCanvas.height = imgHeight;
+    function paintCurrentFrame(canvas, width, height) {
+        //imgWidth = videoElement.videoWidth * videoScale;
+        //imgHeight = videoElement.videoHeight * videoScale;
+        if (canvas.width != width) { 
+            canvas.width = width;
+        }
+        if (canvas.height != height) {
+            canvas.height = height;
+        }
 
         var ctx = canvas.getContext('2d');
         ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
@@ -113,7 +118,7 @@
      */
     function getPrediction() {
         var predictions = [];
-        var features = getPupilFeatures(videoElementCanvas, imgWidth, imgHeight);
+        var features = getPupilFeatures(videoElementCanvas, gazer.params.imgWidth, gazer.params.imgHeight);
         for (var reg in regs) {
             predictions.push(regs[reg].predict(features));
         }
@@ -162,7 +167,7 @@
         if (paused) {
             return;
         }
-        var features = getPupilFeatures(videoElementCanvas, imgWidth, imgHeight);
+        var features = getPupilFeatures(videoElementCanvas, gazer.params.imgWidth, gazer.params.imgHeight);
         for (var reg in regs) {
             //TODO setup enum for event types
             regs[reg].addData(features, [event.clientX, event.clientY], 'click');
@@ -183,7 +188,7 @@
         } else {
             moveClock = now;
         }
-        var features = getPupilFeatures(videoElementCanvas, imgWidth, imgHeight);
+        var features = getPupilFeatures(videoElementCanvas, gazer.params.imgWidth, gazer.params.imgHeight);
         for (var reg in regs) {
             //TODO setup enum for event types
             regs[reg].addData(features, [event.clientX, event.clientY], 'move');
