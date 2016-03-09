@@ -1,3 +1,4 @@
+../dependencies/synaptic.js
 ../dependencies/js-objectdetect/js/objectdetect.js
 ../dependencies/js-objectdetect/js/objectdetect.eye.js  
 ../dependencies/js-objectdetect/js/objectdetect.frontalface_alt.js  
@@ -22,7 +23,7 @@
 ../src/clmGaze.js
 ../src/trackingjsGaze.js
 ../src/js_objectdetectGaze.js
-../src/linearReg.js
+../src/neuralReg.js
 ../src/mat.js
 ../src/pupil.js
 ../src/regression.js
