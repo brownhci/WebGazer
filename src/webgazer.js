@@ -276,7 +276,7 @@
         //SETUP VIDEO ELEMENTS
         navigator.getUserMedia = navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||
-            navigator.mozGetUserMedia;
+            navigator.mediaDevices.getUserMedia;
 
         if(navigator.getUserMedia != null){ 
             var options = { 

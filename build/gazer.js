@@ -8239,7 +8239,7 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         }
 
         var eyeObjs = {};
-        var leftImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[0][0]), Math.floor(eyes[0][1]), Math.floor(eyes[0][2]), Math.floor(eyes[0][3]));
+        var leftImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[0][0])+offsetX, Math.floor(eyes[0][1])+offsetY, Math.floor(eyes[0][2]), Math.floor(eyes[0][3]));
         eyeObjs.left = {
             patch: leftImageData,
             imagex: eyes[0][0]+offsetX,
@@ -8248,7 +8248,7 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             height: eyes[0][3]
         };
  
-        var rightImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[1][0]), Math.floor(eyes[1][1]), Math.floor(eyes[1][2]), Math.floor(eyes[1][3]));
+        var rightImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[1][0])+offsetX, Math.floor(eyes[1][1])+offsetY, Math.floor(eyes[1][2]), Math.floor(eyes[1][3]));
         eyeObjs.right = {
             patch: rightImageData,
             imagex: eyes[1][0]+offsetX,
@@ -8295,6 +8295,10 @@ gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
                     }                       
                 }
             }
+
+            eyes.sort(function(a,b) {
+              return a[0]-b[0]
+            });
             return eyes;
         }
         else{

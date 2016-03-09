@@ -55,9 +55,9 @@
             window.localStorage.setItem(localstorageLabel, null);
             var leftEyeElem = document.getElementById('leftEyeCanvas');
             var rightEyeElem = document.getElementById('rightEyeCanvas');
-            
+
             gazer.setRegression('interaction') /* currently must set regression and tracker */
-                .setTracker('trackingjs')
+                .setTracker('clmtrackr')
                 .setGazeListener(function(data, clock) {
                     if (!data) {
                         return;
@@ -81,6 +81,12 @@
             var context = canvas.getContext('2d');
             canvas.width  = window.innerWidth;
             canvas.height = window.innerHeight;
+
+            var overlay = document.createElement('canvas');
+            overlay.id = 'overlay';
+            overlay.width = 400;
+            overlay.height = 400;
+            document.body.appendChild(overlay);
 
             var drawCircle = function(x,y, radius, color) {
                 context.beginPath();
@@ -222,13 +228,17 @@
 
                 found = false;
 
-                function drawLoop() {
+                function drawLoop(){
                     requestAnimFrame(drawLoop);
-                    if (ctrack.getCurrentPosition() && !found) {
-                        randomizer(coordinates);
-                        found = true;
+                    overlay.getContext("2d").clearRect(0, 0, overlay.width, overlay.height);
+                    if (ctrack.getCurrentPosition()){
+                        ctrack.draw(overlay);
+                        if(!found) {
+                            randomizer(coordinates);
+                            found = true;
+                        }
                     }
-                }   
+                }  
 
                 drawLoop();             
             };
