@@ -8,22 +8,28 @@
 
     var resizeWidth = 10;
     var resizeHeight = 6;
+    var dataWindow = 700;
 
     //the network
-    var learningRate = .7;
+    var learningRate = .3;
     var inputSize = 120;
-    var hiddenSize = 100;
+    var hiddenSize = 10;
     var outputSize = 2;
     var inputLayer = new Layer(inputSize);
-    var hiddenLayer = new Layer(hiddenSize);
+    var hiddenLayer1 = new Layer(hiddenSize);
+    var hiddenLayer2 = new Layer(hiddenSize);
     var outputLayer = new Layer(outputSize);
 
-    inputLayer.project(hiddenLayer);
-    hiddenLayer.project(outputLayer);
+    //inputLayer.project(outputLayer);
+    inputLayer.project(hiddenLayer1);
+    //hiddenLayer1.project(hiddenLayer2);
+    hiddenLayer1.project(outputLayer);
+    //hiddenLayer2.project(outputLayer);
 
     var network = new Network({
         input: inputLayer,
-        hidden: [hiddenLayer],
+        hidden: [hiddenLayer1],
+        //hidden: [hiddenLayer1, hiddenLayer2],
         output: outputLayer
     });
 
@@ -41,8 +47,8 @@
         var histRight = [];
         objectdetect.equalizeHistogram(rightGray, 5, histRight);
 
-        leftGrayArray = Array.prototype.slice.call(histLeft);
-        rightGrayArray = Array.prototype.slice.call(histRight);
+        leftGrayArray = Array.prototype.slice.call(histLeft).map(function(val) { return val / 255; });
+        rightGrayArray = Array.prototype.slice.call(histRight).map(function(val) { return val / 255; });
 
         //TODO take into account head positions
         //23 - left eye left
@@ -61,11 +67,8 @@
     }
 
     gazer.reg.Neural = function() {
-        this.screenXClicksArray = new gazer.util.DataWindow(dataWindow);
-        this.screenYClicksArray = new gazer.util.DataWindow(dataWindow);
-        this.eyeFeaturesClicks = new gazer.util.DataWindow(dataWindow);
-
-        
+        this.screenCoords = new gazer.util.DataWindow(dataWindow);
+        this.eyeFeatures = new gazer.util.DataWindow(dataWindow);
     }
 
     gazer.reg.Neural.prototype.addData = function(eyes, screenPos, type) {
@@ -75,19 +78,35 @@
         if (eyes.left.blink || eyes.right.blink) {
             return;
         }
-        network.activate(getEyeFeats(eyes));
-        network.propagate(learningRate, screenPos);
+        if (type == 'move') {
+            return;
+        }
+        screenPos[0] = screenPos[0] / window.innerWidth;
+        screenPos[1] = screenPos[1] / window.innerHeight;
+
+        var features = getEyeFeats(eyes);
+        this.eyeFeatures.push(features);
+        this.screenCoords.push(screenPos);
+
+        //for (var j = 0; j < 100; j++) {
+            for (var i = 0; i < this.eyeFeatures.length; i++) {
+                network.activate(this.eyeFeatures.get(i));
+                network.propagate(learningRate, this.screenCoords.get(i));
+            }
+        //}
+        
+        console.log('trained');
     }
 
     gazer.reg.Neural.prototype.predict = function(eyesObj) {
-        if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
+        if (!eyesObj || this.eyeFeatures.length < 2) {
             return null;
         }
         var features = getEyeFeats(eyesObj);
         var predicted = network.activate(features);
         return {
-            x: predicted[0],
-            y: predicted[1]
+            x: predicted[0] * window.innerWidth,
+            y: predicted[1] * window.innerHeight
         };
     }
 

@@ -23,7 +23,7 @@
 ../src/clmGaze.js
 ../src/trackingjsGaze.js
 ../src/js_objectdetectGaze.js
-../src/neuralReg.js
+../src/neuralnetReg.js
 ../src/mat.js
 ../src/pupil.js
 ../src/regression.js
