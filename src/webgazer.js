@@ -59,7 +59,8 @@
         'js_objectdetect': function() { return new gazer.tracker.Js_objectdetectGaze(); }
     };
     var regressionMap = {
-        'interaction': function() { return new gazer.reg.RidgeReg(); }
+        'interaction': function() { return new gazer.reg.RidgeReg(); },
+        'weightedRidge': function() { return new gazer.reg.RidgeWeightedReg(); }
     };
 
     //localstorage name

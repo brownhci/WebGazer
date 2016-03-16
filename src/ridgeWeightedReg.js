@@ -106,7 +106,7 @@
         return i;
     }
 
-    gazer.reg.RidgeReg = function() {
+    gazer.reg.RidgeWeightedReg = function() {
         this.screenXClicksArray = new gazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new gazer.util.DataWindow(dataWindow);
         this.eyeFeaturesClicks = new gazer.util.DataWindow(dataWindow);
@@ -123,7 +123,7 @@
         this.dataTrail = new gazer.util.DataWindow(dataWindow);
     }
 
-    gazer.reg.RidgeReg.prototype.addData = function(eyes, screenPos, type) {
+    gazer.reg.RidgeWeightedReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
         }
@@ -149,7 +149,7 @@
         eyes.right.patch = Array.from(eyes.right.patch.data);
     }
 
-    gazer.reg.RidgeReg.prototype.predict = function(eyesObj) {
+    gazer.reg.RidgeWeightedReg.prototype.predict = function(eyesObj) {
         if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
             return null;
         }
@@ -173,16 +173,16 @@
             var weight = Math.sqrt( 1 / (len - i) ); // access from oldest to newest so should start with low weight and increase steadily
             //TODO my abstraction is leaking...
             var trueIndex = this.eyeFeaturesClicks.getTrueIndex(i);
-            for (var j = 0; j < this.eyeFeaturesClicks.data[i].length; j++) {
-                var val = this.eyeFeaturesClicks.data[trueIndex] * weight;
+            for (var j = 0; j < this.eyeFeaturesClicks.data[trueIndex].length; j++) {
+                var val = this.eyeFeaturesClicks.data[trueIndex][j] * weight;
                 if (weightedEyeFeats[trueIndex] != undefined){
                     weightedEyeFeats[trueIndex].push(val);
                 } else {
                     weightedEyeFeats[trueIndex] = [val];
                 }
             }
-            weightedXArray.push(this.screenXClicksArray.get(i).slice(0, this.screenXClicksArray.get(i).length))
-                weightedYArray.push(this.screenYClicksArray.get(i).slice(0, this.screenYClicksArray.get(i).length));
+            weightedXArray[trueIndex] = this.screenXClicksArray.get(i).slice(0, this.screenXClicksArray.get(i).length);
+            weightedYArray[trueIndex] = this.screenYClicksArray.get(i).slice(0, this.screenYClicksArray.get(i).length);
             weightedXArray[i][0] = weightedXArray[i][0] * weight;
             weightedYArray[i][0] = weightedYArray[i][0] * weight;
         }
@@ -215,7 +215,7 @@
         };
     }
 
-    gazer.reg.RidgeReg.prototype.setData = function(data) {
+    gazer.reg.RidgeWeightedReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             //TODO this is a kludge, needs to be fixed
             data[i].eyes.left.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.left.patch), data[i].eyes.left.width, data[i].eyes.left.height);
@@ -224,11 +224,11 @@
         }
     }
 
-    gazer.reg.RidgeReg.prototype.getData = function() {
+    gazer.reg.RidgeWeightedReg.prototype.getData = function() {
         //TODO move data storage to webgazer object level
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 
 
-    gazer.reg.RidgeReg.prototype.name = 'ridge';
+    gazer.reg.RidgeWeightedReg.prototype.name = 'ridge';
 }(window));

@@ -27,5 +27,6 @@
 ../src/pupil.js
 ../src/regression.js
 ../src/ridgeReg.js
+../src/ridgeWeightedReg.js
 ../src/util.js
 ../src/webgazer.js
