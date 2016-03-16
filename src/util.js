@@ -159,4 +159,60 @@
         return prediction;
     }
 
+    function debugBoxWrite(para, stats) {
+        var str = '';
+        for (var key in stats) {
+            str += key + ': ' + stats[key] + '\n';
+        }
+        para.innerText = str;
+    }
+
+    self.gazer.util.DebugBox = function(interval) {
+        this.para = document.createElement('p');
+        this.div = document.createElement('div');
+        this.div.appendChild(this.para);
+        document.body.appendChild(this.div);
+
+        this.buttons = {};
+        this.canvas = {};
+        this.stats = {};
+        var updateInterval = interval || 300;
+        (function(localThis) {
+            setInterval(function() { 
+                debugBoxWrite(localThis.para, localThis.stats); 
+            }, updateInterval);
+        }(this));
+    }
+
+    self.gazer.util.DebugBox.prototype.set = function(key, value) {
+        this.stats[key] = value;
+    }
+
+    self.gazer.util.DebugBox.prototype.inc = function(key, incBy, init) {
+        if (!this.stats[key]) {
+            this.stats[key] = init || 0;
+        }
+        this.stats[key] += incBy || 1;
+    }
+
+    self.gazer.util.DebugBox.prototype.addButton = function(name, func) {
+        if (!this.buttons[name]) {
+            this.buttons[name] = document.createElement('button');
+            this.div.appendChild(this.buttons[name]);
+        }
+        var button = this.buttons[name];
+        this.buttons[name] = button;
+        button.addEventListener('click', func);
+        button.innerText = name;
+    }
+
+    self.gazer.util.DebugBox.prototype.show = function(name, func) {
+        if (!this.canvas[name]) {
+            this.canvas[name] = document.createElement('canvas');
+            this.div.appendChild(this.canvas[name]);
+        }
+        var canvas = this.canvas[name];
+        canvas.getContext('2d').clearRect(0,0, canvas.width, canvas.height);
+        func(canvas);
+    }
 }());
