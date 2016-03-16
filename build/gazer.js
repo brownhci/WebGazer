@@ -8066,44 +8066,56 @@ var mosseFilterResponses = function() {
 
     window.gazer = window.gazer || {};
 
-gazer.BlinkDetector = function(blinkWindow) {
-    //TODO use DataWindow instead
-    this.blinkData = [];
-    //determines number of previous eyeObj to hold onto
-    this.blinkWindow = blinkWindow || 8;
-
-    //cycles through to replace oldest entry
-    this.blinkWindowIndex = 0;
+self.gazer.BlinkDetector = function(blinkWindow) {
+    this.blinkData = new gazer.util.DataWindow(blinkWindow || 8);
 };
 
 gazer.BlinkDetector.prototype.detectBlink = function(eyesObj) {
     if (!eyesObj) {
         return eyesObj;
     }
-    if (this.blinkData.length < this.blinkWindow) {
-        this.blinkData.push(eyesObj);
-        eyesObj.left.blink = false;
-        eyesObj.right.blink = false;
-        return eyesObj;
+
+    this.blinkData.push(eyesObj);
+
+    var leftAverage = [];
+    var rightAverage = [];
+
+    for(var i=0; i<gazer.util.resizeWidth*gazer.util.resizeHeight; i++){
+        leftAverage[i] = 0;
+        rightAverage[i] = 0;
+        for(var j=0; j<this.blinkData.data.length; j++)
+        {
+            if(typeof this.blinkData.data[j].left.gray!== "undefined"){
+                leftAverage[i] += this.blinkData.data[j].left.gray[i];
+            }            
+            if(typeof this.blinkData.data[j].right.gray!== "undefined"){
+                rightAverage[i] += this.blinkData.data[j].right.gray[i];
+            }
+
+        }
+        leftAverage[i]/=this.blinkData.data.length;
+        rightAverage[i]/=this.blinkData.data.length;
     }
 
-    //replace oldest entry
-    this.blinkData[this.blinkWindowIndex] = eyesObj;
-    this.blinkWindowIndex = (this.blinkWindowIndex + 1) % this.blinkWindow;
-
-    //TODO detect if current eyeObj is different from eyeObj in blinkData;
+    if(typeof this.blinkData.data[this.blinkData.data.length-1].left.gray!== "undefined"){
+        var leftBlink = (gazer.util.ZNCC(this.blinkData.data[this.blinkData.data.length-1].left.gray, leftAverage));
+        if(leftBlink<0.6){
+            console.log("left blink");
+        }
+    }
+    if(typeof this.blinkData.data[this.blinkData.data.length-1].right.gray!== "undefined"){
+        var rightBlink = (gazer.util.ZNCC(this.blinkData.data[this.blinkData.data.length-1].right.gray, rightAverage));
+        if(rightBlink<0.6){
+            console.log("right blink");
+        }
+    }
 
     eyesObj.left.blink = false;
     eyesObj.right.blink = false;
     return eyesObj;
 }
 
-gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
-    if (gazer.utils.isInt(value) && value > 0) {
-        this.blinkWindow = value;
-    }
-    return this;
-}
+
 }(window));
 ;
 
@@ -9326,8 +9338,6 @@ if (typeof exports !== 'undefined') {
     gazer.params = gazer.params || {};
 
     var ridgeParameter = Math.pow(10,-5);
-    var resizeWidth = 10;
-    var resizeHeight = 6;
     var dataWindow = 700;
     var trailDataWindow = 10; //TODO perhaps more? less?;
 
@@ -9378,38 +9388,6 @@ if (typeof exports !== 'undefined') {
     }
 
 
-    function getEyeFeats(eyes) {
-        var resizedLeft = gazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
-        var resizedright = gazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
-
-        var leftGray = gazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-        var rightGray = gazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
-
-        //TODO either move objectdetect into gazer namespace or re-implement
-        var histLeft = [];
-        objectdetect.equalizeHistogram(leftGray, 5, histLeft);
-        var histRight = [];
-        objectdetect.equalizeHistogram(rightGray, 5, histRight);
-
-        leftGrayArray = Array.prototype.slice.call(histLeft);
-        rightGrayArray = Array.prototype.slice.call(histRight);
-
-        //TODO take into account head positions
-        //23 - left eye left
-        //25 - left eye right
-        //30 - right eye left
-        //28 - right eye right
-        /*var widthLeft = eyes.positions[23][0] - eyes.positions[25][0];
-        var widthRight = eyes.positions[30][0] - eyes.positions[28][0];
-        var widthRatio = widthLeft / widthRight;
-        var widthTotal = widthLeft + widthRight;
-        var headVals = [eyes.positions[23][0], eyes.positions[23][1], eyes.positions[25][0], eyes.positions[25][1],
-                        eyes.positions[30][0], eyes.positions[30][1], eyes.positions[28][0], eyes.positions[28][1],
-                        widthLeft, widthRight, widthRatio, widthTotal]; */
-        var headVals = [];
-        return leftGrayArray.concat(rightGrayArray).concat(headVals);
-    }
-
     function getCurrentFixationIndex() {
         var index = 0;
         var recentX = this.screenXTrailArray.get(0);
@@ -9452,14 +9430,14 @@ if (typeof exports !== 'undefined') {
         if (type === 'click') {
             this.screenXClicksArray.push([screenPos[0]]);
             this.screenYClicksArray.push([screenPos[1]]);
-
-            this.eyeFeaturesClicks.push(getEyeFeats(eyes));
+            var grayedEyes = gazer.util.getEyeFeats(eyes);
+            this.eyeFeaturesClicks.push(grayedEyes.left.gray.concat(grayedEyes.right.gray));
             this.dataClicks.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         } else if (type === 'move') {
             this.screenXTrailArray.push([screenPos[0]]);
             this.screenYTrailArray.push([screenPos[1]]);
-
-            this.eyeFeaturesTrail.push(getEyeFeats(eyes));
+            var grayedEyes = gazer.util.getEyeFeats(eyes);
+            this.eyeFeaturesTrail.push(grayedEyes.left.gray.concat(grayedEyes.right.gray));
             this.trailTimes.push(performance.now());
             this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         }
@@ -9491,7 +9469,8 @@ if (typeof exports !== 'undefined') {
         var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
         var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter); 	
 
-        var eyeFeats = getEyeFeats(eyesObj);
+        var grayedEyes = gazer.util.getEyeFeats(eyesObj);
+        var eyeFeats = grayedEyes.left.gray.concat(grayedEyes.right.gray);
         var predictedX = 0;
         for(var i=0; i< eyeFeats.length; i++){
             predictedX += eyeFeats[i] * coefficientsX[i];
@@ -9537,6 +9516,10 @@ if (typeof exports !== 'undefined') {
     self.gazer.mat = self.gazer.mat || {};
 
 
+    self.gazer.util.resizeWidth = 10;
+    self.gazer.util.resizeHeight = 6;
+
+
     /**
      * Eye class, represents an eye patch detected in the video stream
      * @param {ImageData} patch - the image data corresponding to an eye
@@ -9544,13 +9527,15 @@ if (typeof exports !== 'undefined') {
      * @param {number} imagey - y-axis offset from the top-left corner of the video canvas
      * @param {number} width  - width of the eye patch
      * @param {number} height - height of the eye patch
+     * @param {array} gray - grayscaled and normalized pixels
      */
-    self.gazer.util.Eye = function(patch, imagex, imagey, width, height) {
+    self.gazer.util.Eye = function(patch, imagex, imagey, width, height, gray) {
         this.patch = patch;
         this.imagex = imagex;
         this.imagey = imagey;
         this.width = width;
         this.height = height;
+        this.gray = gray;
     }
 
 
@@ -9616,6 +9601,37 @@ if (typeof exports !== 'undefined') {
 
 
     //Helper functions
+    
+    /**
+     * @todo  Rename
+     * Resizes 
+     * @param  {[type]} eyesObj [description]
+     * @return {[type]}         [description]
+     */
+    self.gazer.util.getEyeFeats = function(eyesObj) {
+        var resizedLeft = this.resizeEye(eyesObj.left, this.resizeWidth, this.resizeHeight);
+        var resizedright = this.resizeEye(eyesObj.right, this.resizeWidth, this.resizeHeight);
+
+        var leftGray = this.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+        var rightGray = this.grayscale(resizedright.data, resizedright.width, resizedright.height);
+
+        //TODO either move objectdetect into gazer namespace or re-implement
+        var histLeft = [];
+        objectdetect.equalizeHistogram(leftGray, 5, histLeft);
+        var histRight = [];
+        objectdetect.equalizeHistogram(rightGray, 5, histRight);
+
+        leftGrayArray = Array.prototype.slice.call(histLeft);
+        rightGrayArray = Array.prototype.slice.call(histRight);
+
+        eyesObj.left.gray = leftGrayArray;
+        eyesObj.right.gray = rightGrayArray;
+        //leftGrayArray.concat(rightGrayArray);
+
+        return eyesObj;
+    }
+
+
     /**
      * Grayscales an image patch. Can be used for the whole canvas, detected face, detected eye, etc.
      * @param  {ImageData} imageData - image data to be grayscaled
@@ -9680,6 +9696,110 @@ if (typeof exports !== 'undefined') {
             prediction.y = h;
         }
         return prediction;
+    }
+
+
+
+
+    /**From https://github.com/timsuchanek/matrix-correlation
+    *
+    * TODO: Properly attribute and license
+    * 
+    * /
+    
+
+    // /**
+    //   Zero Mean Normalized Cross-Correlation (ZNCC) of two matrices.
+    // */
+    // self.gazer.util.ZNCC = function(A, B) {
+    //   var mean_A = this.mean(A);
+    //   var mean_B = this.mean(B);
+
+    //   var numerator = 0;
+    //   var denumerator = 0;
+    //   var denumerator = 0;
+    //   var denumerator_2 = 0;
+      
+    //   this.overall(A, B, function(a, b) {
+    //     numerator += (a - mean_A) * (b - mean_B);
+    //     denumerator += (a - mean_A) * (a - mean_A);
+    //     denumerator_2 += (b - mean_B) * (b - mean_B);
+    //   });
+
+    //   denumerator = Math.sqrt(denumerator * denumerator_2);
+
+    //   return numerator / denumerator;
+    // }
+
+    // self.gazer.util.mean = function(A) {
+    //   var sum = 0;
+    //   var m = A[0].length;
+    //   var n = A.length;
+
+    //   for (var i = 0; i < m; i++) {
+    //     for (var j = 0; j < n; j++) {
+    //       sum += A[i][j];
+    //     }
+    //   }
+      
+    //   return sum / (m * n);
+    // }
+
+    // self.gazer.util.overall = function(A, B, cb) {
+    //   var m = A[0].length == B[0].length ? A[0].length : null;
+    //   var n = A.length == B.length ? A.length : null;
+      
+    //   if (m === null || n === null) {
+    //     throw new Error("Matrices don't have the same size.");
+    //   }
+
+    //   for (var i = 0; i < m; i++) {
+    //     for (var j = 0; j < n; j++) {
+    //       cb(A[i][j], B[i][j]);
+    //     }
+    //   }
+    // }
+    // 
+        self.gazer.util.ZNCC = function(A, B) {
+      var mean_A = this.mean(A);
+      var mean_B = this.mean(B);
+
+      var numerator = 0;
+      var denumerator = 0;
+      var denumerator = 0;
+      var denumerator_2 = 0;
+      
+      this.overall(A, B, function(a, b) {
+        numerator += (a - mean_A) * (b - mean_B);
+        denumerator += (a - mean_A) * (a - mean_A);
+        denumerator_2 += (b - mean_B) * (b - mean_B);
+      });
+
+      denumerator = Math.sqrt(denumerator * denumerator_2);
+
+      return numerator / denumerator;
+    }
+
+    self.gazer.util.mean = function(A) {
+        if(A.length>0)
+        {
+            var total = 0;
+            A.forEach(function(val) {
+                total += val;
+            });
+          return total/A.length;
+        }
+        return null;
+    }
+
+    self.gazer.util.overall = function(A, B, cb) {      
+      if (A.length!=B.length) {
+        throw new Error("Matrices don't have the same size.");
+      }
+
+      for (var i = 0; i < A.length; i++) {
+          cb(A[i], B[i]);
+        }
     }
 
 }());
@@ -9963,7 +10083,7 @@ if (typeof exports !== 'undefined') {
         //SETUP VIDEO ELEMENTS
         navigator.getUserMedia = navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||
-            navigator.mozGetUserMedia;
+            navigator.mediaDevices.getUserMedia;
 
         if(navigator.getUserMedia != null){ 
             var options = { 

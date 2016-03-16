@@ -5,6 +5,10 @@
     self.gazer.mat = self.gazer.mat || {};
 
 
+    self.gazer.util.resizeWidth = 10;
+    self.gazer.util.resizeHeight = 6;
+
+
     /**
      * Eye class, represents an eye patch detected in the video stream
      * @param {ImageData} patch - the image data corresponding to an eye
@@ -12,13 +16,15 @@
      * @param {number} imagey - y-axis offset from the top-left corner of the video canvas
      * @param {number} width  - width of the eye patch
      * @param {number} height - height of the eye patch
+     * @param {array} gray - grayscaled and normalized pixels
      */
-    self.gazer.util.Eye = function(patch, imagex, imagey, width, height) {
+    self.gazer.util.Eye = function(patch, imagex, imagey, width, height, gray) {
         this.patch = patch;
         this.imagex = imagex;
         this.imagey = imagey;
         this.width = width;
         this.height = height;
+        this.gray = gray;
     }
 
 
@@ -84,6 +90,37 @@
 
 
     //Helper functions
+    
+    /**
+     * @todo  Rename
+     * Resizes 
+     * @param  {[type]} eyesObj [description]
+     * @return {[type]}         [description]
+     */
+    self.gazer.util.getEyeFeats = function(eyesObj) {
+        var resizedLeft = this.resizeEye(eyesObj.left, this.resizeWidth, this.resizeHeight);
+        var resizedright = this.resizeEye(eyesObj.right, this.resizeWidth, this.resizeHeight);
+
+        var leftGray = this.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+        var rightGray = this.grayscale(resizedright.data, resizedright.width, resizedright.height);
+
+        //TODO either move objectdetect into gazer namespace or re-implement
+        var histLeft = [];
+        objectdetect.equalizeHistogram(leftGray, 5, histLeft);
+        var histRight = [];
+        objectdetect.equalizeHistogram(rightGray, 5, histRight);
+
+        leftGrayArray = Array.prototype.slice.call(histLeft);
+        rightGrayArray = Array.prototype.slice.call(histRight);
+
+        eyesObj.left.gray = leftGrayArray;
+        eyesObj.right.gray = rightGrayArray;
+        //leftGrayArray.concat(rightGrayArray);
+
+        return eyesObj;
+    }
+
+
     /**
      * Grayscales an image patch. Can be used for the whole canvas, detected face, detected eye, etc.
      * @param  {ImageData} imageData - image data to be grayscaled
@@ -148,6 +185,110 @@
             prediction.y = h;
         }
         return prediction;
+    }
+
+
+
+
+    /**From https://github.com/timsuchanek/matrix-correlation
+    *
+    * TODO: Properly attribute and license
+    * 
+    * /
+    
+
+    // /**
+    //   Zero Mean Normalized Cross-Correlation (ZNCC) of two matrices.
+    // */
+    // self.gazer.util.ZNCC = function(A, B) {
+    //   var mean_A = this.mean(A);
+    //   var mean_B = this.mean(B);
+
+    //   var numerator = 0;
+    //   var denumerator = 0;
+    //   var denumerator = 0;
+    //   var denumerator_2 = 0;
+      
+    //   this.overall(A, B, function(a, b) {
+    //     numerator += (a - mean_A) * (b - mean_B);
+    //     denumerator += (a - mean_A) * (a - mean_A);
+    //     denumerator_2 += (b - mean_B) * (b - mean_B);
+    //   });
+
+    //   denumerator = Math.sqrt(denumerator * denumerator_2);
+
+    //   return numerator / denumerator;
+    // }
+
+    // self.gazer.util.mean = function(A) {
+    //   var sum = 0;
+    //   var m = A[0].length;
+    //   var n = A.length;
+
+    //   for (var i = 0; i < m; i++) {
+    //     for (var j = 0; j < n; j++) {
+    //       sum += A[i][j];
+    //     }
+    //   }
+      
+    //   return sum / (m * n);
+    // }
+
+    // self.gazer.util.overall = function(A, B, cb) {
+    //   var m = A[0].length == B[0].length ? A[0].length : null;
+    //   var n = A.length == B.length ? A.length : null;
+      
+    //   if (m === null || n === null) {
+    //     throw new Error("Matrices don't have the same size.");
+    //   }
+
+    //   for (var i = 0; i < m; i++) {
+    //     for (var j = 0; j < n; j++) {
+    //       cb(A[i][j], B[i][j]);
+    //     }
+    //   }
+    // }
+    // 
+        self.gazer.util.ZNCC = function(A, B) {
+      var mean_A = this.mean(A);
+      var mean_B = this.mean(B);
+
+      var numerator = 0;
+      var denumerator = 0;
+      var denumerator = 0;
+      var denumerator_2 = 0;
+      
+      this.overall(A, B, function(a, b) {
+        numerator += (a - mean_A) * (b - mean_B);
+        denumerator += (a - mean_A) * (a - mean_A);
+        denumerator_2 += (b - mean_B) * (b - mean_B);
+      });
+
+      denumerator = Math.sqrt(denumerator * denumerator_2);
+
+      return numerator / denumerator;
+    }
+
+    self.gazer.util.mean = function(A) {
+        if(A.length>0)
+        {
+            var total = 0;
+            A.forEach(function(val) {
+                total += val;
+            });
+          return total/A.length;
+        }
+        return null;
+    }
+
+    self.gazer.util.overall = function(A, B, cb) {      
+      if (A.length!=B.length) {
+        throw new Error("Matrices don't have the same size.");
+      }
+
+      for (var i = 0; i < A.length; i++) {
+          cb(A[i], B[i]);
+        }
     }
 
 }());

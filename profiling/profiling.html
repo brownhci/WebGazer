@@ -213,11 +213,6 @@
                 vid.height = 400;
                 vid.play();
                 
-                // //For clmtrackr
-                var ctrack = new clm.tracker({useWebGL : true});
-                ctrack.init(pModel);
-                ctrack.start(vid);
-
                 //var coordinates = genCoords(3, 3, canvas.width, canvas.height, 30, false);
                 coordinates =  [[30,30],
                     [canvas.width - 30,30],
@@ -231,8 +226,8 @@
                 function drawLoop(){
                     requestAnimFrame(drawLoop);
                     overlay.getContext("2d").clearRect(0, 0, overlay.width, overlay.height);
-                    if (ctrack.getCurrentPosition()){
-                        ctrack.draw(overlay);
+                    if (gazer.getTracker().clm.getCurrentPosition()){
+                        gazer.getTracker().clm.draw(overlay);
                         if(!found) {
                             randomizer(coordinates);
                             found = true;
