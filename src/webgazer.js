@@ -32,6 +32,7 @@
     gazeDot.style.width = '10px';
     gazeDot.style.height = '10px';
     gazeDot.style.background = 'red';
+    gazeDot.style.display = 'none';
 
     var debugVideoLoc = '';
         
@@ -376,6 +377,7 @@
     gazer.showPredictionPoints = function(bool) {
         showGazeDot = bool;
         gazeDot.style.left = '-999em';
+        gazeDot.style.display = bool ? 'block' : 'none';
         return gazer;
     }
 
