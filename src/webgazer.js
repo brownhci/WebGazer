@@ -86,7 +86,7 @@
         }
         paintCurrentFrame(canvas);
         try {
-            return tracker.getEyePatches(canvas, width, height);
+            return blinkDetector.detectBlink(tracker.getEyePatches(canvas, width, height));
         } catch(err) {
             console.log(err);
             return null;

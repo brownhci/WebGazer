@@ -8065,11 +8065,9 @@ var mosseFilterResponses = function() {
 (function(window) {
 
     window.gazer = window.gazer || {};
-    gazer.util = gazer.util || {};
 
 self.gazer.BlinkDetector = function(blinkWindow) {
     this.blinkData = new gazer.util.DataWindow(blinkWindow || 8);
-    this.debug = new gazer.util.DebugBox();
 };
 
 gazer.BlinkDetector.prototype.detectBlink = function(eyesObj) {
@@ -8082,78 +8080,36 @@ gazer.BlinkDetector.prototype.detectBlink = function(eyesObj) {
     var leftAverage = [];
     var rightAverage = [];
 
-    // for(var i=0; i<gazer.util.resizeWidth*gazer.util.resizeHeight; i++){
-    //     leftAverage[i] = 0;
-    //     rightAverage[i] = 0;
-    //     for(var j=0; j<this.blinkData.data.length; j++)
-    //     {
-    //         if(typeof this.blinkData.data[j].left.gray!== "undefined"){
-    //             leftAverage[i] += this.blinkData.data[j].left.gray[i];
-    //         }            
-    //         if(typeof this.blinkData.data[j].right.gray!== "undefined"){
-    //             rightAverage[i] += this.blinkData.data[j].right.gray[i];
-    //         }
-
-    //     }
-    //     leftAverage[i]/=this.blinkData.data.length;
-    //     rightAverage[i]/=this.blinkData.data.length;
-    // }
-    var groundedI= gazer.util.resizeWidth*gazer.util.resizeHeight/2-1;
-    for(var i=gazer.util.resizeWidth*gazer.util.resizeHeight/2-1; i<gazer.util.resizeWidth*gazer.util.resizeHeight; i++){
-        leftAverage[i-groundedI] = 0;
-        rightAverage[i-groundedI] = 0;
+    for(var i=0; i<gazer.util.resizeWidth*gazer.util.resizeHeight; i++){
+        leftAverage[i] = 0;
+        rightAverage[i] = 0;
         for(var j=0; j<this.blinkData.data.length; j++)
         {
             if(typeof this.blinkData.data[j].left.gray!== "undefined"){
-                leftAverage[i-groundedI] += this.blinkData.data[j].left.gray[i];
+                leftAverage[i] += this.blinkData.data[j].left.gray[i];
             }            
             if(typeof this.blinkData.data[j].right.gray!== "undefined"){
-                rightAverage[i-groundedI] += this.blinkData.data[j].right.gray[i];
+                rightAverage[i] += this.blinkData.data[j].right.gray[i];
             }
 
         }
-        leftAverage[i-groundedI]/=this.blinkData.data.length;
-        rightAverage[i-groundedI]/=this.blinkData.data.length;
+        leftAverage[i]/=this.blinkData.data.length;
+        rightAverage[i]/=this.blinkData.data.length;
     }
 
-    // if(typeof this.blinkData.data[this.blinkData.data.length-1].left.gray!== "undefined"){
-    //     var leftBlink = (gazer.util.ZNCC(this.blinkData.data[this.blinkData.data.length-1].left.gray, leftAverage));
-    //     if(leftBlink<0.6){
-    //         console.log("left blink");
-    //         this.debug.show('left blink', function(canvas) {
-    //             canvas.getContext('2d').putImageData(eyesObj.left.patch,0,0);
-    //         })
-    //     }
-    // }
-    // if(typeof this.blinkData.data[this.blinkData.data.length-1].right.gray!== "undefined"){
-    //     var rightBlink = (gazer.util.ZNCC(this.blinkData.data[this.blinkData.data.length-1].right.gray, rightAverage));
-    //     if(rightBlink<0.6){
-    //         console.log("right blink");
-    //         this.debug.show('right blink', function(canvas) {
-    //             canvas.getContext('2d').putImageData(eyesObj.right.patch,0,0);
-    //         })
-    //     }
-    // }
-
     if(typeof this.blinkData.data[this.blinkData.data.length-1].left.gray!== "undefined"){
-        var leftBlink = (gazer.util.ZNCC(this.blinkData.data[this.blinkData.data.length-1].left.gray.slice(gazer.util.resizeWidth*gazer.util.resizeHeight/2-1), leftAverage));
-        var leftBlink = Math.abs(gazer.util.mean(this.blinkData.data[this.blinkData.data.length-1].left.gray.slice(gazer.util.resizeWidth*gazer.util.resizeHeight/2-1))- gazer.util.mean(leftAverage))/255;
-        if(leftBlink<0.8){
+        var leftBlink = (gazer.util.ZNCC(this.blinkData.data[this.blinkData.data.length-1].left.gray, leftAverage));
+        if(leftBlink<0.6){
             console.log("left blink");
-            this.debug.show('left blink', function(canvas) {
-                //canvas.getContext('2d').putImageData(eyesObj.left.patch,0,0);
-            })
         }
     }
     if(typeof this.blinkData.data[this.blinkData.data.length-1].right.gray!== "undefined"){
-        var rightBlink = (gazer.util.ZNCC(this.blinkData.data[this.blinkData.data.length-1].right.gray.slice(gazer.util.resizeWidth*gazer.util.resizeHeight/2-1),rightAverage));
-        if(rightBlink<0.8){
+        var rightBlink = (gazer.util.ZNCC(this.blinkData.data[this.blinkData.data.length-1].right.gray, rightAverage));
+        if(rightBlink<0.6){
             console.log("right blink");
-            this.debug.show('right blink', function(canvas) {
-              //  canvas.getContext('2d').putImageData(eyesObj.right.patch,0,0);
-            })
         }
     }
+
     eyesObj.left.blink = false;
     eyesObj.right.blink = false;
     return eyesObj;
@@ -9744,6 +9700,7 @@ if (typeof exports !== 'undefined') {
 
 
 
+
     /**From https://github.com/timsuchanek/matrix-correlation
     *
     * TODO: Properly attribute and license
@@ -9845,62 +9802,6 @@ if (typeof exports !== 'undefined') {
         }
     }
 
-    function debugBoxWrite(para, stats) {
-        var str = '';
-        for (var key in stats) {
-            str += key + ': ' + stats[key] + '\n';
-        }
-        para.innerText = str;
-    }
-
-    self.gazer.util.DebugBox = function(interval) {
-        this.para = document.createElement('p');
-        this.div = document.createElement('div');
-        this.div.appendChild(this.para);
-        document.body.appendChild(this.div);
-
-        this.buttons = {};
-        this.canvas = {};
-        this.stats = {};
-        var updateInterval = interval || 300;
-        (function(localThis) {
-            setInterval(function() { 
-                debugBoxWrite(localThis.para, localThis.stats); 
-            }, updateInterval);
-        }(this));
-    }
-
-    self.gazer.util.DebugBox.prototype.set = function(key, value) {
-        this.stats[key] = value;
-    }
-
-    self.gazer.util.DebugBox.prototype.inc = function(key, incBy, init) {
-        if (!this.stats[key]) {
-            this.stats[key] = init || 0;
-        }
-        this.stats[key] += incBy || 1;
-    }
-
-    self.gazer.util.DebugBox.prototype.addButton = function(name, func) {
-        if (!this.buttons[name]) {
-            this.buttons[name] = document.createElement('button');
-            this.div.appendChild(this.buttons[name]);
-        }
-        var button = this.buttons[name];
-        this.buttons[name] = button;
-        button.addEventListener('click', func);
-        button.innerText = name;
-    }
-
-    self.gazer.util.DebugBox.prototype.show = function(name, func) {
-        if (!this.canvas[name]) {
-            this.canvas[name] = document.createElement('canvas');
-            this.div.appendChild(this.canvas[name]);
-        }
-        var canvas = this.canvas[name];
-        canvas.getContext('2d').clearRect(0,0, canvas.width, canvas.height);
-        func(canvas);
-    }
 }());
 ;
 
@@ -9992,7 +9893,7 @@ if (typeof exports !== 'undefined') {
         }
         paintCurrentFrame(canvas);
         try {
-            return tracker.getEyePatches(canvas, width, height);
+            return blinkDetector.detectBlink(tracker.getEyePatches(canvas, width, height));
         } catch(err) {
             console.log(err);
             return null;
