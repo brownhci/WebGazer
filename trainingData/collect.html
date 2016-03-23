@@ -5,15 +5,8 @@
 		<meta charset="utf-8">
 		<link href="./styles/bootstrap.min.css" rel="stylesheet" type="text/css">
 		<style>
-			@import url(https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700);
 			
-			body {
-				font-family: 'Lato';
-				background-color: #f0f0f0;
-				margin: 0px auto;
-				max-width: 1150px;
-			}
-			
+		
 			#overlay {
 				position: absolute;
 				top: 0px;
@@ -39,41 +32,6 @@
 				/*margin : 0px auto;*/
 			}
 			
-			#content {
-				margin-top : 70px;
-				margin-left : 100px;
-				margin-right : 100px;
-				max-width: 950px;
-			}
-			
-			#sketch {
-				display: block;
-			}
-			
-			#filter {
-				display: none;
-			}
-			
-			h2 {
-				font-weight : 400;
-			}
-
-			.nogum {
-				display : none;
-			}
-			
-			.btn {
-				font-family: 'Lato';
-				font-size: 16px;
-			}
-
-			.hide {
-				display : none;
-			}
-
-			.nohide {
-				display : block;
-			}
 		</style>
 	
 	</head>
@@ -90,7 +48,6 @@
 				<!--<canvas id="sketch" width="400" height="300"></canvas>-->
 			</div>
 			<br/>
-            <button onclick="saveFile()">Save data to file</button>
 			
 			<script>
 				var vid = document.getElementById('videoel');
@@ -163,31 +120,44 @@
                         var pixelData = paintCanvasCC.getImageData(0,0,vid.width,vid.height);
                         var x = e.clientX;
                         var y = e.clientY;
-                        data.push({
+                        var data = {
                             'positions' : positions,
-                            'pixels': pixelData,
+                            'width': pixelData.width,
                             'x' : x,
                             'y' : y,
-                            'type' : type
-                        });
+                            'type' : type,
+                            'timestamp' : (new Date()).getTime()
+                        };
+                        sendToServer(paintCanvas, data);
                     }
                 }
 
+                function sendToServer(canvas, data) {
+                    var xhttp = new XMLHttpRequest();
+                    var formdata = new FormData();
+                    formdata.append('img', canvas.toDataURL());
+                    formdata.append('data', JSON.stringify(data));
+                    xhttp.open('POST', '', true);
+                    xhttp.send(formdata);
+                }
+    
                 function saveFile() {
                     var file = new Blob([JSON.stringify(data)], {type: 'text/json'});
-                    var url = URL.createObjectUrl(file);
+                    var url = URL.createObjectURL(file);
                     var link = document.createElement('a');
                     link.href = url;
                     link.download = 'collectedData' + (new Date()).toJSON();
+                    link.innerText = 'download here';
                     document.body.appendChild(link);
                 }
 
                 document.body.addEventListener('click', function(event) {
+                    console.log('click');
                     listener(event, 'click');
                 });
 
                 document.body.addEventListener('mousemove', function(event) {
-                    listener(event, 'move');
+                    //listener(event, 'move');
                 });
 				
 			</script>
