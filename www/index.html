@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <title>WebGazer</title>
+
+        <!-- Bootstrap -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+            <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+<style type="text/css">
+
+body {
+    height: 100%;
+}
+
+#sidebar {
+    background-color: #fae596;
+    z-index: 1000;
+    display: inline-block;
+    position: fixed;
+    margin: 0px;
+    padding-left: 0px;
+    height: 100%;
+    width: 20%;
+    max-width: 200px;
+    float: left;
+    border-right-style: solid;
+    border-right: thin single black;
+}
+
+#sidebar-list {
+    margin-top: 50%;
+    list-style: none;
+}
+
+#sidebar-list li {
+    margin-top: 10px;
+}
+
+#main-content {
+    display: block;
+    width: 80%;
+    float: right;
+    height: 100vh;
+}
+
+#header {
+    padding-left: 10%;
+}
+
+</style>
+    </head>
+    <body>
+        <div id="sidebar" class="container">
+            <ul id="sidebar-list">
+                <li class="sidebar-list-elem" >Download</li>
+                <li class="sidebar-list-elem" >Demos</li>
+                <li class="sidebar-list-elem" >API</li>
+                <li class="sidebar-list-elem" >About</li>
+                <li class="sidebar-list-elem" >Licence</li>
+            </ul>
+        </div>
+        <div id="main-content">
+            <div id="header">
+                <h1>Webgazer</h1>
+            </div>
+        </div>
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="js/bootstrap.min.js"></script>
+    </body>
+</html>
