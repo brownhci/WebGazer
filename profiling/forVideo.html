@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+    <HEAD>
+        <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+        <TITLE>WebGazer</TITLE>
+        <style>
+            #myCanvas {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+    </HEAD>
+    <BODY LANG="en-US" LINK="#0000ff" DIR="LTR">
+        <canvas id="myCanvas" width="578" height="200"></canvas>
+
+        <script src="../build/gazer.js"></script>
+        <script>
+window.onload = function() {
+    gazer.setRegression('interaction') /* currently must set regression and tracker */
+        .setTracker('clmtrackr')
+        .setGazeListener(function(data, clock) {
+         //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
+         //   console.log(clock); /* elapsed time in milliseconds since gazer.begin() was called */
+        })
+        .begin()
+        .showPredictionPoints(true); /* shows a square every 100 milliseconds where current prediction is */
+
+    var width = 320;
+    var height = 240;
+    var topDist = '0px';
+    var leftDist = '0px';
+    
+    var setup = function() {
+        var video = document.getElementById('webgazerVideoFeed');
+        video.style.display = 'block';
+        video.style.position = 'absolute';
+        video.style.top = topDist;
+        video.style.left = leftDist;
+        video.width = width;
+        video.height = height;
+        video.style.margin = '0px';
+        video.style.zIndex="-1";
+
+        var overlay = document.createElement('canvas');
+        overlay.id = 'overlay';
+        overlay.style.position = 'absolute';
+        overlay.width = width;
+        overlay.height = height;
+        overlay.style.top = topDist;
+        overlay.style.left = leftDist;
+        overlay.style.margin = '0px';
+
+        var canvas = document.getElementById('myCanvas');
+        var context = canvas.getContext('2d');
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+
+
+        document.body.appendChild(overlay);
+
+        var cl = gazer.getTracker().clm;
+
+        coordinates =  [[30,30],
+            [canvas.width - 30,30],
+            [30,canvas.height - 30],
+            [canvas.width - 30, canvas.height - 30],
+            [canvas.width/2, canvas.height/2],
+            [150,150],
+            [canvas.width/2 - 150,150],
+            [canvas.width - 150,150],
+            [150,canvas.height/2 - 150],
+            [150,canvas.height - 150],
+            [canvas.width - 150, canvas.height - 150],
+            [canvas.width/2 - 150, canvas.height/2 - 150],
+            [canvas.width/2, canvas.height/2]
+        ];
+        found=false;
+        function drawLoop() {
+            requestAnimFrame(drawLoop);
+            overlay.getContext('2d').clearRect(0,0,width,height);
+            if (cl.getCurrentPosition()) {
+                cl.draw(overlay);
+                if(!found) {
+                    randomizer(coordinates);
+                    found = true;
+                }
+            }
+        }
+        drawLoop();
+
+        function drawCircle(x,y, radius, color) {
+            context.beginPath();
+            context.arc(x, y, radius, 0, 2 * Math.PI, false);
+            context.fillStyle = color || 'green';
+            context.fill();
+        } 
+        
+        function randomizer(coordinates){
+                var counter = 0;
+                var caliRadius = 20;
+                centerX = coordinates[counter][0];
+                centerY = coordinates[counter][1];
+                drawCircle(centerX, centerY, caliRadius); 
+                counter++;
+                var timerID = setInterval(function() {
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    if (counter<coordinates.length){
+                        centerX = coordinates[counter][0];
+                        centerY = coordinates[counter][1];
+                        if(counter<5)
+                            drawCircle(centerX, centerY, caliRadius); 
+                        else 
+                            drawCircle(centerX,centerY,caliRadius,"blue");
+                        counter++;
+                    }
+                    else{
+                        clearInterval(timerID);
+                    }
+                }, 4000); 
+        }
+
+    };
+
+    function checkIfReady() {
+        if (gazer.isReady()) {
+            setup();
+        } else {
+            setTimeout(checkIfReady, 100);
+        }
+    }
+    setTimeout(checkIfReady,100);
+};
+
+window.onbeforeunload = function() {
+    //gazer.end()
+}
+        </script>
+
+    </BODY>
+</HTML>
