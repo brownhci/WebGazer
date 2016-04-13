@@ -436,7 +436,7 @@
         if (regressionMap[name] == undefined) {
             console.log('Invalid regression selection');
             console.log('Options are: ');
-            for (var reg in regMap) {
+            for (var reg in regressionMap) {
                 console.log(reg);
             }
             return webgazer;
