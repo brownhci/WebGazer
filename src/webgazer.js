@@ -509,7 +509,7 @@
      * returns the different event types that may be passed to regressions when calling regression.addData()
      * @return {array} array of strings where each string is an event type
      */
-    gazer.getEventTypes = function() { 
+    gazer.params.getEventTypes = function() { 
         return eventTypes.slice(); 
     }
 }(window));
