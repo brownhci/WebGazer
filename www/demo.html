@@ -2,14 +2,14 @@
 <HTML>
     <HEAD>
         <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
-        <TITLE>Gaze Tracker Study</TITLE>
+        <TITLE>Simple Demonstration of how WebGazer.js works</TITLE>
     </HEAD>
     <BODY LANG="en-US" LINK="#0000ff" DIR="LTR">
         <script src="../build/gazer.js"></script>
         <script>
 window.onload = function() {
     gazer.setRegression('interaction') /* currently must set regression and tracker */
-        .setTracker('js_objectdetect')
+        .setTracker('clmtrackr')
         .setGazeListener(function(data, clock) {
          //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
          //   console.log(clock); /* elapsed time in milliseconds since gazer.begin() was called */
@@ -43,16 +43,16 @@ window.onload = function() {
 
         document.body.appendChild(overlay);
 
-        // var cl = gazer.getTracker().clm;
+        var cl = gazer.getTracker().clm;
 
-        // function drawLoop() {
-        //     requestAnimFrame(drawLoop);
-        //     overlay.getContext('2d').clearRect(0,0,width,height);
-        //     if (cl.getCurrentPosition()) {
-        //         cl.draw(overlay);
-        //     }
-        // }
-        // drawLoop();
+        function drawLoop() {
+            requestAnimFrame(drawLoop);
+            overlay.getContext('2d').clearRect(0,0,width,height);
+            if (cl.getCurrentPosition()) {
+                cl.draw(overlay);
+            }
+        }
+        drawLoop();
     };
 
     function checkIfReady() {
