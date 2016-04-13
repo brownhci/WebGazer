@@ -1,9 +1,9 @@
 (function(window) {
     
-    window.gazer = window.gazer || {};
-    gazer.reg = window.reg || {};
+    window.webgazer = window.webgazer || {};
+    webgazer.reg = window.reg || {};
 
-    gazer.reg.LinearReg = function() {
+    webgazer.reg.LinearReg = function() {
         this.leftDatasetX = [];
         this.leftDatasetY = [];
         this.rightDatasetX = [];
@@ -11,7 +11,7 @@
         this.data = [];
     }
 
-    gazer.reg.LinearReg.prototype.addData = function(eyes, screenPos, type) {
+    webgazer.reg.LinearReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
         }
@@ -27,18 +27,18 @@
         this.data.push({'eyes': eyes, 'screenPos': screenPos, 'type': type});
     }
 
-    gazer.reg.LinearReg.prototype.setData = function(data) {
+    webgazer.reg.LinearReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             this.addData(data[i].eyes, data[i].screenPos, data[i].type);
         }
         this.data = data;
     }
 
-    gazer.reg.LinearReg.prototype.getData = function() {
+    webgazer.reg.LinearReg.prototype.getData = function() {
         return this.data;
     }
 
-    gazer.reg.LinearReg.prototype.predict = function(eyesObj) {
+    webgazer.reg.LinearReg.prototype.predict = function(eyesObj) {
         var result = regression('linear', this.leftDatasetX);
         var leftSlopeX = result.equation[0];
         var leftIntersceptX = result.equation[1];
@@ -71,7 +71,7 @@
         };
     }
 
-    gazer.reg.LinearReg.prototype.name = 'simple';
+    webgazer.reg.LinearReg.prototype.name = 'simple';
 
 
 }(window));

@@ -8,16 +8,16 @@ var dataWindow = 700;
 var trailDataWindow = 10; //TODO perhaps more? less?;
 var trainInterval = 500;
 
-var screenXClicksArray = new self.gazer.util.DataWindow(dataWindow);
-var screenYClicksArray = new self.gazer.util.DataWindow(dataWindow);
-var eyeFeaturesClicks = new self.gazer.util.DataWindow(dataWindow);
+var screenXClicksArray = new self.webgazer.util.DataWindow(dataWindow);
+var screenYClicksArray = new self.webgazer.util.DataWindow(dataWindow);
+var eyeFeaturesClicks = new self.webgazer.util.DataWindow(dataWindow);
 
-var screenXTrailArray = new self.gazer.util.DataWindow(trailDataWindow);
-var screenYTrailArray = new self.gazer.util.DataWindow(trailDataWindow);
-var eyeFeaturesTrail = new self.gazer.util.DataWindow(trailDataWindow);
+var screenXTrailArray = new self.webgazer.util.DataWindow(trailDataWindow);
+var screenYTrailArray = new self.webgazer.util.DataWindow(trailDataWindow);
+var eyeFeaturesTrail = new self.webgazer.util.DataWindow(trailDataWindow);
 
-var dataClicks = new self.gazer.util.DataWindow(dataWindow);
-var dataTrail = new self.gazer.util.DataWindow(dataWindow);
+var dataClicks = new self.webgazer.util.DataWindow(dataWindow);
+var dataTrail = new self.webgazer.util.DataWindow(dataWindow);
 
 
 /**
@@ -30,18 +30,18 @@ var dataTrail = new self.gazer.util.DataWindow(dataWindow);
 function ridge(y, X, k){
     var nc = X[0].length;
     var m_Coefficients = new Array(nc);
-    var xt = self.gazer.mat.transpose(X);
+    var xt = self.webgazer.mat.transpose(X);
     var solution = new Array();
     var success = true;
     do{
-        var ss = self.gazer.mat.mult(xt,X);
+        var ss = self.webgazer.mat.mult(xt,X);
         // Set ridge regression adjustment
         for (var i = 0; i < nc; i++) {
             ss[i][i] = ss[i][i] + k;
         }
 
         // Carry out the regression
-        var bb = self.gazer.mat.mult(xt,y);
+        var bb = self.webgazer.mat.mult(xt,y);
         for(var i = 0; i < nc; i++) {
             m_Coefficients[i] = bb[i][0];
         }
@@ -50,7 +50,7 @@ function ridge(y, X, k){
             if (m_Coefficients.length*n != m_Coefficients.length){
                 console.log("Array length must be a multiple of m")
             }
-            solution = (ss.length == ss[0].length ? (self.gazer.mat.LUDecomposition(ss,bb)) : (self.gazer.mat.QRDecomposition(ss,bb)));
+            solution = (ss.length == ss[0].length ? (self.webgazer.mat.LUDecomposition(ss,bb)) : (self.webgazer.mat.QRDecomposition(ss,bb)));
 
             for (var i = 0; i < nc; i++){
                 m_Coefficients[i] = solution[i][0];

@@ -1,8 +1,8 @@
 (function(window) {
     "use strict"
 
-    window.gazer = window.gazer || {};
-    gazer.tracker = gazer.tracker || {};
+    window.webgazer = window.webgazer || {};
+    webgazer.tracker = webgazer.tracker || {};
 
     /**
      * Initialize clmtrackr object
@@ -12,7 +12,7 @@
         this.clm.init(pModel);
     }
 
-    gazer.tracker.ClmGaze = ClmGaze;
+    webgazer.tracker.ClmGaze = ClmGaze;
 
     /**
      * Isolates the two patches that correspond to the user's eyes

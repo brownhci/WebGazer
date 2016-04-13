@@ -1,8 +1,8 @@
 (function(window) {
 
-    window.gazer = window.gazer || {};
+    window.webgazer = window.webgazer || {};
 
-gazer.BlinkDetector = function(blinkWindow) {
+webgazer.BlinkDetector = function(blinkWindow) {
     //TODO use DataWindow instead
     this.blinkData = [];
     //determines number of previous eyeObj to hold onto
@@ -12,7 +12,7 @@ gazer.BlinkDetector = function(blinkWindow) {
     this.blinkWindowIndex = 0;
 };
 
-gazer.BlinkDetector.prototype.detectBlink = function(eyesObj) {
+webgazer.BlinkDetector.prototype.detectBlink = function(eyesObj) {
     if (!eyesObj) {
         return eyesObj;
     }
@@ -34,8 +34,8 @@ gazer.BlinkDetector.prototype.detectBlink = function(eyesObj) {
     return eyesObj;
 }
 
-gazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
-    if (gazer.utils.isInt(value) && value > 0) {
+webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
+    if (webgazer.utils.isInt(value) && value > 0) {
         this.blinkWindow = value;
     }
     return this;

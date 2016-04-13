@@ -1,9 +1,9 @@
 (function(window) {
 
-    window.gazer = window.gazer || {};
-    gazer.reg = gazer.reg || {};
-    gazer.mat = gazer.mat || {};
-    gazer.util = gazer.util || {};
+    window.webgazer = window.webgazer || {};
+    webgazer.reg = webgazer.reg || {};
+    webgazer.mat = webgazer.mat || {};
+    webgazer.util = webgazer.util || {};
 
     var ridgeParameter = Math.pow(10,-5);
     var resizeWidth = 10;
@@ -13,13 +13,13 @@
     var trailDataWindow = 10; //TODO perhaps more? less?;
 
     function getEyeFeats(eyes) {
-        var resizedLeft = gazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
-        var resizedright = gazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
+        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
-        var leftGray = gazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-        var rightGray = gazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
+        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
 
-        //TODO either move objectdetect into gazer namespace or re-implement
+        //TODO either move objectdetect into webgazer namespace or re-implement
         var histLeft = [];
         objectdetect.equalizeHistogram(leftGray, 5, histLeft);
         var histRight = [];
@@ -50,17 +50,17 @@
         this.weights = event.data;
     }
 
-    gazer.reg.RidgeRegThreaded = function() {
-        this.screenXClicksArray = new gazer.util.DataWindow(dataWindow);
-        this.screenYClicksArray = new gazer.util.DataWindow(dataWindow);
-        this.eyeFeaturesClicks = new gazer.util.DataWindow(dataWindow);
+    webgazer.reg.RidgeRegThreaded = function() {
+        this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
+        this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
+        this.eyeFeaturesClicks = new webgazer.util.DataWindow(dataWindow);
 
-        this.screenXTrailArray = new gazer.util.DataWindow(trailDataWindow);
-        this.screenYTrailArray = new gazer.util.DataWindow(trailDataWindow);
-        this.eyeFeaturesTrail = new gazer.util.DataWindow(trailDataWindow);
+        this.screenXTrailArray = new webgazer.util.DataWindow(trailDataWindow);
+        this.screenYTrailArray = new webgazer.util.DataWindow(trailDataWindow);
+        this.eyeFeaturesTrail = new webgazer.util.DataWindow(trailDataWindow);
 
-        this.dataClicks = new gazer.util.DataWindow(dataWindow);
-        this.dataTrail = new gazer.util.DataWindow(dataWindow);
+        this.dataClicks = new webgazer.util.DataWindow(dataWindow);
+        this.dataTrail = new webgazer.util.DataWindow(dataWindow);
 
 
         this.worker = new Worker('../src/ridgeWorker.js');
@@ -70,7 +70,7 @@
         };
     }
 
-    gazer.reg.RidgeRegThreaded.prototype.addData = function(eyes, screenPos, type) {
+    webgazer.reg.RidgeRegThreaded.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
         }
@@ -80,7 +80,7 @@
         this.worker.postMessage({'eyes':getEyeFeats(eyes), 'screenPos':screenPos, 'type':type})
     }
 
-    gazer.reg.RidgeRegThreaded.prototype.predict = function(eyesObj) {
+    webgazer.reg.RidgeRegThreaded.prototype.predict = function(eyesObj) {
         console.log('in predict1');
         if (!eyesObj) {
             return null;
@@ -108,7 +108,7 @@
         };
     }
 
-    gazer.reg.RidgeRegThreaded.prototype.setData = function(data) {
+    webgazer.reg.RidgeRegThreaded.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             //TODO this is a kludge, needs to be fixed
             data[i].eyes.left.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.left.patch), data[i].eyes.left.width, data[i].eyes.left.height);
@@ -117,11 +117,11 @@
         }
     }
 
-    gazer.reg.RidgeRegThreaded.prototype.getData = function() {
-        //TODO move data storage to webgazer object level
+    webgazer.reg.RidgeRegThreaded.prototype.getData = function() {
+        //TODO move data storage to webwebgazer object level
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 
 
-    gazer.reg.RidgeRegThreaded.prototype.name = 'ridge';
+    webgazer.reg.RidgeRegThreaded.prototype.name = 'ridge';
 }(window));
