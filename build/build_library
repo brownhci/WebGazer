@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILENAME='gazer.js'
+FILENAME='webgazer.js'
 
 echo '' > $FILENAME
 for FILE in $(cat toCombine)
