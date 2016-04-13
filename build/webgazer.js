@@ -10172,7 +10172,7 @@ if (typeof exports !== 'undefined') {
             return null;
         }
         for (var reg in regs) {
-            regs[reg].addData(features, [event.clientX, event.clientY], eventType[0]); // eventType[0] === 'click'
+            regs[reg].addData(features, [event.clientX, event.clientY], eventTypes[0]); // eventType[0] === 'click'
         }
     }
 
@@ -10196,7 +10196,7 @@ if (typeof exports !== 'undefined') {
             return null;
         }
         for (var reg in regs) {
-            regs[reg].addData(features, [event.clientX, event.clientY], eventType[1]); //eventType[1] === 'move'
+            regs[reg].addData(features, [event.clientX, event.clientY], eventTypes[1]); //eventType[1] === 'move'
         }
     }
 
@@ -10401,7 +10401,7 @@ if (typeof exports !== 'undefined') {
      * @return {webgazer} this
      */
     webgazer.setTracker = function(name) {
-        if (trackermap[name] == undefined) {
+        if (trackerMap[name] == undefined) {
             console.log('Invalid tracker selection');
             console.log('Options are: ');
             for (var tracker in trackerMap) {
