@@ -1,14 +1,14 @@
 (function(window) {
     "use strict"
 
-    window.gazer = window.gazer || {};
-    gazer.tracker = gazer.tracker || {};
+    window.webgazer = window.webgazer || {};
+    webgazer.tracker = webgazer.tracker || {};
 
     var TrackingjsGaze = function() {
 
     }
 
-    gazer.tracker.TrackingjsGaze = TrackingjsGaze;
+    webgazer.tracker.TrackingjsGaze = TrackingjsGaze;
 
     /**
      * Isolates the two patches that correspond to the user's eyes

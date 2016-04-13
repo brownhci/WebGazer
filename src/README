@@ -1,5 +1,5 @@
 <!--Based on tracking.js Is that OK?-->
-# Webgazer
+# Webwebgazer
 
 WebGazer is an open-source, client-side JavaScript library that performs real-time gaze tracking on the browser. WebGazer uses HTML5 to access the webcam of the user and upon their consent uses a series of computational models to predict where the user is looking at any given time. All computations are performed locally and are not transmitted outside the user's computer.
 
@@ -17,7 +17,7 @@ Good question
 <!--WebGazer can integrated in any website that wishes to use gaze tracking either to better understand users-->
 
 ## Operation
-    webgazer.js contains the top level api commands which control the state of webgazer. At a high level, webgazer's flow of operation is
+    webwebgazer.js contains the top level api commands which control the state of webwebgazer. At a high level, webwebgazer's flow of operation is
 
         (set parameters like tracker)
         \/

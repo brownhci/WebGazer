@@ -1,10 +1,10 @@
 (function(window) {
 
-    window.gazer = window.gazer || {};
-    gazer.reg = gazer.reg || {};
-    gazer.mat = gazer.mat || {};
-    gazer.util = gazer.util || {};
-    gazer.params = gazer.params || {};
+    window.webgazer = window.webgazer || {};
+    webgazer.reg = webgazer.reg || {};
+    webgazer.mat = webgazer.mat || {};
+    webgazer.util = webgazer.util || {};
+    webgazer.params = webgazer.params || {};
 
     var ridgeParameter = Math.pow(10,-5);
     var resizeWidth = 10;
@@ -22,18 +22,18 @@
     function ridge(y, X, k){
         var nc = X[0].length;
         var m_Coefficients = new Array(nc);
-        var xt = gazer.mat.transpose(X);
+        var xt = webgazer.mat.transpose(X);
         var solution = new Array();
         var success = true;
         do{
-            var ss = gazer.mat.mult(xt,X);
+            var ss = webgazer.mat.mult(xt,X);
             // Set ridge regression adjustment
             for (var i = 0; i < nc; i++) {
                 ss[i][i] = ss[i][i] + k;
             }
 
             // Carry out the regression
-            var bb = gazer.mat.mult(xt,y);
+            var bb = webgazer.mat.mult(xt,y);
             for(var i = 0; i < nc; i++) {
                 m_Coefficients[i] = bb[i][0];
             }
@@ -42,7 +42,7 @@
                 if (m_Coefficients.length*n != m_Coefficients.length){
                     console.log("Array length must be a multiple of m")
                 }
-                solution = (ss.length == ss[0].length ? (gazer.mat.LUDecomposition(ss,bb)) : (gazer.mat.QRDecomposition(ss,bb)));
+                solution = (ss.length == ss[0].length ? (webgazer.mat.LUDecomposition(ss,bb)) : (webgazer.mat.QRDecomposition(ss,bb)));
 
                 for (var i = 0; i < nc; i++){
                     m_Coefficients[i] = solution[i][0];
@@ -60,13 +60,13 @@
 
 
     function getEyeFeats(eyes) {
-        var resizedLeft = gazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
-        var resizedright = gazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
+        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
-        var leftGray = gazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-        var rightGray = gazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
+        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
 
-        //TODO either move objectdetect into gazer namespace or re-implement
+        //TODO either move objectdetect into webgazer namespace or re-implement
         var histLeft = [];
         objectdetect.equalizeHistogram(leftGray, 5, histLeft);
         var histRight = [];
@@ -106,24 +106,24 @@
         return i;
     }
 
-    gazer.reg.RidgeWeightedReg = function() {
-        this.screenXClicksArray = new gazer.util.DataWindow(dataWindow);
-        this.screenYClicksArray = new gazer.util.DataWindow(dataWindow);
-        this.eyeFeaturesClicks = new gazer.util.DataWindow(dataWindow);
+    webgazer.reg.RidgeWeightedReg = function() {
+        this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
+        this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
+        this.eyeFeaturesClicks = new webgazer.util.DataWindow(dataWindow);
 
         //sets to one second worth of cursor trail
         this.trailTime = 1000;
-        this.trailDataWindow = this.trailTime / gazer.params.moveTickSize;
-        this.screenXTrailArray = new gazer.util.DataWindow(trailDataWindow);
-        this.screenYTrailArray = new gazer.util.DataWindow(trailDataWindow);
-        this.eyeFeaturesTrail = new gazer.util.DataWindow(trailDataWindow);
-        this.trailTimes = new gazer.util.DataWindow(trailDataWindow);
+        this.trailDataWindow = this.trailTime / webgazer.params.moveTickSize;
+        this.screenXTrailArray = new webgazer.util.DataWindow(trailDataWindow);
+        this.screenYTrailArray = new webgazer.util.DataWindow(trailDataWindow);
+        this.eyeFeaturesTrail = new webgazer.util.DataWindow(trailDataWindow);
+        this.trailTimes = new webgazer.util.DataWindow(trailDataWindow);
 
-        this.dataClicks = new gazer.util.DataWindow(dataWindow);
-        this.dataTrail = new gazer.util.DataWindow(dataWindow);
+        this.dataClicks = new webgazer.util.DataWindow(dataWindow);
+        this.dataTrail = new webgazer.util.DataWindow(dataWindow);
     }
 
-    gazer.reg.RidgeWeightedReg.prototype.addData = function(eyes, screenPos, type) {
+    webgazer.reg.RidgeWeightedReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
         }
@@ -149,7 +149,7 @@
         eyes.right.patch = Array.from(eyes.right.patch.data);
     }
 
-    gazer.reg.RidgeWeightedReg.prototype.predict = function(eyesObj) {
+    webgazer.reg.RidgeWeightedReg.prototype.predict = function(eyesObj) {
         if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
             return null;
         }
@@ -215,7 +215,7 @@
         };
     }
 
-    gazer.reg.RidgeWeightedReg.prototype.setData = function(data) {
+    webgazer.reg.RidgeWeightedReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             //TODO this is a kludge, needs to be fixed
             data[i].eyes.left.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.left.patch), data[i].eyes.left.width, data[i].eyes.left.height);
@@ -224,11 +224,11 @@
         }
     }
 
-    gazer.reg.RidgeWeightedReg.prototype.getData = function() {
-        //TODO move data storage to webgazer object level
+    webgazer.reg.RidgeWeightedReg.prototype.getData = function() {
+        //TODO move data storage to webwebgazer object level
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 
 
-    gazer.reg.RidgeWeightedReg.prototype.name = 'ridge';
+    webgazer.reg.RidgeWeightedReg.prototype.name = 'ridge';
 }(window));

@@ -1,7 +1,7 @@
 (function(window) {
 
-    window.gazer = window.gazer || {};
-    gazer.pupil = gazer.pupil || {};
+    window.webgazer = window.webgazer || {};
+    webgazer.pupil = webgazer.pupil || {};
 
 /**
  * Returns intensity value at x,y position of a pixels image
@@ -90,7 +90,7 @@ var getSinglePupil = function (pixels, width, height){
  * @param  {Object} eyesObj - left and right detected eye patches
  * @return {Object} eyesObj - updated eye patches with information about pupils' locations
  */
-gazer.pupil.getPupils = function(eyesObj) {
+webgazer.pupil.getPupils = function(eyesObj) {
     if (!eyesObj) {
         return eyesObj;
     }
