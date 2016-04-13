@@ -9520,7 +9520,7 @@ if (typeof exports !== 'undefined') {
     }
 
     webgazer.reg.RidgeReg.prototype.getData = function() {
-        //TODO move data storage to webwebgazer object level
+        //TODO move data storage to webgazer object level
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 
@@ -9756,7 +9756,7 @@ if (typeof exports !== 'undefined') {
     }
 
     webgazer.reg.RidgeWeightedReg.prototype.getData = function() {
-        //TODO move data storage to webwebgazer object level
+        //TODO move data storage to webgazer object level
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 
@@ -10004,8 +10004,8 @@ if (typeof exports !== 'undefined') {
     webgazer.params.videoScale = 1;
     var videoElement = null;
     var videoElementCanvas = null;
-    webgazer.params.videoElementId = 'webwebgazerVideoFeed'; 
-    webgazer.params.videoElementCanvasId = 'webwebgazerVideoCanvas';
+    webgazer.params.videoElementId = 'webgazerVideoFeed'; 
+    webgazer.params.videoElementCanvasId = 'webgazerVideoCanvas';
     webgazer.params.imgWidth = 1280;
     webgazer.params.imgHeight = 720;
 
@@ -10057,7 +10057,7 @@ if (typeof exports !== 'undefined') {
     };
 
     //localstorage name
-    var localstorageLabel = 'webwebgazerGlobalData';
+    var localstorageLabel = 'webgazerGlobalData';
     //settings object for future storage of settings
     var settings = {};
     var data = [];
@@ -10221,7 +10221,7 @@ if (typeof exports !== 'undefined') {
             'data': regs[0].getData() || data
         };
         window.localStorage.setItem(localstorageLabel, JSON.stringify(storage));
-        //TODO data should probably be stored in webwebgazer object instead of each regression model
+        //TODO data should probably be stored in webgazer object instead of each regression model
         //     -> requires duplication of data, but is likely easier on regression model implementors
     }
 
@@ -10272,7 +10272,7 @@ if (typeof exports !== 'undefined') {
     //PUBLIC FUNCTIONS - CONTROL
 
     /**
-     * starts all state related to webwebgazer -> dataLoop, video collection, click listener
+     * starts all state related to webgazer -> dataLoop, video collection, click listener
      */
     webgazer.begin = function() {
         loadGlobalData();
@@ -10314,7 +10314,7 @@ if (typeof exports !== 'undefined') {
         if (videoElementCanvas == null) {
             return false;
         }
-        paintCurrentFrame(videoElementCanvas);
+        paintCurrentFrame(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
         return videoElementCanvas.width > 0;
     }
 

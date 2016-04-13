@@ -17,8 +17,8 @@
     webgazer.params.videoScale = 1;
     var videoElement = null;
     var videoElementCanvas = null;
-    webgazer.params.videoElementId = 'webwebgazerVideoFeed'; 
-    webgazer.params.videoElementCanvasId = 'webwebgazerVideoCanvas';
+    webgazer.params.videoElementId = 'webgazerVideoFeed'; 
+    webgazer.params.videoElementCanvasId = 'webgazerVideoCanvas';
     webgazer.params.imgWidth = 1280;
     webgazer.params.imgHeight = 720;
 
@@ -70,7 +70,7 @@
     };
 
     //localstorage name
-    var localstorageLabel = 'webwebgazerGlobalData';
+    var localstorageLabel = 'webgazerGlobalData';
     //settings object for future storage of settings
     var settings = {};
     var data = [];
@@ -234,7 +234,7 @@
             'data': regs[0].getData() || data
         };
         window.localStorage.setItem(localstorageLabel, JSON.stringify(storage));
-        //TODO data should probably be stored in webwebgazer object instead of each regression model
+        //TODO data should probably be stored in webgazer object instead of each regression model
         //     -> requires duplication of data, but is likely easier on regression model implementors
     }
 
@@ -285,7 +285,7 @@
     //PUBLIC FUNCTIONS - CONTROL
 
     /**
-     * starts all state related to webwebgazer -> dataLoop, video collection, click listener
+     * starts all state related to webgazer -> dataLoop, video collection, click listener
      */
     webgazer.begin = function() {
         loadGlobalData();
@@ -327,7 +327,7 @@
         if (videoElementCanvas == null) {
             return false;
         }
-        paintCurrentFrame(videoElementCanvas);
+        paintCurrentFrame(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
         return videoElementCanvas.width > 0;
     }
 

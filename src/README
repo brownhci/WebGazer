@@ -17,7 +17,7 @@ Good question
 <!--WebGazer can integrated in any website that wishes to use gaze tracking either to better understand users-->
 
 ## Operation
-    webwebgazer.js contains the top level api commands which control the state of webwebgazer. At a high level, webwebgazer's flow of operation is
+    webgazer.js contains the top level api commands which control the state of webgazer. At a high level, webgazer's flow of operation is
 
         (set parameters like tracker)
         \/

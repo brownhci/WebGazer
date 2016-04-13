@@ -118,7 +118,7 @@
     }
 
     webgazer.reg.RidgeRegThreaded.prototype.getData = function() {
-        //TODO move data storage to webwebgazer object level
+        //TODO move data storage to webgazer object level
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 
