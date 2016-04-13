@@ -38,11 +38,16 @@
         
     // loop parameters
     var clockStart = performance.now();
-    gazer.params.dataTimestep = 50; //TODO either make this a settable parameter or otherwise determine best value
+    gazer.params.dataTimestep = 50; //TODO either make this a settable parameter or otherwise determine best value, currently a settable parameter
     var paused = false;
     //registered callback for loop
     var nopCallback = function(data, time) {};
     var callback = nopCallback;
+
+    //Types that regression systems should handle
+    //Describes the source of data so that regression systems may ignore or handle differently the various generating events
+    var eventTypes = ['click', 'move'];
+    
 
     //movelistener timeout clock parameters
     var moveClock = performance.now();
@@ -68,6 +73,7 @@
     var localstorageLabel = 'webgazerGlobalData';
     //settings object for future storage of settings
     var settings = {};
+    var data = [];
     var defaults = {
         'data': [],
         'settings': {},
@@ -121,6 +127,10 @@
     function getPrediction() {
         var predictions = [];
         var features = getPupilFeatures(videoElementCanvas, gazer.params.imgWidth, gazer.params.imgHeight);
+        if (regs.length == 0) {
+            console.log('regression not set, call setRegression()');
+            return null;
+        }
         for (var reg in regs) {
             predictions.push(regs[reg].predict(features));
         }
@@ -170,9 +180,12 @@
             return;
         }
         var features = getPupilFeatures(videoElementCanvas, gazer.params.imgWidth, gazer.params.imgHeight);
+        if (regs.length == 0) {
+            console.log('regression not set, call setRegression()');
+            return null;
+        }
         for (var reg in regs) {
-            //TODO setup enum for event types
-            regs[reg].addData(features, [event.clientX, event.clientY], 'click');
+            regs[reg].addData(features, [event.clientX, event.clientY], eventType[0]); // eventType[0] === 'click'
         }
     }
 
@@ -191,9 +204,12 @@
             moveClock = now;
         }
         var features = getPupilFeatures(videoElementCanvas, gazer.params.imgWidth, gazer.params.imgHeight);
+        if (regs.length == 0) {
+            console.log('regression not set, call setRegression()');
+            return null;
+        }
         for (var reg in regs) {
-            //TODO setup enum for event types
-            regs[reg].addData(features, [event.clientX, event.clientY], 'move');
+            regs[reg].addData(features, [event.clientX, event.clientY], eventType[1]); //eventType[1] === 'move'
         }
     }
 
@@ -203,6 +219,7 @@
     function loadGlobalData() {
         var storage = JSON.parse(window.localStorage.getItem(localstorageLabel)) || defaults;
         settings = storage.settings;
+        data = storage.data;
         for (var reg in regs) {
             regs[reg].setData(storage.data);
         }
@@ -212,10 +229,9 @@
     * constructs the global storage object and adds it to localstorage
     */
     function setGlobalData() {
-        //TODO set localstorage to combined dataset
         var storage = {
             'settings': settings,
-            'data': regs[0].getData()
+            'data': regs[0].getData() || data
         };
         window.localStorage.setItem(localstorageLabel, JSON.stringify(storage));
         //TODO data should probably be stored in webgazer object instead of each regression model
@@ -398,7 +414,14 @@
      * @return {gazer} this
      */
     gazer.setTracker = function(name) {
-        //TODO validate name
+        if (trackermap[name] == undefined) {
+            console.log('Invalid tracker selection');
+            console.log('Options are: ');
+            for (var tracker in trackerMap) {
+                console.log(tracker);
+            }
+            return gazer;
+        }
         tracker = trackerMap[name]();    
         return gazer;
     }
@@ -409,9 +432,15 @@
      * @return {gazer} this
      */
     gazer.setRegression = function(name) {
-        //TODO validate name
-        //TODO make robust to adding regression after calling begin
-        var data = regs[0].getData();
+        if (regressionMap[name] == undefined) {
+            console.log('Invalid regression selection');
+            console.log('Options are: ');
+            for (var reg in regMap) {
+                console.log(reg);
+            }
+            return gazer;
+        }
+        data = regs[0].getData();
         regs = [regressionMap[name]()];
         regs[0].setData(data);
         return gazer;
@@ -424,7 +453,7 @@
      */
     gazer.addRegression = function(name) {
         var newReg = regressionMap[name]();
-        var data = regs[0].getData();
+        data = regs[0].getData();
         newReg.setData(data);
         regs.push(newReg);
         return gazer;
@@ -438,7 +467,6 @@
      * @return {gazer} this
      */
     gazer.setGazeListener = function(listener) {
-        //TODO validate listener
         callback = listener;
         return gazer;
     }
@@ -458,7 +486,6 @@
      * @return {tracker} an object following the tracker interface
      */
     gazer.getTracker = function() {
-        //TODO decide if this should return the tracker object or just the string, tracker.name
         return tracker;
     }
     
@@ -467,7 +494,6 @@
      * @return {regression} an object following the regression interface
      */
     gazer.getRegression = function() {
-        //TODO decide if this should return the regression object or just the string, reg.name
         return reg;
     }
 
@@ -477,5 +503,13 @@
      */
     gazer.getCurrentPrediction = function() {
         return getPrediction(); 
+    }
+
+    /**
+     * returns the different event types that may be passed to regressions when calling regression.addData()
+     * @return {array} array of strings where each string is an event type
+     */
+    gazer.getEventTypes = function() { 
+        return eventTypes.slice(); 
     }
 }(window));
