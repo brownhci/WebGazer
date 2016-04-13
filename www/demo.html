@@ -5,14 +5,14 @@
         <TITLE>Simple Demonstration of how WebGazer.js works</TITLE>
     </HEAD>
     <BODY LANG="en-US" LINK="#0000ff" DIR="LTR">
-        <script src="../build/gazer.js"></script>
+        <script src="../build/webgazer.js"></script>
         <script>
 window.onload = function() {
-    gazer.setRegression('interaction') /* currently must set regression and tracker */
+    webgazer.setRegression('interaction') /* currently must set regression and tracker */
         .setTracker('clmtrackr')
         .setGazeListener(function(data, clock) {
          //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
-         //   console.log(clock); /* elapsed time in milliseconds since gazer.begin() was called */
+         //   console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
         })
         .begin()
         .showPredictionPoints(true); /* shows a square every 100 milliseconds where current prediction is */
@@ -43,7 +43,8 @@ window.onload = function() {
 
         document.body.appendChild(overlay);
 
-        var cl = gazer.getTracker().clm;
+
+        var cl = webgazer.getTracker().clm;
 
         function drawLoop() {
             requestAnimFrame(drawLoop);
@@ -56,7 +57,7 @@ window.onload = function() {
     };
 
     function checkIfReady() {
-        if (gazer.isReady()) {
+        if (webgazer.isReady()) {
             setup();
         } else {
             setTimeout(checkIfReady, 100);
@@ -66,7 +67,7 @@ window.onload = function() {
 };
 
 window.onbeforeunload = function() {
-    //gazer.end()
+    //webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
 }
         </script>
 
