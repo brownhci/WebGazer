@@ -1,4 +1,4 @@
-# Webgazer.js
+# WebGazer.js
 
 WebGazer.js is an open-source, client-side JavaScript library that performs real-time gaze tracking on the browser. WebGazer.js uses HTML5 to access the webcam of the user and upon their consent uses a series of computational models to predict where the user is looking at any given time. All computations are performed locally and are not transmitted outside the user's computer.
 
@@ -9,9 +9,13 @@ WebGazer.js is an open-source, client-side JavaScript library that performs real
 
 ## How to install
 
-Good question
 
-## Example/Video/Demo
+
+## Example
+
+## Video
+
+## Demo
 
 <!--WebGazer.js can integrated in any website that wishes to use gaze tracking either to better understand users-->
 
@@ -69,7 +73,23 @@ The following browsers support WebGazer.js:
 
 Your browser needs to support the getUserMedia API as seen [here](http://caniuse.com/#feat=stream).
 
+## Citation
+
+	@inproceedings{papoutsaki2016webgazer,
+	author     = {Alexandra Papoutsaki and Patsorn Sangkloy and James Laskey and Nediyana Daskalova and Jeff Huang and James Hays},
+	title      = {{WebGazer}: Scalable Webcam Eye Tracking Using User Interactions},
+    booktitle  = {Proceedings of the 25th International Joint Conference on Artificial Intelligence (IJCAI)},
+	year       = {2016},
+	}
+
+
+
+
 ## Who We Are
+
+* Alexandra Papoutsaki
+* James Laskey
+* Jeff Huang
 
 ## License
 
