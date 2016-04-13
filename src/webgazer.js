@@ -65,8 +65,9 @@
         'js_objectdetect': function() { return new webgazer.tracker.Js_objectdetectGaze(); }
     };
     var regressionMap = {
-        'interaction': function() { return new webgazer.reg.RidgeReg(); },
-        'weightedRidge': function() { return new webgazer.reg.RidgeWeightedReg(); }
+        'ridge': function() { return new webgazer.reg.RidgeReg(); },
+        'weightedRidge': function() { return new webgazer.reg.RidgeWeightedReg(); },
+        'threadedRidge': function() { return new webgazer.reg.RidgeRegThreaded(); }
     };
 
     //localstorage name
