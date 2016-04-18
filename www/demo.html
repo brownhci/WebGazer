@@ -8,7 +8,7 @@
         <script src="../build/webgazer.js"></script>
         <script>
 window.onload = function() {
-    webgazer.setRegression('interaction') /* currently must set regression and tracker */
+    webgazer.setRegression('ridge') /* currently must set regression and tracker */
         .setTracker('clmtrackr')
         .setGazeListener(function(data, clock) {
          //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
@@ -43,7 +43,6 @@ window.onload = function() {
 
         document.body.appendChild(overlay);
 
-
         var cl = webgazer.getTracker().clm;
 
         function drawLoop() {
@@ -65,6 +64,7 @@ window.onload = function() {
     }
     setTimeout(checkIfReady,100);
 };
+
 
 window.onbeforeunload = function() {
     //webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
