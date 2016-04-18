@@ -10435,6 +10435,29 @@ if (typeof exports !== 'undefined') {
     }
 
     /**
+     * adds a new tracker module so that it can be used by setTracker()
+     * @param {string} name - the new name of the tracker
+     * @param {function} constructor - the constructor of the tracker object
+     * @return {webgazer} this
+     */
+    webgazer.addTrackerModule = function(name, constructor) {
+        trackerMap[name] = { function() {
+            contructor();
+        });
+    }
+
+    /**
+     * adds a new regression module so that it can be used by setRegression() and addRegression()
+     * @param {string} name - the new name of the tracker
+     * @param {function} constructor - the constructor of the tracker object
+     * @param {webgazer} this
+     */
+    webgazer.addRegressionModule = function(name, constructor) {
+        regressionMap[name] = { function() {
+            contructor();
+        });
+    }
+    /**
      * adds a new regression module to the list of regression modules, seeding its data from the first regression module
      * @param {string} name - the string name of the regression module to add
      * @return {webgazer} this
