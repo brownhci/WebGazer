@@ -10441,9 +10441,9 @@ if (typeof exports !== 'undefined') {
      * @return {webgazer} this
      */
     webgazer.addTrackerModule = function(name, constructor) {
-        trackerMap[name] = { function() {
+        trackerMap[name] = function() {
             contructor();
-        });
+        };
     }
 
     /**
@@ -10453,9 +10453,9 @@ if (typeof exports !== 'undefined') {
      * @param {webgazer} this
      */
     webgazer.addRegressionModule = function(name, constructor) {
-        regressionMap[name] = { function() {
+        regressionMap[name] = function() {
             contructor();
-        });
+        };
     }
     /**
      * adds a new regression module to the list of regression modules, seeding its data from the first regression module
