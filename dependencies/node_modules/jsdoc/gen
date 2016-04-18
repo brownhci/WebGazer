@@ -1,0 +1,19 @@
+#!/bin/sh
+
+#SOURCE_FILES="jsdoc.js package.json lib/jsdoc/*"
+#SOURCE_FILES="lib/jsdoc/opts/args.js lib/jsdoc/src/parser.js"
+#SOURCE_FILES="lib/jsdoc/name.js"
+#SOURCE_FILES="lib/jsdoc/doclet.js"
+SOURCE_FILES="tmp/blah.js"
+
+#PROFILING_FLAGS="--prof --track_gc_object_stats --trace_gc_verbose --log_timer_events"
+PROFILING_FLAGS=""
+
+#RANDOM_OPTIONS="-q basepath=/cast/docs/reference/receiver&productName=Receiver"
+RANDOM_OPTIONS="-u tmp"
+
+#TEMPLATE=templates/default
+#TEMPLATE=$HOME/github/hegemonic/jsdoc-baseline/master/_custom
+TEMPLATE=$HOME/github/hegemonic/jsdoc-baseline/master
+
+/usr/bin/env node ${PROFILING_FLAGS} ./jsdoc.js ${SOURCE_FILES} -r -c gen.json -t ${TEMPLATE} ${RANDOM_OPTIONS}

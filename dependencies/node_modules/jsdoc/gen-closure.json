@@ -1,0 +1,20 @@
+{
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["closure"]
+    },
+    "source": {
+        "includePattern": ".+\\.js(doc)?$",
+        "excludePattern": "^(?:.+)_test\\.js$"
+    },
+    "plugins": ["plugins/summarize"],
+    "templates": {
+        "baseline": "baseline.json",
+        "cleverLinks": false,
+        "docletFormat": "array",
+        "monospaceLinks": false,
+        "default": {
+            "outputSourceFiles": true
+        }
+    }
+}

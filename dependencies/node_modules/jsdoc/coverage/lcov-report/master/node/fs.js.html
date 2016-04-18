@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for master/node/fs.js</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../../prettify.css">
+    <link rel="stylesheet" href="../../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header low">
+    <h1>Code coverage report for <span class="entity">master/node/fs.js</span></h1>
+    <h2>
+        Statements: <span class="metric">25% <small>(9 / 36)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">0% <small>(0 / 6)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">25% <small>(1 / 4)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">25% <small>(9 / 36)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../../index.html">All files</a> &#187; <a href="index.html">master/node/</a> &#187; fs.js</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">82</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use strict';
+&nbsp;
+var fs = require('fs');
+var path = require('path');
+var stream = require('stream');
+var wrench = require('wrench');
+&nbsp;
+var toDir = exports.toDir = <span class="fstat-no" title="function not covered" >function(_path) {</span>
+<span class="cstat-no" title="statement not covered" >    var isDirectory;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    _path = path.normalize(_path);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >        isDirectory = fs.statSync(_path).isDirectory();</span>
+    }
+    catch(e) {
+<span class="cstat-no" title="statement not covered" >        isDirectory = false;</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (isDirectory) {</span>
+<span class="cstat-no" title="statement not covered" >       return _path;</span>
+    } else {
+<span class="cstat-no" title="statement not covered" >        return path.dirname(_path);</span>
+    }
+};
+&nbsp;
+exports.mkPath = <span class="fstat-no" title="function not covered" >function(/**Array*/ _path) {</span>
+<span class="cstat-no" title="statement not covered" >    if ( Array.isArray(_path) ) {</span>
+<span class="cstat-no" title="statement not covered" >        _path = _path.join('');</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    wrench.mkdirSyncRecursive(_path);</span>
+};
+&nbsp;
+// adapted from http://procbits.com/2011/11/15/synchronous-file-copy-in-node-js
+exports.copyFileSync = <span class="fstat-no" title="function not covered" >function(inFile, outDir, fileName) {</span>
+<span class="cstat-no" title="statement not covered" >    var BUF_LENGTH = 64 * 1024;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    var read;</span>
+<span class="cstat-no" title="statement not covered" >    var write;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    var buffer = new Buffer(BUF_LENGTH);</span>
+<span class="cstat-no" title="statement not covered" >    var bytesRead = 1;</span>
+<span class="cstat-no" title="statement not covered" >    var outFile = path.join( outDir, fileName || path.basename(inFile) );</span>
+<span class="cstat-no" title="statement not covered" >    var pos = 0;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    wrench.mkdirSyncRecursive(outDir);</span>
+<span class="cstat-no" title="statement not covered" >    read = fs.openSync(inFile, 'r');</span>
+<span class="cstat-no" title="statement not covered" >    write = fs.openSync(outFile, 'w');</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    while (bytesRead &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >        bytesRead = fs.readSync(read, buffer, 0, BUF_LENGTH, pos);</span>
+<span class="cstat-no" title="statement not covered" >        fs.writeSync(write, buffer, 0, bytesRead);</span>
+<span class="cstat-no" title="statement not covered" >        pos += bytesRead;</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    fs.closeSync(read);</span>
+<span class="cstat-no" title="statement not covered" >    return fs.closeSync(write);</span>
+};
+&nbsp;
+Object.keys(fs).forEach(function(key) {
+    exports[key] = fs[key];
+});
+&nbsp;</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Jul 29 2015 16:27:33 GMT-0700 (PDT)</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

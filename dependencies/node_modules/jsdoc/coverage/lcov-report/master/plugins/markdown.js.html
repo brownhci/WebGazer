@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for master/plugins/markdown.js</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../../prettify.css">
+    <link rel="stylesheet" href="../../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header high">
+    <h1>Code coverage report for <span class="entity">master/plugins/markdown.js</span></h1>
+    <h2>
+        Statements: <span class="metric">94.29% <small>(33 / 35)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">84% <small>(21 / 25)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(6 / 6)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">94.29% <small>(33 / 35)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../../index.html">All files</a> &#187; <a href="index.html">master/plugins/</a> &#187; markdown.js</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">16</span>
+<span class="cline-any cline-yes">128</span>
+<span class="cline-any cline-yes">104</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24</span>
+<span class="cline-any cline-yes">9</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * @overview Translate doclet descriptions from MarkDown into HTML.
+ * @module plugins/markdown
+ * @author Michael Mathews &lt;micmath@gmail.com&gt;
+ * @author Ben Blank &lt;ben.blank@gmail.com&gt;
+ */
+'use strict';
+&nbsp;
+var env = require('jsdoc/env');
+&nbsp;
+var config = env.conf.markdown || {};
+var defaultTags = [
+    'author',
+    'classdesc',
+    'description',
+    'exceptions',
+    'params',
+    'properties',
+    'returns',
+    'see'
+];
+var hasOwnProp = Object.prototype.hasOwnProperty;
+var parse = require('jsdoc/util/markdown').getParser();
+var tags = [];
+var excludeTags = [];
+&nbsp;
+function shouldProcessString(tagName, text) {
+    var shouldProcess = true;
+&nbsp;
+    // we only want to process `@author` and `@see` tags that contain Markdown links
+    if ( (tagName === 'author' || tagName === 'see') &amp;&amp; text.indexOf('[') === -1 ) {
+        shouldProcess = false;
+    }
+&nbsp;
+    return shouldProcess;
+}
+&nbsp;
+/**
+ * Process the markdown source in a doclet. The properties that should be
+ * processed are configurable, but always include "classdesc", "description",
+ * "params", "properties", and "returns".  Handled properties can be bare
+ * strings, objects, or arrays of objects.
+ */
+function process(doclet) {
+    tags.forEach(function(tag) {
+        if ( !hasOwnProp.call(doclet, tag) ) {
+            return;
+        }
+&nbsp;
+        if (typeof doclet[tag] === 'string' &amp;&amp; shouldProcessString(tag, doclet[tag]) ) {
+            doclet[tag] = parse(doclet[tag]);
+        }
+        else if ( Array.isArray(doclet[tag]) ) {
+            doclet[tag].forEach(function(value, index, original) {
+                var inner = {};
+                inner[tag] = value;
+                process(inner);
+                original[index] = inner[tag];
+            });
+        }
+        else <span class="missing-if-branch" title="else path not taken" >E</span>if (doclet[tag]) {
+            process(doclet[tag]);
+        }
+    });
+}
+&nbsp;
+// set up the list of "tags" (properties) to process
+<span class="missing-if-branch" title="if path not taken" >I</span>if (config.tags) {
+<span class="cstat-no" title="statement not covered" >    tags = config.tags.slice();</span>
+}
+// set up the list of default tags to exclude from processing
+<span class="missing-if-branch" title="if path not taken" >I</span>if (config.excludeTags) {
+<span class="cstat-no" title="statement not covered" >    excludeTags = config.excludeTags.slice();</span>
+}
+defaultTags.forEach(function(tag) {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (excludeTags.indexOf(tag) === -1 &amp;&amp; tags.indexOf(tag) === -1) {
+        tags.push(tag);
+    }
+});
+&nbsp;
+exports.handlers = {
+    /**
+     * Translate markdown syntax in a new doclet's description into HTML. Is run
+     * by JSDoc 3 whenever a "newDoclet" event fires.
+     */
+    newDoclet: function(e) {
+        process(e.doclet);
+    }
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Jul 29 2015 16:27:33 GMT-0700 (PDT)</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

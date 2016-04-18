@@ -1,0 +1,1425 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for master/lib/jsdoc/src/astbuilder.js</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../../../../prettify.css">
+    <link rel="stylesheet" href="../../../../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header high">
+    <h1>Code coverage report for <span class="entity">master/lib/jsdoc/src/astbuilder.js</span></h1>
+    <h2>
+        Statements: <span class="metric">99.42% <small>(171 / 172)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">89.04% <small>(65 / 73)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(27 / 27)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">99.42% <small>(171 / 172)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../../../../index.html">All files</a> &#187; <a href="index.html">master/lib/jsdoc/src/</a> &#187; astbuilder.js</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">16</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">967</span>
+<span class="cline-any cline-yes">967</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">967</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">602</span>
+<span class="cline-any cline-yes">576</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26</span>
+<span class="cline-any cline-yes">26</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">967</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">13745</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">10385</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">767</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">685</span>
+<span class="cline-any cline-yes">685</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-yes">767</span>
+<span class="cline-any cline-yes">767</span>
+<span class="cline-any cline-yes">685</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">207</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">207</span>
+<span class="cline-any cline-yes">207</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">207</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">207</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">207</span>
+<span class="cline-any cline-yes">205</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">207</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">13745</span>
+<span class="cline-any cline-yes">13745</span>
+<span class="cline-any cline-yes">13745</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13745</span>
+<span class="cline-any cline-yes">3360</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10385</span>
+<span class="cline-any cline-yes">865</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9520</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9520</span>
+<span class="cline-any cline-yes">9520</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13745</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">867</span>
+<span class="cline-any cline-yes">867</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">867</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">867</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">867</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">9563</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">9386</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9386</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9386</span>
+<span class="cline-any cline-yes">20057</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20057</span>
+<span class="cline-any cline-yes">9086</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10971</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9386</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-yes">42</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">641</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4894</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4894</span>
+<span class="cline-any cline-yes">4228</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">666</span>
+<span class="cline-any cline-yes">600</span>
+<span class="cline-any cline-yes">600</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-yes">41</span>
+<span class="cline-any cline-yes">41</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">666</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">666</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">666</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-yes">4681</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-yes">967</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4870</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4870</span>
+<span class="cline-any cline-yes">177</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">600</span>
+<span class="cline-any cline-yes">600</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">600</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">600</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4693</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-yes">24</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">205</span>
+<span class="cline-any cline-yes">205</span>
+<span class="cline-any cline-yes">205</span>
+<span class="cline-any cline-yes">205</span>
+<span class="cline-any cline-yes">205</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">205</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4870</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">201</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use strict';
+&nbsp;
+var espree = require('espree');
+var jsdoc = {
+    src: {
+        syntax: require('jsdoc/src/syntax'),
+        Walker: require('jsdoc/src/walker').Walker
+    },
+    util: {
+        logger: require('jsdoc/util/logger')
+    }
+};
+var Syntax = jsdoc.src.syntax.Syntax;
+&nbsp;
+// TODO: should set e.stopPropagation == true for consistency with Rhino, right?
+var VISITOR_CONTINUE = true;
+var VISITOR_STOP = false;
+&nbsp;
+// TODO: docs; empty array means any node type, otherwise only the node types in the array
+var acceptsLeadingComments = (function() {
+    var accepts = {};
+&nbsp;
+    // these nodes always accept leading comments
+    var commentable = [
+        Syntax.AssignmentExpression,
+        Syntax.CallExpression,
+        Syntax.ClassDeclaration,
+        Syntax.ExportAllDeclaration,
+        Syntax.ExportDefaultDeclaration,
+        Syntax.ExportNamedDeclaration,
+        Syntax.ExportSpecifier,
+        Syntax.FunctionDeclaration,
+        Syntax.FunctionExpression,
+        Syntax.MemberExpression,
+        Syntax.MethodDefinition,
+        Syntax.Property,
+        Syntax.TryStatement,
+        Syntax.VariableDeclaration,
+        Syntax.VariableDeclarator,
+        Syntax.WithStatement
+    ];
+    for (var i = 0, l = commentable.length; i &lt; l; i++) {
+        accepts[commentable[i]] = [];
+    }
+&nbsp;
+    // these nodes accept leading comments if they have specific types of parent nodes
+    // like: function foo(/** @type {string} */ bar) {}
+    accepts[Syntax.Identifier] = [
+        Syntax.CatchClause,
+        Syntax.FunctionDeclaration,
+        Syntax.FunctionExpression
+    ];
+    // like: function foo(/** @type {string} */ bar='baz') {}
+    accepts[Syntax.AssignmentPattern] = [
+        Syntax.FunctionDeclaration,
+        Syntax.FunctionExpression
+    ];
+    // like: function foo(/** @type {string} */ ...bar) {}
+    accepts[Syntax.RestElement] = [
+        Syntax.FunctionDeclaration,
+        Syntax.FunctionExpression
+    ];
+    // like: var Foo = Class.create(/** @lends Foo */{ // ... })
+    accepts[Syntax.ObjectExpression] = [
+        Syntax.CallExpression,
+        Syntax.Property,
+        Syntax.ReturnStatement
+    ];
+&nbsp;
+    return accepts;
+})();
+// exported so we can use them in tests
+var parserOptions = exports.parserOptions = {
+    comment: true,
+    loc: true,
+    range: true,
+    tokens: true,
+    ecmaFeatures: {
+        arrowFunctions: true,
+        binaryLiterals: true,
+        blockBindings: true,
+        classes: true,
+        defaultParams: true,
+        destructuring: true,
+        experimentalObjectRestSpread: true,
+        forOf: true,
+        generators: true,
+        globalReturn: true,
+        jsx: false,
+        modules: true,
+        newTarget: true,
+        objectLiteralComputedProperties: true,
+        objectLiteralDuplicateProperties: true,
+        objectLiteralShorthandMethods: true,
+        objectLiteralShorthandProperties: true,
+        octalLiterals: true,
+        regexUFlag: true,
+        regexYFlag: true,
+        restParams: true,
+        spread: true,
+        superInFunctions: true,
+        templateStrings: true,
+        unicodeCodePointEscapes: true
+    }
+};
+&nbsp;
+// TODO: docs
+function canAcceptComment(node) {
+    var canAccept = false;
+    var spec = acceptsLeadingComments[node.type];
+&nbsp;
+    if (spec) {
+        // empty array means we don't care about the parent type
+        if (spec.length === 0) {
+            canAccept = true;
+        }
+        // we can accept the comment if the spec contains the type of the node's parent
+        else <span class="missing-if-branch" title="else path not taken" >E</span>if (node.parent) {
+            canAccept = spec.indexOf(node.parent.type) !== -1;
+        }
+    }
+&nbsp;
+    return canAccept;
+}
+&nbsp;
+// TODO: docs
+// check whether node1 is before node2
+function isBefore(beforeRange, afterRange) {
+    return beforeRange[1] &lt;= afterRange[0];
+}
+&nbsp;
+// TODO: docs
+function isWithin(innerRange, outerRange) {
+    return innerRange[0] &gt;= outerRange[0] &amp;&amp; innerRange[1] &lt;= outerRange[1];
+}
+&nbsp;
+// TODO: docs
+function isJsdocComment(comment) {
+    return comment &amp;&amp; (comment.type === 'Block') &amp;&amp; (comment.value[0] === '*');
+}
+&nbsp;
+/**
+ * Add the raw comment string to a block comment node.
+ *
+ * @private
+ * @param {!Object} comment - A comment node with `type` and `value` properties.
+ */
+function addRawComment(comment) {
+    comment.raw = comment.raw || ('/*' + comment.value + '*/');
+    return comment;
+}
+&nbsp;
+// TODO: docs
+function scrubComments(comments) {
+    var comment;
+&nbsp;
+    var scrubbed = [];
+&nbsp;
+    for (var i = 0, l = comments.length; i &lt; l; i++) {
+        comment = comments[i];
+        if ( isJsdocComment(comment) ) {
+            scrubbed.push( addRawComment(comment) );
+        }
+    }
+&nbsp;
+    return scrubbed;
+}
+&nbsp;
+// TODO: docs
+var AstBuilder = exports.AstBuilder = function() {};
+&nbsp;
+function parse(source, filename) {
+    var ast;
+&nbsp;
+    try {
+        ast = espree.parse(source, parserOptions);
+    }
+    catch (e) {
+        jsdoc.util.logger.error('Unable to parse %s: %s', filename, e.message);
+    }
+&nbsp;
+    return ast;
+}
+&nbsp;
+// TODO: docs
+AstBuilder.prototype.build = function(source, filename) {
+    var ast = parse(source, filename);
+&nbsp;
+    if (ast) {
+        this._postProcess(filename, ast);
+    }
+&nbsp;
+    return ast;
+};
+&nbsp;
+// TODO: docs
+function atomSorter(a, b) {
+    var aRange = a.range;
+    var bRange = b.range;
+    var result = 0;
+&nbsp;
+    // does a end before b starts?
+    if ( isBefore(aRange, bRange) ) {
+        result = -1;
+    }
+    // does a enclose b?
+    else if ( isWithin(bRange, aRange) ) {
+        result = -1;
+    }
+    // does a start before b?
+    else <span class="missing-if-branch" title="if path not taken" >I</span>if (aRange[0] &lt; bRange[0]) {
+<span class="cstat-no" title="statement not covered" >        result = -1;</span>
+    }
+    // are the ranges non-identical? if so, b must be first
+    else <span class="missing-if-branch" title="else path not taken" >E</span>if ( aRange[0] !== bRange[0] || <span class="branch-1 cbranch-no" title="branch not covered" >aRange[1] !== bRange[1] </span>) {
+        result = 1;
+    }
+&nbsp;
+    return result;
+}
+&nbsp;
+// TODO: docs
+// TODO: export?
+function CommentAttacher(comments, tokens) {
+    this._comments = comments || <span class="branch-1 cbranch-no" title="branch not covered" >[];</span>
+    this._tokens = tokens || <span class="branch-1 cbranch-no" title="branch not covered" >[];</span>
+&nbsp;
+    this._tokenIndex = 0;
+    this._previousNode = null;
+    this._astRoot = null;
+&nbsp;
+    this._resetPendingComments()
+        ._resetCandidates();
+}
+&nbsp;
+// TODO: docs
+CommentAttacher.prototype._resetPendingComments = function() {
+    this._pendingComments = [];
+    this._pendingCommentRange = null;
+&nbsp;
+    return this;
+};
+&nbsp;
+// TODO: docs
+CommentAttacher.prototype._resetCandidates = function() {
+    this._candidates = [];
+&nbsp;
+    return this;
+};
+&nbsp;
+// TODO: docs
+CommentAttacher.prototype._nextComment = function() {
+    return this._comments[0] || null;
+};
+&nbsp;
+// TODO: docs
+CommentAttacher.prototype._nextToken = function() {
+    return this._tokens[this._tokenIndex] || null;
+};
+&nbsp;
+// TODO: docs
+// find the index of the atom whose end position is closest to (but not after) the specified
+// position
+CommentAttacher.prototype._nextIndexBefore = function(atoms, startIndex, position) {
+    var atom;
+&nbsp;
+    var newIndex = startIndex;
+&nbsp;
+    for (var i = newIndex, l = atoms.length; i &lt; l; i++) {
+        atom = atoms[i];
+&nbsp;
+        if (atom.range[1] &gt; position) {
+            break;
+        }
+        else {
+            newIndex = i;
+        }
+    }
+&nbsp;
+    return newIndex;
+};
+&nbsp;
+// TODO: docs
+CommentAttacher.prototype._advanceTokenIndex = function(node) {
+    var position = node.range[0];
+&nbsp;
+    this._tokenIndex = this._nextIndexBefore(this._tokens, this._tokenIndex, position);
+&nbsp;
+    return this;
+};
+&nbsp;
+// TODO: docs
+CommentAttacher.prototype._fastForwardComments = function(node) {
+    var position = node.range[0];
+    var commentIndex = this._nextIndexBefore(this._comments, 0, position);
+&nbsp;
+    // all comments before the node (except the last one) are pended
+    if (commentIndex &gt; 0) {
+        this._pendingComments = this._pendingComments.concat( this._comments.splice(0,
+            commentIndex) );
+    }
+};
+&nbsp;
+CommentAttacher.prototype._attachPendingCommentsAsLeading = function(target) {
+    target.leadingComments = (target.leadingComments || []).concat(this._pendingComments);
+};
+&nbsp;
+CommentAttacher.prototype._attachPendingCommentsAsTrailing = function(target) {
+    target.trailingComments = (target.trailingComments || []).concat(this._pendingComments);
+};
+&nbsp;
+// TODO: docs
+CommentAttacher.prototype._attachPendingComments = function(currentNode) {
+    var target;
+&nbsp;
+    if (!this._pendingComments.length) {
+        return this;
+    }
+&nbsp;
+    // if there are one or more candidate nodes, attach the pending comments before the last
+    // candidate node
+    if (this._candidates.length &gt; 0) {
+        target = this._candidates[this._candidates.length - 1];
+        this._attachPendingCommentsAsLeading(target);
+    }
+    // if we don't have a previous node, attach pending comments before the AST root; this should
+    // mean that we haven't encountered any other nodes yet, or that the source file contains
+    // JSDoc comments but not code
+    else if (!this._previousNode) {
+        target = this._astRoot;
+        this._attachPendingCommentsAsLeading(target);
+    }
+    // otherwise, the comments must come after the current node (or the last node of the AST, if
+    // we've run out of nodes)
+    else {
+        this._attachPendingCommentsAsTrailing(currentNode || this._previousNode);
+    }
+&nbsp;
+    // update the previous node
+    this._previousNode = currentNode;
+&nbsp;
+    this._resetPendingComments()
+        ._resetCandidates();
+&nbsp;
+    return this;
+};
+&nbsp;
+// TODO: docs
+CommentAttacher.prototype._isEligible = function(node) {
+    var atoms;
+    var token;
+&nbsp;
+    var isEligible = false;
+&nbsp;
+    var comment = this._nextComment();
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (comment) {
+        atoms = [node, comment];
+        token = this._nextToken();
+        if (token) {
+            atoms.push(token);
+        }
+&nbsp;
+        atoms.sort(atomSorter);
+&nbsp;
+        // a candidate node must immediately follow the comment
+        if (atoms.indexOf(node) === atoms.indexOf(comment) + 1) {
+            isEligible = true;
+        }
+    }
+&nbsp;
+    return isEligible;
+};
+&nbsp;
+// TODO: docs
+// TODO: do we ever get multiple candidate nodes?
+CommentAttacher.prototype.visit = function(node) {
+    var isEligible;
+&nbsp;
+    // bail if we're out of comments
+    if ( !this._nextComment() ) {
+        return VISITOR_STOP;
+    }
+&nbsp;
+    // set the AST root if necessary
+    this._astRoot = this._astRoot || node;
+&nbsp;
+    // move to the next token, and fast-forward past comments that can no longer be attached
+    this._advanceTokenIndex(node);
+    this._fastForwardComments(node);
+    // now we can check whether the current node is in the right position to accept the next comment
+    isEligible = this._isEligible(node);
+&nbsp;
+    // attach the pending comments, if any
+    this._attachPendingComments(node);
+&nbsp;
+    // okay, now that we've done all that bookkeeping, we can check whether the current node accepts
+    // leading comments and add it to the candidate list if needed
+    if ( isEligible &amp;&amp; canAcceptComment(node) ) {
+        // make sure we don't go past the end of the outermost target node
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (!this._pendingCommentRange) {
+            this._pendingCommentRange = node.range.slice(0);
+        }
+        this._candidates.push(node);
+&nbsp;
+        // we have a candidate node, so pend the current comment
+        this._pendingComments.push(this._comments.splice(0, 1)[0]);
+    }
+&nbsp;
+    return VISITOR_CONTINUE;
+};
+&nbsp;
+// TODO: docs
+CommentAttacher.prototype.finish = function() {
+    var length = this._comments.length;
+&nbsp;
+    // any leftover comments are pended
+    if (length) {
+        this._pendingComments = this._pendingComments.concat( this._comments.splice(0, length) );
+    }
+&nbsp;
+    // attach the pending comments, if any
+    this._attachPendingComments();
+};
+&nbsp;
+// TODO: docs
+// TODO: refactor to make this extensible
+/**
+ * @private
+ * @param {string} filename - The full path to the source file.
+ * @param {Object} ast - An abstract syntax tree that conforms to the Mozilla Parser API.
+ */
+AstBuilder.prototype._postProcess = function(filename, ast) {
+    var attachComments = !!ast.comments &amp;&amp; !!ast.comments.length;
+    var commentAttacher;
+    var scrubbed;
+    var visitor;
+    var walker;
+&nbsp;
+    if (!attachComments) {
+        return;
+    }
+&nbsp;
+    scrubbed = scrubComments(ast.comments.slice(0));
+    commentAttacher = new CommentAttacher(scrubbed.slice(0), ast.tokens);
+    visitor = {
+        visit: function(node) {
+            return commentAttacher.visit(node);
+        }
+    };
+    walker = new jsdoc.src.Walker();
+&nbsp;
+    walker.recurse(ast, visitor, filename);
+&nbsp;
+    commentAttacher.finish();
+&nbsp;
+    // replace the comments with the filtered comments
+    ast.comments = scrubbed;
+    // we no longer need the tokens
+    ast.tokens = [];
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Jul 29 2015 16:27:33 GMT-0700 (PDT)</div>
+</div>
+<script src="../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../sorter.js"></script>
+</body>
+</html>

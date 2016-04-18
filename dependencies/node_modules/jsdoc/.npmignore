@@ -1,0 +1,7 @@
+# development-related files
+.eslintignore
+.eslintrc
+.gitignore
+.travis.yml
+gulpfile.js
+test/
