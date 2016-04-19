@@ -14,6 +14,10 @@
         <!-- Bootstrap core CSS -->
         <link href="css/bootstrap.min.css" rel="stylesheet">
 
+        <link rel="stylesheet" href="css/highlight/styles/default.css">
+        <script src="css/highlight/highlight.pack.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+
 <style type="text/css">
 body {
     position: relative;
@@ -22,8 +26,8 @@ body {
 }
 
 .pad {
-    padding-top: 70px;
-    margin-bottom: 40px;
+    padding-top: 20px;
+    margin-bottom: 20px;
 }
 
 .jumbotron p {
@@ -37,6 +41,7 @@ body {
             <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
     </head>
+
 
     <body data-spy="scroll" data-target="#navbar">
 
@@ -55,11 +60,11 @@ body {
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav nav-tabs" role="tablist">
                         <li class="active"><a href="#home">Home</a></li>
-                        <li><a href="#about">About</a></li>
+                        <li><a href="#video">About</a></li>
                         <li><a href="#download">Download</a></li>
                         <li><a href="https://github.com/brownhci/WebGazer/wiki">Documentation</a></li>
-                        <li><a href="#demos">Demos</a></li>
-                        <li><a href="#papers">Papers</a></li>
+                        <li><a href="#examples">Examples</a></li>
+                        <li><a href="#publication">Publication</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div><!--/.nav-collapse
@@ -67,7 +72,7 @@ body {
             </div>
         </nav>
 
-        <div id="home" class="container pad" style="padding-top: 20px">
+        <div id="home" class="container pad" style="padding-top: 0px">
             <a href="https://github.com/brownhci/WebGazer"><img style="position: absolute; top: 30; right: 0; border: 0;" src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub"
                data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
             <!-- Main
@@ -75,6 +80,19 @@ body {
             to action -->
             <div class="jumbotron">
                 <h1 class="text-center" style="margin-bottom:20px"> WebGazer.js </h1>
+                <h2 class="text-center" style="margin-bottom:0px"> Democratizing Webcam Eye Tracking on the Browser</h2>
+            </div>
+            <hr class="featurette-divider">
+            <div id="description" class="container pad">
+                <p class="text-center" style="text-align: justify; text-justify: inter-word;">
+                    WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. It is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their experience. 
+                </p>
+            </div>
+
+            <hr class="featurette-divider">
+
+            <div id="video" class="container pad">
+
                 <div class="row">
                     <div class="col-sm-8">
                         <div class="embed-responsive embed-responsive-16by9" align="center">
@@ -92,30 +110,40 @@ body {
                         </div>
                         <div>
                             <h3 class="text-center pad">Predictions From Only A Few Clicks</h3>
+                        </div>                        
+                        <div>
+                            <h3 class="text-center pad">Extensible</h3>
                         </div>
                     </div>
                 </div>
             </div>
 
         </div>
+        <hr class="featurette-divider">
+
 
         <div id="about" class="container pad">
             <div class="row">
-                <div class="col-lg-4">
+                <div class="col-lg-3">
                     <img class="img-circle center-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
                     <h2 class="text-center">Real Time Eye Tracking</h2>
                     <p class="center-block">WebGazer.js is an easy to use library which provides continuous gaze predictions as screen coordinates.</p>
-                </div><!-- /.col-lg-4 -->
-                <div class="col-lg-4">
+                </div><!-- /.col-lg-3 -->
+                <div class="col-lg-3">
                     <img class="img-circle center-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
                     <h2 class="text-center">No Special Hardware</h2>
                     <p class="center-block">Other eye tracking programs often require specialized or expensive hardware components. WebGazer.js taps into normal, commodity grade webcams like you would find on a laptop and runs in the web browser.</p>
-                </div><!-- /.col-lg-4 -->
-                <div class="col-lg-4">
+                </div><!-- /.col-lg-3 -->
+                <div class="col-lg-3">
                     <img class="img-circle center-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
                     <h2 class="text-center">Predictions From Only A Few Clicks</h2>
                     <p>Once a user has clicked the screen a few times, WebgGazer.js will start giving eye predictions.</p>
-                </div><!-- /.col-lg-4 -->
+                </div><!-- /.col-lg-3 -->                
+                <div class="col-lg-3">
+                    <img class="img-circle center-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
+                    <h2 class="text-center">Predictions From Only A Few Clicks</h2>
+                    <p>Once a user has clicked the screen a few times, WebgGazer.js will start giving eye predictions.</p>
+                </div><!-- /.col-lg-3 -->
             </div><!-- /.row -->
         </div>
 
@@ -126,35 +154,58 @@ body {
                 <div class="col-lg-6">
                     <h3 class="pad">Download</h3>
                     <form method="get" action="webgazer.js">
-                        <button type="submit">Download WebGazer.js</button>
+                        <button class="btn btn-primary btn-lg" type="submit"><span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span> Download WebGazer.js</button>
                     </form>
                 </div>
                 <div class="col-lg-6">
-                    <h3 class="pad">Creating from Source</h3>
-                    <p>Clone the repository and then cd into build, then run the build_library command.</p>
-                    <code>
-                        git clone https://github.com/brownhci/WebGazer.git <br>
-                        cd build  <br>
-                        ./build_library <br>
-                    </code>
+                    <h3 class="pad">Create from Source</h3>
+                    <pre><code class="bash">git clone https://github.com/brownhci/WebGazer.git
+cd build
+./build_library</code></pre>
                 </div>
             </div>
         </div>
 
-        <hr class="featurette-divider">
-        <div id="demos" class="container pad">
-            <h2 class="text-center">Demos</h2>
-            <h3 class="pad">Ball Collision</h3>
-            <p>Move the orange ball with your eyes and create collisions with the blue balls. Train WebGazer.js by clicking in various locations within the screen, while looking at your cursor.</p>
-            <a href="collision.html">Try Live.</a>
-        </div>
 
         <hr class="featurette-divider">
-        <div id="papers" class="container pad">
-            <h2 class="text-center">Papers</h2>
-            <h3 class="pad">Blah Blah</h4>
-            <p>asdf</p>
-            <a href="">Link to PDF</a>
+        <div id="examples" class="container pad">
+            <h2 class="text-center pad">Examples</h2>
+            <div class="row">              
+                <div class="col-lg-6">
+                    <img src="media/empty.png" alt="Empty Webpage Demo" width="300" height="250">
+                    <h4 class="pad">WebGazer.js on an Empty Webpage</h4>
+                    <p>See how easy it is to integrate WebGazer.js on any webpage. Just with a few clicks you will get real-time predictions. 
+                        <form method="get" action="webgazer.js">
+                        <button class="btn btn-primary" type="submit">Try Live!</button>
+                    </form>
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <img src="media/collision.png" alt="Collision demo" width="300" height="250">
+                    <h4 class="pad">Ball Collision Game</h4>
+                    <p>Move the orange ball with your eyes and create collisions with the blue balls. Train WebGazer.js by clicking in various locations within the screen, while looking at your cursor.                     
+                        <form method="get" action="webgazer.js">
+                        <button class="btn btn-primary" type="submit">Try Live!</button>
+                    </form>
+                    </p>
+                </div>  
+            </div>
+        </div>
+
+
+        <hr class="featurette-divider">
+        <div id="publication" class="container pad">
+            <h2 class="text-center">Publication</h2>
+            <p>If you use WebGazer.js please cite the following paper:</p>
+            <code>
+                @inproceedings{papoutsaki2016webgazer,<br>
+                author     = {Alexandra Papoutsaki and Patsorn Sangkloy and James Laskey and Nediyana Daskalova and Jeff Huang and James Hays},<br>
+                title      = {WebGazer: Scalable Webcam Eye Tracking Using User Interactions},<br>
+                booktitle  = {Proceedings of the 25th International Joint Conference on Artificial Intelligence (IJCAI)},<br>
+                pages      = {to appear}<br>
+                year       = {2016},<br>
+                }
+            </code>
         </div>
 
         <hr class="featurette-divider">
