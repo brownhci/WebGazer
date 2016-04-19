@@ -22,11 +22,15 @@
 body {
     position: relative;
     min-height: 2000px;
-    padding-top: 70px;
+    padding-top: 50px;
 }
 
+.padright {
+    padding-top: 0px;
+    margin-bottom: 22px;
+}
 .pad {
-    padding-top: 20px;
+    padding-top: 10px;
     margin-bottom: 20px;
 }
 
@@ -61,6 +65,8 @@ body {
                     <ul class="nav navbar-nav nav-tabs" role="tablist">
                         <li class="active"><a href="#home">Home</a></li>
                         <li><a href="#video">About</a></li>
+                        <li><a href="#usage">Usage</a></li>
+                        <li><a href="#support">Support</a></li>
                         <li><a href="#download">Download</a></li>
                         <li><a href="https://github.com/brownhci/WebGazer/wiki">Documentation</a></li>
                         <li><a href="#examples">Examples</a></li>
@@ -84,8 +90,8 @@ body {
             </div>
             <hr class="featurette-divider">
             <div id="description" class="container pad">
-                <p class="text-center" style="text-align: justify; text-justify: inter-word;">
-                    WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. It is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their experience. 
+                <p class="text-justify">
+                    WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js was built It is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. 
                 </p>
             </div>
 
@@ -103,16 +109,13 @@ body {
                     </div>
                     <div class="col-sm-4">
                         <div>
-                            <h3 class="text-center pad">Real Time Eye Tracking</h3>
-                        </div>
-                        <div>
-                            <h3 class="text-center pad">No Special Hardware</h3>
-                        </div>
-                        <div>
-                            <h3 class="text-center pad">Predictions From Only A Few Clicks</h3>
-                        </div>                        
-                        <div>
-                            <h3 class="text-center pad">Extensible</h3>
+                            <h4 class="text-left padright">Real time gaze prediction on almost all major browser</h4>
+                            <h4 class="text-left padright">No need for special hardware - WebGazer.js uses common webcams</h4>
+                            <h4 class="text-left padright">Continuous self-calibration from clicks and cursor movements</h4>
+                            <h4 class="text-left padright">Easy to integrate - Only a few lines of JavaScript needed</h4>
+                            <h4 class="text-left padright">Swappable components for eye detection. Supports 3 libraries. Plug in yours.</h4>
+                            <h4 class="text-left padright">Multiple regression models that predict the gaze location</h4>
+                            <h4 class="text-left padright">No video transmitted - All operations done at the client side</h4>
                         </div>
                     </div>
                 </div>
@@ -121,31 +124,61 @@ body {
         </div>
         <hr class="featurette-divider">
 
+        <div id="usage" class="container pad">
+            <h2 class="text-center">Usage</h2>
+            <div class="row">
+                <div class="col-lg-12">
+                    To use WebGazer.js you need to add the webgazer.js as a script in your website:
+                    <pre><code class="html hljs"> &lt;script src="webgazer.js" type="text/js" &gt;</code></pre>
+                    <p>
+                        Once the script is included, the webgazer object is introduced into the global namespace. The object webgazer has methods for controlling the operation of WebGazer allowing us to start and stop it, add callbacks, or change out modules. The two most important methods on webgazer are webgazer.begin() and webgazer.setGazeListener(). webgazer.begin() starts the data collection that enables the predictions, so it's important to call this early on. Once webgazer.begin() has been called, webgazer is ready to start giving predictions. webgazer.setGazeListener() is a convenient way to access these predictions. This method invokes a callback you provide every few milliseconds to provide the current gaze location of a user. If this data stream is too much, you may alternatively call webgazer.getCurrentPrediction() which will give you a prediction at the moment when it is called.
+                    </p>
 
-        <div id="about" class="container pad">
+                    <pre><code class="javascript hljs">webgazer.setGazeListener(function(data, elapsedTime) {
+    var xprediction = data.x;
+    var yprediction = data.y;
+}).begin();
+</code></pre>
+                </div>
+            </div>
+        </div>
+
+
+        <hr class="featurette-divider">
+        <div id="support" class="container pad">
+            <h2 class="text-center">Support</h2>
+            <p class="text-left" pad>
+                WebGazer.js uses the <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia">getUserMedia/Stream API</a> to get access to the webcam. These browsers are currently supported, as seen <a href="http://caniuse.com/#feat=stream">here</a>.
+            </p>
+
             <div class="row">
                 <div class="col-lg-3">
-                    <img class="img-circle center-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
-                    <h2 class="text-center">Real Time Eye Tracking</h2>
-                    <p class="center-block">WebGazer.js is an easy to use library which provides continuous gaze predictions as screen coordinates.</p>
-                </div><!-- /.col-lg-3 -->
+                    <center>
+                        <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/chrome/chrome.png" alt="Google Chrome" width="100" height="100" >
+                    </center>
+                    <h4 class="text-center">Google Chrome 47+</h4>
+                </div>
                 <div class="col-lg-3">
-                    <img class="img-circle center-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
-                    <h2 class="text-center">No Special Hardware</h2>
-                    <p class="center-block">Other eye tracking programs often require specialized or expensive hardware components. WebGazer.js taps into normal, commodity grade webcams like you would find on a laptop and runs in the web browser.</p>
-                </div><!-- /.col-lg-3 -->
+                    <center>
+                        <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/edge/edge.png" alt="Microsoft Edge" width="100" height="100">
+                    </center>
+                    <h4 class="text-center">Microsoft Edge 13+</h4>
+                </div>
                 <div class="col-lg-3">
-                    <img class="img-circle center-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
-                    <h2 class="text-center">Predictions From Only A Few Clicks</h2>
-                    <p>Once a user has clicked the screen a few times, WebgGazer.js will start giving eye predictions.</p>
-                </div><!-- /.col-lg-3 -->                
+                    <center>
+                        <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/firefox/firefox.png" alt="Mozilla Firefox" width="100" height="100">
+                    </center>
+                    <h4 class="text-center">Mozilla Firefox 44+</h4>
+                </div>                
                 <div class="col-lg-3">
-                    <img class="img-circle center-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
-                    <h2 class="text-center">Predictions From Only A Few Clicks</h2>
-                    <p>Once a user has clicked the screen a few times, WebgGazer.js will start giving eye predictions.</p>
-                </div><!-- /.col-lg-3 -->
-            </div><!-- /.row -->
+                    <center>
+                        <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/opera/opera.png" alt="Opera" width="100" height="100">
+                    </center>
+                    <h4 class="text-center">Opera 36+</h4>
+                </div>
+            </div>
         </div>
+
 
         <hr class="featurette-divider">
         <div id="download" class="container pad">
@@ -174,7 +207,7 @@ cd build
                 <div class="col-lg-6">
                     <img src="media/empty.png" alt="Empty Webpage Demo" width="300" height="250">
                     <h4 class="pad">WebGazer.js on an Empty Webpage</h4>
-                    <p>See how easy it is to integrate WebGazer.js on any webpage. Just with a few clicks you will get real-time predictions. 
+                    <p>See how easy it is to integrate WebGazer.js on any webpage. Just with a few clicks you will get real-time predictions. The video and the visualized gaze prediction are only shown in debugging mode.
                         <form method="get" action="webgazer.js">
                         <button class="btn btn-primary" type="submit">Try Live!</button>
                     </form>
@@ -214,31 +247,37 @@ cd build
             <div class="row">
                 <!-- bootstrap has 12 columns, so each person gets part of that 12 cols -->
                 <div class="col-lg-4">
-                    <img class="img-circle center-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
+                    <img class="img-circle center-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="James Hays" width="140" height="140">
                     <h4>James Laskey</h4>
                     <p>Undergraduate at Brown University graduating in 2016. Excited to work for Google in the coming year!</p>
-                    <a href="demo.html">Linky to the demo</a>
                 </div>
                 <div class="col-lg-4">
-                    <img class="img-circle center-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
-                    <h4>James Laskey</h4>
-                    <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-                    <a href="demo.html">Linky to the demo</a>
+                    <img src="http://cs.brown.edu/media/filer_public_thumbnails/filer_public/8b/d8/8bd86f85-0f10-4712-8504-84cd58f4c07f/alexpap-hs.jpg__90x120_q85_subsampling-2.jpg" alt="Alexandra Papoutsaki" height="150">
+                    <h4><a href="http://cs.brown.edu/~alexpap">Alexandra Papoutsaki</a></h4>
+                    <p>PhD Candidate in Computer Science at Brown University.</p>
                 </div>
                 <div class="col-lg-4">
-                    <img class="img-circle center-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
-                    <h4>James Laskey</h4>
-                    <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-                    <a href="demo.html">Linky to the demo</a>
+                    <img src="http://cs.brown.edu/media/filer_public_thumbnails/filer_public/2014/10/08/jeff-hs.jpg__90x120_q85_subsampling-2.jpg" alt="Jeff Huang" height="150">
+                    <h4><a href="http://jeffhuang.com">Jeff Huang</a></h4>
+                    <p>Assistant Professor of Computer Science at Brown University.</p>
                 </div>
             </div>
             <div class="pad">
-                <h3>Additional Thanks to Other Collaborators</h3>
+                <h3>Other Collaborators</h3>
                 <ul style="margin-top: 20px">
-                    <li>Brown University</li>
+                    <li><a href="http://www.cc.gatech.edu/~psangklo/">Patsorn Sangkloy</a> - PhD student at Georgia Institute of Technology</li>
+                    <li><a href="http://cs.brown.edu/~nediyana">Nediyana Daskalova</a> - PhD student at Brown University</li>
+                    <li><a href="http://www.cc.gatech.edu/~hays/">James Hays</a> - Associate Professor at Georgia Institute of Technology</li>
                 </ul>
-            </div>
+            </div>            
         </div>
+        <hr class="featurette-divider">
+        <div id="license" class="container pad">
+            <h2 class="text-center">License</h2>
+            <p class="text-center">Copyright (C) 2016 <a href="hci.cs.brown.edu">Brown HCI Group</a><br>
+            Licensed under <a href="http://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3</a>.
+            </p>
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
     </body>
