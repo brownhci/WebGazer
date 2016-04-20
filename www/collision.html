@@ -173,6 +173,9 @@
       video.style.margin = '0px';
       video.style.zIndex="-1";
 
+      webgazer.params.imgWidth = width;
+      webgazer.params.imgHeight = height;
+
       var overlay = document.createElement('canvas');
       overlay.id = 'overlay';
       overlay.style.position = 'absolute';

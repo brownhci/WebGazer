@@ -32,6 +32,9 @@ window.onload = function() {
         video.height = height;
         video.style.margin = '0px';
 
+        webgazer.params.imgWidth = width;
+        webgazer.params.imgHeight = height;
+
         var overlay = document.createElement('canvas');
         overlay.id = 'overlay';
         overlay.style.position = 'absolute';
