@@ -91,7 +91,8 @@ body {
             <hr class="featurette-divider">
             <div id="description" class="container pad">
                 <p class="text-justify">
-                    WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js was built It is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. 
+                    WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js was built It is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand
+                    their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data or eye data needs to be sent to a server.
                 </p>
             </div>
 
@@ -136,11 +137,74 @@ body {
                     </p>
 
                     <pre><code class="javascript hljs">webgazer.setGazeListener(function(data, elapsedTime) {
-    var xprediction = data.x;
-    var yprediction = data.y;
+    if (data == null) {
+        return;
+    }
+    var xprediction = data.x; //these x coordinates are relative to the viewport 
+    var yprediction = data.y; //these y coordinates are relative to the viewport
+    console.log(elapsedTime); //elapsed time is based on time since begin was called
 }).begin();
-</code></pre>
+                    </code></pre>
+                    <p> Here is the alternate method of getting predictions where you can request a gaze prediction as needed. </p>
+                    <pre><code class="javascript hljs">
+                    var prediction = webgazer.getCurrentPrediction();
+                    if (prediction) {
+                        var x = prediction.x;
+                        var y = prediction.y;
+                    }
+                    </code></pre>
                 </div>
+            </div>
+            <h3>Advanced Usage</h3>
+            <p>There are several features that WebGazer.js enables beyond the example shown so far.<p>
+            <div class="row">
+                <h4 class="text-center">Saving Data Between Sessions</h4>
+                <p>WebGazer.js can save and restore the training data between browser sessions by saving data to localstorage. This occurs automatically when end() is called.</p>
+                <pre><code class="javascript hljs">webgazer.end()</code></pre>
+            </div>
+            <div>
+                <h4 class="text-center">Changing in Use Regression and Tracker Modules</h4>
+                <p>At the heart of WebGazer.js are the tracker and regression modules. The tracker module controls how eyes are detected and the regression module determines how the regression model is learned and how predictions are made based on the eye patches extracted from the tracker module. These modules can be swapped in and out at any time. We hope that this will make it easy to extend and adapt WebGazer.js</p>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <pre><code class="javascript hljs">webgazer.setRegression("ridge"); //set a regression module</code></pre>
+                        <pre><code class="javascript hljs">webgazer.addRegressionModule("newReg", NewRegConstructor); //add a new regression module</code></pre>
+                        <p>Here are all the regression modules that come by default with WebGazer.js</p>
+                        <ul>
+                            <li>ridge</li>
+                            <li>weightedRidge</li>
+                            <li>threadedRidge</li>
+                            <li>linear</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6">
+                        <pre><code class="javascript hljs">webgazer.setTracker("clmtrackr"); //set a tracker module</code></pre>
+                        <pre><code class="javascript hljs">webgazer.addTrackerModule("newTracker", NewTrackerConstructor); //add a new tracker module</code></pre>
+                        <p>Here are all the tracker modules that come by default with WebGazer.js</p>
+                        <ul>
+                            <li>clmtrackr</li>
+                            <li>trackingjs</li>
+                            <li>js_objectdetect</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <h4 class="text-center">Pause and Resume</h4>
+                <p>It may be necessary to pause the data collection and predictions of WebGazer.js for performance reasons.</p>
+                <pre><code class="javascript hljs">
+                webgazer.pause(); //WebGazer.js is now paused, no data will be collected and the gaze callback will not be executed
+                webgazer.resume(); //data collection resumes, gaze callback will be called again
+                </code></pre>
+            </div>
+            <div class="row">
+                <h4 class="text-center">Util and Params</h4>
+                <p>We provide some useful functions and objects in webgazer.util. The webgazer.params object also contains some useful parameters to tweak to control video fidelity (trades off speed and accuracy) and sample rate for mouse movements.</p>
+                <pre><code class="javascript hljs">
+                webgazer.util.bound(prediction);
+                prediction.x; //now always in the bounds of the viewport
+                prediction.y; //now always in the bounds of the viewport
+                </code></pre>
             </div>
         </div>
 
@@ -209,7 +273,7 @@ cd build
                     <img src="media/empty.png" alt="Empty Webpage Demo" width="300" height="250">
                     <h4 class="pad">WebGazer.js on an Empty Webpage</h4>
                     <p>See how easy it is to integrate WebGazer.js on any webpage. Just with a few clicks you will get real-time predictions. The video and the visualized gaze prediction are only shown in debugging mode.
-                        <form method="get" action="webgazer.js">
+                        <form method="get" action="demo.html">
                         <button class="btn btn-primary" type="submit">Try Live!</button>
                     </form>
                     </p>
@@ -218,7 +282,7 @@ cd build
                     <img src="media/collision.png" alt="Collision demo" width="300" height="250">
                     <h4 class="pad">Ball Collision Game</h4>
                     <p>Move the orange ball with your eyes and create collisions with the blue balls. Train WebGazer.js by clicking in various locations within the screen, while looking at your cursor.                     
-                        <form method="get" action="webgazer.js">
+                        <form method="get" action="collision.html">
                         <button class="btn btn-primary" type="submit">Try Live!</button>
                     </form>
                     </p>
@@ -247,15 +311,16 @@ cd build
             <h2 class="text-center pad">Who We Are</h2>
             <div class="row">
                 <!-- bootstrap has 12 columns, so each person gets part of that 12 cols -->
-                <div class="col-lg-4">
-                    <img class="img-circle center-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="James Hays" width="140" height="140">
-                    <h4>James Laskey</h4>
-                    <p>Undergraduate at Brown University graduating in 2016. Excited to work for Google in the coming year!</p>
-                </div>
+                
                 <div class="col-lg-4">
                     <img src="http://cs.brown.edu/media/filer_public_thumbnails/filer_public/8b/d8/8bd86f85-0f10-4712-8504-84cd58f4c07f/alexpap-hs.jpg__90x120_q85_subsampling-2.jpg" alt="Alexandra Papoutsaki" height="150">
                     <h4><a href="http://cs.brown.edu/~alexpap">Alexandra Papoutsaki</a></h4>
                     <p>PhD Candidate in Computer Science at Brown University.</p>
+                </div>
+                <div class="col-lg-4">
+                    <img class="img-circle center-block" src="jim.jpg" alt="James Laskey" width="140" height="140">
+                    <h4>James Laskey</h4>
+                    <p>Undergraduate at Brown University graduating in 2016.</p>
                 </div>
                 <div class="col-lg-4">
                     <img src="http://cs.brown.edu/media/filer_public_thumbnails/filer_public/2014/10/08/jeff-hs.jpg__90x120_q85_subsampling-2.jpg" alt="Jeff Huang" height="150">

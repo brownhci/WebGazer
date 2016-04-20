@@ -280,6 +280,9 @@
 
         //BEGIN CALLBACK LOOP
         paused = false;
+
+        clockStart = performance.now();
+
         loop();
     }
 
