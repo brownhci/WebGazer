@@ -163,27 +163,31 @@ body {
             </div>
             <div>
                 <h4 class="text-center">Changing in Use Regression and Tracker Modules</h4>
-                <p>At the heart of WebGazer.js are the tracker and regression modules. The tracker module controls how eyes are detected and the regression module determines how the regression model is learned and how predictions are made based on the eye patches extracted from the tracker module. These modules can be swapped in and out at any time. We hope that this will make it easy to extend and adapt WebGazer.js</p>
+                <p>At the heart of WebGazer.js are the tracker and regression modules. The tracker module controls how eyes are detected and the regression module determines how the regression model is learned and how predictions are made based on the eye patches extracted from the tracker module. These modules can be swapped in and out at any time. We hope that this will make it easy to extend and adapt WebGazer.js and welcome any developers that want to contribute.</p>
+
+                <p>WebGazer.js requires the bounding box that includes the pixels from the webcam video feed that correspond to the detected eyes of the user. Currently we include three external libraries that implement different Computer Vision algorithms to detect the face and eyes.</p>
                 <div class="row">
-                    <div class="col-lg-6">
-                        <pre><code class="javascript hljs">webgazer.setRegression("ridge"); //set a regression module</code></pre>
-                        <pre><code class="javascript hljs">webgazer.addRegressionModule("newReg", NewRegConstructor); //add a new regression module</code></pre>
-                        <p>Here are all the regression modules that come by default with WebGazer.js</p>
-                        <ul>
-                            <li>ridge</li>
-                            <li>weightedRidge</li>
-                            <li>threadedRidge</li>
-                            <li>linear</li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-12">
                         <pre><code class="javascript hljs">webgazer.setTracker("clmtrackr"); //set a tracker module</code></pre>
                         <pre><code class="javascript hljs">webgazer.addTrackerModule("newTracker", NewTrackerConstructor); //add a new tracker module</code></pre>
-                        <p>Here are all the tracker modules that come by default with WebGazer.js</p>
+                        <p>Here are all the external tracker modules that come by default with WebGazer.js. Let us know if you want to introduce your own facial feature detection library. </p>
                         <ul>
-                            <li>clmtrackr</li>
-                            <li>trackingjs</li>
-                            <li>js_objectdetect</li>
+                            <li><a href="https://github.com/auduno/clmtrackr">clmtrackr</a></li>
+                            <li><a href="https://github.com/mtschirs/js-objectdetect">js_objectdetect</a></li>
+                            <li><a href="https://trackingjs.com/">tracking.js</a></li>
+                        </ul>
+                    </div>
+                </div> 
+                <div class="row">
+                    <div class="col-lg-12">
+                        <pre><code class="javascript hljs">webgazer.setRegression("ridge"); //set a regression module</code></pre>
+                        <pre><code class="javascript hljs">webgazer.addRegressionModule("newReg", NewRegConstructor); //add a new regression module</code></pre>
+                        <p>Here are all the regression modules that come by default with WebGazer.js. Let us know if you would like introduce different modules - just keep in mind that they should be able to produce predictions very fast.</p>
+                        <ul>
+                            <li>ridge - a simple ridge regression model mapping pixels from the detected eyes to locations on the screen.</li>
+                            <li>weightedRidge - a weight ridge regression model with newest user interactions contribution more to the model.</li>
+                            <li>threadedRidge - a faster implementation of ridge regression that uses threads.</li>
+                            <li>linear - a basic simple linear regression that maps </li>
                         </ul>
                     </div>
                 </div>
@@ -312,18 +316,18 @@ cd build
                 <!-- bootstrap has 12 columns, so each person gets part of that 12 cols -->
                 
                 <div class="col-lg-4">
-                    <img src="http://cs.brown.edu/media/filer_public_thumbnails/filer_public/8b/d8/8bd86f85-0f10-4712-8504-84cd58f4c07f/alexpap-hs.jpg__90x120_q85_subsampling-2.jpg" alt="Alexandra Papoutsaki" height="150">
-                    <h4><a href="http://cs.brown.edu/~alexpap">Alexandra Papoutsaki</a></h4>
+                    <img class="img-circle center-block" src="http://cs.brown.edu/media/filer_public_thumbnails/filer_public/8b/d8/8bd86f85-0f10-4712-8504-84cd58f4c07f/alexpap-hs.jpg__90x120_q85_subsampling-2.jpg" alt="Alexandra Papoutsaki" height="140">
+                    <h4 class="text-center"><a href="http://cs.brown.edu/~alexpap">Alexandra Papoutsaki</a></h4>
                     <p>PhD Candidate in Computer Science at Brown University.</p>
                 </div>
                 <div class="col-lg-4">
                     <img class="img-circle center-block" src="jim.jpg" alt="James Laskey" width="140" height="140">
-                    <h4>James Laskey</h4>
+                    <h4 class="text-center">James Laskey</h4>
                     <p>Undergraduate at Brown University graduating in 2016.</p>
                 </div>
                 <div class="col-lg-4">
-                    <img src="http://cs.brown.edu/media/filer_public_thumbnails/filer_public/2014/10/08/jeff-hs.jpg__90x120_q85_subsampling-2.jpg" alt="Jeff Huang" height="150">
-                    <h4><a href="http://jeffhuang.com">Jeff Huang</a></h4>
+                    <img class="img-circle center-block" src="http://cs.brown.edu/media/filer_public_thumbnails/filer_public/2014/10/08/jeff-hs.jpg__90x120_q85_subsampling-2.jpg" alt="Jeff Huang" height="140">
+                    <h4 class="text-center"><a href="http://jeffhuang.com">Jeff Huang</a></h4>
                     <p>Assistant Professor of Computer Science at Brown University.</p>
                 </div>
             </div>
