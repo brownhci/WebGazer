@@ -91,7 +91,8 @@ body {
             <hr class="featurette-divider">
             <div id="description" class="container pad">
                 <p class="text-justify">
-                    WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js was built It is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. 
+                    WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js was built It is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand
+                    their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data or eye data needs to be sent to a server.
                 </p>
             </div>
 
@@ -188,10 +189,18 @@ body {
                 </div>
             </div>
             <div class="row">
+                <h4 class="text-center">Pause and Resume</h4>
+                <p>It may be necessary to pause the data collection and predictions of WebGazer.js for performance reasons.</p>
+                <pre><code class="javascript hljs">
+                webgazer.pause(); //WebGazer.js is now paused, no data will be collected and the gaze callback will not be executed
+                webgazer.resume(); //data collection resumes, gaze callback will be called again
+                </code></pre>
+            </div>
+            <div class="row">
                 <h4 class="text-center">Util and Params</h4>
                 <p>We provide some useful functions and objects in webgazer.util. The webgazer.params object also contains some useful parameters to tweak to control video fidelity (trades off speed and accuracy) and sample rate for mouse movements.</p>
                 <pre><code class="javascript hljs">
-                webgazer.bound(prediction);
+                webgazer.util.bound(prediction);
                 prediction.x; //now always in the bounds of the viewport
                 prediction.y; //now always in the bounds of the viewport
                 </code></pre>
