@@ -101,22 +101,21 @@ body {
             <div id="video" class="container pad">
 
                 <div class="row">
-                    <div class="col-sm-8">
+                    <div class="col-sm-7">
                         <div class="embed-responsive embed-responsive-16by9" align="center">
                             <video class="embed-responsive-item" controls>
                                 <source src="demo.mp4" type="video/mp4">
                             </video>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-5">
                         <div>
-                            <h4 class="text-left padright">Real time gaze prediction on almost all major browser</h4>
-                            <h4 class="text-left padright">No need for special hardware - WebGazer.js uses common webcams</h4>
-                            <h4 class="text-left padright">Continuous self-calibration from clicks and cursor movements</h4>
-                            <h4 class="text-left padright">Easy to integrate - Only a few lines of JavaScript needed</h4>
-                            <h4 class="text-left padright">Swappable components for eye detection. Supports 3 libraries. Plug in yours.</h4>
-                            <h4 class="text-left padright">Multiple regression models that predict the gaze location</h4>
-                            <h4 class="text-left padright">No video transmitted - All operations done at the client side</h4>
+                            <p class="text-left padright" style="font-size:20px">Real time gaze prediction on almost all major browsers</p>
+                            <p class="text-left padright" style="font-size:20px">No special hardware - WebGazer.js uses common webcams</p>
+                            <p class="text-left padright" style="font-size:20px">Continuous self-calibration from clicks and cursor movements</p>
+                            <p class="text-left padright" style="font-size:20px">Easy to integrate - Only a few lines of JavaScript needed</p>
+                            <p class="text-left padright" style="font-size:20px">Swappable components for eye detection. Supports 3 libraries. Plug in yours.</p>
+                            <p class="text-left padright" style="font-size:20px">Multiple regression models that predict the gaze location</p>
                         </div>
                     </div>
                 </div>
@@ -130,7 +129,8 @@ body {
             <div class="row">
                 <div class="col-lg-12">
                     To use WebGazer.js you need to add the webgazer.js as a script in your website:
-                    <pre><code class="html hljs"> &lt;script src="webgazer.js" type="text/js" &gt;</code></pre>
+                    <pre><code class="html hljs"> /* WebGazer.js library */ 
+&lt;script src="webgazer.js" type="text/js" &gt;</code></pre>
                     <p>
                         Once the script is included, the webgazer object is introduced into the global namespace. The object webgazer has methods for controlling the operation of WebGazer allowing us to start and stop it, add callbacks, or change out modules. The two most important methods on webgazer are webgazer.begin() and webgazer.setGazeListener(). webgazer.begin() starts the data collection that enables the predictions, so it's important to call this early on. Once webgazer.begin() has been called, webgazer is ready to start giving predictions. webgazer.setGazeListener() is a convenient way to access these predictions. This method invokes a callback you provide every few milliseconds to provide the current gaze location of a user. If this data stream is too much, you may alternatively call webgazer.getCurrentPrediction() which will give you a prediction at the moment when it is called.
                     </p>
