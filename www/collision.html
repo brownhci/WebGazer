@@ -20,8 +20,6 @@
     var localstorageLabel = 'webgazerGlobalData';
     window.localStorage.setItem(localstorageLabel, null);
     
-    debugger;
-
     webgazer.setRegression('ridge') /* currently must set regression and tracker */
     .setTracker('clmtrackr')
     .setGazeListener(function(data, clock) {
