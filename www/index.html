@@ -135,9 +135,9 @@ body {
                     </p>
 
                     <pre><code class="javascript hljs">webgazer.setGazeListener(function(data, elapsedTime) {
-                        if (data == null) {
-                            return;
-                        }
+    if (data == null) {
+        return;
+    }
     var xprediction = data.x; //these x coordinates are relative to the viewport 
     var yprediction = data.y; //these y coordinates are relative to the viewport
     console.log(elapsedTime); //elapsed time is based on time since begin was called
@@ -156,26 +156,45 @@ body {
             <h3>Advanced Usage</h3>
             <p>There are several features that WebGazer.js enables beyond the example shown so far.<p>
             <div class="row">
-                <div class="col-lg-4">
-                    <h4 class="text-center">Saving Data Between Sessions</h4>
-                    <p>WebGazer.js can save and restore the training data between browser sessions by saving data to localstorage. This occurs automatically when end() is called.</p>
-                    <pre><code class="javascript hljs">webgazer.end()</code></pre>
+                <h4 class="text-center">Saving Data Between Sessions</h4>
+                <p>WebGazer.js can save and restore the training data between browser sessions by saving data to localstorage. This occurs automatically when end() is called.</p>
+                <pre><code class="javascript hljs">webgazer.end()</code></pre>
+            </div>
+            <div>
+                <h4 class="text-center">Changing in Use Regression and Tracker Modules</h4>
+                <p>At the heart of WebGazer.js are the tracker and regression modules. The tracker module controls how eyes are detected and the regression module determines how the regression model is learned and how predictions are made based on the eye patches extracted from the tracker module. These modules can be swapped in and out at any time. We hope that this will make it easy to extend and adapt WebGazer.js</p>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <pre><code class="javascript hljs">webgazer.setRegression("ridge"); //set a regression module</code></pre>
+                        <pre><code class="javascript hljs">webgazer.addRegressionModule("newReg", NewRegConstructor); //add a new regression module</code></pre>
+                        <p>Here are all the regression modules that come by default with WebGazer.js</p>
+                        <ul>
+                            <li>ridge</li>
+                            <li>weightedRidge</li>
+                            <li>threadedRidge</li>
+                            <li>linear</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6">
+                        <pre><code class="javascript hljs">webgazer.setTracker("clmtrackr"); //set a tracker module</code></pre>
+                        <pre><code class="javascript hljs">webgazer.addTrackerModule("newTracker", NewTrackerConstructor); //add a new tracker module</code></pre>
+                        <p>Here are all the tracker modules that come by default with WebGazer.js</p>
+                        <ul>
+                            <li>clmtrackr</li>
+                            <li>trackingjs</li>
+                            <li>js_objectdetect</li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="col-lg-4">
-                    <h4 class="text-center">Changing in Use Modules</h4>
-                    <p>At the heart of WebGazer.js are the tracker and regression modules. The tracker module controls how eyes are detected and the regression module determines how the regression model is learned and how predictions are made based on the eye patches extracted from the tracker module. These modules can be swapped in and out at any time. We hope that this will make it easy to extend and adapt WebGazer.js</p>
-                    <pre><code class="javascript hljs">webgazer.setRegression("ridge"); //set a regression module</code></pre>
-                    <pre><code class="javascript hljs">webgazer.setTracker("clmtrackr"); //set a tracker module</code></pre>
-                    <pre><code class="javascript hljs">webgazer.addRegressionModule("newReg", NewRegConstructor); //add a new regression module</code></pre>
-                    <pre><code class="javascript hljs">webgazer.addTrackerModule("newTracker", NewTrackerConstructor); //add a new tracker module</code></pre>
-                </div>
-                <div class="col-lg-4">
-                    <h4 class="text-center">Util and Params</h4>
-                    <p>We provide some useful functions and objects in webgazer.util. The webgazer.params object also contains some useful parameters to tweak to control video fidelity (trades off speed and accuracy) and sample rate for mouse movements.</p>
-                    <pre><code class="javascript hljs">webgazer.bound(prediction);
-                    prediction.x; //now always in the bounds of the viewport
-                    prediction.y; //now always in the bounds of the viewport</code></pre>
-                </div>
+            </div>
+            <div class="row">
+                <h4 class="text-center">Util and Params</h4>
+                <p>We provide some useful functions and objects in webgazer.util. The webgazer.params object also contains some useful parameters to tweak to control video fidelity (trades off speed and accuracy) and sample rate for mouse movements.</p>
+                <pre><code class="javascript hljs">
+                webgazer.bound(prediction);
+                prediction.x; //now always in the bounds of the viewport
+                prediction.y; //now always in the bounds of the viewport
+                </code></pre>
             </div>
         </div>
 
