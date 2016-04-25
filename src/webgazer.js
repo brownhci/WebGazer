@@ -140,7 +140,7 @@
                 'x' : predictions[regModelIndex].x,
                 'y' : predictions[regModelIndex].y,
             };
-        else {
+        } else {
             return predictions.length == 0 || predictions[0] == null ? null : {
                 'x' : predictions[0].x,
                 'y' : predictions[0].y,
