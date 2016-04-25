@@ -10,7 +10,7 @@
     var resizeWidth = 10;
     var resizeHeight = 6;
     var dataWindow = 700;
-    var trailDataWindow = 10; //TODO perhaps more? less?;
+    var trailDataWindow = 10; 
 
     /**
      * Performs ridge regression, according to the Weka code.
@@ -66,29 +66,15 @@
         var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
         var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
 
-        //TODO either move objectdetect into webgazer namespace or re-implement
         var histLeft = [];
-        objectdetect.equalizeHistogram(leftGray, 5, histLeft);
+        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
         var histRight = [];
-        objectdetect.equalizeHistogram(rightGray, 5, histRight);
+        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
 
         leftGrayArray = Array.prototype.slice.call(histLeft);
         rightGrayArray = Array.prototype.slice.call(histRight);
 
-        //TODO take into account head positions
-        //23 - left eye left
-        //25 - left eye right
-        //30 - right eye left
-        //28 - right eye right
-        /*var widthLeft = eyes.positions[23][0] - eyes.positions[25][0];
-        var widthRight = eyes.positions[30][0] - eyes.positions[28][0];
-        var widthRatio = widthLeft / widthRight;
-        var widthTotal = widthLeft + widthRight;
-        var headVals = [eyes.positions[23][0], eyes.positions[23][1], eyes.positions[25][0], eyes.positions[25][1],
-                        eyes.positions[30][0], eyes.positions[30][1], eyes.positions[28][0], eyes.positions[28][1],
-                        widthLeft, widthRight, widthRatio, widthTotal]; */
-        var headVals = [];
-        return leftGrayArray.concat(rightGrayArray).concat(headVals);
+        return leftGrayArray.concat(rightGrayArray);
     }
 
     function getCurrentFixationIndex() {
@@ -171,7 +157,7 @@
         var weightedYArray = Array(len);
         for (var i = 0; i < len; i++) {
             var weight = Math.sqrt( 1 / (len - i) ); // access from oldest to newest so should start with low weight and increase steadily
-            //TODO my abstraction is leaking...
+            //abstraction is leaking...
             var trueIndex = this.eyeFeaturesClicks.getTrueIndex(i);
             for (var j = 0; j < this.eyeFeaturesClicks.data[trueIndex].length; j++) {
                 var val = this.eyeFeaturesClicks.data[trueIndex][j] * weight;
@@ -225,7 +211,6 @@
     }
 
     webgazer.reg.RidgeWeightedReg.prototype.getData = function() {
-        //TODO move data storage to webgazer object level
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 

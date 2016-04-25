@@ -38,7 +38,7 @@
         
     // loop parameters
     var clockStart = performance.now();
-    webgazer.params.dataTimestep = 50; //TODO either make this a settable parameter or otherwise determine best value, currently a settable parameter
+    webgazer.params.dataTimestep = 50; 
     var paused = false;
     //registered callback for loop
     var nopCallback = function(data, time) {};
@@ -125,7 +125,7 @@
     /**
      *  paints the video to a canvas and runs the prediction pipeline to get a prediction
      */
-    function getPrediction() {
+    function getPrediction(regModelIndex) {
         var predictions = [];
         var features = getPupilFeatures(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
         if (regs.length == 0) {
@@ -135,12 +135,18 @@
         for (var reg in regs) {
             predictions.push(regs[reg].predict(features));
         }
-        //TODO make better api for this
-        return predictions[0] == null ? null : {
-            'x' : predictions[0].x,
-            'y' : predictions[0].y,
-            'all' : predictions
-        };
+        if (regModelIndex !== undefined) {
+            return predictions[regModelIndex] == null ? null : {
+                'x' : predictions[regModelIndex].x,
+                'y' : predictions[regModelIndex].y,
+            };
+        else {
+            return predictions.length == 0 || predictions[0] == null ? null : {
+                'x' : predictions[0].x,
+                'y' : predictions[0].y,
+                'all' : predictions
+            };
+        }
     }
 
     /**
@@ -262,7 +268,6 @@
 
         //turn the stream into a magic URL 
         videoElement.src = videoSrc;  
-        //TODO check to see if we actually need to add the element to the dom
         document.body.appendChild(videoElement);
 
         videoElementCanvas = document.createElement('canvas'); 
@@ -379,15 +384,11 @@
      * @return {boolean} if browser is compatible
      */
     webgazer.detectCompatibility = function() {
-        //TODO detectCompatibility
-        return true;
-    }
+        navigator.getUserMedia = navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mediaDevices.getUserMedia;
 
-    /**
-     * runs an initial calibration page/step
-     */
-    webgazer.performCalibration = function(desiredAccuracy) {
-        //TODO performCalibration
+        return navigator.getUserMedia !== undefined;
     }
 
     /**

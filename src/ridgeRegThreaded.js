@@ -10,7 +10,7 @@
     var resizeHeight = 6;
     var dataWindow = 700;
     var weights = {'X':[0],'Y':[0]};
-    var trailDataWindow = 10; //TODO perhaps more? less?;
+    var trailDataWindow = 10;
 
     function getEyeFeats(eyes) {
         var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
@@ -19,29 +19,15 @@
         var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
         var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
 
-        //TODO either move objectdetect into webgazer namespace or re-implement
         var histLeft = [];
-        objectdetect.equalizeHistogram(leftGray, 5, histLeft);
+        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
         var histRight = [];
-        objectdetect.equalizeHistogram(rightGray, 5, histRight);
+        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
 
         leftGrayArray = Array.prototype.slice.call(histLeft);
         rightGrayArray = Array.prototype.slice.call(histRight);
 
-        //TODO take into account head positions
-        //23 - left eye left
-        //25 - left eye right
-        //30 - right eye left
-        //28 - right eye right
-        /*var widthLeft = eyes.positions[23][0] - eyes.positions[25][0];
-        var widthRight = eyes.positions[30][0] - eyes.positions[28][0];
-        var widthRatio = widthLeft / widthRight;
-        var widthTotal = widthLeft + widthRight;
-        var headVals = [eyes.positions[23][0], eyes.positions[23][1], eyes.positions[25][0], eyes.positions[25][1],
-                        eyes.positions[30][0], eyes.positions[30][1], eyes.positions[28][0], eyes.positions[28][1],
-                        widthLeft, widthRight, widthRatio, widthTotal]; */
-        var headVals = [];
-        return leftGrayArray.concat(rightGrayArray).concat(headVals);
+        return leftGrayArray.concat(rightGrayArray);
     }
 
     
@@ -118,7 +104,6 @@
     }
 
     webgazer.reg.RidgeRegThreaded.prototype.getData = function() {
-        //TODO move data storage to webgazer object level
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 
