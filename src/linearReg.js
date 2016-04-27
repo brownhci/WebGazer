@@ -41,6 +41,9 @@
     }
 
     webgazer.reg.LinearReg.prototype.predict = function(eyesObj) {
+        if (!eyesObj) {
+            return null;
+        }
         var result = regression('linear', this.leftDatasetX);
         var leftSlopeX = result.equation[0];
         var leftIntersceptX = result.equation[1];
@@ -57,7 +60,7 @@
         var rightSlopeY = result.equation[0];
         var rightIntersceptY = result.equation[1];
         
-        console.log(eyesObj);
+        webgazer.pupil.getPupils(eyesObj);
 
         var leftPupilX = eyesObj.left.pupil[0];
         var leftPupilY = eyesObj.left.pupil[1];

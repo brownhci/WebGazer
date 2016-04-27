@@ -8619,6 +8619,9 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
     }
 
     webgazer.reg.LinearReg.prototype.predict = function(eyesObj) {
+        if (!eyesObj) {
+            return null;
+        }
         var result = regression('linear', this.leftDatasetX);
         var leftSlopeX = result.equation[0];
         var leftIntersceptX = result.equation[1];
@@ -8635,7 +8638,7 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         var rightSlopeY = result.equation[0];
         var rightIntersceptY = result.equation[1];
         
-        console.log(eyesObj);
+        webgazer.pupil.getPupils(eyesObj);
 
         var leftPupilX = eyesObj.left.pupil[0];
         var leftPupilY = eyesObj.left.pupil[1];
@@ -10035,7 +10038,8 @@ if (typeof exports !== 'undefined') {
     var regressionMap = {
         'ridge': function() { return new webgazer.reg.RidgeReg(); },
         'weightedRidge': function() { return new webgazer.reg.RidgeWeightedReg(); },
-        'threadedRidge': function() { return new webgazer.reg.RidgeRegThreaded(); }
+        'threadedRidge': function() { return new webgazer.reg.RidgeRegThreaded(); },
+        'linear': function() { return new webgazer.reg.LinearReg(); }
     };
 
     //localstorage name
