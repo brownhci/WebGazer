@@ -1,7 +1,8 @@
 (function(window) {
     
     window.webgazer = window.webgazer || {};
-    webgazer.reg = window.reg || {};
+    webgazer.reg = webgazer.reg || {};
+    webgazer.pupil = webgazer.pupil || {};
 
     webgazer.reg.LinearReg = function() {
         this.leftDatasetX = [];
@@ -15,6 +16,7 @@
         if (!eyes) {
             return;
         }
+        webgazer.pupil.getPupils(eyes);
         if (!eyes.left.blink) {
             this.leftDatasetX.push([eyes.left.pupil[0], screenPos[0]]);
             this.leftDatasetY.push([eyes.left.pupil[1], screenPos[1]]);
