@@ -24,8 +24,8 @@
         var histRight = [];
         webgazer.util.equalizeHistogram(rightGray, 5, histRight);
 
-        leftGrayArray = Array.prototype.slice.call(histLeft);
-        rightGrayArray = Array.prototype.slice.call(histRight);
+        var leftGrayArray = Array.prototype.slice.call(histLeft);
+        var rightGrayArray = Array.prototype.slice.call(histRight);
 
         return leftGrayArray.concat(rightGrayArray);
     }
