@@ -54,12 +54,12 @@
     webgazer.params.moveTickSize = 50; //milliseconds
 
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
-    var tracker = new webgazer.tracker.ClmGaze();
+    var curTracker = new webgazer.tracker.ClmGaze();
     var regs = [new webgazer.reg.RidgeReg()];
     var blinkDetector = new webgazer.BlinkDetector();
 
     //lookup tables
-    var trackerMap = {
+    var curTrackerMap = {
         'clmtrackr': function() { return new webgazer.tracker.ClmGaze(); },
         'trackingjs': function() { return new webgazer.tracker.TrackingjsGaze(); },
         'js_objectdetect': function() { return new webgazer.tracker.Js_objectdetectGaze(); }
@@ -84,7 +84,7 @@
 
     /**
      * gets the pupil features by following the pipeline which threads an eyes object through each call:
-     * tracker gets eye patches -> blink detector -> pupil detection 
+     * curTracker gets eye patches -> blink detector -> pupil detection 
      * @param {Canvas} canvas - a canvas which will have the video drawn onto it
      * @param {number} width - the width of canvas
      * @param {number} height - the height of canvas
@@ -95,7 +95,7 @@
         }
         paintCurrentFrame(canvas, width, height);
         try {
-            return blinkDetector.detectBlink(tracker.getEyePatches(canvas, width, height));
+            return blinkDetector.detectBlink(curTracker.getEyePatches(canvas, width, height));
         } catch(err) {
             console.log(err);
             return null;
@@ -419,15 +419,15 @@
      * @return {webgazer} this
      */
     webgazer.setTracker = function(name) {
-        if (trackerMap[name] == undefined) {
+        if (curTrackerMap[name] == undefined) {
             console.log('Invalid tracker selection');
             console.log('Options are: ');
-            for (var tracker in trackerMap) {
-                console.log(tracker);
+            for (var t in curTrackerMap) {
+                console.log(t);
             }
             return webgazer;
         }
-        tracker = trackerMap[name]();    
+        curTracker = curTrackerMap[name]();    
         return webgazer;
     }
 
@@ -454,19 +454,19 @@
     /**
      * adds a new tracker module so that it can be used by setTracker()
      * @param {string} name - the new name of the tracker
-     * @param {function} constructor - the constructor of the tracker object
+     * @param {function} constructor - the constructor of the curTracker object
      * @return {webgazer} this
      */
     webgazer.addTrackerModule = function(name, constructor) {
-        trackerMap[name] = function() {
+        curTrackerMap[name] = function() {
             contructor();
         };
     }
 
     /**
      * adds a new regression module so that it can be used by setRegression() and addRegression()
-     * @param {string} name - the new name of the tracker
-     * @param {function} constructor - the constructor of the tracker object
+     * @param {string} name - the new name of the regression
+     * @param {function} constructor - the constructor of the regression object
      * @param {webgazer} this
      */
     webgazer.addRegressionModule = function(name, constructor) {
@@ -514,15 +514,15 @@
      * @return {tracker} an object following the tracker interface
      */
     webgazer.getTracker = function() {
-        return tracker;
+        return curTracker;
     }
     
     /**
      * returns the regression currently in use
-     * @return {regression} an object following the regression interface
+     * @return {Array{regression}} an array of objects following the regression interface
      */
     webgazer.getRegression = function() {
-        return reg;
+        return regs;
     }
 
     /**
