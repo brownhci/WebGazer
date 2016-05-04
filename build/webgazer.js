@@ -8596,13 +8596,13 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         }
         webgazer.pupil.getPupils(eyes);
         if (!eyes.left.blink) {
-            this.leftDatasetX.push([eyes.left.pupil[0], screenPos[0]]);
-            this.leftDatasetY.push([eyes.left.pupil[1], screenPos[1]]);
+            this.leftDatasetX.push([eyes.left.pupil[0][0], screenPos[0]]);
+            this.leftDatasetY.push([eyes.left.pupil[0][1], screenPos[1]]);
         }
 
         if (!eyes.right.blink) {
-            this.rightDatasetX.push([eyes.right.pupil[0], screenPos[0]]);
-            this.rightDatasetY.push([eyes.right.pupil[1], screenPos[1]]);
+            this.rightDatasetX.push([eyes.right.pupil[0][0], screenPos[0]]);
+            this.rightDatasetY.push([eyes.right.pupil[0][1], screenPos[1]]);
         }
         this.data.push({'eyes': eyes, 'screenPos': screenPos, 'type': type});
     }
@@ -8640,11 +8640,11 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         
         webgazer.pupil.getPupils(eyesObj);
 
-        var leftPupilX = eyesObj.left.pupil[0];
-        var leftPupilY = eyesObj.left.pupil[1];
+        var leftPupilX = eyesObj.left.pupil[0][0];
+        var leftPupilY = eyesObj.left.pupil[0][1];
 
-        var rightPupilX = eyesObj.right.pupil[0];
-        var rightPupilY = eyesObj.right.pupil[1];
+        var rightPupilX = eyesObj.right.pupil[0][0];
+        var rightPupilY = eyesObj.right.pupil[0][1];
 
         predictedX = Math.floor((((leftSlopeX * leftPupilX) + leftIntersceptX) + ((rightSlopeX * rightPupilX) + rightIntersceptX))/2);
         predictedY = Math.floor((((leftSlopeY * leftPupilY) + leftIntersceptY) + ((rightSlopeY * rightPupilY) + rightIntersceptY))/2);
@@ -9058,14 +9058,14 @@ webgazer.pupil.getPupils = function(eyesObj) {
         return eyesObj;
     }
     if (!eyesObj.left.blink) {
-        eyesObj.left.pupil = getSinglePupil(eyesObj.left.patch, eyesObj.left.width, eyesObj.left.height)[0];
-        eyesObj.left.pupil[0] += eyesObj.left.imagex;
-        eyesObj.left.pupil[1] += eyesObj.left.imagey;
+        eyesObj.left.pupil = getSinglePupil(Array.prototype.slice.call(webgazer.util.grayscale(eyesObj.left.patch, eyesObj.left.width, eyesObj.left.height)), eyesObj.left.width, eyesObj.left.height);
+        eyesObj.left.pupil[0][0] -= eyesObj.left.pupil[1];
+        eyesObj.left.pupil[0][1] -= eyesObj.left.pupil[1];
     }
     if (!eyesObj.right.blink) {
-        eyesObj.right.pupil = getSinglePupil(eyesObj.right.patch, eyesObj.right.width, eyesObj.right.height)[0];
-        eyesObj.right.pupil[0] += eyesObj.right.imagex;
-        eyesObj.right.pupil[1] += eyesObj.right.imagey;
+        eyesObj.right.pupil = getSinglePupil(Array.prototype.slice.call(webgazer.util.grayscale(eyesObj.right.patch, eyesObj.right.width, eyesObj.right.height)), eyesObj.right.width, eyesObj.right.height);
+        eyesObj.right.pupil[0][0] -= eyesObj.right.pupil[1];
+        eyesObj.right.pupil[0][1] -= eyesObj.right.pupil[1];
     }
     return eyesObj;
 }
@@ -9844,7 +9844,7 @@ if (typeof exports !== 'undefined') {
      */
     self.webgazer.util.grayscale = function(imageData, imageWidth, imageHeight){
         //TODO implement ourselves to remove dependency
-        return tracking.Image.grayscale(imageData, imageWidth, imageHeight, false);
+        return tracking.Image.grayscale(imageData.data, imageWidth, imageHeight, false);
     }
 
     /**
