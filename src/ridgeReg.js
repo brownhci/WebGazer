@@ -8,11 +8,11 @@ define('RidgeReg', ['util', 'regression', 'matrix'], function(util, reg, mat) {
     /**
      * Performs ridge regression, according to the Weka code.
      * @param {array} y corresponds to screen coordinates (either x or y) for each of n click events
-     * @param {array of arrays} X corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
+     * @param {number[][]} X corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
      * @param {array} ridge ridge parameter
      * @return{array} regression coefficients
      */
-    function ridge(y, X, k){
+    var ridge = function(y, X, k){
         var nc = X[0].length;
         var m_Coefficients = new Array(nc);
         var xt = mat.transpose(X);
@@ -86,7 +86,7 @@ define('RidgeReg', ['util', 'regression', 'matrix'], function(util, reg, mat) {
     }
 
     /**
-     * Constructor for the RidgeReg object which uses unweighted ridge regression to correlate click and mouse movement to eye patch features
+     * Constructor for the RidgeRegObject[] which uses unweighted ridge regression to correlate click and mouse movement to eye patch features
      * @alias module:RidgeReg
      * @exports RidgeReg
      */
@@ -108,6 +108,12 @@ define('RidgeReg', ['util', 'regression', 'matrix'], function(util, reg, mat) {
         this.dataTrail = new util.DataWindow(dataWindow);
     }
 
+    /**
+     * adds data to the regression model
+     * @param {object} eyes - util.eyesObject[] containing left and right data
+     * @param {array} screenPos - the screen [x,y] position when a training event happens
+     * @param {string} type - the type of event
+     */
     RidgeReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
@@ -134,6 +140,13 @@ define('RidgeReg', ['util', 'regression', 'matrix'], function(util, reg, mat) {
         eyes.right.patch = Array.from(eyes.right.patch.data);
     }
 
+    /**
+     * gets a prediction based on the current set of training data
+     * @param {object} eyesObj - util.eyesObject[]
+     * @return {Object} prediction -Object[] containing the prediction data
+     *  @return {integer} prediction.x - the x screen coordinate predicted
+     *  @return {integer} prediction.y - the y screen coordinate predicted
+     */
     RidgeReg.prototype.predict = function(eyesObj) {
         if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
             return null;
@@ -176,6 +189,10 @@ define('RidgeReg', ['util', 'regression', 'matrix'], function(util, reg, mat) {
         };
     }
 
+    /**
+     * seeds the model with initial training data in case data is stored in a separate location
+     * @params {Object[]} data - array of util.eyes objects
+     */
     RidgeReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             //TODO this is a kludge, needs to be fixed
@@ -185,6 +202,10 @@ define('RidgeReg', ['util', 'regression', 'matrix'], function(util, reg, mat) {
         }
     }
 
+    /**
+     * gets the training data stored in this regression model, *this is not the model itself, but merely its training data*
+     * @return {Object[]} the set of training data stored in this regression class
+     */
     RidgeReg.prototype.getData = function() {
         return this.dataClicks.data.concat(this.dataTrail.data);
     }

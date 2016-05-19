@@ -1,4 +1,32 @@
-define('Js_objectdetectGaze', function() {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: js_objectdetectGaze.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: js_objectdetectGaze.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>define('Js_objectdetectGaze', function() {
     "use strict"
 
 
@@ -36,7 +64,7 @@ define('Js_objectdetectGaze', function() {
         var offsetY = 0;
 
         //if face has been detected
-        if (face.length>0 && !isNaN(face[0]) && !isNaN(face[1]) && !isNaN(face[2]) && !isNaN(face[3])){
+        if (face.length>0 &amp;&amp; !isNaN(face[0]) &amp;&amp; !isNaN(face[1]) &amp;&amp; !isNaN(face[2]) &amp;&amp; !isNaN(face[3])){
             //working image is restricted on upper half of detected face
             workingImage = imageCanvas.getContext('2d').getImageData(Math.floor(face[0]), Math.floor(face[1]), Math.floor(face[2]), Math.floor(face[3]/2));
             width = Math.floor(face[2]);
@@ -83,7 +111,7 @@ define('Js_objectdetectGaze', function() {
      * @param {ImageData} workingImage - either the whole canvas or the upper half of the head
      * @param {number} width - width of working image
      * @param {number} height - height of working image
-     * @return{array} eyes -number[][] of rectangle information. 
+     * @return{array} eyes - array of rectangle information. 
      */
     Js_objectdetectGaze.prototype.detectEyes = function(workingImage, workingImageWidth, workingImageHeight){    
 
@@ -97,11 +125,11 @@ define('Js_objectdetectGaze', function() {
         var intermediateEyes = [];
         var width = ~~(60 * workingImageWidth / workingImageHeight);
         var height = 60;
-        var detector = newObject[]detect.detector(width, height, 1.1,Object[]detect.eye);
+        var detector = new objectdetect.detector(width, height, 1.1, objectdetect.eye);
         intermediateEyes = detector.detect(tempCanvas, 0);
         eyes = this.mergeRectangles(intermediateEyes);
         if (typeof eyes !== 'undefined'){
-            for(var i=0; i< eyes.length; i++){
+            for(var i=0; i&lt; eyes.length; i++){
                 // Rescale coordinates from detector to video coordinate space:
                 eyes[i][0] *= workingImageWidth / detector.canvas.width;
                 eyes[i][1] *= workingImageHeight / detector.canvas.height;
@@ -125,14 +153,14 @@ define('Js_objectdetectGaze', function() {
      * @param {canvas} imageCanvas - whole video canvas
      * @param {number} width - width of imageCanvas
      * @param {number} height - height of imageCanvas
-     * @return{array} face -number[][] of rectangle information
+     * @return{array} face - array of rectangle information
      */
     Js_objectdetectGaze.prototype.detectFace = function(imageCanvas, workingImageWidth, workingImageHeight){
         var intermediateFaces = [];
         var face = [];
         var width = ~~(60 * workingImageWidth / workingImageHeight);
         var height = 60;
-        var detector = newObject[]detect.detector(width, height, 1.1,Object[]detect.frontalface_alt);
+        var detector = new objectdetect.detector(width, height, 1.1, objectdetect.frontalface_alt);
         intermediateFaces = detector.detect(imageCanvas, 1);
         face = this.findLargestRectangle(intermediateFaces);
         // Rescale coordinates from detector to video coordinate space:
@@ -144,15 +172,15 @@ define('Js_objectdetectGaze', function() {
     }
 
     /**
-     * Goes through annumber[][] of rectangles and returns the one with the largest area
-     * @param {number[][]} rectanglesnumber[][] |number[][] of format [xCoordinate, yCoordinate, width, height]
+     * Goes through an array of rectangles and returns the one with the largest area
+     * @param {array | array} rectangles array | array of format [xCoordinate, yCoordinate, width, height]
      * @return{array} largestRectangle = [xCoordinate, yCoordinate, width, height]
      */
     Js_objectdetectGaze.prototype.findLargestRectangle = function(rectangles){
         var largestArea = 0;
         var area = 0;
         var largestRectangle = [];
-        for (var i = 0; i < rectangles.length; ++i){
+        for (var i = 0; i &lt; rectangles.length; ++i){
             area = rectangles[i][2] * rectangles[i][3];
             if (area > largestArea){
                 largestArea = area;
@@ -164,16 +192,16 @@ define('Js_objectdetectGaze', function() {
 
     /**
      * Merges detected rectangles in clusters
-     * Taken from trackingjs and modified slightly to reflect that rectangles arenumber[][]s and notObject[]s
-     * @param  {number[][]} rects rectangles to me clustered
-     * @return {number[][]} result merged rectangles
+     * Taken from trackingjs and modified slightly to reflect that rectangles are arrays and not objects
+     * @param  {array | array} rects rectangles to me clustered
+     * @return {array | array} result merged rectangles
      */
     Js_objectdetectGaze.prototype.mergeRectangles = function(rects){
         var disjointSet = new tracking.DisjointSet(rects.length);
 
-        for (var i = 0; i < rects.length; i++){
+        for (var i = 0; i &lt; rects.length; i++){
           var r1 = rects[i];
-          for (var j = 0; j < rects.length; j++){
+          for (var j = 0; j &lt; rects.length; j++){
             var r2 = rects[j];
             if (tracking.Math.intersectRect(r1[0], r1[1], r1[0] + r1[2], r1[1] + r1[3], r2[0], r2[1], r2[0] + r2[2], r2[1] + r2[3])){
               var x1 = Math.max(r1[0], r2[0]);
@@ -184,7 +212,7 @@ define('Js_objectdetectGaze', function() {
               var area1 = (r1[2] * r1[3]);
               var area2 = (r2[2] * r2[3]);
 
-              if ((overlap / (area1 * (area1 / area2)) >= 0.5) &&
+              if ((overlap / (area1 * (area1 / area2)) >= 0.5) &amp;&amp;
                 (overlap / (area2 * (area1 / area2)) >= 0.5)){
                 disjointSet.union(i, j);
               }
@@ -193,7 +221,7 @@ define('Js_objectdetectGaze', function() {
         }
 
         var map ={};
-        for (var k = 0; k < disjointSet.length; k++){
+        for (var k = 0; k &lt; disjointSet.length; k++){
           var rep = disjointSet.find(k);
           if (!map[rep]){
             map[rep] ={
@@ -225,3 +253,26 @@ define('Js_objectdetectGaze', function() {
 
     return Js_objectdetectGaze;
 }(window));
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-ClmGaze.html">ClmGaze</a></li><li><a href="module-Js_objectdetectGaze.html">Js_objectdetectGaze</a></li><li><a href="module-LinearReg.html">LinearReg</a></li><li><a href="module-matrix.html">matrix</a></li><li><a href="module-pupil.html">pupil</a></li><li><a href="module-RidgeReg.html">RidgeReg</a></li><li><a href="module-RidgeThreadedReg.html">RidgeThreadedReg</a></li><li><a href="module-RidgeWightedReg.html">RidgeWightedReg</a></li><li><a href="module-TrackingjsGaze.html">TrackingjsGaze</a></li><li><a href="module-webgazer.html">webgazer</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ridge">ridge</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu May 19 2016 14:28:37 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

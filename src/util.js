@@ -18,9 +18,9 @@ define('util', function() {
 
 
     //Data Window class
-    //operates like an array but 'wraps' data around to keep the array at a fixed windowSize
+    //operates like annumber[][] but 'wraps' data around to keep thenumber[][] at a fixed windowSize
     /**
-     * DataWindow class - Operates like an array, but 'wraps' data around to keep the array at a fixed windowSize
+     * DataWindow class - Operates like annumber[][], but 'wraps' data around to keep thenumber[][] at a fixed windowSize
      * @param {number} windowSize - defines the maximum size of the window
      * @param {data} [data] - optional data to seed the DataWindow with
      **/
@@ -63,7 +63,7 @@ define('util', function() {
     }
 
     /**
-     * Gets the true this.data array index given an index for a desired element
+     * Gets the true this.datanumber[][] index given an index for a desired element
      * @param {number} ind - index of desired entry
      * @return {number} index of desired entry in this.data
      */
@@ -102,17 +102,17 @@ define('util', function() {
 
     /**
      * Increase contrast of an image
-     * @param {ImageData} grayscaleImageSrc - grayscale integer array
+     * @param {ImageData} grayscaleImageSrc - grayscale integernumber[][]
      * @param {number} step - sampling rate, control performance
-     * @param {array} destinationImage - array to hold the resulting image
+     * @param {array} destinationImage -number[][] to hold the resulting image
      */
     util.equalizeHistogram = function(grayscaleImageSrc, step, destinationImage) {
         //TODO implement ourselves to remove dependency
-        return objectdetect.equalizeHistogram(grayscaleImageSrc, step, destinationImage);
+        returnObject[]detect.equalizeHistogram(grayscaleImageSrc, step, destinationImage);
     }
 
     /**
-     * Gets an Eye object and resizes it to the desired resolution
+     * Gets an EyeObject[] and resizes it to the desired resolution
      * @param  {util.Eye} eye - patch to be resized
      * @param  {number} resizeWidth - desired width
      * @param  {number} resizeHeight - desired height

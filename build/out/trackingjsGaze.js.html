@@ -1,4 +1,32 @@
-define('TrackingjsGaze', function() {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: trackingjsGaze.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: trackingjsGaze.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>define('TrackingjsGaze', function() {
     "use strict"
 
     /**
@@ -34,7 +62,7 @@ define('TrackingjsGaze', function() {
         var offsetY = 0;
 
         //if face has been detected
-        if (face.length>0 && !isNaN(face[0]) && !isNaN(face[1]) && !isNaN(face[2]) && !isNaN(face[3])){
+        if (face.length>0 &amp;&amp; !isNaN(face[0]) &amp;&amp; !isNaN(face[1]) &amp;&amp; !isNaN(face[2]) &amp;&amp; !isNaN(face[3])){
             //working image is restricted on upper half of detected face
             workingImage = imageCanvas.getContext('2d').getImageData(Math.floor(face[0]), Math.floor(face[1]), Math.floor(face[2]), Math.floor(face[3]/2));
             width = Math.floor(face[2]);
@@ -82,7 +110,7 @@ define('TrackingjsGaze', function() {
      * @param {ImageData} workingImage - either the whole canvas or the upper half of the head
      * @param {number} width - width of working image
      * @param {number} height - height of working image
-     * @return{array} eyes -number[][] of rectangle information. 
+     * @return{array} eyes - array of rectangle information. 
      */
     TrackingjsGaze.prototype.detectEyes = function(workingImage, width, height){         
         var eyes = [];
@@ -97,10 +125,10 @@ define('TrackingjsGaze', function() {
             var minimumYDistance = 1000;
             var eyes = [];
 
-            for(var i=0; i < intermediateEyes.length; i++){
-                for(var j = i+1; j < intermediateEyes.length; j++){
+            for(var i=0; i &lt; intermediateEyes.length; i++){
+                for(var j = i+1; j &lt; intermediateEyes.length; j++){
                     var YDistance = Math.abs(Math.floor(intermediateEyes[i][1]) - Math.floor(intermediateEyes[j][1]));
-                    if(YDistance <= minimumYDistance){
+                    if(YDistance &lt;= minimumYDistance){
                         minimumYDistance = YDistance;
                         eyes[0] = intermediateEyes[i];
                         eyes[1] = intermediateEyes[j];
@@ -124,7 +152,7 @@ define('TrackingjsGaze', function() {
      * @param {ImageData} workingImage - whole video canvas
      * @param {number} width - width of imageCanvas
      * @param {number} height - height of imageCanvas
-     * @return{array} face -number[][] of rectangle information
+     * @return{array} face - array of rectangle information
      */
     TrackingjsGaze.prototype.detectFace = function(workingImage, width, height){
         var intermediateFaces = [];
@@ -141,15 +169,15 @@ define('TrackingjsGaze', function() {
     }
 
     /**
-     * Goes through annumber[][] of rectangles and returns the one with the largest area
-     * @param {number[][]} rectanglesnumber[][] |number[][] of format [xCoordinate, yCoordinate, width, height]
+     * Goes through an array of rectangles and returns the one with the largest area
+     * @param {array | array} rectangles array | array of format [xCoordinate, yCoordinate, width, height]
      * @return{array} largestRectangle = [xCoordinate, yCoordinate, width, height]
      */
     TrackingjsGaze.prototype.findLargestRectangle = function(rectangles){
         var largestArea = 0;
         var area = 0;
         var largestRectangle = [];
-        for (var i = 0; i < rectangles.length; ++i){
+        for (var i = 0; i &lt; rectangles.length; ++i){
             area = rectangles[i][2] * rectangles[i][3];
             if (area > largestArea){
                 largestArea = area;
@@ -163,3 +191,26 @@ define('TrackingjsGaze', function() {
 
     return TrackingjsGaze;
 });
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-ClmGaze.html">ClmGaze</a></li><li><a href="module-Js_objectdetectGaze.html">Js_objectdetectGaze</a></li><li><a href="module-LinearReg.html">LinearReg</a></li><li><a href="module-matrix.html">matrix</a></li><li><a href="module-pupil.html">pupil</a></li><li><a href="module-RidgeReg.html">RidgeReg</a></li><li><a href="module-RidgeThreadedReg.html">RidgeThreadedReg</a></li><li><a href="module-RidgeWightedReg.html">RidgeWightedReg</a></li><li><a href="module-TrackingjsGaze.html">TrackingjsGaze</a></li><li><a href="module-webgazer.html">webgazer</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ridge">ridge</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu May 19 2016 14:28:37 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

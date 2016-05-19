@@ -1,4 +1,32 @@
-define('RidgeThreadedReg', ['util', 'regression', 'matrix'], function(util, reg, mat) {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ridgeThreadedReg.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ridgeThreadedReg.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>define('RidgeThreadedReg', ['util', 'regression', 'matrix'], function(util, reg, mat) {
 
     var ridgeParameter = Math.pow(10,-5);
     var resizeWidth = 10;
@@ -32,7 +60,7 @@ define('RidgeThreadedReg', ['util', 'regression', 'matrix'], function(util, reg,
     }
 
     /**
-     * Constructor for the RidgeThreadedRegObject[] which uses unweighted ridge regression to correlate click and mouse movement to eye patch features
+     * Constructor for the RidgeThreadedReg object which uses unweighted ridge regression to correlate click and mouse movement to eye patch features
      * This class has the same functionality as RidgeReg with two large differences:
      * 1. training examples are batched for retraining the model instead of retraining on each new example
      * 2. the training runs on a separate thread which should enable better running time
@@ -58,13 +86,7 @@ define('RidgeThreadedReg', ['util', 'regression', 'matrix'], function(util, reg,
             weights = event.data;   
         };
     }
-    
-    /**
-     * adds data to the regression model
-     * @param {object} eyes - util.eyesObject[] containing left and right data
-     * @param {array} screenPos - the screen [x,y] position when a training event happens
-     * @param {string} type - the type of event
-     */
+
     RidgeThreadedReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
@@ -75,13 +97,6 @@ define('RidgeThreadedReg', ['util', 'regression', 'matrix'], function(util, reg,
         this.worker.postMessage({'eyes':getEyeFeats(eyes), 'screenPos':screenPos, 'type':type})
     }
 
-    /**
-     * gets a prediction based on the current set of training data
-     * @param {object} eyesObj - util.eyesObject[]
-     * @return {Object} prediction -Object[] containing the prediction data
-     *  @return {integer} prediction.x - the x screen coordinate predicted
-     *  @return {integer} prediction.y - the y screen coordinate predicted
-     */
     RidgeThreadedReg.prototype.predict = function(eyesObj) {
         console.log('in predict1');
         if (!eyesObj) {
@@ -93,11 +108,11 @@ define('RidgeThreadedReg', ['util', 'regression', 'matrix'], function(util, reg,
 
         var eyeFeats = getEyeFeats(eyesObj);
         var predictedX = 0;
-        for(var i=0; i< eyeFeats.length; i++){
+        for(var i=0; i&lt; eyeFeats.length; i++){
             predictedX += eyeFeats[i] * coefficientsX[i];
         }
         var predictedY = 0;
-        for(var i=0; i< eyeFeats.length; i++){
+        for(var i=0; i&lt; eyeFeats.length; i++){
             predictedY += eyeFeats[i] * coefficientsY[i];
         }
 
@@ -110,12 +125,8 @@ define('RidgeThreadedReg', ['util', 'regression', 'matrix'], function(util, reg,
         };
     }
 
-    /**
-     * seeds the model with initial training data in case data is stored in a separate location
-     * @params {Object[]} data - array of util.eyes objects
-     */
     RidgeThreadedReg.prototype.setData = function(data) {
-        for (var i = 0; i < data.length; i++) {
+        for (var i = 0; i &lt; data.length; i++) {
             //TODO this is a kludge, needs to be fixed
             data[i].eyes.left.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.left.patch), data[i].eyes.left.width, data[i].eyes.left.height);
             data[i].eyes.right.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.right.patch), data[i].eyes.right.width, data[i].eyes.right.height);
@@ -123,10 +134,6 @@ define('RidgeThreadedReg', ['util', 'regression', 'matrix'], function(util, reg,
         }
     }
 
-    /**
-     * gets the training data stored in this regression model, *this is not the model itself, but merely its training data*
-     * @return {Object[]} the set of training data stored in this regression class
-     */
     RidgeThreadedReg.prototype.getData = function() {
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
@@ -136,3 +143,26 @@ define('RidgeThreadedReg', ['util', 'regression', 'matrix'], function(util, reg,
 
     return RidgeThreadedReg;
 });
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-ClmGaze.html">ClmGaze</a></li><li><a href="module-Js_objectdetectGaze.html">Js_objectdetectGaze</a></li><li><a href="module-LinearReg.html">LinearReg</a></li><li><a href="module-matrix.html">matrix</a></li><li><a href="module-pupil.html">pupil</a></li><li><a href="module-RidgeReg.html">RidgeReg</a></li><li><a href="module-RidgeThreadedReg.html">RidgeThreadedReg</a></li><li><a href="module-RidgeWightedReg.html">RidgeWightedReg</a></li><li><a href="module-TrackingjsGaze.html">TrackingjsGaze</a></li><li><a href="module-webgazer.html">webgazer</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ridge">ridge</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu May 19 2016 14:28:37 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
