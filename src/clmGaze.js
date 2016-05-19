@@ -1,18 +1,15 @@
-(function(window) {
+define('ClmGaze', function() {
     "use strict"
 
-    window.webgazer = window.webgazer || {};
-    webgazer.tracker = webgazer.tracker || {};
-
     /**
-     * Initialize clmtrackr object
+     * Constructor for the ClmGaze object which tracks head and eye positions using the clmtracker.js library
+     * @alias module:ClmGaze
+     * @exports ClmGaze 
      */
     var ClmGaze = function() {
         this.clm = new clm.tracker({useWebGL : true});
         this.clm.init(pModel);
     }
-
-    webgazer.tracker.ClmGaze = ClmGaze;
 
     /**
      * Isolates the two patches that correspond to the user's eyes
@@ -74,4 +71,6 @@
     }
 
     ClmGaze.prototype.name = 'clmtrackr';
-}(window));
+
+    return ClmGaze;
+});

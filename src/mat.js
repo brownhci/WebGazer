@@ -1,15 +1,19 @@
-(function() {
+define('matrix', function() {
     "use strict"
-
-    self.webgazer = self.webgazer || {};
-    self.webgazer.mat = self.webgazer.mat || {};
+    
+    /**
+     * A utility module that contains some common matrix operations as well as decompositions
+     * @alias module:matrix
+     * @exports matrix
+     */
+    var mat = {};
 
     /**
      * Transposes an mxn array
      * @param {array of arrays} matrix - of mxn dimensionality
      * @return {array of arrays} transposed matrix
      */
-    self.webgazer.mat.transpose = function(matrix){
+    mat.transpose = function(matrix){
         var m = matrix.length;
         var n = matrix[0].length;
         var transposedMatrix = new Array(n);
@@ -32,7 +36,7 @@
      * @param [number] j1 - Final column index
      * @return [array of arrays] X is the submatrix matrix(r(:),j0:j1)
      */
-    self.webgazer.mat.getMatrix = function(matrix, r, j0, j1){
+    mat.getMatrix = function(matrix, r, j0, j1){
         var X = new Array(r.length);
         for(var i=0; i<r.length; i++){
             X[i] = new Array(j1-j0+1);
@@ -54,7 +58,7 @@
      * @param [number] j1 - Final column index
      * @return matrix(i0:i1,j0:j1)
      */
-    self.webgazer.mat.getSubMatrix = function(matrix, i0, i1, j0, j1){
+    mat.getSubMatrix = function(matrix, i0, i1, j0, j1){
         var X = new Array(i1-i0+1);
         for(var i=0; i<i1-i0+1; i++){
             X[i] = new Array(j1-j0+1);
@@ -73,7 +77,7 @@
      * @param {array of arrays} matrix2
      * @return {array of arrays} Matrix product, matrix1 * matrix2
      */
-    self.webgazer.mat.mult = function(matrix1, matrix2){	
+    mat.mult = function(matrix1, matrix2){	
         if (matrix2.length != matrix1[0].length){
             console.log("Matrix inner dimensions must agree.");
         }
@@ -105,7 +109,7 @@
      * @param{array of arrays} B - right matrix of equation to be solved
      * @return {array of arrays} X so that L*U*X = B(piv,:)
      */
-    self.webgazer.mat.LUDecomposition = function(A,B){
+    mat.LUDecomposition = function(A,B){
         var LU = new Array(A.length);
         for(var i=0; i<A.length; i++){
             LU[i] = new Array(A[0].length);
@@ -175,7 +179,7 @@
             }
         }
         var nx = B[0].length;
-        var X = self.webgazer.mat.getMatrix(B,piv,0,nx-1);
+        var X = mat.getMatrix(B,piv,0,nx-1);
         // Solve L*Y = B(piv,:)
         for (var k = 0; k < n; k++){
             for (var i = k+1; i < n; i++){
@@ -204,7 +208,7 @@
      * @param [array of arrays] B - a matrix with as many rows as A and any number of columns.
      * @return [array of arrays] X - that minimizes the two norms of QR*X-B.
      */
-    self.webgazer.mat.QRDecomposition = function(A, B){
+    mat.QRDecomposition = function(A, B){
         // Initialize.
         QR = new Array(A.length);
         for(var i=0; i<A.length; i++){
@@ -293,7 +297,9 @@
                 }
             }
         }
-        return self.webgazer.mat.getSubMatrix(X,0,n-1,0,nx-1);
+        return mat.getSubMatrix(X,0,n-1,0,nx-1);
     }
-}());
+
+    return mat;
+});
 

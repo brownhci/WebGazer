@@ -1,14 +1,14 @@
-(function(window) {
+define('TrackingjsGaze', function() {
     "use strict"
 
-    window.webgazer = window.webgazer || {};
-    webgazer.tracker = webgazer.tracker || {};
-
+    /**
+     * TrackingjsGaze constructor which uses the trackingjs library in order to find the head and eye positions
+     * @alias module:TrackingjsGaze
+     * @exports TrackingjsGaze 
+     */
     var TrackingjsGaze = function() {
 
     }
-
-    webgazer.tracker.TrackingjsGaze = TrackingjsGaze;
 
     /**
      * Isolates the two patches that correspond to the user's eyes
@@ -160,4 +160,6 @@
     }
 
     TrackingjsGaze.prototype.name = 'trackingjs';
-}(window));
+
+    return TrackingjsGaze;
+});

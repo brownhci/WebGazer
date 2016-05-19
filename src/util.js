@@ -1,9 +1,4 @@
-(function() {
-
-    self.webgazer = self.webgazer || {};
-    self.webgazer.util = self.webgazer.util || {};
-    self.webgazer.mat = self.webgazer.mat || {};
-
+define('util', function() {
 
     /**
      * Eye class, represents an eye patch detected in the video stream
@@ -13,7 +8,7 @@
      * @param {number} width  - width of the eye patch
      * @param {number} height - height of the eye patch
      */
-    self.webgazer.util.Eye = function(patch, imagex, imagey, width, height) {
+    util.Eye = function(patch, imagex, imagey, width, height) {
         this.patch = patch;
         this.imagex = imagex;
         this.imagey = imagey;
@@ -29,7 +24,7 @@
      * @param {number} windowSize - defines the maximum size of the window
      * @param {data} [data] - optional data to seed the DataWindow with
      **/
-    self.webgazer.util.DataWindow = function(windowSize, data) {
+    util.DataWindow = function(windowSize, data) {
         this.data = [];
         this.windowSize = windowSize;
         this.index = 0;
@@ -45,7 +40,7 @@
      * @param  {Any} entry - item to be inserted. It either grows the DataWindow or replaces the oldest item
      * @return {DataWindow} this
      */
-    self.webgazer.util.DataWindow.prototype.push = function(entry) {
+    util.DataWindow.prototype.push = function(entry) {
         if (this.data.length < this.windowSize) {
             this.data.push(entry);
             this.length = this.data.length;
@@ -63,7 +58,7 @@
      * @param  {number} ind index of desired entry
      * @return {Any} 
      */
-    self.webgazer.util.DataWindow.prototype.get = function(ind) {
+    util.DataWindow.prototype.get = function(ind) {
         return this.data[this.getTrueIndex(ind)];
     }
 
@@ -72,7 +67,7 @@
      * @param {number} ind - index of desired entry
      * @return {number} index of desired entry in this.data
      */
-    self.webgazer.util.DataWindow.prototype.getTrueIndex = function(ind) {
+    util.DataWindow.prototype.getTrueIndex = function(ind) {
         if (this.data.length < this.windowSize) {
             return ind;
         } else {
@@ -85,7 +80,7 @@
      * Append all the contents of data
      * @param {array} data - to be inserted 
      */
-    self.webgazer.util.DataWindow.prototype.addAll = function(data) {
+    util.DataWindow.prototype.addAll = function(data) {
         for (var i = 0; i < data.length; i++) {
             this.push(data[i]);
         }
@@ -100,7 +95,7 @@
      * @param  {number} imageHeight - height of image data to be grayscaled
      * @return {ImageData} grayscaledImage 
      */
-    self.webgazer.util.grayscale = function(imageData, imageWidth, imageHeight){
+    util.grayscale = function(imageData, imageWidth, imageHeight){
         //TODO implement ourselves to remove dependency
         return tracking.Image.grayscale(imageData.data, imageWidth, imageHeight, false);
     }
@@ -111,19 +106,19 @@
      * @param {number} step - sampling rate, control performance
      * @param {array} destinationImage - array to hold the resulting image
      */
-    self.webgazer.util.equalizeHistogram = function(grayscaleImageSrc, step, destinationImage) {
+    util.equalizeHistogram = function(grayscaleImageSrc, step, destinationImage) {
         //TODO implement ourselves to remove dependency
         return objectdetect.equalizeHistogram(grayscaleImageSrc, step, destinationImage);
     }
 
     /**
      * Gets an Eye object and resizes it to the desired resolution
-     * @param  {webgazer.util.Eye} eye - patch to be resized
+     * @param  {util.Eye} eye - patch to be resized
      * @param  {number} resizeWidth - desired width
      * @param  {number} resizeHeight - desired height
-     * @return {webgazer.util.Eye} resized eye patch
+     * @return {util.Eye} resized eye patch
      */
-    self.webgazer.util.resizeEye = function(eye, resizeWidth, resizeHeight) {
+    util.resizeEye = function(eye, resizeWidth, resizeHeight) {
 
         var canvas = document.createElement('canvas');
         canvas.width = eye.width;
@@ -150,7 +145,7 @@
      * @param  {array} prediction [x,y] predicted gaze coordinates
      * @return {array} constrained coordinates
      */
-    self.webgazer.util.bound = function(prediction){
+    util.bound = function(prediction){
         if(prediction.x < 0)
             prediction.x = 0;
         if(prediction.y < 0)
@@ -176,7 +171,7 @@
         para.innerText = str;
     }
 
-    self.webgazer.util.DebugBox = function(interval) {
+    util.DebugBox = function(interval) {
         this.para = document.createElement('p');
         this.div = document.createElement('div');
         this.div.appendChild(this.para);
@@ -193,18 +188,18 @@
         }(this));
     }
 
-    self.webgazer.util.DebugBox.prototype.set = function(key, value) {
+    util.DebugBox.prototype.set = function(key, value) {
         this.stats[key] = value;
     }
 
-    self.webgazer.util.DebugBox.prototype.inc = function(key, incBy, init) {
+    util.DebugBox.prototype.inc = function(key, incBy, init) {
         if (!this.stats[key]) {
             this.stats[key] = init || 0;
         }
         this.stats[key] += incBy || 1;
     }
 
-    self.webgazer.util.DebugBox.prototype.addButton = function(name, func) {
+    util.DebugBox.prototype.addButton = function(name, func) {
         if (!this.buttons[name]) {
             this.buttons[name] = document.createElement('button');
             this.div.appendChild(this.buttons[name]);
@@ -215,7 +210,7 @@
         button.innerText = name;
     }
 
-    self.webgazer.util.DebugBox.prototype.show = function(name, func) {
+    util.DebugBox.prototype.show = function(name, func) {
         if (!this.canvas[name]) {
             this.canvas[name] = document.createElement('canvas');
             this.div.appendChild(this.canvas[name]);

@@ -1,26 +1,29 @@
-(function(window, undefined) {
-    console.log('initializing webgazer')
+define(['RidgeReg', 'RidgeWeightedReg', 'RidgeThreadedReg', 'ClmGaze', 'TrackingjsGaze', 'Js_objectdetectGaze', 'LinearReg'] , 
+function(RidgeReg, RidgeWeightedReg, RidgeThreadedReg, ClmGaze, TrackingjsGaze, Js_objectdetectGaze, LinearReg) {    
     //strict mode for type safety
     "use strict"
-
-    //auto invoke function to bind our own copy of window and undefined
     
-    //set up namespaces for modules
-    window.webgazer = window.webgazer || {};
-    webgazer.tracker = webgazer.tracker || {};
-    webgazer.reg = webgazer.reg || {};
-    webgazer.params = webgazer.params || {};
-
     //PRIVATE VARIABLES
+   
+    /**
+     * Top level control module
+     * @alias module:webgazer
+     * @exports webgazer
+     */
+    var webgazer = {};
+
+    //params object to be passed into tracker and regression constructors
+    //contains various potentially useful knowledge like the video size and data collection rates
+    var params = {};
     
     //video elements
-    webgazer.params.videoScale = 1;
+    params.videoScale = 1;
     var videoElement = null;
     var videoElementCanvas = null;
-    webgazer.params.videoElementId = 'webgazerVideoFeed'; 
-    webgazer.params.videoElementCanvasId = 'webgazerVideoCanvas';
-    webgazer.params.imgWidth = 1280;
-    webgazer.params.imgHeight = 720;
+    params.videoElementId = 'webgazerVideoFeed'; 
+    params.videoElementCanvasId = 'webgazerVideoCanvas';
+    params.imgWidth = 1280;
+    params.imgHeight = 720;
 
     //DEBUG variables
     //debug control boolean
@@ -38,7 +41,7 @@
         
     // loop parameters
     var clockStart = performance.now();
-    webgazer.params.dataTimestep = 50; 
+    params.dataTimestep = 50; 
     var paused = false;
     //registered callback for loop
     var nopCallback = function(data, time) {};
@@ -51,25 +54,24 @@
 
     //movelistener timeout clock parameters
     var moveClock = performance.now();
-    webgazer.params.moveTickSize = 50; //milliseconds
-
-    //currently used tracker and regression models, defaults to clmtrackr and linear regression
-    var curTracker = new webgazer.tracker.ClmGaze();
-    var regs = [new webgazer.reg.RidgeReg()];
-    var blinkDetector = new webgazer.BlinkDetector();
+    params.moveTickSize = 50; //milliseconds
 
     //lookup tables
     var curTrackerMap = {
-        'clmtrackr': function() { return new webgazer.tracker.ClmGaze(); },
-        'trackingjs': function() { return new webgazer.tracker.TrackingjsGaze(); },
-        'js_objectdetect': function() { return new webgazer.tracker.Js_objectdetectGaze(); }
+        'clmtrackr': function() { return new ClmGaze(params); },
+        'trackingjs': function() { return new TrackingjsGaze(params); },
+        'js_objectdetect': function() { return new Js_objectdetectGaze(params); }
     };
     var regressionMap = {
-        'ridge': function() { return new webgazer.reg.RidgeReg(); },
-        'weightedRidge': function() { return new webgazer.reg.RidgeWeightedReg(); },
-        'threadedRidge': function() { return new webgazer.reg.RidgeRegThreaded(); },
-        'linear': function() { return new webgazer.reg.LinearReg(); }
+        'ridge': function() { return new RidgeReg(params); },
+        'weightedRidge': function() { return new RidgeWeightedReg(params); },
+        'threadedRidge': function() { return new RidgeRegThreaded(params); },
+        'linear': function() { return new LinearReg(params); }
     };
+    //currently used tracker and regression models, defaults to clmtrackr and linear regression
+    var curTracker = curTrackerMap['clmtrackr']();
+    var regs = [regressionMap['ridge']()];
+
 
     //localstorage name
     var localstorageLabel = 'webgazerGlobalData';
@@ -105,7 +107,7 @@
 
     /**
      * gets the most current frame of video and paints it to a resized version of the canvas with width and height
-     * @param {canvas} - the canvas to paint the video on to
+     * @param {canvas} canvas - the canvas to paint the video on to
      * @param {integer} width - the new width of the canvas
      * @param {integer} height - the new height of the canvas
      */
@@ -125,10 +127,15 @@
 
     /**
      *  paints the video to a canvas and runs the prediction pipeline to get a prediction
+     *  @param {integer} [regModelIndex] - if specified, gives a specific regression model prediction, otherwise gives all predictions
+     *  @return {Object} prediction - object containing the prediction data
+     *  @return {integer} prediction.x - the x screen coordinate predicted
+     *  @return {integer} prediction.y - the y screen coordinate predicted
+     *  @return {Array} prediction.all - if regModelIndex is unset, an array of prediction objects each with correspodning x and y attributes
      */
     function getPrediction(regModelIndex) {
         var predictions = [];
-        var features = getPupilFeatures(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
+        var features = getPupilFeatures(videoElementCanvas, params.imgWidth, params.imgHeight);
         if (regs.length == 0) {
             console.log('regression not set, call setRegression()');
             return null;
@@ -175,7 +182,7 @@
         }
 
         if (!paused) {
-            //setTimeout(loop, webgazer.params.dataTimestep);
+            //setTimeout(loop, params.dataTimestep);
             requestAnimationFrame(loop);
         }
     }
@@ -187,7 +194,7 @@
         if (paused) {
             return;
         }
-        var features = getPupilFeatures(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
+        var features = getPupilFeatures(videoElementCanvas, params.imgWidth, params.imgHeight);
         if (regs.length == 0) {
             console.log('regression not set, call setRegression()');
             return null;
@@ -206,12 +213,12 @@
         }
 
         var now = performance.now();
-        if (now < moveClock + webgazer.params.moveTickSize) {
+        if (now < moveClock + params.moveTickSize) {
             return;
         } else {
             moveClock = now;
         }
-        var features = getPupilFeatures(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
+        var features = getPupilFeatures(videoElementCanvas, params.imgWidth, params.imgHeight);
         if (regs.length == 0) {
             console.log('regression not set, call setRegression()');
             return null;
@@ -262,7 +269,7 @@
      */
     function init(videoSrc) {
         videoElement = document.createElement('video');
-        videoElement.id = webgazer.params.videoElementId; 
+        videoElement.id = params.videoElementId; 
         videoElement.autoplay = true;
         console.log(videoElement);
         videoElement.style.display = 'none';
@@ -272,7 +279,7 @@
         document.body.appendChild(videoElement);
 
         videoElementCanvas = document.createElement('canvas'); 
-        videoElementCanvas.id = webgazer.params.videoElementCanvasId;
+        videoElementCanvas.id = params.videoElementCanvasId;
         videoElementCanvas.style.display = 'none';
         document.body.appendChild(videoElementCanvas);
 
@@ -337,7 +344,7 @@
         if (videoElementCanvas == null) {
             return false;
         }
-        paintCurrentFrame(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
+        paintCurrentFrame(videoElementCanvas, params.imgWidth, params.imgHeight);
         return videoElementCanvas.width > 0;
     }
 
@@ -490,15 +497,24 @@
 
     /**
      * sets a callback to be executed on every gaze event (currently all time steps)
-     * @param {function}
-     *      @param {data} - the prediction data
-     *      @param {elapsedTime} - the elapsed time since begin() was called
+     * @param {gazeListener} listener - callback to handle a gaze prediction event
      * @return {webgazer} this
      */
     webgazer.setGazeListener = function(listener) {
         callback = listener;
         return webgazer;
     }
+
+    /**
+     * Handles gaze events by providing a prediction object and elapsed time
+     * @callback gazeListener
+     * @param {Object} prediction - object containing the prediction data
+     *  @param {integer} prediction.x - the x screen coordinate predicted
+     *  @param {integer} prediction.y - the y screen coordinate predicted
+     *  @param {Array} prediction.all - if regModelIndex is unset, an array of prediction objects each with correspodning x and y attributes
+     *  @param {integer} elapsedTime - amount of time since begin() was called
+     */
+
 
     /**
      * removes the callback set by setGazeListener
@@ -520,7 +536,7 @@
     
     /**
      * returns the regression currently in use
-     * @return {Array{regression}} an array of objects following the regression interface
+     * @return {array} an array of objects following the regression interface
      */
     webgazer.getRegression = function() {
         return regs;
@@ -528,7 +544,10 @@
 
     /**
      * requests an immediate prediction
-     * @return {object} prediction data object
+     *  @return {Object} prediction - object containing the prediction data
+     *  @return {integer} prediction.x - the x screen coordinate predicted
+     *  @return {integer} prediction.y - the y screen coordinate predicted
+     *  @return {Array} prediction.all - if regModelIndex is unset, an array of prediction objects each with correspodning x and y attributes
      */
     webgazer.getCurrentPrediction = function() {
         return getPrediction(); 
@@ -538,7 +557,9 @@
      * returns the different event types that may be passed to regressions when calling regression.addData()
      * @return {array} array of strings where each string is an event type
      */
-    webgazer.params.getEventTypes = function() { 
+    params.getEventTypes = function() { 
         return eventTypes.slice(); 
     }
-}(window));
+
+    return webgazer;
+})

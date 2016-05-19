@@ -1,9 +1,4 @@
-(function(window) {
-
-    window.webgazer = window.webgazer || {};
-    webgazer.reg = webgazer.reg || {};
-    webgazer.mat = webgazer.mat || {};
-    webgazer.util = webgazer.util || {};
+define('RidgeThreadedReg', ['util', 'regression', 'matrix'], function(util, reg, mat) {
 
     var ridgeParameter = Math.pow(10,-5);
     var resizeWidth = 10;
@@ -13,16 +8,16 @@
     var trailDataWindow = 10;
 
     function getEyeFeats(eyes) {
-        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
-        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
+        var resizedLeft = util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+        var resizedright = util.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
-        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
+        var leftGray = util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+        var rightGray = util.grayscale(resizedright.data, resizedright.width, resizedright.height);
 
         var histLeft = [];
-        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
+        util.equalizeHistogram(leftGray, 5, histLeft);
         var histRight = [];
-        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
+        util.equalizeHistogram(rightGray, 5, histRight);
 
         var leftGrayArray = Array.prototype.slice.call(histLeft);
         var rightGrayArray = Array.prototype.slice.call(histRight);
@@ -36,17 +31,25 @@
         this.weights = event.data;
     }
 
-    webgazer.reg.RidgeRegThreaded = function() {
-        this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
-        this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
-        this.eyeFeaturesClicks = new webgazer.util.DataWindow(dataWindow);
+    /**
+     * Constructor for the RidgeThreadedReg object which uses unweighted ridge regression to correlate click and mouse movement to eye patch features
+     * This class has the same functionality as RidgeReg with two large differences:
+     * 1. training examples are batched for retraining the model instead of retraining on each new example
+     * 2. the training runs on a separate thread which should enable better running time
+     * @alias module:RidgeThreadedReg
+     * @exports RidgeThreadedReg
+     */
+    var RidgeThreadedReg = function() {
+        this.screenXClicksArray = new util.DataWindow(dataWindow);
+        this.screenYClicksArray = new util.DataWindow(dataWindow);
+        this.eyeFeaturesClicks = new util.DataWindow(dataWindow);
 
-        this.screenXTrailArray = new webgazer.util.DataWindow(trailDataWindow);
-        this.screenYTrailArray = new webgazer.util.DataWindow(trailDataWindow);
-        this.eyeFeaturesTrail = new webgazer.util.DataWindow(trailDataWindow);
+        this.screenXTrailArray = new util.DataWindow(trailDataWindow);
+        this.screenYTrailArray = new util.DataWindow(trailDataWindow);
+        this.eyeFeaturesTrail = new util.DataWindow(trailDataWindow);
 
-        this.dataClicks = new webgazer.util.DataWindow(dataWindow);
-        this.dataTrail = new webgazer.util.DataWindow(dataWindow);
+        this.dataClicks = new util.DataWindow(dataWindow);
+        this.dataTrail = new util.DataWindow(dataWindow);
 
 
         this.worker = new Worker('../src/ridgeWorker.js');
@@ -56,7 +59,7 @@
         };
     }
 
-    webgazer.reg.RidgeRegThreaded.prototype.addData = function(eyes, screenPos, type) {
+    RidgeThreadedReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
         }
@@ -66,7 +69,7 @@
         this.worker.postMessage({'eyes':getEyeFeats(eyes), 'screenPos':screenPos, 'type':type})
     }
 
-    webgazer.reg.RidgeRegThreaded.prototype.predict = function(eyesObj) {
+    RidgeThreadedReg.prototype.predict = function(eyesObj) {
         console.log('in predict1');
         if (!eyesObj) {
             return null;
@@ -94,7 +97,7 @@
         };
     }
 
-    webgazer.reg.RidgeRegThreaded.prototype.setData = function(data) {
+    RidgeThreadedReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             //TODO this is a kludge, needs to be fixed
             data[i].eyes.left.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.left.patch), data[i].eyes.left.width, data[i].eyes.left.height);
@@ -103,10 +106,12 @@
         }
     }
 
-    webgazer.reg.RidgeRegThreaded.prototype.getData = function() {
+    RidgeThreadedReg.prototype.getData = function() {
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 
 
-    webgazer.reg.RidgeRegThreaded.prototype.name = 'ridge';
-}(window));
+    RidgeThreadedReg.prototype.name = 'RidgeThreadedReg';
+
+    return RidgeThreadedReg;
+});
