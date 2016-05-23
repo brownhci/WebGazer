@@ -1,66 +1,37 @@
 # WebGazer.js
 
-WebGazer.js is an open-source, client-side JavaScript library that performs real-time gaze tracking on the browser. WebGazer.js uses HTML5 to access the webcam of the user and upon their consent uses a series of computational models to predict where the user is looking at any given time. All computations are performed locally and are not transmitted outside the user's computer.
+WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js was built It is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server.
+
 
 * [Official website](https://webgazer.cs.brown.edu)
-* [Documentation](https://github.com/brownhci/WebGazer/wiki)
+* [Documentation](https://webgazer.cs.brown.edu/documentation)
 * [API Docs](https://github.com/brownhci/WebGazer/wiki/Top-Level-API)
 
 
+## Features
+
+* Real time gaze prediction on most major browsers
+* No special hardware - WebGazer.js uses common webcams
+* Self-calibration from clicks and cursor movements
+* Easy to integrate with a few lines of JavaScript
+* Swappable components for eye detection
+* Multiple gaze prediction models
+
+
 ## How to install
+Download the webgazer.js file located [here](https://webgazer.cs.brown.edu/#download) or use the file build/webgazer.js from this repository.
+
+If you want to build the repository from source follow these instructions:
+
+    git clone https://github.com/brownhci/WebGazer.git
+    cd build
+    ./build_library
 
 
+## Examples
 
-## Example
+Examples can be found [here](https://webgazer.cs.brown.edu/#examples)
 
-## Video
-
-## Demo
-
-<!--WebGazer.js can integrated in any website that wishes to use gaze tracking either to better understand users-->
-
-## Operation
-    WebGazer.js contains the top level api commands which control the state of webgazer. At a high level, webgazer's flow of operation is
-
-        (set parameters like tracker)
-        \/
-        isReady()
-        \/
-   |--->begin()
-   |         ||                             
-   |        (load global parameters)        
-   |         ||                             
-   |        loop()
-   |            || 
-   |           getPrediction()     
-   |
-   |
-   |    (move or click listener)
-   |        ||
-   |       (training data is given to regression module via addData) 
-   |
-   |    getPrediction()
-   |        ||
-   |       tracker.getEyePatches()
-   |            ||
-   |           blickDetector.detectBlink()
-   |                ||
-   |               pupil.getPupils()
-   |
-   |    pause()
-   |    \/
-   |<---resume()
-        \/
-        end()
-            ||
-           (save global parameters)
-            
-
-
-Development Tooling
-
-
-Bugs
 
 ## Browser Support
 
@@ -84,7 +55,6 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 
 
 
-
 ## Who We Are
 
 * Alexandra Papoutsaki
@@ -96,5 +66,4 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 Copyright (C) 2016 Brown HCI Group
 
 Licensed under GPLv3.
-
 

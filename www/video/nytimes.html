@@ -3,9 +3,16 @@
     <HEAD>
         <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
         <TITLE>Simple Demonstration of how WebGazer.js works</TITLE>
+        <style>
+        body {
+            background-image: url("nytimes.png");
+            height: 2046px;
+        }
+
+        </style>
     </HEAD>
     <BODY LANG="en-US" LINK="#0000ff" DIR="LTR">
-        <script src="webgazer.js"></script>
+        <script src="../webgazer.js"></script>
         <script>
 window.onload = function() {
     webgazer.setRegression('ridge') /* currently must set regression and tracker */
@@ -20,7 +27,7 @@ window.onload = function() {
     var width = 320;
     var height = 240;
     var topDist = '0px';
-    var leftDist = '0px';
+    var leftDist = '1000px';
     
     var setup = function() {
         var video = document.getElementById('webgazerVideoFeed');
@@ -70,7 +77,7 @@ window.onload = function() {
 
 
 window.onbeforeunload = function() {
-    webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
+    //webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
 }
         </script>
 
