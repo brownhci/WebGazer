@@ -47,6 +47,10 @@ define('LinearReg', ['pupil'], function(pupil) {
         this.data = data;
     }
 
+    /**
+     * gets the training data stored in this regression model, *this is not the model itself, but merely its training data*
+     * @return {Object[]} the set of training data stored in this regression class
+     */
     LinearReg.prototype.getData = function() {
         return this.data;
     }
