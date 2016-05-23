@@ -9844,7 +9844,7 @@ if (typeof exports !== 'undefined') {
      */
     self.webgazer.util.grayscale = function(imageData, imageWidth, imageHeight){
         //TODO implement ourselves to remove dependency
-        return tracking.Image.grayscale(imageData.data, imageWidth, imageHeight, false);
+        return tracking.Image.grayscale(imageData, imageWidth, imageHeight, false);
     }
 
     /**
@@ -10141,8 +10141,8 @@ if (typeof exports !== 'undefined') {
                 y += smoothingVals.get(d).y;
             }
             var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
-            gazeDot.style.top = pred.y + 'px';
-            gazeDot.style.left = pred.x + 'px';
+            gazeDot.style.top = window.scrollY + pred.y + 'px';
+            gazeDot.style.left = window.scrollX + pred.x + 'px';
         }
 
         if (!paused) {

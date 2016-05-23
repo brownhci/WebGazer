@@ -102,7 +102,7 @@
      */
     self.webgazer.util.grayscale = function(imageData, imageWidth, imageHeight){
         //TODO implement ourselves to remove dependency
-        return tracking.Image.grayscale(imageData.data, imageWidth, imageHeight, false);
+        return tracking.Image.grayscale(imageData, imageWidth, imageHeight, false);
     }
 
     /**
