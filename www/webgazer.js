@@ -8579,7 +8579,8 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
 (function(window) {
     
     window.webgazer = window.webgazer || {};
-    webgazer.reg = window.reg || {};
+    webgazer.reg = webgazer.reg || {};
+    webgazer.pupil = webgazer.pupil || {};
 
     webgazer.reg.LinearReg = function() {
         this.leftDatasetX = [];
@@ -8593,14 +8594,15 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         if (!eyes) {
             return;
         }
+        webgazer.pupil.getPupils(eyes);
         if (!eyes.left.blink) {
-            this.leftDatasetX.push([eyes.left.pupil[0], screenPos[0]]);
-            this.leftDatasetY.push([eyes.left.pupil[1], screenPos[1]]);
+            this.leftDatasetX.push([eyes.left.pupil[0][0], screenPos[0]]);
+            this.leftDatasetY.push([eyes.left.pupil[0][1], screenPos[1]]);
         }
 
         if (!eyes.right.blink) {
-            this.rightDatasetX.push([eyes.right.pupil[0], screenPos[0]]);
-            this.rightDatasetY.push([eyes.right.pupil[1], screenPos[1]]);
+            this.rightDatasetX.push([eyes.right.pupil[0][0], screenPos[0]]);
+            this.rightDatasetY.push([eyes.right.pupil[0][1], screenPos[1]]);
         }
         this.data.push({'eyes': eyes, 'screenPos': screenPos, 'type': type});
     }
@@ -8617,6 +8619,9 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
     }
 
     webgazer.reg.LinearReg.prototype.predict = function(eyesObj) {
+        if (!eyesObj) {
+            return null;
+        }
         var result = regression('linear', this.leftDatasetX);
         var leftSlopeX = result.equation[0];
         var leftIntersceptX = result.equation[1];
@@ -8633,13 +8638,13 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         var rightSlopeY = result.equation[0];
         var rightIntersceptY = result.equation[1];
         
-        console.log(eyesObj);
+        webgazer.pupil.getPupils(eyesObj);
 
-        var leftPupilX = eyesObj.left.pupil[0];
-        var leftPupilY = eyesObj.left.pupil[1];
+        var leftPupilX = eyesObj.left.pupil[0][0];
+        var leftPupilY = eyesObj.left.pupil[0][1];
 
-        var rightPupilX = eyesObj.right.pupil[0];
-        var rightPupilY = eyesObj.right.pupil[1];
+        var rightPupilX = eyesObj.right.pupil[0][0];
+        var rightPupilY = eyesObj.right.pupil[0][1];
 
         predictedX = Math.floor((((leftSlopeX * leftPupilX) + leftIntersceptX) + ((rightSlopeX * rightPupilX) + rightIntersceptX))/2);
         predictedY = Math.floor((((leftSlopeY * leftPupilY) + leftIntersceptY) + ((rightSlopeY * rightPupilY) + rightIntersceptY))/2);
@@ -9053,14 +9058,14 @@ webgazer.pupil.getPupils = function(eyesObj) {
         return eyesObj;
     }
     if (!eyesObj.left.blink) {
-        eyesObj.left.pupil = getSinglePupil(eyesObj.left.patch, eyesObj.left.width, eyesObj.left.height)[0];
-        eyesObj.left.pupil[0] += eyesObj.left.imagex;
-        eyesObj.left.pupil[1] += eyesObj.left.imagey;
+        eyesObj.left.pupil = getSinglePupil(Array.prototype.slice.call(webgazer.util.grayscale(eyesObj.left.patch, eyesObj.left.width, eyesObj.left.height)), eyesObj.left.width, eyesObj.left.height);
+        eyesObj.left.pupil[0][0] -= eyesObj.left.pupil[1];
+        eyesObj.left.pupil[0][1] -= eyesObj.left.pupil[1];
     }
     if (!eyesObj.right.blink) {
-        eyesObj.right.pupil = getSinglePupil(eyesObj.right.patch, eyesObj.right.width, eyesObj.right.height)[0];
-        eyesObj.right.pupil[0] += eyesObj.right.imagex;
-        eyesObj.right.pupil[1] += eyesObj.right.imagey;
+        eyesObj.right.pupil = getSinglePupil(Array.prototype.slice.call(webgazer.util.grayscale(eyesObj.right.patch, eyesObj.right.width, eyesObj.right.height)), eyesObj.right.width, eyesObj.right.height);
+        eyesObj.right.pupil[0][0] -= eyesObj.right.pupil[1];
+        eyesObj.right.pupil[0][1] -= eyesObj.right.pupil[1];
     }
     return eyesObj;
 }
@@ -9329,7 +9334,7 @@ if (typeof exports !== 'undefined') {
     var resizeWidth = 10;
     var resizeHeight = 6;
     var dataWindow = 700;
-    var trailDataWindow = 10; //TODO perhaps more? less?;
+    var trailDataWindow = 10;
 
     /**
      * Performs ridge regression, according to the Weka code.
@@ -9385,29 +9390,15 @@ if (typeof exports !== 'undefined') {
         var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
         var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
 
-        //TODO either move objectdetect into webgazer namespace or re-implement
         var histLeft = [];
-        objectdetect.equalizeHistogram(leftGray, 5, histLeft);
+        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
         var histRight = [];
-        objectdetect.equalizeHistogram(rightGray, 5, histRight);
+        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
 
-        leftGrayArray = Array.prototype.slice.call(histLeft);
-        rightGrayArray = Array.prototype.slice.call(histRight);
+        var leftGrayArray = Array.prototype.slice.call(histLeft);
+        var rightGrayArray = Array.prototype.slice.call(histRight);
 
-        //TODO take into account head positions
-        //23 - left eye left
-        //25 - left eye right
-        //30 - right eye left
-        //28 - right eye right
-        /*var widthLeft = eyes.positions[23][0] - eyes.positions[25][0];
-        var widthRight = eyes.positions[30][0] - eyes.positions[28][0];
-        var widthRatio = widthLeft / widthRight;
-        var widthTotal = widthLeft + widthRight;
-        var headVals = [eyes.positions[23][0], eyes.positions[23][1], eyes.positions[25][0], eyes.positions[25][1],
-                        eyes.positions[30][0], eyes.positions[30][1], eyes.positions[28][0], eyes.positions[28][1],
-                        widthLeft, widthRight, widthRatio, widthTotal]; */
-        var headVals = [];
-        return leftGrayArray.concat(rightGrayArray).concat(headVals);
+        return leftGrayArray.concat(rightGrayArray);
     }
 
     function getCurrentFixationIndex() {
@@ -9520,7 +9511,6 @@ if (typeof exports !== 'undefined') {
     }
 
     webgazer.reg.RidgeReg.prototype.getData = function() {
-        //TODO move data storage to webgazer object level
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 
@@ -9541,7 +9531,7 @@ if (typeof exports !== 'undefined') {
     var resizeWidth = 10;
     var resizeHeight = 6;
     var dataWindow = 700;
-    var trailDataWindow = 10; //TODO perhaps more? less?;
+    var trailDataWindow = 10; 
 
     /**
      * Performs ridge regression, according to the Weka code.
@@ -9597,29 +9587,15 @@ if (typeof exports !== 'undefined') {
         var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
         var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
 
-        //TODO either move objectdetect into webgazer namespace or re-implement
         var histLeft = [];
-        objectdetect.equalizeHistogram(leftGray, 5, histLeft);
+        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
         var histRight = [];
-        objectdetect.equalizeHistogram(rightGray, 5, histRight);
+        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
 
-        leftGrayArray = Array.prototype.slice.call(histLeft);
-        rightGrayArray = Array.prototype.slice.call(histRight);
+        var leftGrayArray = Array.prototype.slice.call(histLeft);
+        var rightGrayArray = Array.prototype.slice.call(histRight);
 
-        //TODO take into account head positions
-        //23 - left eye left
-        //25 - left eye right
-        //30 - right eye left
-        //28 - right eye right
-        /*var widthLeft = eyes.positions[23][0] - eyes.positions[25][0];
-        var widthRight = eyes.positions[30][0] - eyes.positions[28][0];
-        var widthRatio = widthLeft / widthRight;
-        var widthTotal = widthLeft + widthRight;
-        var headVals = [eyes.positions[23][0], eyes.positions[23][1], eyes.positions[25][0], eyes.positions[25][1],
-                        eyes.positions[30][0], eyes.positions[30][1], eyes.positions[28][0], eyes.positions[28][1],
-                        widthLeft, widthRight, widthRatio, widthTotal]; */
-        var headVals = [];
-        return leftGrayArray.concat(rightGrayArray).concat(headVals);
+        return leftGrayArray.concat(rightGrayArray);
     }
 
     function getCurrentFixationIndex() {
@@ -9702,7 +9678,7 @@ if (typeof exports !== 'undefined') {
         var weightedYArray = Array(len);
         for (var i = 0; i < len; i++) {
             var weight = Math.sqrt( 1 / (len - i) ); // access from oldest to newest so should start with low weight and increase steadily
-            //TODO my abstraction is leaking...
+            //abstraction is leaking...
             var trueIndex = this.eyeFeaturesClicks.getTrueIndex(i);
             for (var j = 0; j < this.eyeFeaturesClicks.data[trueIndex].length; j++) {
                 var val = this.eyeFeaturesClicks.data[trueIndex][j] * weight;
@@ -9756,7 +9732,6 @@ if (typeof exports !== 'undefined') {
     }
 
     webgazer.reg.RidgeWeightedReg.prototype.getData = function() {
-        //TODO move data storage to webgazer object level
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 
@@ -9868,8 +9843,19 @@ if (typeof exports !== 'undefined') {
      * @return {ImageData} grayscaledImage 
      */
     self.webgazer.util.grayscale = function(imageData, imageWidth, imageHeight){
-        //TODO either move tracking into webgazer namespace or re-implement function
+        //TODO implement ourselves to remove dependency
         return tracking.Image.grayscale(imageData, imageWidth, imageHeight, false);
+    }
+
+    /**
+     * Increase contrast of an image
+     * @param {ImageData} grayscaleImageSrc - grayscale integer array
+     * @param {number} step - sampling rate, control performance
+     * @param {array} destinationImage - array to hold the resulting image
+     */
+    self.webgazer.util.equalizeHistogram = function(grayscaleImageSrc, step, destinationImage) {
+        //TODO implement ourselves to remove dependency
+        return objectdetect.equalizeHistogram(grayscaleImageSrc, step, destinationImage);
     }
 
     /**
@@ -9880,8 +9866,6 @@ if (typeof exports !== 'undefined') {
      * @return {webgazer.util.Eye} resized eye patch
      */
     self.webgazer.util.resizeEye = function(eye, resizeWidth, resizeHeight) {
-
-        //TODO this seems like it could be done in just one painting to a canvas
 
         var canvas = document.createElement('canvas');
         canvas.width = eye.width;
@@ -10025,7 +10009,7 @@ if (typeof exports !== 'undefined') {
         
     // loop parameters
     var clockStart = performance.now();
-    webgazer.params.dataTimestep = 50; //TODO either make this a settable parameter or otherwise determine best value, currently a settable parameter
+    webgazer.params.dataTimestep = 50; 
     var paused = false;
     //registered callback for loop
     var nopCallback = function(data, time) {};
@@ -10041,12 +10025,12 @@ if (typeof exports !== 'undefined') {
     webgazer.params.moveTickSize = 50; //milliseconds
 
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
-    var tracker = new webgazer.tracker.ClmGaze();
+    var curTracker = new webgazer.tracker.ClmGaze();
     var regs = [new webgazer.reg.RidgeReg()];
     var blinkDetector = new webgazer.BlinkDetector();
 
     //lookup tables
-    var trackerMap = {
+    var curTrackerMap = {
         'clmtrackr': function() { return new webgazer.tracker.ClmGaze(); },
         'trackingjs': function() { return new webgazer.tracker.TrackingjsGaze(); },
         'js_objectdetect': function() { return new webgazer.tracker.Js_objectdetectGaze(); }
@@ -10054,7 +10038,8 @@ if (typeof exports !== 'undefined') {
     var regressionMap = {
         'ridge': function() { return new webgazer.reg.RidgeReg(); },
         'weightedRidge': function() { return new webgazer.reg.RidgeWeightedReg(); },
-        'threadedRidge': function() { return new webgazer.reg.RidgeRegThreaded(); }
+        'threadedRidge': function() { return new webgazer.reg.RidgeRegThreaded(); },
+        'linear': function() { return new webgazer.reg.LinearReg(); }
     };
 
     //localstorage name
@@ -10071,7 +10056,7 @@ if (typeof exports !== 'undefined') {
 
     /**
      * gets the pupil features by following the pipeline which threads an eyes object through each call:
-     * tracker gets eye patches -> blink detector -> pupil detection 
+     * curTracker gets eye patches -> blink detector -> pupil detection 
      * @param {Canvas} canvas - a canvas which will have the video drawn onto it
      * @param {number} width - the width of canvas
      * @param {number} height - the height of canvas
@@ -10082,7 +10067,7 @@ if (typeof exports !== 'undefined') {
         }
         paintCurrentFrame(canvas, width, height);
         try {
-            return blinkDetector.detectBlink(tracker.getEyePatches(canvas, width, height));
+            return blinkDetector.detectBlink(curTracker.getEyePatches(canvas, width, height));
         } catch(err) {
             console.log(err);
             return null;
@@ -10112,7 +10097,7 @@ if (typeof exports !== 'undefined') {
     /**
      *  paints the video to a canvas and runs the prediction pipeline to get a prediction
      */
-    function getPrediction() {
+    function getPrediction(regModelIndex) {
         var predictions = [];
         var features = getPupilFeatures(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
         if (regs.length == 0) {
@@ -10122,12 +10107,18 @@ if (typeof exports !== 'undefined') {
         for (var reg in regs) {
             predictions.push(regs[reg].predict(features));
         }
-        //TODO make better api for this
-        return predictions[0] == null ? null : {
-            'x' : predictions[0].x,
-            'y' : predictions[0].y,
-            'all' : predictions
-        };
+        if (regModelIndex !== undefined) {
+            return predictions[regModelIndex] == null ? null : {
+                'x' : predictions[regModelIndex].x,
+                'y' : predictions[regModelIndex].y,
+            };
+        } else {
+            return predictions.length == 0 || predictions[0] == null ? null : {
+                'x' : predictions[0].x,
+                'y' : predictions[0].y,
+                'all' : predictions
+            };
+        }
     }
 
     /**
@@ -10150,8 +10141,8 @@ if (typeof exports !== 'undefined') {
                 y += smoothingVals.get(d).y;
             }
             var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
-            gazeDot.style.top = pred.y + 'px';
-            gazeDot.style.left = pred.x + 'px';
+            gazeDot.style.top = window.scrollY + pred.y + 'px';
+            gazeDot.style.left = window.scrollX + pred.x + 'px';
         }
 
         if (!paused) {
@@ -10249,7 +10240,6 @@ if (typeof exports !== 'undefined') {
 
         //turn the stream into a magic URL 
         videoElement.src = videoSrc;  
-        //TODO check to see if we actually need to add the element to the dom
         document.body.appendChild(videoElement);
 
         videoElementCanvas = document.createElement('canvas'); 
@@ -10366,15 +10356,11 @@ if (typeof exports !== 'undefined') {
      * @return {boolean} if browser is compatible
      */
     webgazer.detectCompatibility = function() {
-        //TODO detectCompatibility
-        return true;
-    }
+        navigator.getUserMedia = navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mediaDevices.getUserMedia;
 
-    /**
-     * runs an initial calibration page/step
-     */
-    webgazer.performCalibration = function(desiredAccuracy) {
-        //TODO performCalibration
+        return navigator.getUserMedia !== undefined;
     }
 
     /**
@@ -10405,15 +10391,15 @@ if (typeof exports !== 'undefined') {
      * @return {webgazer} this
      */
     webgazer.setTracker = function(name) {
-        if (trackerMap[name] == undefined) {
+        if (curTrackerMap[name] == undefined) {
             console.log('Invalid tracker selection');
             console.log('Options are: ');
-            for (var tracker in trackerMap) {
-                console.log(tracker);
+            for (var t in curTrackerMap) {
+                console.log(t);
             }
             return webgazer;
         }
-        tracker = trackerMap[name]();    
+        curTracker = curTrackerMap[name]();    
         return webgazer;
     }
 
@@ -10440,19 +10426,19 @@ if (typeof exports !== 'undefined') {
     /**
      * adds a new tracker module so that it can be used by setTracker()
      * @param {string} name - the new name of the tracker
-     * @param {function} constructor - the constructor of the tracker object
+     * @param {function} constructor - the constructor of the curTracker object
      * @return {webgazer} this
      */
     webgazer.addTrackerModule = function(name, constructor) {
-        trackerMap[name] = function() {
+        curTrackerMap[name] = function() {
             contructor();
         };
     }
 
     /**
      * adds a new regression module so that it can be used by setRegression() and addRegression()
-     * @param {string} name - the new name of the tracker
-     * @param {function} constructor - the constructor of the tracker object
+     * @param {string} name - the new name of the regression
+     * @param {function} constructor - the constructor of the regression object
      * @param {webgazer} this
      */
     webgazer.addRegressionModule = function(name, constructor) {
@@ -10500,15 +10486,15 @@ if (typeof exports !== 'undefined') {
      * @return {tracker} an object following the tracker interface
      */
     webgazer.getTracker = function() {
-        return tracker;
+        return curTracker;
     }
     
     /**
      * returns the regression currently in use
-     * @return {regression} an object following the regression interface
+     * @return {Array{regression}} an array of objects following the regression interface
      */
     webgazer.getRegression = function() {
-        return reg;
+        return regs;
     }
 
     /**

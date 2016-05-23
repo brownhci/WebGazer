@@ -1,7 +1,8 @@
 (function(window) {
     
     window.webgazer = window.webgazer || {};
-    webgazer.reg = window.reg || {};
+    webgazer.reg = webgazer.reg || {};
+    webgazer.pupil = webgazer.pupil || {};
 
     webgazer.reg.LinearReg = function() {
         this.leftDatasetX = [];
@@ -15,14 +16,15 @@
         if (!eyes) {
             return;
         }
+        webgazer.pupil.getPupils(eyes);
         if (!eyes.left.blink) {
-            this.leftDatasetX.push([eyes.left.pupil[0], screenPos[0]]);
-            this.leftDatasetY.push([eyes.left.pupil[1], screenPos[1]]);
+            this.leftDatasetX.push([eyes.left.pupil[0][0], screenPos[0]]);
+            this.leftDatasetY.push([eyes.left.pupil[0][1], screenPos[1]]);
         }
 
         if (!eyes.right.blink) {
-            this.rightDatasetX.push([eyes.right.pupil[0], screenPos[0]]);
-            this.rightDatasetY.push([eyes.right.pupil[1], screenPos[1]]);
+            this.rightDatasetX.push([eyes.right.pupil[0][0], screenPos[0]]);
+            this.rightDatasetY.push([eyes.right.pupil[0][1], screenPos[1]]);
         }
         this.data.push({'eyes': eyes, 'screenPos': screenPos, 'type': type});
     }
@@ -39,6 +41,9 @@
     }
 
     webgazer.reg.LinearReg.prototype.predict = function(eyesObj) {
+        if (!eyesObj) {
+            return null;
+        }
         var result = regression('linear', this.leftDatasetX);
         var leftSlopeX = result.equation[0];
         var leftIntersceptX = result.equation[1];
@@ -55,13 +60,13 @@
         var rightSlopeY = result.equation[0];
         var rightIntersceptY = result.equation[1];
         
-        console.log(eyesObj);
+        webgazer.pupil.getPupils(eyesObj);
 
-        var leftPupilX = eyesObj.left.pupil[0];
-        var leftPupilY = eyesObj.left.pupil[1];
+        var leftPupilX = eyesObj.left.pupil[0][0];
+        var leftPupilY = eyesObj.left.pupil[0][1];
 
-        var rightPupilX = eyesObj.right.pupil[0];
-        var rightPupilY = eyesObj.right.pupil[1];
+        var rightPupilX = eyesObj.right.pupil[0][0];
+        var rightPupilY = eyesObj.right.pupil[0][1];
 
         predictedX = Math.floor((((leftSlopeX * leftPupilX) + leftIntersceptX) + ((rightSlopeX * rightPupilX) + rightIntersceptX))/2);
         predictedY = Math.floor((((leftSlopeY * leftPupilY) + leftIntersceptY) + ((rightSlopeY * rightPupilY) + rightIntersceptY))/2);

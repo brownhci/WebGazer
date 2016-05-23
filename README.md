@@ -30,7 +30,7 @@ If you want to build the repository from source follow these instructions:
 
 ## Examples
 
-Examples can be found [here](https://webgazer.cs.brown.edu/#examples)
+Examples of how WebGazer.js works can be found [here](https://webgazer.cs.brown.edu/#examples)
 
 
 ## Browser Support

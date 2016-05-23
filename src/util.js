@@ -101,8 +101,19 @@
      * @return {ImageData} grayscaledImage 
      */
     self.webgazer.util.grayscale = function(imageData, imageWidth, imageHeight){
-        //TODO either move tracking into webgazer namespace or re-implement function
+        //TODO implement ourselves to remove dependency
         return tracking.Image.grayscale(imageData, imageWidth, imageHeight, false);
+    }
+
+    /**
+     * Increase contrast of an image
+     * @param {ImageData} grayscaleImageSrc - grayscale integer array
+     * @param {number} step - sampling rate, control performance
+     * @param {array} destinationImage - array to hold the resulting image
+     */
+    self.webgazer.util.equalizeHistogram = function(grayscaleImageSrc, step, destinationImage) {
+        //TODO implement ourselves to remove dependency
+        return objectdetect.equalizeHistogram(grayscaleImageSrc, step, destinationImage);
     }
 
     /**
@@ -113,8 +124,6 @@
      * @return {webgazer.util.Eye} resized eye patch
      */
     self.webgazer.util.resizeEye = function(eye, resizeWidth, resizeHeight) {
-
-        //TODO this seems like it could be done in just one painting to a canvas
 
         var canvas = document.createElement('canvas');
         canvas.width = eye.width;
