@@ -2,7 +2,7 @@ define('pupil', ['util'], function(util) {
 
     /**
      * Returns intensity value at x,y position of a pixels image
-     * @param{array} pixels -number[][] of size width*height
+     * @param{array} pixels - array of size width*height
      * @param{number} x -  input x value
      * @param{number} y - input y value
      * @param{number} width - width of pixels image
@@ -24,7 +24,7 @@ define('pupil', ['util'], function(util) {
      * @param{array} pixels value of eye area
      * @param{number} width - of image in 'pixels'
      * @param{number} height - of image in 'pixels'
-     * @returns{2dnumber[][]} -integral image
+     * @returns{number[][]} -integral image
      */
     var getSumTable = function (pixels, width, height){
         var integralImage = new Array(width);
@@ -90,7 +90,7 @@ define('pupil', ['util'], function(util) {
     }
 
     /**
-     * Given anObject[] with two eye patches it finds the location of the detected pupils
+     * Given an Object with two eye patches it finds the location of the detected pupils
      * @param  {Object} eyesObj - left and right detected eye patches
      * @return {Object} eyesObj - updated eye patches with information about pupils' locations
      */

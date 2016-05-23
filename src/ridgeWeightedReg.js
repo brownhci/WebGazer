@@ -86,7 +86,7 @@ define('RidgeWeightedReg', ['util', 'regression', 'matrix'], function(util, reg,
     }
 
     /**
-     * Constructor for the RidgeWightedRegObject[] which uses *weighted* ridge regression to correlate click and mouse movement to eye patch features
+     * Constructor for the RidgeWightedReg Object which uses *weighted* ridge regression to correlate click and mouse movement to eye patch features
      * The weighting essentially provides a scheduled falloff in influence for mouse movements. This means that mouse moevemnts will only count towards the prediction for a short period of time, unlike unweighted ridge regression where all mouse movements are treated equally.
      * @alias module:RidgeWightedReg 
      * @exports RidgeWightedReg 
@@ -110,7 +110,7 @@ define('RidgeWeightedReg', ['util', 'regression', 'matrix'], function(util, reg,
 
     /**
      * adds data to the regression model
-     * @param {object} eyes - util.eyesObject[] containing left and right data
+     * @param {object} eyes - util.eyes Object containing left and right data
      * @param {array} screenPos - the screen [x,y] position when a training event happens
      * @param {string} type - the type of event
      */
@@ -142,8 +142,8 @@ define('RidgeWeightedReg', ['util', 'regression', 'matrix'], function(util, reg,
 
     /**
      * gets a prediction based on the current set of training data
-     * @param {object} eyesObj - util.eyesObject[]
-     * @return {Object} prediction -Object[] containing the prediction data
+     * @param {object} eyesObj - util.eyes Object
+     * @return {Object} prediction - Object containing the prediction data
      *  @return {integer} prediction.x - the x screen coordinate predicted
      *  @return {integer} prediction.y - the y screen coordinate predicted
      */

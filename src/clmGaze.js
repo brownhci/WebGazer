@@ -2,7 +2,7 @@ define('ClmGaze', function() {
     "use strict"
 
     /**
-     * Constructor for the ClmGazeObject[] which tracks head and eye positions using the clmtracker.js library
+     * Constructor for the ClmGaze Object which tracks head and eye positions using the clmtracker.js library
      * @alias module:ClmGaze
      * @exports ClmGaze 
      */

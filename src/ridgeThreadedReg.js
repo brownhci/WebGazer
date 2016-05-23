@@ -32,7 +32,7 @@ define('RidgeThreadedReg', ['util', 'regression', 'matrix'], function(util, reg,
     }
 
     /**
-     * Constructor for the RidgeThreadedRegObject[] which uses unweighted ridge regression to correlate click and mouse movement to eye patch features
+     * Constructor for the RidgeThreadedReg Object which uses unweighted ridge regression to correlate click and mouse movement to eye patch features
      * This class has the same functionality as RidgeReg with two large differences:
      * 1. training examples are batched for retraining the model instead of retraining on each new example
      * 2. the training runs on a separate thread which should enable better running time
@@ -61,7 +61,7 @@ define('RidgeThreadedReg', ['util', 'regression', 'matrix'], function(util, reg,
     
     /**
      * adds data to the regression model
-     * @param {object} eyes - util.eyesObject[] containing left and right data
+     * @param {object} eyes - util.eyes Object containing left and right data
      * @param {array} screenPos - the screen [x,y] position when a training event happens
      * @param {string} type - the type of event
      */
@@ -77,8 +77,8 @@ define('RidgeThreadedReg', ['util', 'regression', 'matrix'], function(util, reg,
 
     /**
      * gets a prediction based on the current set of training data
-     * @param {object} eyesObj - util.eyesObject[]
-     * @return {Object} prediction -Object[] containing the prediction data
+     * @param {object} eyesObj - util.eyes Object
+     * @return {Object} prediction - Object containing the prediction data
      *  @return {integer} prediction.x - the x screen coordinate predicted
      *  @return {integer} prediction.y - the y screen coordinate predicted
      */

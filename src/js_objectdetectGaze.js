@@ -83,7 +83,7 @@ define('Js_objectdetectGaze', function() {
      * @param {ImageData} workingImage - either the whole canvas or the upper half of the head
      * @param {number} width - width of working image
      * @param {number} height - height of working image
-     * @return{array} eyes -number[][] of rectangle information. 
+     * @return{object} eyes - object of rectangle information. 
      */
     Js_objectdetectGaze.prototype.detectEyes = function(workingImage, workingImageWidth, workingImageHeight){    
 
@@ -125,14 +125,14 @@ define('Js_objectdetectGaze', function() {
      * @param {canvas} imageCanvas - whole video canvas
      * @param {number} width - width of imageCanvas
      * @param {number} height - height of imageCanvas
-     * @return{array} face -number[][] of rectangle information
+     * @return{array} face - array of rectangle information
      */
     Js_objectdetectGaze.prototype.detectFace = function(imageCanvas, workingImageWidth, workingImageHeight){
         var intermediateFaces = [];
         var face = [];
         var width = ~~(60 * workingImageWidth / workingImageHeight);
         var height = 60;
-        var detector = newObject[]detect.detector(width, height, 1.1,Object[]detect.frontalface_alt);
+        var detector = new js_objectdetect.detector(width, height, 1.1, js_objectdetect.frontalface_alt);
         intermediateFaces = detector.detect(imageCanvas, 1);
         face = this.findLargestRectangle(intermediateFaces);
         // Rescale coordinates from detector to video coordinate space:
@@ -144,8 +144,8 @@ define('Js_objectdetectGaze', function() {
     }
 
     /**
-     * Goes through annumber[][] of rectangles and returns the one with the largest area
-     * @param {number[][]} rectanglesnumber[][] |number[][] of format [xCoordinate, yCoordinate, width, height]
+     * Goes through an array of rectangles and returns the one with the largest area
+     * @param {array} rectangles array | array of format [xCoordinate, yCoordinate, width, height]
      * @return{array} largestRectangle = [xCoordinate, yCoordinate, width, height]
      */
     Js_objectdetectGaze.prototype.findLargestRectangle = function(rectangles){
@@ -164,9 +164,9 @@ define('Js_objectdetectGaze', function() {
 
     /**
      * Merges detected rectangles in clusters
-     * Taken from trackingjs and modified slightly to reflect that rectangles arenumber[][]s and notObject[]s
-     * @param  {number[][]} rects rectangles to me clustered
-     * @return {number[][]} result merged rectangles
+     * Taken from trackingjs and modified slightly to reflect that rectangles are arrays and not Objects
+     * @param  { array} rects rectangles to me clustered
+     * @return { array} result merged rectangles
      */
     Js_objectdetectGaze.prototype.mergeRectangles = function(rects){
         var disjointSet = new tracking.DisjointSet(rects.length);

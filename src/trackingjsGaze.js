@@ -82,7 +82,7 @@ define('TrackingjsGaze', function() {
      * @param {ImageData} workingImage - either the whole canvas or the upper half of the head
      * @param {number} width - width of working image
      * @param {number} height - height of working image
-     * @return{array} eyes -number[][] of rectangle information. 
+     * @return{array} eyes - array of rectangle information. 
      */
     TrackingjsGaze.prototype.detectEyes = function(workingImage, width, height){         
         var eyes = [];
@@ -124,7 +124,7 @@ define('TrackingjsGaze', function() {
      * @param {ImageData} workingImage - whole video canvas
      * @param {number} width - width of imageCanvas
      * @param {number} height - height of imageCanvas
-     * @return{array} face -number[][] of rectangle information
+     * @return{array} face - array of rectangle information
      */
     TrackingjsGaze.prototype.detectFace = function(workingImage, width, height){
         var intermediateFaces = [];
@@ -141,9 +141,9 @@ define('TrackingjsGaze', function() {
     }
 
     /**
-     * Goes through annumber[][] of rectangles and returns the one with the largest area
-     * @param {number[][]} rectanglesnumber[][] |number[][] of format [xCoordinate, yCoordinate, width, height]
-     * @return{array} largestRectangle = [xCoordinate, yCoordinate, width, height]
+     * Goes through an array of rectangles and returns the one with the largest area
+     * @param {array} rectangles - array of format [xCoordinate, yCoordinate, width, height]
+     * @return{array} largestRectangle  [xCoordinate, yCoordinate, width, height]
      */
     TrackingjsGaze.prototype.findLargestRectangle = function(rectangles){
         var largestArea = 0;

@@ -12,7 +12,7 @@ function(RidgeReg, RidgeWeightedReg, RidgeThreadedReg, ClmGaze, TrackingjsGaze, 
      */
     var webgazer = {};
 
-    //paramsObject[] to be passed into tracker and regression constructors
+    //params Object to be passed into tracker and regression constructors
     //contains various potentially useful knowledge like the video size and data collection rates
     var params = {};
     
@@ -75,7 +75,7 @@ function(RidgeReg, RidgeWeightedReg, RidgeThreadedReg, ClmGaze, TrackingjsGaze, 
 
     //localstorage name
     var localstorageLabel = 'webgazerGlobalData';
-    //settingsObject[] for future storage of settings
+    //settings Object for future storage of settings
     var settings = {};
     var data = [];
     var defaults = {
@@ -86,7 +86,7 @@ function(RidgeReg, RidgeWeightedReg, RidgeThreadedReg, ClmGaze, TrackingjsGaze, 
     //PRIVATE FUNCTIONS
 
     /**
-     * gets the pupil features by following the pipeline which threads an eyesObject[] through each call:
+     * gets the pupil features by following the pipeline which threads an eyes Object through each call:
      * curTracker gets eye patches -> blink detector -> pupil detection 
      * @param {Canvas} canvas - a canvas which will have the video drawn onto it
      * @param {number} width - the width of canvas
@@ -128,10 +128,10 @@ function(RidgeReg, RidgeWeightedReg, RidgeThreadedReg, ClmGaze, TrackingjsGaze, 
     /**
      *  paints the video to a canvas and runs the prediction pipeline to get a prediction
      *  @param {integer} [regModelIndex] - if specified, gives a specific regression model prediction, otherwise gives all predictions
-     *  @return {Object} prediction -Object[] containing the prediction data
+     *  @return {Object} prediction - Object containing the prediction data
      *  @return {integer} prediction.x - the x screen coordinate predicted
      *  @return {integer} prediction.y - the y screen coordinate predicted
-     *  @return {Array} prediction.all - if regModelIndex is unset, annumber[][] of predictionObject[]s each with correspodning x and y attributes
+     *  @return {Array} prediction.all - if regModelIndex is unset, an array of prediction Objects each with correspodning x and y attributes
      */
     function getPrediction(regModelIndex) {
         var predictions = [];
@@ -241,7 +241,7 @@ function(RidgeReg, RidgeWeightedReg, RidgeThreadedReg, ClmGaze, TrackingjsGaze, 
     }
    
    /**
-    * constructs the global storageObject[] and adds it to localstorage
+    * constructs the global storage Object and adds it to localstorage
     */
     function setGlobalData() {
         var storage = {
@@ -249,7 +249,7 @@ function(RidgeReg, RidgeWeightedReg, RidgeThreadedReg, ClmGaze, TrackingjsGaze, 
             'data': regs[0].getData() || data
         };
         window.localStorage.setItem(localstorageLabel, JSON.stringify(storage));
-        //TODO data should probably be stored in webgazerObject[] instead of each regression model
+        //TODO data should probably be stored in webgazer Object instead of each regression model
         //     -> requires duplication of data, but is likely easier on regression model implementors
     }
 
@@ -462,7 +462,7 @@ function(RidgeReg, RidgeWeightedReg, RidgeThreadedReg, ClmGaze, TrackingjsGaze, 
     /**
      * adds a new tracker module so that it can be used by setTracker()
      * @param {string} name - the new name of the tracker
-     * @param {function} constructor - the constructor of the curTrackerObject[]
+     * @param {function} constructor - the constructor of the curTracker Object
      * @return {webgazer} this
      */
     webgazer.addTrackerModule = function(name, constructor) {
@@ -474,7 +474,7 @@ function(RidgeReg, RidgeWeightedReg, RidgeThreadedReg, ClmGaze, TrackingjsGaze, 
     /**
      * adds a new regression module so that it can be used by setRegression() and addRegression()
      * @param {string} name - the new name of the regression
-     * @param {function} constructor - the constructor of the regressionObject[]
+     * @param {function} constructor - the constructor of the regression Object
      * @param {webgazer} this
      */
     webgazer.addRegressionModule = function(name, constructor) {
@@ -506,12 +506,12 @@ function(RidgeReg, RidgeWeightedReg, RidgeThreadedReg, ClmGaze, TrackingjsGaze, 
     }
 
     /**
-     * Handles gaze events by providing a predictionObject[] and elapsed time
+     * Handles gaze events by providing a prediction Object and elapsed time
      * @callback gazeListener
-     * @param {Object} prediction -Object[] containing the prediction data
+     * @param {Object} prediction - Object containing the prediction data
      *  @param {integer} prediction.x - the x screen coordinate predicted
      *  @param {integer} prediction.y - the y screen coordinate predicted
-     *  @param {Array} prediction.all - if regModelIndex is unset, annumber[][] of predictionObject[]s each with correspodning x and y attributes
+     *  @param {Array} prediction.all - if regModelIndex is unset, an array of prediction Objects each with correspodning x and y attributes
      *  @param {integer} elapsedTime - amount of time since begin() was called
      */
 
@@ -528,7 +528,7 @@ function(RidgeReg, RidgeWeightedReg, RidgeThreadedReg, ClmGaze, TrackingjsGaze, 
     //GETTERS
     /**
      * returns the tracker currently in use
-     * @return {tracker} anObject[] following the tracker interface
+     * @return {tracker} an Object following the tracker interface
      */
     webgazer.getTracker = function() {
         return curTracker;
@@ -536,7 +536,7 @@ function(RidgeReg, RidgeWeightedReg, RidgeThreadedReg, ClmGaze, TrackingjsGaze, 
     
     /**
      * returns the regression currently in use
-     * @return {array} annumber[][] ofObject[]s following the regression interface
+     * @return {array} an array of Objects following the regression interface
      */
     webgazer.getRegression = function() {
         return regs;
@@ -544,10 +544,10 @@ function(RidgeReg, RidgeWeightedReg, RidgeThreadedReg, ClmGaze, TrackingjsGaze, 
 
     /**
      * requests an immediate prediction
-     *  @return {Object} prediction -Object[] containing the prediction data
+     *  @return {Object} prediction - Object containing the prediction data
      *  @return {integer} prediction.x - the x screen coordinate predicted
      *  @return {integer} prediction.y - the y screen coordinate predicted
-     *  @return {Array} prediction.all - if regModelIndex is unset, annumber[][] of predictionObject[]s each with correspodning x and y attributes
+     *  @return {Array} prediction.all - if regModelIndex is unset, an array of prediction Objects each with correspodning x and y attributes
      */
     webgazer.getCurrentPrediction = function() {
         return getPrediction(); 
@@ -555,7 +555,7 @@ function(RidgeReg, RidgeWeightedReg, RidgeThreadedReg, ClmGaze, TrackingjsGaze, 
 
     /**
      * returns the different event types that may be passed to regressions when calling regression.addData()
-     * @return {array}number[][] of strings where each string is an event type
+     * @return {array} array of strings where each string is an event type
      */
     params.getEventTypes = function() { 
         return eventTypes.slice(); 

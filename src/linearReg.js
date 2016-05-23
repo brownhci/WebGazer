@@ -15,7 +15,7 @@ define('LinearReg', ['pupil'], function(pupil) {
     
     /**
      * adds data to the regression model
-     * @param {object} eyes - util.eyesObject[] containing left and right data
+     * @param {object} eyes - util.eyes Object containing left and right data
      * @param {array} screenPos - the screen [x,y] position when a training event happens
      * @param {string} type - the type of event
      */
@@ -57,8 +57,8 @@ define('LinearReg', ['pupil'], function(pupil) {
 
     /**
      * gets a prediction based on the current set of training data
-     * @param {object} eyesObj - util.eyesObject[]
-     * @return {Object} prediction -Object[] containing the prediction data
+     * @param {object} eyesObj - util.eyes Object
+     * @return {Object} prediction - Object containing the prediction data
      *  @return {integer} prediction.x - the x screen coordinate predicted
      *  @return {integer} prediction.y - the y screen coordinate predicted
      */

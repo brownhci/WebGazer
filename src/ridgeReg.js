@@ -86,7 +86,7 @@ define('RidgeReg', ['util', 'regression', 'matrix'], function(util, reg, mat) {
     }
 
     /**
-     * Constructor for the RidgeRegObject[] which uses unweighted ridge regression to correlate click and mouse movement to eye patch features
+     * Constructor for the RidgeReg Object which uses unweighted ridge regression to correlate click and mouse movement to eye patch features
      * @alias module:RidgeReg
      * @exports RidgeReg
      */
@@ -110,7 +110,7 @@ define('RidgeReg', ['util', 'regression', 'matrix'], function(util, reg, mat) {
 
     /**
      * adds data to the regression model
-     * @param {object} eyes - util.eyesObject[] containing left and right data
+     * @param {object} eyes - util.eyes Object containing left and right data
      * @param {array} screenPos - the screen [x,y] position when a training event happens
      * @param {string} type - the type of event
      */
@@ -142,8 +142,8 @@ define('RidgeReg', ['util', 'regression', 'matrix'], function(util, reg, mat) {
 
     /**
      * gets a prediction based on the current set of training data
-     * @param {object} eyesObj - util.eyesObject[]
-     * @return {Object} prediction -Object[] containing the prediction data
+     * @param {object} eyesObj - util.eyes Object
+     * @return {Object} prediction - Object containing the prediction data
      *  @return {integer} prediction.x - the x screen coordinate predicted
      *  @return {integer} prediction.y - the y screen coordinate predicted
      */
