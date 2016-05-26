@@ -63,7 +63,7 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 
 ## License
 
-Copyright (C) 2016 Brown HCI Group
+Copyright (C) 2016 [Brown HCI Group](http://hci.cs.brown.edu)
 
 Licensed under GPLv3.
 
