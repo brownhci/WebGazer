@@ -5,6 +5,16 @@
         <TITLE>Simple Demonstration of how WebGazer.js works</TITLE>
     </HEAD>
     <BODY LANG="en-US" LINK="#0000ff" DIR="LTR">
+    <div id="mydiv">
+        <h1 style="color:#C0C0C0" align="right">
+            Click on a few locations within the screen<br>
+            while looking purposefully at the cursor.<br>
+            Both clicks and cursor movements<br>
+            make the predictions more accurate. 
+        </h1>
+    </div>
+
+
         <script src="webgazer.js"></script>
         <script>
 window.onload = function() {
@@ -70,7 +80,8 @@ window.onload = function() {
 
 
 window.onbeforeunload = function() {
-    webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
+    //webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
+    window.localStorage.clear(); //Comment out if you want to save data across different sessions 
 }
         </script>
 
