@@ -55,7 +55,7 @@
      * @return matrix(i0:i1,j0:j1)
      */
     self.webgazer.mat.getSubMatrix = function(matrix, i0, i1, j0, j1){
-        var size = i1-i0+1,
+        var size = j1 - j0 + 1,
             X = new Array(i1-i0+1);
 
         for (var i = i0; i <= i1; i++){
