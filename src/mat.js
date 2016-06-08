@@ -13,18 +13,18 @@
         var m = matrix.length;
         var n = matrix[0].length;
         var transposedMatrix = new Array(n);
-        for (var i = 0; i < n; i++){
-            transposedMatrix[i] = new Array(m);
-        }  
+
         for (var i = 0; i < m; i++){
             for (var j = 0; j < n; j++){
+                if (i === 0) transposedMatrix[j] = new Array(m);
                 transposedMatrix[j][i] = matrix[i][j];
             }
         }
+
         return transposedMatrix;
     }
 
-    /** 
+    /**
      * Get a submatrix of matrix
      * @param [array of arrays] matrix - original matrix
      * @param [array] r - Array of row indices.
@@ -33,11 +33,11 @@
      * @return [array of arrays] X is the submatrix matrix(r(:),j0:j1)
      */
     self.webgazer.mat.getMatrix = function(matrix, r, j0, j1){
-        var X = new Array(r.length);
-        for(var i=0; i<r.length; i++){
-            X[i] = new Array(j1-j0+1);
-        }
+        var X = new Array(r.length),
+            m = j1-j0+1;
+
         for (var i = 0; i < r.length; i++){
+            X[i] = new Array(m);
             for (var j = j0; j <= j1; j++){
                 X[i][j-j0] = matrix[r[i]][j];
             }
@@ -45,7 +45,7 @@
         return X;
     }
 
-    /** 
+    /**
      * Get a submatrix of matrix
      * @param [array of arrays] matrix - original matrix
      * @param [number] i0 - Initial row index
@@ -55,38 +55,44 @@
      * @return matrix(i0:i1,j0:j1)
      */
     self.webgazer.mat.getSubMatrix = function(matrix, i0, i1, j0, j1){
-        var X = new Array(i1-i0+1);
-        for(var i=0; i<i1-i0+1; i++){
-            X[i] = new Array(j1-j0+1);
-        }
+        var size = i1-i0+1,
+            X = new Array(i1-i0+1);
+
         for (var i = i0; i <= i1; i++){
+            var subI = i-i0;
+
+            X[subI] = new Array(size);
+
             for (var j = j0; j <= j1; j++){
-                X[i-i0][j-j0] = matrix[i][j];
+                X[subI][j-j0] = matrix[i][j];
             }
         }
         return X;
     }
 
-    /** 
+    /**
      * Linear algebraic matrix multiplication, matrix1 * matrix2
      * @param {array of arrays} matrix1
      * @param {array of arrays} matrix2
      * @return {array of arrays} Matrix product, matrix1 * matrix2
      */
-    self.webgazer.mat.mult = function(matrix1, matrix2){	
+    self.webgazer.mat.mult = function(matrix1, matrix2){
+
         if (matrix2.length != matrix1[0].length){
             console.log("Matrix inner dimensions must agree.");
         }
-        var X = new Array(matrix1.length);
-        for (var i = 0; i < matrix1.length; i++){
-            X[i] = new Array(matrix2[0].length);
-        }  
-        var Bcolj = new Array(matrix1[0].length);
+
+        var X = new Array(matrix1.length),
+            Bcolj = new Array(matrix1[0].length);
+
         for (var j = 0; j < matrix2[0].length; j++){
             for (var k = 0; k < matrix1[0].length; k++){
                 Bcolj[k] = matrix2[k][j];
             }
             for (var i = 0; i < matrix1.length; i++){
+
+                X[i] = new Array(matrix2[0].length);
+
                 var Arowi = matrix1[i];
                 var s = 0;
                 for (var k = 0; k < matrix1[0].length; k++){
@@ -107,14 +113,14 @@
      */
     self.webgazer.mat.LUDecomposition = function(A,B){
         var LU = new Array(A.length);
-        for(var i=0; i<A.length; i++){
-            LU[i] = new Array(A[0].length);
-        }
+
         for (var i = 0; i < A.length; i++){
+          LU[i] = new Array(A[0].length);
             for (var j = 0; j < A[0].length; j++){
                 LU[i][j] = A[i][j];
             }
         }
+
         var m = A.length;
         var n = A[0].length;
         var piv = new Array(m);
@@ -150,12 +156,12 @@
             }
             if (p != j){
                 for (var k = 0; k < n; k++){
-                    var t = LU[p][k]; 
-                    LU[p][k] = LU[j][k]; 
+                    var t = LU[p][k];
+                    LU[p][k] = LU[j][k];
                     LU[j][k] = t;
                 }
-                var k = piv[p]; 
-                piv[p] = piv[j]; 
+                var k = piv[p];
+                piv[p] = piv[j];
                 piv[j] = k;
                 pivsign = -pivsign;
             }
@@ -207,10 +213,9 @@
     self.webgazer.mat.QRDecomposition = function(A, B){
         // Initialize.
         QR = new Array(A.length);
-        for(var i=0; i<A.length; i++){
-            QR[i] = new Array(A[0].length);
-        }
+
         for (var i = 0; i < A.length; i++){
+            QR[i] = new Array(A[0].length);
             for (var j = 0; j < A[0].length; j++){
                 QR[i][j] = A[i][j];
             }
@@ -239,7 +244,7 @@
 
                 // Apply transformation to remaining columns.
                 for (var j = k+1; j < n; j++){
-                    var s = 0; 
+                    var s = 0;
                     for (var i = k; i < m; i++){
                         s += QR[i][k]*QR[i][j];
                     }
@@ -272,7 +277,7 @@
         // Compute Y = transpose(Q)*B
         for (var k = 0; k < n; k++){
             for (var j = 0; j < nx; j++){
-                var s = 0.0; 
+                var s = 0.0;
                 for (var i = k; i < m; i++){
                     s += QR[i][k]*X[i][j];
                 }
@@ -296,4 +301,3 @@
         return self.webgazer.mat.getSubMatrix(X,0,n-1,0,nx-1);
     }
 }());
-
