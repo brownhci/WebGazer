@@ -91,7 +91,8 @@
             }
             for (var i = 0; i < matrix1.length; i++){
 
-                X[i] = new Array(matrix2[0].length);
+                if (j === 0)
+                    X[i] = new Array(matrix2[0].length);
 
                 var Arowi = matrix1[i];
                 var s = 0;
