@@ -83,10 +83,10 @@
         //Apply Kalman Filtering
         var rightBox = [rightOriginX, rightOriginY, rightOriginX + rightWidth, rightOriginY + rightHeight];
         rightBox = this.rightKalman.update(rightBox);
-        rightOriginX = rightBox[0];
-        rightOriginY = rightBox[1];
-        rightWidth = rightBox[2] - rightBox[0];
-        rightHeight = rightBox[3] - rightBox[1];
+        rightOriginX = Math.round(rightBox[0]);
+        rightOriginY = Math.round(rightBox[1]);
+        rightWidth = Math.round(rightBox[2] - rightBox[0]);
+        rightHeight = Math.round(rightBox[3] - rightBox[1]);
 
         var eyeObjs = {};
         var leftImageData = imageCanvas.getContext('2d').getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);

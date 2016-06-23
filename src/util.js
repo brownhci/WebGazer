@@ -279,7 +279,7 @@
       // correction: X = X + K * (m - H * X)  |  P = (I - K * H) * P
       this.X = add(X_p, mult(K, y));
       this.P = mult(sub(identity(K.length), mult(K,this.H)), P_p)
-      return mult(this.H, this.X); //Transforms the predicted state back into it's measurement form
+      return transpose(mult(this.H, this.X))[0]; //Transforms the predicted state back into it's measurement form
     }
 
 }());
