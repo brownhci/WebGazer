@@ -8112,6 +8112,7 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
 
     window.webgazer = window.webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
+    webgazer.util = webgazer.util || {};
 
     /**
      * Initialize clmtrackr object
@@ -8119,6 +8120,34 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
     var ClmGaze = function() {
         this.clm = new clm.tracker({useWebGL : true});
         this.clm.init(pModel);
+        var F = [ [1, 0, 0, 0, 1, 0],
+                  [0, 1, 0, 0, 0, 1],
+                  [0, 0, 1, 0, 1, 0],
+                  [0, 0, 0, 1, 0, 1],
+                  [0, 0, 0, 0, 1, 0],
+                  [0, 0, 0, 0, 0, 1]];
+        //Parameters Q and R may require some fine tuning
+        var Q = [ [1/4,  0, 0, 0,  1/2,   0],
+                  [0, 1/4,  0, 0,    0, 1/2],
+                  [0, 0,   1/4, 0, 1/2,   0],
+                  [0, 0,   0,  1/4,  0, 1/2],
+                  [1/2, 0, 1/2, 0,    1,  0],
+                  [0, 1/2,  0,  1/2,  0,  1]];// * delta_t
+        var delta_t = 1/10; // The amount of time between frames
+        Q = numeric.mul(Q, delta_t);
+        var H = [ [1, 0, 0, 0, 0, 0],
+                  [0, 1, 0, 0, 0, 0],
+                  [0, 0, 1, 0, 0, 0],
+                  [0, 0, 0, 1, 0, 0]];
+        var pixel_error = 6.5; //We will need to fine tune this value
+        //This matrix represents the expected measurement error
+        var R = numeric.mul(numeric.identity(4), pixel_error);
+
+        var P_initial = numeric.mul(numeric.identity(6), 0.0001); //Initial covariance matrix
+        var x_initial = [[200], [150], [250], [180], [0], [0]]; // Initial measurement matrix
+
+        this.leftKalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
+        this.rightKalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
     }
 
     webgazer.tracker.ClmGaze = ClmGaze;
@@ -8144,15 +8173,41 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         }
 
         //Fit the detected eye in a rectangle
-        var leftOriginX = Math.floor(positions[23][0]);
-        var leftOriginY = Math.floor(positions[24][1]);
-        var leftWidth = Math.floor(positions[25][0] - positions[23][0]);
-        var leftHeight = Math.floor(positions[26][1] - positions[24][1]);
-        var rightOriginX = Math.floor(positions[30][0]);
-        var rightOriginY = Math.floor(positions[29][1]);
-        var rightWidth = Math.floor(positions[28][0] - positions[30][0]);
-        var rightHeight = Math.floor(positions[31][1] - positions[29][1]);
-      
+        var leftOriginX = (positions[23][0]);
+        var leftOriginY = (positions[24][1]);
+        var leftWidth = (positions[25][0] - positions[23][0]);
+        var leftHeight = (positions[26][1] - positions[24][1]);
+        var rightOriginX = (positions[30][0]);
+        var rightOriginY = (positions[29][1]);
+        var rightWidth = (positions[28][0] - positions[30][0]);
+        var rightHeight = (positions[31][1] - positions[29][1]);
+
+        //Apply Kalman Filtering
+        var leftBox = [leftOriginX, leftOriginY, leftOriginX + leftWidth, leftOriginY + leftHeight];
+        leftBox = this.leftKalman.update(leftBox);
+        leftOriginX = Math.round(leftBox[0]);
+        leftOriginY = Math.round(leftBox[1]);
+        leftWidth = Math.round(leftBox[2] - leftBox[0]);
+        leftHeight = Math.round(leftBox[3] - leftBox[1]);
+
+        //Apply Kalman Filtering
+        var rightBox = [rightOriginX, rightOriginY, rightOriginX + rightWidth, rightOriginY + rightHeight];
+        rightBox = this.rightKalman.update(rightBox);
+        rightOriginX = Math.round(rightBox[0]);
+        rightOriginY = Math.round(rightBox[1]);
+        rightWidth = Math.round(rightBox[2] - rightBox[0]);
+        rightHeight = Math.round(rightBox[3] - rightBox[1]);
+
+        if (leftWidth == 0 || rightWidth == 0){
+          console.log('an eye patch had zero width');
+          return null;
+        }
+
+        if (leftHeight == 0 || rightHeight == 0){
+          console.log("an eye patch had zero height");
+          return null;
+        }
+
         var eyeObjs = {};
         var leftImageData = imageCanvas.getContext('2d').getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);
         eyeObjs.left = {
@@ -8162,7 +8217,7 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             width: leftWidth,
             height: leftHeight
         };
- 
+
         var rightImageData = imageCanvas.getContext('2d').getImageData(rightOriginX, rightOriginY, rightWidth, rightHeight);
         eyeObjs.right = {
             patch: rightImageData,
@@ -8171,11 +8226,6 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             width: rightWidth,
             height: rightHeight
         };
-      
-        if (leftImageData.width == 0 || rightImageData.width == 0) {
-            console.log('an eye patch had zero width');
-            return null;
-        }
 
         eyeObjs.positions = positions;
 
@@ -9921,7 +9971,7 @@ if (typeof exports !== 'undefined') {
     /**
      * Get the element at the ind position by wrapping around the DataWindow
      * @param  {number} ind index of desired entry
-     * @return {Any} 
+     * @return {Any}
      */
     self.webgazer.util.DataWindow.prototype.get = function(ind) {
         return this.data[this.getTrueIndex(ind)];
@@ -9943,7 +9993,7 @@ if (typeof exports !== 'undefined') {
 
     /**
      * Append all the contents of data
-     * @param {array} data - to be inserted 
+     * @param {array} data - to be inserted
      */
     self.webgazer.util.DataWindow.prototype.addAll = function(data) {
         for (var i = 0; i < data.length; i++) {
@@ -9958,7 +10008,7 @@ if (typeof exports !== 'undefined') {
      * @param  {ImageData} imageData - image data to be grayscaled
      * @param  {number} imageWidth  - width of image data to be grayscaled
      * @param  {number} imageHeight - height of image data to be grayscaled
-     * @return {ImageData} grayscaledImage 
+     * @return {ImageData} grayscaledImage
      */
     self.webgazer.util.grayscale = function(imageData, imageWidth, imageHeight){
         //TODO implement ourselves to remove dependency
@@ -10047,8 +10097,8 @@ if (typeof exports !== 'undefined') {
         this.stats = {};
         var updateInterval = interval || 300;
         (function(localThis) {
-            setInterval(function() { 
-                debugBoxWrite(localThis.para, localThis.stats); 
+            setInterval(function() {
+                debugBoxWrite(localThis.para, localThis.stats);
             }, updateInterval);
         }(this));
     }
@@ -10084,6 +10134,64 @@ if (typeof exports !== 'undefined') {
         canvas.getContext('2d').clearRect(0,0, canvas.width, canvas.height);
         func(canvas);
     }
+
+    /**
+     * Kalman Filter constructor
+     * Kalman filters work by reducing the amount of noise in a models.
+     * https://blog.cordiner.net/2011/05/03/object-tracking-using-a-kalman-filter-matlab/
+     *
+     * @param {array of arrays} F  		-> transition matrix
+     * @param {array of arrays} Q		  -> process noise matrix
+     * @param {array of arrays} H 		-> maps between measurement vector and noise matrix
+     * @param {array of arrays} R     -> defines measurement error of the device
+     * @param {array}           P_initial -> the initial state
+     * @param {array}           X_initial -> the initial state of the device
+     */
+    self.webgazer.util.KalmanFilter = function(F, H, Q, R, P_initial, X_initial) {
+        this.F = F; // State transition matrix
+        this.Q = Q; // Process noise matrix
+        this.H = H; // Transformation matrix
+        this.R = R; // Measurement Noise
+        this.P = P_initial; //Initial covariance matrix
+        this.X = X_initial; //Initial guess of measurement
+    }
+
+
+    /**
+     * Get Kalman next filtered value and update the internal state
+     * @param {array} z  	-> the new measurement
+     * @return {array}
+     */
+    self.webgazer.util.KalmanFilter.prototype.update = function(z) {
+
+      // Here, we define all the different matrix operations we will need
+      var add = numeric.add, sub = numeric.sub, inv = numeric.inv, identity = numeric.identity;
+      var mult = webgazer.mat.mult, transpose = webgazer.mat.transpose;
+      //TODO cache variables like the transpose of H
+
+      // prediction: X = F * X  |  P = F * P * F' + Q
+      var X_p = mult(this.F, this.X); //Update state vector
+      var P_p = add(mult(mult(this.F,this.P), transpose(this.F)), this.Q); //Predicted covaraince
+
+      //Calculate the update values
+      var y = sub(z, mult(this.H, X_p)); // This is the measurement error (between what we expect and the actual value)
+      var S = add(mult(mult(this.H, P_p), transpose(this.H)), this.R); //This is the residual covariance (the error in the covariance)
+
+      // kalman multiplier: K = P * H' * (H * P * H' + R)^-1
+      var K = mult(P_p, mult(transpose(this.H), inv(S))); //This is the Optimal Kalman Gain
+
+      //We need to change Y into it's column vector form
+      for(var i = 0; i < y.length; i++){
+        y[i] = [y[i]];
+      }
+
+      //Now we correct the internal values of the model
+      // correction: X = X + K * (m - H * X)  |  P = (I - K * H) * P
+      this.X = add(X_p, mult(K, y));
+      this.P = mult(sub(identity(K.length), mult(K,this.H)), P_p)
+      return transpose(mult(this.H, this.X))[0]; //Transforms the predicted state back into it's measurement form
+    }
+
 }());
 ;
 
