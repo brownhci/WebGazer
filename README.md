@@ -57,6 +57,7 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 
 ## Who We Are
 
+* Aaron Gokaslan
 * Alexandra Papoutsaki
 * James Laskey
 * Jeff Huang
