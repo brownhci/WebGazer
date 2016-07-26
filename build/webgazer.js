@@ -10224,12 +10224,16 @@ if (typeof exports !== 'undefined') {
     var showGazeDot = false;
     //debug element (starts offscreen)
     var gazeDot = document.createElement('div');
-    gazeDot.style.position = 'absolute';
-    gazeDot.style.left = '20px'; //'-999em';
+    gazeDot.style.position = 'fixed';
+    gazeDot.style.zIndex = 99999;
+    gazeDot.style.left = '-5px'; //'-999em';
+    gazeDot.style.top  = '-5px';
     gazeDot.style.width = '10px';
     gazeDot.style.height = '10px';
     gazeDot.style.background = 'red';
     gazeDot.style.display = 'none';
+    gazeDot.style.borderRadius = '100%';
+    gazeDot.style.opacity = '0.7';
 
     var debugVideoLoc = '';
         
@@ -10367,8 +10371,7 @@ if (typeof exports !== 'undefined') {
                 y += smoothingVals.get(d).y;
             }
             var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
-            gazeDot.style.top = window.scrollY + pred.y + 'px';
-            gazeDot.style.left = window.scrollX + pred.x + 'px';
+            gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
         }
 
         if (!paused) {
@@ -10601,7 +10604,7 @@ if (typeof exports !== 'undefined') {
      */
     webgazer.showPredictionPoints = function(bool) {
         showGazeDot = bool;
-        gazeDot.style.left = '-999em';
+        gazeDot.style.left = '-5px';
         gazeDot.style.display = bool ? 'block' : 'none';
         return webgazer;
     }
