@@ -1,0 +1,29 @@
+{
+  "name": "webgazer",
+  "version": "1.0.0",
+  "description": "Scalable Webcam Eye Tracking Using User Interactions",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prestontw/WebGazer.git"
+  },
+  "keywords": [
+    "web",
+    "gazer",
+    "webgazer",
+    "webcam",
+    "camera",
+    "eye",
+    "tracking",
+    "eyetracking"
+  ],
+  "author": "BrownHCI",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/prestontw/WebGazer/issues"
+  },
+  "homepage": "https://github.com/prestontw/WebGazer#readme"
+}
