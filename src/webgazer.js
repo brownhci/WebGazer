@@ -184,9 +184,10 @@
     }
 
     /**
-     * records click data and passes it to the regression model
+     * records screen position data based on current pupil feature and passes it
+     * to the regression model.
      */
-    var clickListener = function(event) {
+    var recordScreenPosition = function(x, y, eventType) {
         if (paused) {
             return;
         }
@@ -196,8 +197,15 @@
             return null;
         }
         for (var reg in regs) {
-            regs[reg].addData(features, [event.clientX, event.clientY], eventTypes[0]); // eventType[0] === 'click'
+            regs[reg].addData(features, [x, y], eventType);
         }
+    }
+
+    /**
+     * records click data and passes it to the regression model
+     */
+    var clickListener = function(event) {
+        recordScreenPosition(event.clientX, event.clientY, eventTypes[0]); // eventType[0] === 'click'
     }
 
     /**
@@ -214,15 +222,28 @@
         } else {
             moveClock = now;
         }
-        var features = getPupilFeatures(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
-        if (regs.length == 0) {
-            console.log('regression not set, call setRegression()');
-            return null;
-        }
-        for (var reg in regs) {
-            regs[reg].addData(features, [event.clientX, event.clientY], eventTypes[1]); //eventType[1] === 'move'
-        }
+        recordScreenPosition(event.clientX, event.clientY, eventTypes[1]); //eventType[1] === 'move'
     }
+
+    /**
+     * Add event listeners for mouse click and move.
+     */
+    var addMouseEventListeners = function() {
+        //third argument set to true so that we get event on 'capture' instead of 'bubbling'
+        //this prevents a client using event.stopPropagation() preventing our access to the click
+        document.addEventListener('click', clickListener, true);
+        document.addEventListener('mousemove', moveListener, true);
+    };
+
+    /**
+     * Remove event listeners for mouse click and move.
+     */
+    var removeMouseEventListeners = function() {
+        // must set third argument to same value used in addMouseEventListeners
+        // for this to work.
+        document.removeEventListener('click', clickListener, true);
+        document.removeEventListener('mousemove', moveListener, true);
+    };
 
     /** loads the global data and passes it to the regression model 
      * 
@@ -279,11 +300,7 @@
         videoElementCanvas.style.display = 'none';
         document.body.appendChild(videoElementCanvas);
 
-
-        //third argument set to true so that we get event on 'capture' instead of 'bubbling'
-        //this prevents a client using event.stopPropagation() preventing our access to the click
-        document.addEventListener('click', clickListener, true);
-        document.addEventListener('mousemove', moveListener, true);
+        addMouseEventListeners();
 
         document.body.appendChild(gazeDot);
 
@@ -420,6 +437,36 @@
     webgazer.setStaticVideo = function(videoLoc) {
        debugVideoLoc = videoLoc;
        return webgazer;
+    }
+
+    /**
+     *  Add the mouse click and move listeners that add training data.
+     *  @return {webgazer} this
+     */
+    webgazer.addMouseEventListeners = function() {
+        addMouseEventListeners();
+        return webgazer;
+    }
+
+    /**
+     *  Remove the mouse click and move listeners that add training data.
+     *  @return {webgazer} this
+     */
+    webgazer.removeMouseEventListeners = function() {
+        removeMouseEventListeners();
+        return webgazer;
+    }
+
+    /**
+     *  Records current screen position for current pupil features.
+     *  @param {string} x - position on screen in the x axis
+     *  @param {string} y - position on screen in the y axis
+     *  @return {webgazer} this
+     */
+    webgazer.recordScreenPosition = function(x, y) {
+        // give this the same weight that a click gets.
+        recordScreenPosition(x, y, eventTypes[0]);
+        return webgazer;
     }
 
     //SETTERS
