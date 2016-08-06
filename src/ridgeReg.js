@@ -42,13 +42,13 @@
                 if (m_Coefficients.length*n != m_Coefficients.length){
                     console.log("Array length must be a multiple of m")
                 }
-                solution = (ss.length == ss[0].length ? (numeric.LUsolve(numeric.LU(ss),bb)) : (webgazer.mat.QRDecomposition(ss,bb)));
+                solution = (ss.length == ss[0].length ? (numeric.LUsolve(numeric.LU(ss,true),bb)) : (webgazer.mat.QRDecomposition(ss,bb)));
 
                 for (var i = 0; i < nc; i++){
                     m_Coefficients[i] = solution[i];
                 }
                 success = true;
-            } 
+            }
             catch (ex){
                 k *= 10;
                 console.log(ex);
@@ -130,7 +130,7 @@
             this.trailTimes.push(performance.now());
             this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         }
-       
+
         eyes.left.patch = Array.from(eyes.left.patch.data);
         eyes.right.patch = Array.from(eyes.right.patch.data);
     }
@@ -156,7 +156,7 @@
         var eyeFeatures = this.eyeFeaturesClicks.data.concat(trailFeat);
 
         var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
-        var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter); 	
+        var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter);
 
         var eyeFeats = getEyeFeats(eyesObj);
         var predictedX = 0;
