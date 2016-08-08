@@ -19,6 +19,7 @@ module.exports = function(grunt) {
 					'dependencies/clmtrackr/jsfeat-min.js',
 					'dependencies/clmtrackr/frontalface.js',
 					'dependencies/clmtrackr/jsfeat_detect.js',
+					'dependencies/clmtrackr/jsfeat_detect_worker.js',
 					'dependencies/clmtrackr/left_eye_filter.js',
 					'dependencies/clmtrackr/right_eye_filter.js',
 					'dependencies/clmtrackr/nose_filter.js',
@@ -46,6 +47,7 @@ module.exports = function(grunt) {
 		},
 		uglify: {
 			options: {
+				report: 'gzip',
 				preserveComments: false,
 				mangle: false,
 				compress: {
