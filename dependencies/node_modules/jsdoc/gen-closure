@@ -1,6 +1,0 @@
-#!/bin/sh
-
-SOURCE_FILES="../../../google/closure-library/closure/goog"
-#SOURCE_FILES="../../../google/closure-library/closure/goog/timer"
-
-/usr/bin/env node ./jsdoc.js ${SOURCE_FILES} --verbose -r -c gen-closure.json -t $HOME/github/hegemonic/jsdoc-baseline/master

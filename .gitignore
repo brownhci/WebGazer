@@ -26,5 +26,5 @@
 *.pdf
 *.mp4
 *.cpuprofile
-node_modules
+node_modules/
 build/webgazer.min.js
