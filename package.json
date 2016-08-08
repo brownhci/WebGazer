@@ -4,8 +4,9 @@
     "url": "https://github.com/brownhci/WebGazer.git"
   },
   "devDependencies": {
-    "grunt": "~0.4.2",
-    "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-uglify": "~0.2.7"
+    "grunt": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-uglify": "*",
+    "jsdoc": "*"
   }
 }
