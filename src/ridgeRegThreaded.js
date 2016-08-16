@@ -30,9 +30,9 @@
         return leftGrayArray.concat(rightGrayArray);
     }
 
-    
+
     function updateWeights(event) {
-        console.log(event.data);
+        //console.log(event.data);
         this.weights = event.data;
     }
 
@@ -51,10 +51,8 @@
 
         this.worker = new Worker('ridgeWorker.js');
         this.worker.onerror = function(err) { console.log(err.message); };
-        this.worker.onmessage = function(event) {
-            weights = event.data;   
-        };
-    }
+        this.worker.onmessage = updateWeights;
+    };
 
     webgazer.reg.RidgeRegThreaded.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
@@ -63,25 +61,20 @@
         if (eyes.left.blink || eyes.right.blink) {
             return;
         }
-        this.worker.postMessage({'eyes':getEyeFeats(eyes), 'screenPos':screenPos, 'type':type})
-    }
+        this.worker.postMessage({'eyes':getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
+    };
 
     webgazer.reg.RidgeRegThreaded.prototype.predict = function(eyesObj) {
-        console.log('in predict1');
         if (!eyesObj) {
             return null;
         }
-        console.log(weights);
         var coefficientsX = weights.X;
         var coefficientsY = weights.Y;
 
         var eyeFeats = getEyeFeats(eyesObj);
-        var predictedX = 0;
+        var predictedX = 0, predictedY = 0;
         for(var i=0; i< eyeFeats.length; i++){
             predictedX += eyeFeats[i] * coefficientsX[i];
-        }
-        var predictedY = 0;
-        for(var i=0; i< eyeFeats.length; i++){
             predictedY += eyeFeats[i] * coefficientsY[i];
         }
 
@@ -92,7 +85,7 @@
             x: predictedX,
             y: predictedY
         };
-    }
+    };
 
     webgazer.reg.RidgeRegThreaded.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
@@ -101,11 +94,11 @@
             data[i].eyes.right.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.right.patch), data[i].eyes.right.width, data[i].eyes.right.height);
             this.addData(data[i].eyes, data[i].screenPos, data[i].type);
         }
-    }
+    };
 
     webgazer.reg.RidgeRegThreaded.prototype.getData = function() {
         return this.dataClicks.data.concat(this.dataTrail.data);
-    }
+    };
 
 
     webgazer.reg.RidgeRegThreaded.prototype.name = 'ridge';
