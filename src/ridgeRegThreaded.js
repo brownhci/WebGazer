@@ -12,6 +12,7 @@
     var weights = {'X':[0],'Y':[0]};
     var trailDataWindow = 10;
 
+
     function getEyeFeats(eyes) {
         var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
         var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
@@ -31,10 +32,6 @@
     }
 
 
-    function updateWeights(event) {
-        //console.log(event.data);
-        this.weights = event.data;
-    }
 
     webgazer.reg.RidgeRegThreaded = function() {
         this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
@@ -48,10 +45,12 @@
         this.dataClicks = new webgazer.util.DataWindow(dataWindow);
         this.dataTrail = new webgazer.util.DataWindow(dataWindow);
 
-
         this.worker = new Worker('ridgeWorker.js');
         this.worker.onerror = function(err) { console.log(err.message); };
-        this.worker.onmessage = updateWeights;
+        this.worker.onmessage = function(evt){
+          weights.X = evt.data.X;
+          weights.Y = evt.data.Y;
+        };
     };
 
     webgazer.reg.RidgeRegThreaded.prototype.addData = function(eyes, screenPos, type) {
@@ -65,6 +64,7 @@
     };
 
     webgazer.reg.RidgeRegThreaded.prototype.predict = function(eyesObj) {
+        console.log("LOGGING..");
         if (!eyesObj) {
             return null;
         }
@@ -80,6 +80,10 @@
 
         predictedX = Math.floor(predictedX);
         predictedY = Math.floor(predictedY);
+
+        console.log("PredicedX");
+        console.log(predictedX);
+        console.log(predictedY);
 
         return {
             x: predictedX,
