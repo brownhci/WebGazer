@@ -320,9 +320,12 @@
 
     /**
      * starts all state related to webgazer -> dataLoop, video collection, click listener
+     * If starting fails, call `onFail` param function.
      */
-    webgazer.begin = function() {
+    webgazer.begin = function(onFail) {
         loadGlobalData();
+
+        onFail = onFail || function() {console.log("No stream")};
 
         if (debugVideoLoc) {
             init(debugVideoLoc);
@@ -343,7 +346,7 @@
                         init(window.URL.createObjectURL(stream));
                     },
                     function(e){
-                        console.log("No stream");
+                        onFail();
                         videoElement = null;
                     });
         }
