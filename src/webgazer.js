@@ -1,7 +1,7 @@
 (function(window, undefined) {
-    console.log('initializing webgazer')
+    console.log('initializing webgazer');
     //strict mode for type safety
-    "use strict"
+    "use strict";
 
     //auto invoke function to bind our own copy of window and undefined
 
@@ -203,14 +203,14 @@
         for (var reg in regs) {
             regs[reg].addData(features, [x, y], eventType);
         }
-    }
+    };
 
     /**
      * records click data and passes it to the regression model
      */
     var clickListener = function(event) {
         recordScreenPosition(event.clientX, event.clientY, eventTypes[0]); // eventType[0] === 'click'
-    }
+    };
 
     /**
      * records mouse movement data and passes it to the regression model
@@ -227,7 +227,7 @@
             moveClock = now;
         }
         recordScreenPosition(event.clientX, event.clientY, eventTypes[1]); //eventType[1] === 'move'
-    }
+    };
 
     /**
      * Add event listeners for mouse click and move.
@@ -358,7 +358,7 @@
         }
 
         return webgazer;
-    }
+    };
 
     /*
      * checks if webgazer has finished initializing after calling begin()
@@ -370,7 +370,7 @@
         }
         paintCurrentFrame(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
         return videoElementCanvas.width > 0;
-    }
+    };
 
     /*
      * stops collection of data and predictions
@@ -379,7 +379,7 @@
     webgazer.pause = function() {
         paused = true;
         return webgazer;
-    }
+    };
 
     /*
      * resumes collection of data and predictions if paused
@@ -392,7 +392,7 @@
         paused = false;
         loop();
         return webgazer;
-    }
+    };
 
     /**
      * stops collection of data and removes dom modifications, must call begin() to reset up
@@ -407,7 +407,7 @@
 
         setGlobalData();
         return webgazer;
-    }
+    };
 
     //PUBLIC FUNCTIONS - DEBUG
 
@@ -421,7 +421,7 @@
             navigator.mediaDevices.getUserMedia;
 
         return navigator.getUserMedia !== undefined;
-    }
+    };
 
     /**
      * displays the calibration point for debugging
@@ -432,7 +432,7 @@
         gazeDot.style.left = '-5px';
         gazeDot.style.display = bool ? 'block' : 'none';
         return webgazer;
-    }
+    };
 
     /**
      *  set a static video file to be used instead of webcam video
@@ -442,7 +442,7 @@
     webgazer.setStaticVideo = function(videoLoc) {
        debugVideoLoc = videoLoc;
        return webgazer;
-    }
+    };
 
     /**
      *  Add the mouse click and move listeners that add training data.
@@ -451,7 +451,7 @@
     webgazer.addMouseEventListeners = function() {
         addMouseEventListeners();
         return webgazer;
-    }
+    };
 
     /**
      *  Remove the mouse click and move listeners that add training data.
@@ -460,7 +460,7 @@
     webgazer.removeMouseEventListeners = function() {
         removeMouseEventListeners();
         return webgazer;
-    }
+    };
 
     /**
      *  Records current screen position for current pupil features.
@@ -472,7 +472,7 @@
         // give this the same weight that a click gets.
         recordScreenPosition(x, y, eventTypes[0]);
         return webgazer;
-    }
+    };
 
     //SETTERS
     /**
@@ -491,7 +491,7 @@
         }
         curTracker = curTrackerMap[name]();
         return webgazer;
-    }
+    };
 
     /**
      * sets the regression module and clears any other regression modules
@@ -511,7 +511,7 @@
         regs = [regressionMap[name]()];
         regs[0].setData(data);
         return webgazer;
-    }
+    };
 
     /**
      * adds a new tracker module so that it can be used by setTracker()
@@ -523,7 +523,7 @@
         curTrackerMap[name] = function() {
             contructor();
         };
-    }
+    };
 
     /**
      * adds a new regression module so that it can be used by setRegression() and addRegression()
@@ -535,7 +535,8 @@
         regressionMap[name] = function() {
             contructor();
         };
-    }
+    };
+    
     /**
      * adds a new regression module to the list of regression modules, seeding its data from the first regression module
      * @param {string} name - the string name of the regression module to add
@@ -547,7 +548,7 @@
         newReg.setData(data);
         regs.push(newReg);
         return webgazer;
-    }
+    };
 
     /**
      * sets a callback to be executed on every gaze event (currently all time steps)
@@ -559,7 +560,7 @@
     webgazer.setGazeListener = function(listener) {
         callback = listener;
         return webgazer;
-    }
+    };
 
     /**
      * removes the callback set by setGazeListener
@@ -568,7 +569,7 @@
     webgazer.clearGazeListener = function() {
         callback = nopCallback;
         return webgazer;
-    }
+    };
 
     //GETTERS
     /**
@@ -577,7 +578,7 @@
      */
     webgazer.getTracker = function() {
         return curTracker;
-    }
+    };
 
     /**
      * returns the regression currently in use
@@ -585,7 +586,7 @@
      */
     webgazer.getRegression = function() {
         return regs;
-    }
+    };
 
     /**
      * requests an immediate prediction
@@ -593,7 +594,7 @@
      */
     webgazer.getCurrentPrediction = function() {
         return getPrediction();
-    }
+    };
 
     /**
      * returns the different event types that may be passed to regressions when calling regression.addData()
