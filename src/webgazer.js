@@ -86,7 +86,7 @@
     var data = [];
     var defaults = {
         'data': [],
-        'settings': {},
+        'settings': {}
     };
 
     //PRIVATE FUNCTIONS
@@ -147,7 +147,7 @@
         if (regModelIndex !== undefined) {
             return predictions[regModelIndex] == null ? null : {
                 'x' : predictions[regModelIndex].x,
-                'y' : predictions[regModelIndex].y,
+                'y' : predictions[regModelIndex].y
             };
         } else {
             return predictions.length == 0 || predictions[0] == null ? null : {
