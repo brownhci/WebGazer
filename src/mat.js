@@ -213,7 +213,7 @@
      */
     self.webgazer.mat.QRDecomposition = function(A, B){
         // Initialize.
-        QR = new Array(A.length);
+        var QR = new Array(A.length);
 
         for (var i = 0; i < A.length; i++){
             QR[i] = new Array(A[0].length);
@@ -266,7 +266,7 @@
         }
         // Copy right hand side
         var nx = B[0].length;
-        X = new Array(B.length);
+        var X = new Array(B.length);
         for(var i=0; i<B.length; i++){
             X[i] = new Array(B[0].length);
         }
