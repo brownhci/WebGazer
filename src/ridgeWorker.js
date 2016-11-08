@@ -100,7 +100,7 @@ self.onmessage = function(event) {
         self.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
     }
     self.needsTraining = true;
-}
+};
 
 function retrain() {
     if (self.screenXClicksArray.length == 0) {
