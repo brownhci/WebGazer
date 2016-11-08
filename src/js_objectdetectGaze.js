@@ -217,7 +217,7 @@
         });
         return result;
     };
-
-
+    
     Js_objectdetectGaze.prototype.name = 'js_objectdetect';
+
 }(window));

@@ -77,6 +77,5 @@
     }
 
     webgazer.reg.LinearReg.prototype.name = 'simple';
-
-
+    
 }(window));

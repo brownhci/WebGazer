@@ -11,8 +11,7 @@
     var dataWindow = 700;
     var weights = {'X':[0],'Y':[0]};
     var trailDataWindow = 10;
-
-
+    
     function getEyeFeats(eyes) {
         var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
         var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
@@ -30,9 +29,7 @@
 
         return leftGrayArray.concat(rightGrayArray);
     }
-
-
-
+    
     webgazer.reg.RidgeRegThreaded = function() {
         this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
@@ -103,7 +100,7 @@
     webgazer.reg.RidgeRegThreaded.prototype.getData = function() {
         return this.dataClicks.data.concat(this.dataTrail.data);
     };
-
-
+    
     webgazer.reg.RidgeRegThreaded.prototype.name = 'ridge';
+    
 }(window));

@@ -81,7 +81,6 @@ function getCurrentFixationIndex() {
     return i;
 }
 
-
 self.onmessage = function(event) {
     var data = event.data;
     var screenPos = data['screenPos'];

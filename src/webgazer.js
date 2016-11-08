@@ -55,8 +55,7 @@
     //Types that regression systems should handle
     //Describes the source of data so that regression systems may ignore or handle differently the various generating events
     var eventTypes = ['click', 'move'];
-
-
+    
     //movelistener timeout clock parameters
     var moveClock = performance.now();
     webgazer.params.moveTickSize = 50; //milliseconds
@@ -89,6 +88,7 @@
         'settings': {},
     };
 
+    
     //PRIVATE FUNCTIONS
 
     /**
@@ -283,8 +283,7 @@
             regs[reg].setData([]);
         }
     }
-
-
+    
     /**
      * initializes all needed dom elements and begins the loop
      */
@@ -316,6 +315,7 @@
         loop();
     }
 
+    
     //PUBLIC FUNCTIONS - CONTROL
 
     /**
@@ -409,6 +409,7 @@
         return webgazer;
     }
 
+    
     //PUBLIC FUNCTIONS - DEBUG
 
     /**
@@ -474,6 +475,7 @@
         return webgazer;
     }
 
+    
     //SETTERS
     /**
      * sets the tracking module
@@ -570,6 +572,7 @@
         return webgazer;
     }
 
+    
     //GETTERS
     /**
      * returns the tracker currently in use
@@ -602,4 +605,5 @@
     webgazer.params.getEventTypes = function() {
         return eventTypes.slice();
     }
+    
 }(window));

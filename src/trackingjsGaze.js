@@ -160,4 +160,5 @@
     }
 
     TrackingjsGaze.prototype.name = 'trackingjs';
+    
 }(window));

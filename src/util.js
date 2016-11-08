@@ -3,8 +3,7 @@
     self.webgazer = self.webgazer || {};
     self.webgazer.util = self.webgazer.util || {};
     self.webgazer.mat = self.webgazer.mat || {};
-
-
+    
     /**
      * Eye class, represents an eye patch detected in the video stream
      * @param {ImageData} patch - the image data corresponding to an eye
@@ -19,9 +18,9 @@
         this.imagey = imagey;
         this.width = width;
         this.height = height;
-    }
-
-
+    };
+    
+    
     //Data Window class
     //operates like an array but 'wraps' data around to keep the array at a fixed windowSize
     /**
@@ -38,7 +37,7 @@
             this.data = data.slice(data.length-windowSize,data.length);
             this.length = this.data.length;
         }
-    }
+    };
 
     /**
      * [push description]
@@ -56,7 +55,7 @@
         this.data[this.index] = entry;
         this.index = (this.index + 1) % this.windowSize;
         return this;
-    }
+    };
 
     /**
      * Get the element at the ind position by wrapping around the DataWindow
@@ -65,7 +64,7 @@
      */
     self.webgazer.util.DataWindow.prototype.get = function(ind) {
         return this.data[this.getTrueIndex(ind)];
-    }
+    };
 
     /**
      * Gets the true this.data array index given an index for a desired element
@@ -79,7 +78,7 @@
             //wrap around ind so that we can traverse from oldest to newest
             return (ind + this.index) % this.windowSize;
         }
-    }
+    };
 
     /**
      * Append all the contents of data
@@ -89,7 +88,7 @@
         for (var i = 0; i < data.length; i++) {
             this.push(data[i]);
         }
-    }
+    };
 
 
     //Helper functions
@@ -103,7 +102,7 @@
     self.webgazer.util.grayscale = function(imageData, imageWidth, imageHeight){
         //TODO implement ourselves to remove dependency
         return tracking.Image.grayscale(imageData, imageWidth, imageHeight, false);
-    }
+    };
 
     /**
      * Increase contrast of an image
@@ -114,7 +113,7 @@
     self.webgazer.util.equalizeHistogram = function(grayscaleImageSrc, step, destinationImage) {
         //TODO implement ourselves to remove dependency
         return objectdetect.equalizeHistogram(grayscaleImageSrc, step, destinationImage);
-    }
+    };
 
     /**
      * Gets an Eye object and resizes it to the desired resolution
@@ -140,11 +139,8 @@
         tempCanvas.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, resizeWidth, resizeHeight);
 
         return tempCanvas.getContext('2d').getImageData(0, 0, resizeWidth, resizeHeight);
-    }
-
-
-
-
+    };
+    
     /**
      * Checks if the prediction is within the boundaries of the viewport and constrains it
      * @param  {array} prediction [x,y] predicted gaze coordinates
@@ -166,7 +162,7 @@
             prediction.y = h;
         }
         return prediction;
-    }
+    };
 
     function debugBoxWrite(para, stats) {
         var str = '';
@@ -191,18 +187,18 @@
                 debugBoxWrite(localThis.para, localThis.stats);
             }, updateInterval);
         }(this));
-    }
+    };
 
     self.webgazer.util.DebugBox.prototype.set = function(key, value) {
         this.stats[key] = value;
-    }
+    };
 
     self.webgazer.util.DebugBox.prototype.inc = function(key, incBy, init) {
         if (!this.stats[key]) {
             this.stats[key] = init || 0;
         }
         this.stats[key] += incBy || 1;
-    }
+    };
 
     self.webgazer.util.DebugBox.prototype.addButton = function(name, func) {
         if (!this.buttons[name]) {
@@ -213,7 +209,7 @@
         this.buttons[name] = button;
         button.addEventListener('click', func);
         button.innerText = name;
-    }
+    };
 
     self.webgazer.util.DebugBox.prototype.show = function(name, func) {
         if (!this.canvas[name]) {
@@ -223,7 +219,7 @@
         var canvas = this.canvas[name];
         canvas.getContext('2d').clearRect(0,0, canvas.width, canvas.height);
         func(canvas);
-    }
+    };
 
     /**
      * Kalman Filter constructor
@@ -244,9 +240,8 @@
         this.R = R; // Measurement Noise
         this.P = P_initial; //Initial covariance matrix
         this.X = X_initial; //Initial guess of measurement
-    }
-
-
+    };
+    
     /**
      * Get Kalman next filtered value and update the internal state
      * @param {array} z  	-> the new measurement
@@ -278,7 +273,7 @@
       //Now we correct the internal values of the model
       // correction: X = X + K * (m - H * X)  |  P = (I - K * H) * P
       this.X = add(X_p, mult(K, y));
-      this.P = mult(sub(identity(K.length), mult(K,this.H)), P_p)
+      this.P = mult(sub(identity(K.length), mult(K,this.H)), P_p);
       return transpose(mult(this.H, this.X))[0]; //Transforms the predicted state back into it's measurement form
     }
 

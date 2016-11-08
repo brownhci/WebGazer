@@ -1,5 +1,5 @@
 (function() {
-    "use strict"
+    "use strict";
 
     self.webgazer = self.webgazer || {};
     self.webgazer.mat = self.webgazer.mat || {};
@@ -22,7 +22,7 @@
         }
 
         return transposedMatrix;
-    }
+    };
 
     /**
      * Get a submatrix of matrix
@@ -43,7 +43,7 @@
             }
         }
         return X;
-    }
+    };
 
     /**
      * Get a submatrix of matrix
@@ -68,7 +68,7 @@
             }
         }
         return X;
-    }
+    };
 
     /**
      * Linear algebraic matrix multiplication, matrix1 * matrix2
@@ -103,7 +103,7 @@
             }
         }
         return X;
-    }
+    };
 
 
     /**
@@ -203,7 +203,7 @@
             }
         }
         return X;
-    }
+    };
 
     /**
      * Least squares solution of A*X = B, based on WEKA code
@@ -213,7 +213,7 @@
      */
     self.webgazer.mat.QRDecomposition = function(A, B){
         // Initialize.
-        QR = new Array(A.length);
+        var QR = new Array(A.length);
 
         for (var i = 0; i < A.length; i++){
             QR[i] = new Array(A[0].length);
@@ -266,7 +266,7 @@
         }
         // Copy right hand side
         var nx = B[0].length;
-        X = new Array(B.length);
+        var X = new Array(B.length);
         for(var i=0; i<B.length; i++){
             X[i] = new Array(B[0].length);
         }
@@ -301,4 +301,5 @@
         }
         return self.webgazer.mat.getSubMatrix(X,0,n-1,0,nx-1);
     }
+    
 }());

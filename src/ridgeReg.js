@@ -57,8 +57,7 @@
         } while (!success);
         return m_Coefficients;
     }
-
-
+    
     function getEyeFeats(eyes) {
         var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
         var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
@@ -107,7 +106,7 @@
 
         this.dataClicks = new webgazer.util.DataWindow(dataWindow);
         this.dataTrail = new webgazer.util.DataWindow(dataWindow);
-    }
+    };
 
     webgazer.reg.RidgeReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
@@ -133,7 +132,7 @@
 
         eyes.left.patch = Array.from(eyes.left.patch.data);
         eyes.right.patch = Array.from(eyes.right.patch.data);
-    }
+    };
 
     webgazer.reg.RidgeReg.prototype.predict = function(eyesObj) {
         if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
@@ -175,7 +174,7 @@
             x: predictedX,
             y: predictedY
         };
-    }
+    };
 
     webgazer.reg.RidgeReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
@@ -184,12 +183,12 @@
             data[i].eyes.right.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.right.patch), data[i].eyes.right.width, data[i].eyes.right.height);
             this.addData(data[i].eyes, data[i].screenPos, data[i].type);
         }
-    }
+    };
 
     webgazer.reg.RidgeReg.prototype.getData = function() {
         return this.dataClicks.data.concat(this.dataTrail.data);
-    }
-
-
+    };
+    
     webgazer.reg.RidgeReg.prototype.name = 'ridge';
+    
 }(window));
