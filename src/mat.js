@@ -1,5 +1,5 @@
 (function() {
-    "use strict"
+    "use strict";
 
     self.webgazer = self.webgazer || {};
     self.webgazer.mat = self.webgazer.mat || {};
@@ -22,7 +22,7 @@
         }
 
         return transposedMatrix;
-    }
+    };
 
     /**
      * Get a submatrix of matrix
@@ -43,7 +43,7 @@
             }
         }
         return X;
-    }
+    };
 
     /**
      * Get a submatrix of matrix
@@ -68,7 +68,7 @@
             }
         }
         return X;
-    }
+    };
 
     /**
      * Linear algebraic matrix multiplication, matrix1 * matrix2
@@ -103,7 +103,7 @@
             }
         }
         return X;
-    }
+    };
 
 
     /**
@@ -203,7 +203,7 @@
             }
         }
         return X;
-    }
+    };
 
     /**
      * Least squares solution of A*X = B, based on WEKA code
