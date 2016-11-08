@@ -40,7 +40,7 @@
            return (x);
     };
 
-        var methods = {
+    var methods = {
             linear: function(data) {
                 var sum = [0, 0, 0, 0, 0], n = 0, results = [];
 
@@ -232,17 +232,17 @@
             }
         };
 
-var regression = (function(method, data, order) {
+    var regression = (function(method, data, order) {
 
-       if (typeof method == 'string') {
-           return methods[method](data, order);
-       }
-    });
+           if (typeof method == 'string') {
+               return methods[method](data, order);
+           }
+        });
 
-if (typeof exports !== 'undefined') {
-    module.exports = regression;
-} else {
-    window.regression = regression;
-}
+    if (typeof exports !== 'undefined') {
+        module.exports = regression;
+    } else {
+        window.regression = regression;
+    }
 
 }());
