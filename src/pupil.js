@@ -13,7 +13,7 @@
  */
 var getValue = function (pixels, x, y, width){
     return pixels[y * width + x];
-}
+};
 
 /**
  * Computes summation area table/integral image of a pixel matrix
@@ -44,7 +44,7 @@ var getSumTable = function (pixels, width, height){
         }
     }
     return integralImage;
-}
+};
 
 /**
  * Detects a pupil in a set of pixels
@@ -83,7 +83,7 @@ var getSinglePupil = function (pixels, width, height){
         }
     }
     return [bestPoint, bestHalfWidth];
-}
+};
 
 /**
  * Given an object with two eye patches it finds the location of the detected pupils
