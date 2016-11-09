@@ -4,6 +4,11 @@
     webgazer.reg = webgazer.reg || {};
     webgazer.pupil = webgazer.pupil || {};
 
+    /**
+     * Constructor of LinearReg,
+     * initialize array data
+     * @constructor
+     */
     webgazer.reg.LinearReg = function() {
         this.leftDatasetX = [];
         this.leftDatasetY = [];
@@ -12,6 +17,13 @@
         this.data = [];
     }
 
+    //TODO
+    /**
+     * Append new data about eyes
+     * @param {?} eyes -
+     * @param {?} screenPos -
+     * @param {?} type -
+     */
     webgazer.reg.LinearReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
@@ -29,6 +41,11 @@
         this.data.push({'eyes': eyes, 'screenPos': screenPos, 'type': type});
     }
 
+    /**
+     * Add given data to current data set then,
+     * replace current data member with given data
+     * @param {Array.<Object>} data - The data to set
+     */
     webgazer.reg.LinearReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             this.addData(data[i].eyes, data[i].screenPos, data[i].type);
@@ -36,10 +53,20 @@
         this.data = data;
     }
 
+    /**
+     * Return the data
+     * @returns {Array.<Object>|*}
+     */
     webgazer.reg.LinearReg.prototype.getData = function() {
         return this.data;
     }
 
+    /**
+     * Try to predict coordinates from pupil data
+     * after apply linear regression on data set
+     * @param {Object} eyesObj - The current user eyes object
+     * @returns {Object}
+     */
     webgazer.reg.LinearReg.prototype.predict = function(eyesObj) {
         if (!eyesObj) {
             return null;
@@ -76,6 +103,10 @@
         };
     }
 
+    /**
+     * The LinearReg object name
+     * @type {string}
+     */
     webgazer.reg.LinearReg.prototype.name = 'simple';
 
 
