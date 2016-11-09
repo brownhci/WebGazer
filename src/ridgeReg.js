@@ -82,7 +82,7 @@
         return leftGrayArray.concat(rightGrayArray);
     }
 
-    //TODO
+    //TODO: still usefull ???
     /**
      *
      * @returns {Number}
@@ -156,6 +156,12 @@
         eyes.right.patch = Array.from(eyes.right.patch.data);
     }
 
+    /**
+     * Try to predict coordinates from pupil data
+     * after apply linear regression on data set
+     * @param {Object} eyesObj - The current user eyes object
+     * @returns {Object}
+     */
     webgazer.reg.RidgeReg.prototype.predict = function(eyesObj) {
         if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
             return null;
@@ -198,6 +204,11 @@
         };
     }
 
+    /**
+     * Add given data to current data set then,
+     * replace current data member with given data
+     * @param {Array.<Object>} data - The data to set
+     */
     webgazer.reg.RidgeReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             //TODO this is a kludge, needs to be fixed
@@ -207,10 +218,17 @@
         }
     }
 
+    /**
+     * Return the data
+     * @returns {Array.<Object>|*}
+     */
     webgazer.reg.RidgeReg.prototype.getData = function() {
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
 
-
+    /**
+     * The RidgeReg object name
+     * @type {string}
+     */
     webgazer.reg.RidgeReg.prototype.name = 'ridge';
 }(window));
