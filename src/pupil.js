@@ -5,11 +5,11 @@
     
     /**
      * Returns intensity value at x,y position of a pixels image
-     * @param{array} pixels - array of size width*height
-     * @param{number} x -  input x value
-     * @param{number} y - input y value
-     * @param{number} width - width of pixels image
-     * @returns{number} - intensity value in [0,255]
+     * @param {Array} pixels - array of size width*height
+     * @param {Number} x -  input x value
+     * @param {Number} y - input y value
+     * @param {Number} width - width of pixels image
+     * @returns {Number} - intensity value in [0,255]
      */
     var getValue = function (pixels, x, y, width){
         return pixels[y * width + x];
@@ -17,10 +17,10 @@
     
     /**
      * Computes summation area table/integral image of a pixel matrix
-     * @param{array} pixels value of eye area
-     * @param{number} width - of image in 'pixels'
-     * @param{number} height - of image in 'pixels'
-     * @returns{2d array} -integral image
+     * @param {Array} pixels value of eye area
+     * @param {Number} width - of image in 'pixels'
+     * @param {Number} height - of image in 'pixels'
+     * @returns {Array} - integral image
      */
     var getSumTable = function (pixels, width, height){
         var integralImage = new Array(width);
@@ -48,10 +48,10 @@
     
     /**
      * Detects a pupil in a set of pixels
-     * @param  {array} pixels - patch of pixels to look for pupil into
-     * @param  {number} width  - of pixel patch
-     * @param  {number} height - of pixel patch
-     * @return {array} coordinate of the bottom right corner and width of the best fitted pupil
+     * @param  {Array} pixels - patch of pixels to look for pupil into
+     * @param  {Number} width  - of pixel patch
+     * @param  {Number} height - of pixel patch
+     * @return {Array} coordinate of the bottom right corner and width of the best fitted pupil
      */
     var getSinglePupil = function (pixels, width, height){
         var summedAreaTable = getSumTable(pixels, width, height);

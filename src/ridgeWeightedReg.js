@@ -14,10 +14,10 @@
 
     /**
      * Performs ridge regression, according to the Weka code.
-     * @param {array} y corresponds to screen coordinates (either x or y) for each of n click events
-     * @param {array of arrays} X corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
-     * @param {array} ridge ridge parameter
-     * @return{array} regression coefficients
+     * @param {Array} y - corresponds to screen coordinates (either x or y) for each of n click events
+     * @param {Array.<Array.<Number>>} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
+     * @param {Array} k - ridge parameter
+     * @return{Array} regression coefficients
      */
     function ridge(y, X, k){
         var nc = X[0].length;
@@ -58,6 +58,11 @@
         return m_Coefficients;
     }
 
+    /**
+     * Compute eyes size as gray histogram
+     * @param {Object} eyes - The eyes where looking for gray histogram
+     * @returns {Array.<T>} The eyes gray level histogram
+     */
     function getEyeFeats(eyes) {
         var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
         var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
@@ -76,6 +81,11 @@
         return leftGrayArray.concat(rightGrayArray);
     }
 
+    //TODO: still usefull ???
+    /**
+     *
+     * @returns {Number}
+     */
     function getCurrentFixationIndex() {
         var index = 0;
         var recentX = this.screenXTrailArray.get(0);
@@ -91,6 +101,10 @@
         return i;
     }
 
+    /**
+     * Constructor of RidgeWeightedReg object
+     * @constructor
+     */
     webgazer.reg.RidgeWeightedReg = function() {
         this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
@@ -108,6 +122,12 @@
         this.dataTrail = new webgazer.util.DataWindow(dataWindow);
     };
 
+    /**
+     * Add given data from eyes
+     * @param {Object} eyes - eyes where extract data to add
+     * @param {Object} screenPos - The current screen point
+     * @param {Object} type - The type of performed action
+     */
     webgazer.reg.RidgeWeightedReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
@@ -134,6 +154,12 @@
         eyes.right.patch = Array.from(eyes.right.patch.data);
     };
 
+    /**
+     * Try to predict coordinates from pupil data
+     * after apply linear regression on data set
+     * @param {Object} eyesObj - The current user eyes object
+     * @returns {Object}
+     */
     webgazer.reg.RidgeWeightedReg.prototype.predict = function(eyesObj) {
         if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
             return null;
@@ -200,6 +226,11 @@
         };
     };
 
+    /**
+     * Add given data to current data set then,
+     * replace current data member with given data
+     * @param {Array.<Object>} data - The data to set
+     */
     webgazer.reg.RidgeWeightedReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             //TODO this is a kludge, needs to be fixed
@@ -209,10 +240,18 @@
         }
     };
 
+    /**
+     * Return the data
+     * @returns {Array.<Object>|*}
+     */
     webgazer.reg.RidgeWeightedReg.prototype.getData = function() {
         return this.dataClicks.data.concat(this.dataTrail.data);
     };
 
+    /**
+     * The RidgeWeightedReg object name
+     * @type {string}
+     */
     webgazer.reg.RidgeWeightedReg.prototype.name = 'ridge';
     
 }(window));

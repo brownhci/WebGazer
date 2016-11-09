@@ -7,7 +7,9 @@
     webgazer.params = webgazer.params || {};
 
     /**
-     * Initialize clmtrackr object
+     * Constructor of ClmGaze,
+     * initialize ClmTrackr object
+     * @constructor
      */
     var ClmGaze = function() {
         this.clm = new clm.tracker(webgazer.params.camConstraints);
@@ -47,8 +49,8 @@
     /**
      * Isolates the two patches that correspond to the user's eyes
      * @param  {Canvas} imageCanvas - canvas corresponding to the webcam stream
-     * @param  {number} width - of imageCanvas
-     * @param  {number} height - of imageCanvas
+     * @param  {Number} width - of imageCanvas
+     * @param  {Number} height - of imageCanvas
      * @return {Object} the two eye-patches, first left, then right eye
      */
     ClmGaze.prototype.getEyePatches = function(imageCanvas, width, height) {
@@ -124,6 +126,10 @@
         return eyeObjs;
     };
 
+    /**
+     * The Js_objectdetectGaze object name
+     * @type {string}
+     */
     ClmGaze.prototype.name = 'clmtrackr';
     
 }(window));
