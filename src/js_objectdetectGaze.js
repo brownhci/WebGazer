@@ -4,13 +4,13 @@
     window.webgazer = window.webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
 
-    var Js_objectdetectGaze = function() {
-
-    }
     /**
      * Constructor of Js_objectdetectGaze
      * @constructor
      */
+    var Js_objectdetectGaze = function() {
+
+    }
 
     webgazer.tracker.Js_objectdetectGaze = Js_objectdetectGaze;
 
@@ -221,11 +221,10 @@
         });
         return result;
     };
+    
     /**
      * The Js_objectdetectGaze object name
      * @type {string}
      */
-
-
     Js_objectdetectGaze.prototype.name = 'js_objectdetect';
 }(window));
