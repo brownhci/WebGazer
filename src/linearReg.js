@@ -17,12 +17,11 @@
         this.data = [];
     }
 
-    //TODO
     /**
-     * Append new data about eyes
-     * @param {?} eyes -
-     * @param {?} screenPos -
-     * @param {?} type -
+     * Add given data from eyes
+     * @param {Object} eyes - eyes where extract data to add
+     * @param {Object} screenPos - The current screen point
+     * @param {Object} type - The type of performed action
      */
     webgazer.reg.LinearReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
