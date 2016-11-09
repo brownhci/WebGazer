@@ -3,8 +3,7 @@
     self.webgazer = self.webgazer || {};
     self.webgazer.util = self.webgazer.util || {};
     self.webgazer.mat = self.webgazer.mat || {};
-
-
+    
     /**
      * Eye class, represents an eye patch detected in the video stream
      * @param {ImageData} patch - the image data corresponding to an eye
@@ -20,8 +19,8 @@
         this.width = width;
         this.height = height;
     };
-
-
+    
+    
     //Data Window class
     //operates like an array but 'wraps' data around to keep the array at a fixed windowSize
     /**
@@ -141,10 +140,7 @@
 
         return tempCanvas.getContext('2d').getImageData(0, 0, resizeWidth, resizeHeight);
     };
-
-
-
-
+    
     /**
      * Checks if the prediction is within the boundaries of the viewport and constrains it
      * @param  {array} prediction [x,y] predicted gaze coordinates
@@ -245,8 +241,7 @@
         this.P = P_initial; //Initial covariance matrix
         this.X = X_initial; //Initial guess of measurement
     };
-
-
+    
     /**
      * Get Kalman next filtered value and update the internal state
      * @param {array} z  	-> the new measurement

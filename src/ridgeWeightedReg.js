@@ -58,7 +58,6 @@
         return m_Coefficients;
     }
 
-
     function getEyeFeats(eyes) {
         var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
         var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
@@ -214,6 +213,6 @@
         return this.dataClicks.data.concat(this.dataTrail.data);
     };
 
-
     webgazer.reg.RidgeWeightedReg.prototype.name = 'ridge';
+    
 }(window));

@@ -301,4 +301,5 @@
         }
         return self.webgazer.mat.getSubMatrix(X,0,n-1,0,nx-1);
     }
+    
 }());

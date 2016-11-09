@@ -125,4 +125,5 @@
     };
 
     ClmGaze.prototype.name = 'clmtrackr';
+    
 }(window));

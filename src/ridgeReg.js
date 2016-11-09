@@ -57,8 +57,7 @@
         } while (!success);
         return m_Coefficients;
     }
-
-
+    
     function getEyeFeats(eyes) {
         var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
         var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
@@ -188,8 +187,8 @@
 
     webgazer.reg.RidgeReg.prototype.getData = function() {
         return this.dataClicks.data.concat(this.dataTrail.data);
-    };
-
-
+    }
+    
     webgazer.reg.RidgeReg.prototype.name = 'ridge';
+    
 }(window));
