@@ -92,6 +92,33 @@ var getSinglePupil = function (pixels, width, height){
  */
 webgazer.pupil.getPupils = function(eyesObj) {
     if (!eyesObj) {
+    /**
+     * Returns intensity value at x,y position of a pixels image
+     * @param {Array} pixels - array of size width*height
+     * @param {Number} x -  input x value
+     * @param {Number} y - input y value
+     * @param {Number} width - width of pixels image
+     * @returns {Number} - intensity value in [0,255]
+     */
+    /**
+     * Computes summation area table/integral image of a pixel matrix
+     * @param {Array} pixels value of eye area
+     * @param {Number} width - of image in 'pixels'
+     * @param {Number} height - of image in 'pixels'
+     * @returns {Array} - integral image
+     */
+    /**
+     * Detects a pupil in a set of pixels
+     * @param  {Array} pixels - patch of pixels to look for pupil into
+     * @param  {Number} width  - of pixel patch
+     * @param  {Number} height - of pixel patch
+     * @return {Array} coordinate of the bottom right corner and width of the best fitted pupil
+     */
+    /**
+     * Given an object with two eye patches it finds the location of the detected pupils
+     * @param  {Object} eyesObj - left and right detected eye patches
+     * @return {Object} eyesObj - updated eye patches with information about pupils' locations
+     */
         return eyesObj;
     }
     if (!eyesObj.left.blink) {
