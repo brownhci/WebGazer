@@ -1,12 +1,10 @@
 (function(window) {
-    "use strict"
+    "use strict";
 
     window.webgazer = window.webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
 
-    var Js_objectdetectGaze = function() {
-
-    }
+    var Js_objectdetectGaze = function() {};
 
     webgazer.tracker.Js_objectdetectGaze = Js_objectdetectGaze;
 
@@ -74,7 +72,7 @@
         }
 
         return eyeObjs;
-    }
+    };
 
     /**
      * Performs eye detection on the passed workingImage
@@ -116,7 +114,7 @@
             console.log('js_objectdetect could not detect two eyes in the video');
             return null;
         }
-    }
+    };
 
     /**
      * Performs face detection on the passed canvas
@@ -139,7 +137,7 @@
         face[2] *= workingImageWidth / detector.canvas.width;
         face[3] *= workingImageHeight / detector.canvas.height;
         return face;
-    }
+    };
 
     /**
      * Goes through an array of rectangles and returns the one with the largest area
@@ -158,7 +156,7 @@
             }
         }
         return largestRectangle;
-    }
+    };
 
     /**
      * Merges detected rectangles in clusters

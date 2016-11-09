@@ -1,12 +1,10 @@
 (function(window) {
-    "use strict"
+    "use strict";
 
     window.webgazer = window.webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
 
-    var TrackingjsGaze = function() {
-
-    }
+    var TrackingjsGaze = function() {};
 
     webgazer.tracker.TrackingjsGaze = TrackingjsGaze;
 
@@ -75,7 +73,7 @@
         }
 
         return eyeObjs;
-    }
+    };
 
     /**
      * Performs eye detection on the passed working image
@@ -117,7 +115,7 @@
             console.log('tracking.js could not detect two eyes in the video');
             return null;
         }
-    }
+    };
 
     /**
      * Performs face detection on the passed canvas
@@ -138,7 +136,7 @@
         });
         face = this.findLargestRectangle(intermediateFaces);
         return face;
-    }
+    };
 
     /**
      * Goes through an array of rectangles and returns the one with the largest area
@@ -157,7 +155,7 @@
             }
         }
         return largestRectangle;
-    }
+    };
 
     TrackingjsGaze.prototype.name = 'trackingjs';
 }(window));

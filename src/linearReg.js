@@ -10,7 +10,7 @@
         this.rightDatasetX = [];
         this.rightDatasetY = [];
         this.data = [];
-    }
+    };
 
     webgazer.reg.LinearReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
@@ -27,18 +27,18 @@
             this.rightDatasetY.push([eyes.right.pupil[0][1], screenPos[1]]);
         }
         this.data.push({'eyes': eyes, 'screenPos': screenPos, 'type': type});
-    }
+    };
 
     webgazer.reg.LinearReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             this.addData(data[i].eyes, data[i].screenPos, data[i].type);
         }
         this.data = data;
-    }
+    };
 
     webgazer.reg.LinearReg.prototype.getData = function() {
         return this.data;
-    }
+    };
 
     webgazer.reg.LinearReg.prototype.predict = function(eyesObj) {
         if (!eyesObj) {
@@ -68,13 +68,13 @@
         var rightPupilX = eyesObj.right.pupil[0][0];
         var rightPupilY = eyesObj.right.pupil[0][1];
 
-        predictedX = Math.floor((((leftSlopeX * leftPupilX) + leftIntersceptX) + ((rightSlopeX * rightPupilX) + rightIntersceptX))/2);
-        predictedY = Math.floor((((leftSlopeY * leftPupilY) + leftIntersceptY) + ((rightSlopeY * rightPupilY) + rightIntersceptY))/2);
+        var predictedX = Math.floor((((leftSlopeX * leftPupilX) + leftIntersceptX) + ((rightSlopeX * rightPupilX) + rightIntersceptX))/2);
+        var predictedY = Math.floor((((leftSlopeY * leftPupilY) + leftIntersceptY) + ((rightSlopeY * rightPupilY) + rightIntersceptY))/2);
         return {
             x: predictedX,
             y: predictedY
         };
-    }
+    };
 
     webgazer.reg.LinearReg.prototype.name = 'simple';
 

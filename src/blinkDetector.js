@@ -32,7 +32,7 @@ webgazer.BlinkDetector.prototype.detectBlink = function(eyesObj) {
     eyesObj.left.blink = false;
     eyesObj.right.blink = false;
     return eyesObj;
-}
+};
 
 webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
     if (webgazer.utils.isInt(value) && value > 0) {
