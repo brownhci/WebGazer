@@ -14,10 +14,10 @@
 
     /**
      * Performs ridge regression, according to the Weka code.
-     * @param {array} y corresponds to screen coordinates (either x or y) for each of n click events
-     * @param {array of arrays} X corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
-     * @param {array} ridge ridge parameter
-     * @return{array} regression coefficients
+     * @param {Array} y - corresponds to screen coordinates (either x or y) for each of n click events
+     * @param {Array.<Array.<Number>>} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
+     * @param {Array} k - ridge parameter
+     * @return{Array} regression coefficients
      */
     function ridge(y, X, k){
         var nc = X[0].length;
@@ -59,6 +59,11 @@
     }
 
 
+    /**
+     * Compute eyes size as gray histogram
+     * @param {Object} eyes - The eyes where looking for gray histogram
+     * @returns {Array.<T>} The eyes gray level histogram
+     */
     function getEyeFeats(eyes) {
         var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
         var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
@@ -77,6 +82,11 @@
         return leftGrayArray.concat(rightGrayArray);
     }
 
+    //TODO
+    /**
+     *
+     * @returns {Number}
+     */
     function getCurrentFixationIndex() {
         var index = 0;
         var recentX = this.screenXTrailArray.get(0);
@@ -92,6 +102,11 @@
         return i;
     }
 
+    /**
+     * Constructor of RidgeReg object,
+     * this object allow to perform ridge regression
+     * @constructor
+     */
     webgazer.reg.RidgeReg = function() {
         this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
@@ -109,6 +124,12 @@
         this.dataTrail = new webgazer.util.DataWindow(dataWindow);
     }
 
+    /**
+     * Add given data from eyes
+     * @param {Object} eyes - eyes where extract data to add
+     * @param {Object} screenPos - The current screen point
+     * @param {Object} type - The type of performed action
+     */
     webgazer.reg.RidgeReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
