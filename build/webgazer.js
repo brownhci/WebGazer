@@ -8042,61 +8042,85 @@ var mosseFilterResponses = function() {
 }
 
 (function(window) {
-
+    "use strict";
+    
     window.webgazer = window.webgazer || {};
 
-webgazer.BlinkDetector = function(blinkWindow) {
-    //TODO use DataWindow instead
-    this.blinkData = [];
-    //determines number of previous eyeObj to hold onto
-    this.blinkWindow = blinkWindow || 8;
+    //TODO
+    /**
+     * Constructor for BlinkDetector
+     * @param blinkWindow
+     * @constructor
+     */
+    webgazer.BlinkDetector = function(blinkWindow) {
+        //TODO use DataWindow instead
+        this.blinkData = [];
+        //determines number of previous eyeObj to hold onto
+        this.blinkWindow = blinkWindow || 8;
 
-    //cycles through to replace oldest entry
-    this.blinkWindowIndex = 0;
-};
+        //cycles through to replace oldest entry
+        this.blinkWindowIndex = 0;
+    };
 
-webgazer.BlinkDetector.prototype.detectBlink = function(eyesObj) {
-    if (!eyesObj) {
-        return eyesObj;
-    }
-    if (this.blinkData.length < this.blinkWindow) {
-        this.blinkData.push(eyesObj);
+    //TODO
+    /**
+     *
+     * @param eyesObj
+     * @returns {*}
+     */
+    webgazer.BlinkDetector.prototype.detectBlink = function(eyesObj) {
+        if (!eyesObj) {
+            return eyesObj;
+        }
+        if (this.blinkData.length < this.blinkWindow) {
+            this.blinkData.push(eyesObj);
+            eyesObj.left.blink = false;
+            eyesObj.right.blink = false;
+            return eyesObj;
+        }
+
+        //replace oldest entry
+        this.blinkData[this.blinkWindowIndex] = eyesObj;
+        this.blinkWindowIndex = (this.blinkWindowIndex + 1) % this.blinkWindow;
+
+        //TODO detect if current eyeObj is different from eyeObj in blinkData;
+
         eyesObj.left.blink = false;
         eyesObj.right.blink = false;
         return eyesObj;
+    };
+
+    //TODO
+    /**
+     *
+     * @param value
+     * @returns {webgazer.BlinkDetector}
+     */
+    webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
+        if (webgazer.utils.isInt(value) && value > 0) {
+            this.blinkWindow = value;
+        }
+        return this;
     }
 
-    //replace oldest entry
-    this.blinkData[this.blinkWindowIndex] = eyesObj;
-    this.blinkWindowIndex = (this.blinkWindowIndex + 1) % this.blinkWindow;
-
-    //TODO detect if current eyeObj is different from eyeObj in blinkData;
-
-    eyesObj.left.blink = false;
-    eyesObj.right.blink = false;
-    return eyesObj;
-}
-
-webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
-    if (webgazer.utils.isInt(value) && value > 0) {
-        this.blinkWindow = value;
-    }
-    return this;
-}
 }(window));
 
+
 (function(window) {
-    "use strict"
+    "use strict";
 
     window.webgazer = window.webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
     webgazer.util = webgazer.util || {};
+    webgazer.params = webgazer.params || {};
 
     /**
-     * Initialize clmtrackr object
+     * Constructor of ClmGaze,
+     * initialize ClmTrackr object
+     * @constructor
      */
     var ClmGaze = function() {
-        this.clm = new clm.tracker({useWebGL : true});
+        this.clm = new clm.tracker(webgazer.params.camConstraints);
         this.clm.init(pModel);
         var F = [ [1, 0, 0, 0, 1, 0],
                   [0, 1, 0, 0, 0, 1],
@@ -8126,20 +8150,20 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
 
         this.leftKalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
         this.rightKalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
-    }
+    };
 
     webgazer.tracker.ClmGaze = ClmGaze;
 
     /**
      * Isolates the two patches that correspond to the user's eyes
      * @param  {Canvas} imageCanvas - canvas corresponding to the webcam stream
-     * @param  {number} width - of imageCanvas
-     * @param  {number} height - of imageCanvas
+     * @param  {Number} width - of imageCanvas
+     * @param  {Number} height - of imageCanvas
      * @return {Object} the two eye-patches, first left, then right eye
      */
     ClmGaze.prototype.getEyePatches = function(imageCanvas, width, height) {
 
-        if (imageCanvas.width == 0) {
+        if (imageCanvas.width === 0) {
             return null;
         }
 
@@ -8176,12 +8200,12 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         rightWidth = Math.round(rightBox[2] - rightBox[0]);
         rightHeight = Math.round(rightBox[3] - rightBox[1]);
 
-        if (leftWidth == 0 || rightWidth == 0){
+        if (leftWidth === 0 || rightWidth === 0){
           console.log('an eye patch had zero width');
           return null;
         }
 
-        if (leftHeight == 0 || rightHeight == 0){
+        if (leftHeight === 0 || rightHeight === 0){
           console.log("an eye patch had zero height");
           return null;
         }
@@ -8208,28 +8232,35 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         eyeObjs.positions = positions;
 
         return eyeObjs;
-    }
+    };
 
+    /**
+     * The Js_objectdetectGaze object name
+     * @type {string}
+     */
     ClmGaze.prototype.name = 'clmtrackr';
+    
 }(window));
 
 (function(window) {
-    "use strict"
+    "use strict";
 
     window.webgazer = window.webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
 
-    var TrackingjsGaze = function() {
-
-    }
+    /**
+     * Constructor of TrackingjsGaze object
+     * @constructor
+     */
+    var TrackingjsGaze = function() {};
 
     webgazer.tracker.TrackingjsGaze = TrackingjsGaze;
 
     /**
      * Isolates the two patches that correspond to the user's eyes
      * @param  {Canvas} imageCanvas - canvas corresponding to the webcam stream
-     * @param  {number} width - of imageCanvas
-     * @param  {number} height - of imageCanvas
+     * @param  {Number} width - of imageCanvas
+     * @param  {Number} height - of imageCanvas
      * @return {Object} the two eye-patches, first left, then right eye
      */
     TrackingjsGaze.prototype.getEyePatches = function(imageCanvas, width, height) {
@@ -8290,14 +8321,14 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         }
 
         return eyeObjs;
-    }
+    };
 
     /**
      * Performs eye detection on the passed working image
      * @param {ImageData} workingImage - either the whole canvas or the upper half of the head
-     * @param {number} width - width of working image
-     * @param {number} height - height of working image
-     * @return{array} eyes - array of rectangle information. 
+     * @param {Number} width - width of working image
+     * @param {Number} height - height of working image
+     * @return {Array} eyes - array of rectangle information. 
      */
     TrackingjsGaze.prototype.detectEyes = function(workingImage, width, height){         
         var eyes = [];
@@ -8332,14 +8363,14 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             console.log('tracking.js could not detect two eyes in the video');
             return null;
         }
-    }
+    };
 
     /**
      * Performs face detection on the passed canvas
      * @param {ImageData} workingImage - whole video canvas
-     * @param {number} width - width of imageCanvas
-     * @param {number} height - height of imageCanvas
-     * @return{array} face - array of rectangle information
+     * @param {Number} width - width of imageCanvas
+     * @param {Number} height - height of imageCanvas
+     * @return {Array} face - array of rectangle information
      */
     TrackingjsGaze.prototype.detectFace = function(workingImage, width, height){
         var intermediateFaces = [];
@@ -8353,12 +8384,12 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         });
         face = this.findLargestRectangle(intermediateFaces);
         return face;
-    }
+    };
 
     /**
      * Goes through an array of rectangles and returns the one with the largest area
-     * @param {array of arrays} rectangles array of arrays of format [xCoordinate, yCoordinate, width, height]
-     * @return{array} largestRectangle = [xCoordinate, yCoordinate, width, height]
+     * @param {Array.<Array.<Number>>} rectangles - array of arrays of format [xCoordinate, yCoordinate, width, height]
+     * @return {Array} largestRectangle = [xCoordinate, yCoordinate, width, height]
      */
     TrackingjsGaze.prototype.findLargestRectangle = function(rectangles){
         var largestArea = 0;
@@ -8372,28 +8403,35 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             }
         }
         return largestRectangle;
-    }
+    };
 
+    /**
+     * The TrackingjsGaze object name
+     * @type {string}
+     */
     TrackingjsGaze.prototype.name = 'trackingjs';
+    
 }(window));
 
 (function(window) {
-    "use strict"
+    "use strict";
 
     window.webgazer = window.webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
 
-    var Js_objectdetectGaze = function() {
-
-    }
+    /**
+     * Constructor of Js_objectdetectGaze
+     * @constructor
+     */
+    var Js_objectdetectGaze = function() {};
 
     webgazer.tracker.Js_objectdetectGaze = Js_objectdetectGaze;
 
     /**
      * Isolates the two patches that correspond to the user's eyes
      * @param  {Canvas} imageCanvas - canvas corresponding to the webcam stream
-     * @param  {number} width - of imageCanvas
-     * @param  {number} height - of imageCanvas
+     * @param  {Number} width - of imageCanvas
+     * @param  {Number} height - of imageCanvas
      * @return {Object} the two eye-patches, first left, then right eye
      */
     Js_objectdetectGaze.prototype.getEyePatches = function(imageCanvas, width, height) {
@@ -8453,14 +8491,14 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         }
 
         return eyeObjs;
-    }
+    };
 
     /**
      * Performs eye detection on the passed workingImage
      * @param {ImageData} workingImage - either the whole canvas or the upper half of the head
-     * @param {number} width - width of working image
-     * @param {number} height - height of working image
-     * @return{array} eyes - array of rectangle information. 
+     * @param {Number} workingImageWidth - width of working image
+     * @param {Number} workingImageHeight - height of working image
+     * @return {Array} eyes - array of rectangle information.
      */
     Js_objectdetectGaze.prototype.detectEyes = function(workingImage, workingImageWidth, workingImageHeight){    
 
@@ -8495,14 +8533,14 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             console.log('js_objectdetect could not detect two eyes in the video');
             return null;
         }
-    }
+    };
 
     /**
      * Performs face detection on the passed canvas
-     * @param {canvas} imageCanvas - whole video canvas
-     * @param {number} width - width of imageCanvas
-     * @param {number} height - height of imageCanvas
-     * @return{array} face - array of rectangle information
+     * @param {Canvas} imageCanvas - whole video canvas
+     * @param {Number} workingImageWidth - width of imageCanvas
+     * @param {Number} workingImageHeight - height of imageCanvas
+     * @return {Array.<Array.<Number>>} face - array of rectangle information
      */
     Js_objectdetectGaze.prototype.detectFace = function(imageCanvas, workingImageWidth, workingImageHeight){
         var intermediateFaces = [];
@@ -8518,12 +8556,12 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         face[2] *= workingImageWidth / detector.canvas.width;
         face[3] *= workingImageHeight / detector.canvas.height;
         return face;
-    }
+    };
 
     /**
      * Goes through an array of rectangles and returns the one with the largest area
-     * @param {array of arrays} rectangles array of arrays of format [xCoordinate, yCoordinate, width, height]
-     * @return{array} largestRectangle = [xCoordinate, yCoordinate, width, height]
+     * @param {Array.<Array.<Number>>} rectangles - array of arrays of format [xCoordinate, yCoordinate, width, height]
+     * @return {Array} largestRectangle = [xCoordinate, yCoordinate, width, height]
      */
     Js_objectdetectGaze.prototype.findLargestRectangle = function(rectangles){
         var largestArea = 0;
@@ -8537,13 +8575,13 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             }
         }
         return largestRectangle;
-    }
+    };
 
     /**
      * Merges detected rectangles in clusters
      * Taken from trackingjs and modified slightly to reflect that rectangles are arrays and not objects
-     * @param  {array of arrays} rects rectangles to me clustered
-     * @return {array of arrays} result merged rectangles
+     * @param  {Array.<Array.<Number>>} rects - rectangles to me clustered
+     * @return {Array.<Array.<Number>>} result merged rectangles
      */
     Js_objectdetectGaze.prototype.mergeRectangles = function(rects){
         var disjointSet = new tracking.DisjointSet(rects.length);
@@ -8596,9 +8634,13 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         });
         return result;
     };
-
-
+    
+    /**
+     * The Js_objectdetectGaze object name
+     * @type {string}
+     */
     Js_objectdetectGaze.prototype.name = 'js_objectdetect';
+
 }(window));
 
 (function(window) {
@@ -8607,14 +8649,25 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
     webgazer.reg = webgazer.reg || {};
     webgazer.pupil = webgazer.pupil || {};
 
+    /**
+     * Constructor of LinearReg,
+     * initialize array data
+     * @constructor
+     */
     webgazer.reg.LinearReg = function() {
         this.leftDatasetX = [];
         this.leftDatasetY = [];
         this.rightDatasetX = [];
         this.rightDatasetY = [];
         this.data = [];
-    }
+    };
 
+    /**
+     * Add given data from eyes
+     * @param {Object} eyes - eyes where extract data to add
+     * @param {Object} screenPos - The current screen point
+     * @param {Object} type - The type of performed action
+     */
     webgazer.reg.LinearReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
@@ -8630,19 +8683,34 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             this.rightDatasetY.push([eyes.right.pupil[0][1], screenPos[1]]);
         }
         this.data.push({'eyes': eyes, 'screenPos': screenPos, 'type': type});
-    }
+    };
 
+    /**
+     * Add given data to current data set then,
+     * replace current data member with given data
+     * @param {Array.<Object>} data - The data to set
+     */
     webgazer.reg.LinearReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             this.addData(data[i].eyes, data[i].screenPos, data[i].type);
         }
         this.data = data;
-    }
+    };
 
+    /**
+     * Return the data
+     * @returns {Array.<Object>|*}
+     */
     webgazer.reg.LinearReg.prototype.getData = function() {
         return this.data;
-    }
+    };
 
+    /**
+     * Try to predict coordinates from pupil data
+     * after apply linear regression on data set
+     * @param {Object} eyesObj - The current user eyes object
+     * @returns {Object}
+     */
     webgazer.reg.LinearReg.prototype.predict = function(eyesObj) {
         if (!eyesObj) {
             return null;
@@ -8671,29 +8739,32 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         var rightPupilX = eyesObj.right.pupil[0][0];
         var rightPupilY = eyesObj.right.pupil[0][1];
 
-        predictedX = Math.floor((((leftSlopeX * leftPupilX) + leftIntersceptX) + ((rightSlopeX * rightPupilX) + rightIntersceptX))/2);
-        predictedY = Math.floor((((leftSlopeY * leftPupilY) + leftIntersceptY) + ((rightSlopeY * rightPupilY) + rightIntersceptY))/2);
+        var predictedX = Math.floor((((leftSlopeX * leftPupilX) + leftIntersceptX) + ((rightSlopeX * rightPupilX) + rightIntersceptX))/2);
+        var predictedY = Math.floor((((leftSlopeY * leftPupilY) + leftIntersceptY) + ((rightSlopeY * rightPupilY) + rightIntersceptY))/2);
         return {
             x: predictedX,
             y: predictedY
         };
-    }
+    };
 
+    /**
+     * The LinearReg object name
+     * @type {string}
+     */
     webgazer.reg.LinearReg.prototype.name = 'simple';
-
-
+    
 }(window));
 
 (function() {
-    "use strict"
+    "use strict";
 
     self.webgazer = self.webgazer || {};
     self.webgazer.mat = self.webgazer.mat || {};
 
     /**
      * Transposes an mxn array
-     * @param {array of arrays} matrix - of mxn dimensionality
-     * @return {array of arrays} transposed matrix
+     * @param {Array.<Array.<Number>>} matrix - of "M x N" dimensionality
+     * @return {Array.<Array.<Number>>} transposed matrix
      */
     self.webgazer.mat.transpose = function(matrix){
         var m = matrix.length;
@@ -8708,15 +8779,15 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         }
 
         return transposedMatrix;
-    }
+    };
 
     /**
-     * Get a submatrix of matrix
-     * @param [array of arrays] matrix - original matrix
-     * @param [array] r - Array of row indices.
-     * @param [number] j0 - Initial column index
-     * @param [number] j1 - Final column index
-     * @return [array of arrays] X is the submatrix matrix(r(:),j0:j1)
+     * Get a sub-matrix of matrix
+     * @param {Array.<Array.<Number>>} matrix - original matrix
+     * @param {Array.<Number>} r - Array of row indices
+     * @param {Number} j0 - Initial column index
+     * @param {Number} j1 - Final column index
+     * @returns {Array} The sub-matrix matrix(r(:),j0:j1)
      */
     self.webgazer.mat.getMatrix = function(matrix, r, j0, j1){
         var X = new Array(r.length),
@@ -8729,16 +8800,16 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             }
         }
         return X;
-    }
+    };
 
     /**
      * Get a submatrix of matrix
-     * @param [array of arrays] matrix - original matrix
-     * @param [number] i0 - Initial row index
-     * @param [number] i1 - Final row index
-     * @param [number] j0 - Initial column index
-     * @param [number] j1 - Final column index
-     * @return matrix(i0:i1,j0:j1)
+     * @param {Array.<Array.<Number>>} matrix - original matrix
+     * @param {Number} i0 - Initial row index
+     * @param {Number} i1 - Final row index
+     * @param {Number} j0 - Initial column index
+     * @param {Number} j1 - Final column index
+     * @return {Array} The sub-matrix matrix(i0:i1,j0:j1)
      */
     self.webgazer.mat.getSubMatrix = function(matrix, i0, i1, j0, j1){
         var size = j1 - j0 + 1,
@@ -8754,13 +8825,13 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             }
         }
         return X;
-    }
+    };
 
     /**
      * Linear algebraic matrix multiplication, matrix1 * matrix2
-     * @param {array of arrays} matrix1
-     * @param {array of arrays} matrix2
-     * @return {array of arrays} Matrix product, matrix1 * matrix2
+     * @param {Array.<Array.<Number>>} matrix1
+     * @param {Array.<Array.<Number>>} matrix2
+     * @return {Array.<Array.<Number>>} Matrix product, matrix1 * matrix2
      */
     self.webgazer.mat.mult = function(matrix1, matrix2){
 
@@ -8789,14 +8860,14 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             }
         }
         return X;
-    }
+    };
 
 
     /**
      * LUDecomposition to solve A*X = B, based on WEKA code
-     * @param{array of arrays} A - left matrix of equation to be solved
-     * @param{array of arrays} B - right matrix of equation to be solved
-     * @return {array of arrays} X so that L*U*X = B(piv,:)
+     * @param {Array.<Array.<Number>>} A - left matrix of equation to be solved
+     * @param {Array.<Array.<Number>>} B - right matrix of equation to be solved
+     * @return {Array.<Array.<Number>>} X so that L*U*X = B(piv,:)
      */
     self.webgazer.mat.LUDecomposition = function(A,B){
         var LU = new Array(A.length);
@@ -8889,17 +8960,17 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
             }
         }
         return X;
-    }
+    };
 
     /**
      * Least squares solution of A*X = B, based on WEKA code
-     * @param [array of arrays] A - left side matrix to be solved
-     * @param [array of arrays] B - a matrix with as many rows as A and any number of columns.
-     * @return [array of arrays] X - that minimizes the two norms of QR*X-B.
+     * @param {Array.<Array.<Number>>} A - left side matrix to be solved
+     * @param {Array.<Array.<Number>>} B - a matrix with as many rows as A and any number of columns.
+     * @return {Array.<Array.<Number>>} X - that minimizes the two norms of QR*X-B.
      */
     self.webgazer.mat.QRDecomposition = function(A, B){
         // Initialize.
-        QR = new Array(A.length);
+        var QR = new Array(A.length);
 
         for (var i = 0; i < A.length; i++){
             QR[i] = new Array(A[0].length);
@@ -8952,7 +9023,7 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         }
         // Copy right hand side
         var nx = B[0].length;
-        X = new Array(B.length);
+        var X = new Array(B.length);
         for(var i=0; i<B.length; i++){
             X[i] = new Array(B[0].length);
         }
@@ -8987,115 +9058,118 @@ webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
         }
         return self.webgazer.mat.getSubMatrix(X,0,n-1,0,nx-1);
     }
+    
 }());
+
 (function(window) {
 
     window.webgazer = window.webgazer || {};
     webgazer.pupil = webgazer.pupil || {};
-
-/**
- * Returns intensity value at x,y position of a pixels image
- * @param{array} pixels - array of size width*height
- * @param{number} x -  input x value
- * @param{number} y - input y value
- * @param{number} width - width of pixels image
- * @returns{number} - intensity value in [0,255]
- */
-var getValue = function (pixels, x, y, width){
-    return pixels[y * width + x];
-}
-
-/**
- * Computes summation area table/integral image of a pixel matrix
- * @param{array} pixels value of eye area
- * @param{number} width - of image in 'pixels'
- * @param{number} height - of image in 'pixels'
- * @returns{2d array} -integral image
- */
-var getSumTable = function (pixels, width, height){
-    var integralImage = new Array(width);
-    var sumx = 0;
-    var sumy = 0;
-
-    for (var i = 0; i < width; i++){
-        integralImage[i] = new Array(height);
-        sumx += getValue(pixels, i, 0, width);
-        integralImage[i][0] = sumx;
-    }
-
-    for (var i = 0; i < height; i++){
-        sumy += getValue(pixels, 0, i, width);
-        integralImage[0][i] = sumy;
-    }
-
-    for (var x = 1; x < width; x++){
-        for (var y = 1; y < height; y++){
-            integralImage[x][y] = getValue(pixels, x, y, width) + integralImage[x - 1][y] + integralImage[x][y - 1] - integralImage[x - 1][y - 1];
+    
+    /**
+     * Returns intensity value at x,y position of a pixels image
+     * @param {Array} pixels - array of size width*height
+     * @param {Number} x -  input x value
+     * @param {Number} y - input y value
+     * @param {Number} width - width of pixels image
+     * @returns {Number} - intensity value in [0,255]
+     */
+    var getValue = function (pixels, x, y, width){
+        return pixels[y * width + x];
+    };
+    
+    /**
+     * Computes summation area table/integral image of a pixel matrix
+     * @param {Array} pixels value of eye area
+     * @param {Number} width - of image in 'pixels'
+     * @param {Number} height - of image in 'pixels'
+     * @returns {Array} - integral image
+     */
+    var getSumTable = function (pixels, width, height){
+        var integralImage = new Array(width);
+        var sumx = 0;
+        var sumy = 0;
+    
+        for (var i = 0; i < width; i++){
+            integralImage[i] = new Array(height);
+            sumx += getValue(pixels, i, 0, width);
+            integralImage[i][0] = sumx;
         }
-    }
-    return integralImage;
-}
-
-/**
- * Detects a pupil in a set of pixels
- * @param  {array} pixels - patch of pixels to look for pupil into
- * @param  {number} width  - of pixel patch
- * @param  {number} height - of pixel patch
- * @return {array} coordinate of the bottom right corner and width of the best fitted pupil
- */
-var getSinglePupil = function (pixels, width, height){
-    var summedAreaTable = getSumTable(pixels, width, height);
-    var bestAvgScore = 999999; //want to minimize this score
-    var bestPoint = [0, 0]; //bottom right corner of best fitted pupil
-    var bestHalfWidth = 0; //corresponding half width of the best fitted pupil
-    var offset = Math.floor(width / 10.0); //padding
-    //halfWidth could also start at 1, but this makes it faster
-    for (var halfWidth = Math.floor(height / 10.0); halfWidth < width / 2; halfWidth++){
-        //think of a sliding rectangular window of width halfWidth*2 that goes through the whole eye pixel matrix and does the following:
-        //1) computes the irisArea, which is the total intensity of the iris
-        //2) computes the scleraIrisArea, which is multiple rows of pixels including the sclera and iris.
-        //3) computes avg, which is the intensity of the area divided by the number of pixels.               
-        //start at the bottom right of the rectangle!not top left
-        for (var x = halfWidth; x < width - offset; x++){
-            for (var y = halfWidth; y < height - offset; y++){
-                //evaluate area by the formula found on wikipedia about the summed area table: I(D)+I(A)-I(B)-I(C)
-                var irisArea = summedAreaTable[x + offset][y + offset] + summedAreaTable[x + offset - halfWidth][y + offset - halfWidth] - summedAreaTable[x + offset][y + offset - halfWidth] - summedAreaTable[x + offset - halfWidth][y + offset];
-                var avgScore = 1.0 * irisArea / ((halfWidth + 1) * (halfWidth + 1)) + 1; 
-                //summation area table again
-                var scleraIrisArea = ((1.0 * summedAreaTable[width - 1 - offset][y + offset] + summedAreaTable[0 + offset][y + offset - halfWidth] - summedAreaTable[0 + offset][y + offset] - summedAreaTable[width - 1 - offset][y + offset - halfWidth]) - irisArea);
-                //minimize avgScore/scleraIrisArea. 150 is too high, might have to change since it's closer to white
-                if ((avgScore) / scleraIrisArea < bestAvgScore && avgScore < 150){
-                    bestAvgScore = (avgScore) / scleraIrisArea;
-                    bestPoint = [x + offset, y + offset];
-                    bestHalfWidth = halfWidth;
+    
+        for (var i = 0; i < height; i++){
+            sumy += getValue(pixels, 0, i, width);
+            integralImage[0][i] = sumy;
+        }
+    
+        for (var x = 1; x < width; x++){
+            for (var y = 1; y < height; y++){
+                integralImage[x][y] = getValue(pixels, x, y, width) + integralImage[x - 1][y] + integralImage[x][y - 1] - integralImage[x - 1][y - 1];
+            }
+        }
+        return integralImage;
+    };
+    
+    /**
+     * Detects a pupil in a set of pixels
+     * @param  {Array} pixels - patch of pixels to look for pupil into
+     * @param  {Number} width  - of pixel patch
+     * @param  {Number} height - of pixel patch
+     * @return {Array} coordinate of the bottom right corner and width of the best fitted pupil
+     */
+    var getSinglePupil = function (pixels, width, height){
+        var summedAreaTable = getSumTable(pixels, width, height);
+        var bestAvgScore = 999999; //want to minimize this score
+        var bestPoint = [0, 0]; //bottom right corner of best fitted pupil
+        var bestHalfWidth = 0; //corresponding half width of the best fitted pupil
+        var offset = Math.floor(width / 10.0); //padding
+        //halfWidth could also start at 1, but this makes it faster
+        for (var halfWidth = Math.floor(height / 10.0); halfWidth < width / 2; halfWidth++){
+            //think of a sliding rectangular window of width halfWidth*2 that goes through the whole eye pixel matrix and does the following:
+            //1) computes the irisArea, which is the total intensity of the iris
+            //2) computes the scleraIrisArea, which is multiple rows of pixels including the sclera and iris.
+            //3) computes avg, which is the intensity of the area divided by the number of pixels.               
+            //start at the bottom right of the rectangle!not top left
+            for (var x = halfWidth; x < width - offset; x++){
+                for (var y = halfWidth; y < height - offset; y++){
+                    //evaluate area by the formula found on wikipedia about the summed area table: I(D)+I(A)-I(B)-I(C)
+                    var irisArea = summedAreaTable[x + offset][y + offset] + summedAreaTable[x + offset - halfWidth][y + offset - halfWidth] - summedAreaTable[x + offset][y + offset - halfWidth] - summedAreaTable[x + offset - halfWidth][y + offset];
+                    var avgScore = 1.0 * irisArea / ((halfWidth + 1) * (halfWidth + 1)) + 1; 
+                    //summation area table again
+                    var scleraIrisArea = ((1.0 * summedAreaTable[width - 1 - offset][y + offset] + summedAreaTable[0 + offset][y + offset - halfWidth] - summedAreaTable[0 + offset][y + offset] - summedAreaTable[width - 1 - offset][y + offset - halfWidth]) - irisArea);
+                    //minimize avgScore/scleraIrisArea. 150 is too high, might have to change since it's closer to white
+                    if ((avgScore) / scleraIrisArea < bestAvgScore && avgScore < 150){
+                        bestAvgScore = (avgScore) / scleraIrisArea;
+                        bestPoint = [x + offset, y + offset];
+                        bestHalfWidth = halfWidth;
+                    }
                 }
             }
         }
-    }
-    return [bestPoint, bestHalfWidth];
-}
-
-/**
- * Given an object with two eye patches it finds the location of the detected pupils
- * @param  {Object} eyesObj - left and right detected eye patches
- * @return {Object} eyesObj - updated eye patches with information about pupils' locations
- */
-webgazer.pupil.getPupils = function(eyesObj) {
-    if (!eyesObj) {
+        return [bestPoint, bestHalfWidth];
+    };
+    
+    /**
+     * Given an object with two eye patches it finds the location of the detected pupils
+     * @param  {Object} eyesObj - left and right detected eye patches
+     * @return {Object} eyesObj - updated eye patches with information about pupils' locations
+     */
+    webgazer.pupil.getPupils = function(eyesObj) {
+        if (!eyesObj) {
+            return eyesObj;
+        }
+        if (!eyesObj.left.blink) {
+            eyesObj.left.pupil = getSinglePupil(Array.prototype.slice.call(webgazer.util.grayscale(eyesObj.left.patch, eyesObj.left.width, eyesObj.left.height)), eyesObj.left.width, eyesObj.left.height);
+            eyesObj.left.pupil[0][0] -= eyesObj.left.pupil[1];
+            eyesObj.left.pupil[0][1] -= eyesObj.left.pupil[1];
+        }
+        if (!eyesObj.right.blink) {
+            eyesObj.right.pupil = getSinglePupil(Array.prototype.slice.call(webgazer.util.grayscale(eyesObj.right.patch, eyesObj.right.width, eyesObj.right.height)), eyesObj.right.width, eyesObj.right.height);
+            eyesObj.right.pupil[0][0] -= eyesObj.right.pupil[1];
+            eyesObj.right.pupil[0][1] -= eyesObj.right.pupil[1];
+        }
         return eyesObj;
     }
-    if (!eyesObj.left.blink) {
-        eyesObj.left.pupil = getSinglePupil(Array.prototype.slice.call(webgazer.util.grayscale(eyesObj.left.patch, eyesObj.left.width, eyesObj.left.height)), eyesObj.left.width, eyesObj.left.height);
-        eyesObj.left.pupil[0][0] -= eyesObj.left.pupil[1];
-        eyesObj.left.pupil[0][1] -= eyesObj.left.pupil[1];
-    }
-    if (!eyesObj.right.blink) {
-        eyesObj.right.pupil = getSinglePupil(Array.prototype.slice.call(webgazer.util.grayscale(eyesObj.right.patch, eyesObj.right.width, eyesObj.right.height)), eyesObj.right.width, eyesObj.right.height);
-        eyesObj.right.pupil[0][0] -= eyesObj.right.pupil[1];
-        eyesObj.right.pupil[0][1] -= eyesObj.right.pupil[1];
-    }
-    return eyesObj;
-}
+        
 }(window));
 
 /**
@@ -9140,7 +9214,7 @@ webgazer.pupil.getPupils = function(eyesObj) {
            return (x);
     };
 
-        var methods = {
+    var methods = {
             linear: function(data) {
                 var sum = [0, 0, 0, 0, 0], n = 0, results = [];
 
@@ -9332,18 +9406,18 @@ webgazer.pupil.getPupils = function(eyesObj) {
             }
         };
 
-var regression = (function(method, data, order) {
+    var regression = (function(method, data, order) {
 
-       if (typeof method == 'string') {
-           return methods[method](data, order);
-       }
-    });
+           if (typeof method == 'string') {
+               return methods[method](data, order);
+           }
+        });
 
-if (typeof exports !== 'undefined') {
-    module.exports = regression;
-} else {
-    window.regression = regression;
-}
+    if (typeof exports !== 'undefined') {
+        module.exports = regression;
+    } else {
+        window.regression = regression;
+    }
 
 }());
 
@@ -9363,10 +9437,10 @@ if (typeof exports !== 'undefined') {
 
     /**
      * Performs ridge regression, according to the Weka code.
-     * @param {array} y corresponds to screen coordinates (either x or y) for each of n click events
-     * @param {array of arrays} X corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
-     * @param {array} ridge ridge parameter
-     * @return{array} regression coefficients
+     * @param {Array} y - corresponds to screen coordinates (either x or y) for each of n click events
+     * @param {Array.<Array.<Number>>} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
+     * @param {Array} k - ridge parameter
+     * @return{Array} regression coefficients
      */
     function ridge(y, X, k){
         var nc = X[0].length;
@@ -9406,8 +9480,12 @@ if (typeof exports !== 'undefined') {
         } while (!success);
         return m_Coefficients;
     }
-
-
+    
+    /**
+     * Compute eyes size as gray histogram
+     * @param {Object} eyes - The eyes where looking for gray histogram
+     * @returns {Array.<T>} The eyes gray level histogram
+     */
     function getEyeFeats(eyes) {
         var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
         var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
@@ -9426,6 +9504,11 @@ if (typeof exports !== 'undefined') {
         return leftGrayArray.concat(rightGrayArray);
     }
 
+    //TODO: still usefull ???
+    /**
+     *
+     * @returns {Number}
+     */
     function getCurrentFixationIndex() {
         var index = 0;
         var recentX = this.screenXTrailArray.get(0);
@@ -9441,6 +9524,11 @@ if (typeof exports !== 'undefined') {
         return i;
     }
 
+    /**
+     * Constructor of RidgeReg object,
+     * this object allow to perform ridge regression
+     * @constructor
+     */
     webgazer.reg.RidgeReg = function() {
         this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
@@ -9456,8 +9544,14 @@ if (typeof exports !== 'undefined') {
 
         this.dataClicks = new webgazer.util.DataWindow(dataWindow);
         this.dataTrail = new webgazer.util.DataWindow(dataWindow);
-    }
+    };
 
+    /**
+     * Add given data from eyes
+     * @param {Object} eyes - eyes where extract data to add
+     * @param {Object} screenPos - The current screen point
+     * @param {Object} type - The type of performed action
+     */
     webgazer.reg.RidgeReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
@@ -9484,6 +9578,12 @@ if (typeof exports !== 'undefined') {
         eyes.right.patch = Array.from(eyes.right.patch.data);
     }
 
+    /**
+     * Try to predict coordinates from pupil data
+     * after apply linear regression on data set
+     * @param {Object} eyesObj - The current user eyes object
+     * @returns {Object}
+     */
     webgazer.reg.RidgeReg.prototype.predict = function(eyesObj) {
         if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
             return null;
@@ -9524,8 +9624,13 @@ if (typeof exports !== 'undefined') {
             x: predictedX,
             y: predictedY
         };
-    }
+    };
 
+    /**
+     * Add given data to current data set then,
+     * replace current data member with given data
+     * @param {Array.<Object>} data - The data to set
+     */
     webgazer.reg.RidgeReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             //TODO this is a kludge, needs to be fixed
@@ -9533,14 +9638,22 @@ if (typeof exports !== 'undefined') {
             data[i].eyes.right.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.right.patch), data[i].eyes.right.width, data[i].eyes.right.height);
             this.addData(data[i].eyes, data[i].screenPos, data[i].type);
         }
-    }
+    };
 
+    /**
+     * Return the data
+     * @returns {Array.<Object>|*}
+     */
     webgazer.reg.RidgeReg.prototype.getData = function() {
         return this.dataClicks.data.concat(this.dataTrail.data);
     }
-
-
+    
+    /**
+     * The RidgeReg object name
+     * @type {string}
+     */
     webgazer.reg.RidgeReg.prototype.name = 'ridge';
+    
 }(window));
 
 (function(window) {
@@ -9559,10 +9672,10 @@ if (typeof exports !== 'undefined') {
 
     /**
      * Performs ridge regression, according to the Weka code.
-     * @param {array} y corresponds to screen coordinates (either x or y) for each of n click events
-     * @param {array of arrays} X corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
-     * @param {array} ridge ridge parameter
-     * @return{array} regression coefficients
+     * @param {Array} y - corresponds to screen coordinates (either x or y) for each of n click events
+     * @param {Array.<Array.<Number>>} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
+     * @param {Array} k - ridge parameter
+     * @return{Array} regression coefficients
      */
     function ridge(y, X, k){
         var nc = X[0].length;
@@ -9603,7 +9716,11 @@ if (typeof exports !== 'undefined') {
         return m_Coefficients;
     }
 
-
+    /**
+     * Compute eyes size as gray histogram
+     * @param {Object} eyes - The eyes where looking for gray histogram
+     * @returns {Array.<T>} The eyes gray level histogram
+     */
     function getEyeFeats(eyes) {
         var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
         var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
@@ -9622,6 +9739,11 @@ if (typeof exports !== 'undefined') {
         return leftGrayArray.concat(rightGrayArray);
     }
 
+    //TODO: still usefull ???
+    /**
+     *
+     * @returns {Number}
+     */
     function getCurrentFixationIndex() {
         var index = 0;
         var recentX = this.screenXTrailArray.get(0);
@@ -9637,6 +9759,10 @@ if (typeof exports !== 'undefined') {
         return i;
     }
 
+    /**
+     * Constructor of RidgeWeightedReg object
+     * @constructor
+     */
     webgazer.reg.RidgeWeightedReg = function() {
         this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
@@ -9652,8 +9778,14 @@ if (typeof exports !== 'undefined') {
 
         this.dataClicks = new webgazer.util.DataWindow(dataWindow);
         this.dataTrail = new webgazer.util.DataWindow(dataWindow);
-    }
+    };
 
+    /**
+     * Add given data from eyes
+     * @param {Object} eyes - eyes where extract data to add
+     * @param {Object} screenPos - The current screen point
+     * @param {Object} type - The type of performed action
+     */
     webgazer.reg.RidgeWeightedReg.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
@@ -9678,8 +9810,14 @@ if (typeof exports !== 'undefined') {
 
         eyes.left.patch = Array.from(eyes.left.patch.data);
         eyes.right.patch = Array.from(eyes.right.patch.data);
-    }
+    };
 
+    /**
+     * Try to predict coordinates from pupil data
+     * after apply linear regression on data set
+     * @param {Object} eyesObj - The current user eyes object
+     * @returns {Object}
+     */
     webgazer.reg.RidgeWeightedReg.prototype.predict = function(eyesObj) {
         if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
             return null;
@@ -9744,8 +9882,13 @@ if (typeof exports !== 'undefined') {
             x: predictedX,
             y: predictedY
         };
-    }
+    };
 
+    /**
+     * Add given data to current data set then,
+     * replace current data member with given data
+     * @param {Array.<Object>} data - The data to set
+     */
     webgazer.reg.RidgeWeightedReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             //TODO this is a kludge, needs to be fixed
@@ -9753,14 +9896,22 @@ if (typeof exports !== 'undefined') {
             data[i].eyes.right.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.right.patch), data[i].eyes.right.width, data[i].eyes.right.height);
             this.addData(data[i].eyes, data[i].screenPos, data[i].type);
         }
-    }
+    };
 
+    /**
+     * Return the data
+     * @returns {Array.<Object>|*}
+     */
     webgazer.reg.RidgeWeightedReg.prototype.getData = function() {
         return this.dataClicks.data.concat(this.dataTrail.data);
-    }
+    };
 
-
+    /**
+     * The RidgeWeightedReg object name
+     * @type {string}
+     */
     webgazer.reg.RidgeWeightedReg.prototype.name = 'ridge';
+    
 }(window));
 
 (function(window) {
@@ -9777,6 +9928,11 @@ if (typeof exports !== 'undefined') {
     var weights = {'X':[0],'Y':[0]};
     var trailDataWindow = 10;
 
+    /**
+     * Compute eyes size as gray histogram
+     * @param {Object} eyes - The eyes where looking for gray histogram
+     * @returns {Array.<T>} The eyes gray level histogram
+     */
     function getEyeFeats(eyes) {
         var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
         var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
@@ -9795,12 +9951,12 @@ if (typeof exports !== 'undefined') {
         return leftGrayArray.concat(rightGrayArray);
     }
 
-    
-    function updateWeights(event) {
-        console.log(event.data);
-        this.weights = event.data;
-    }
-
+    /**
+     * Constructor of RidgeRegThreaded object,
+     * it retrieve data window, and prepare a worker,
+     * this object allow to perform threaded ridge regression
+     * @constructor
+     */
     webgazer.reg.RidgeRegThreaded = function() {
         this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
@@ -9813,14 +9969,20 @@ if (typeof exports !== 'undefined') {
         this.dataClicks = new webgazer.util.DataWindow(dataWindow);
         this.dataTrail = new webgazer.util.DataWindow(dataWindow);
 
-
         this.worker = new Worker('ridgeWorker.js');
         this.worker.onerror = function(err) { console.log(err.message); };
-        this.worker.onmessage = function(event) {
-            weights = event.data;   
+        this.worker.onmessage = function(evt){
+          weights.X = evt.data.X;
+          weights.Y = evt.data.Y;
         };
-    }
+    };
 
+    /**
+     * Add given data from eyes
+     * @param {Object} eyes - eyes where extract data to add
+     * @param {Object} screenPos - The current screen point
+     * @param {Object} type - The type of performed action
+     */
     webgazer.reg.RidgeRegThreaded.prototype.addData = function(eyes, screenPos, type) {
         if (!eyes) {
             return;
@@ -9828,37 +9990,48 @@ if (typeof exports !== 'undefined') {
         if (eyes.left.blink || eyes.right.blink) {
             return;
         }
-        this.worker.postMessage({'eyes':getEyeFeats(eyes), 'screenPos':screenPos, 'type':type})
-    }
+        this.worker.postMessage({'eyes':getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
+    };
 
+    /**
+     * Try to predict coordinates from pupil data
+     * after apply linear regression on data set
+     * @param {Object} eyesObj - The current user eyes object
+     * @returns {Object}
+     */
     webgazer.reg.RidgeRegThreaded.prototype.predict = function(eyesObj) {
-        console.log('in predict1');
+        console.log("LOGGING..");
         if (!eyesObj) {
             return null;
         }
-        console.log(weights);
         var coefficientsX = weights.X;
         var coefficientsY = weights.Y;
 
         var eyeFeats = getEyeFeats(eyesObj);
-        var predictedX = 0;
+        var predictedX = 0, predictedY = 0;
         for(var i=0; i< eyeFeats.length; i++){
             predictedX += eyeFeats[i] * coefficientsX[i];
-        }
-        var predictedY = 0;
-        for(var i=0; i< eyeFeats.length; i++){
             predictedY += eyeFeats[i] * coefficientsY[i];
         }
 
         predictedX = Math.floor(predictedX);
         predictedY = Math.floor(predictedY);
 
+        console.log("PredicedX");
+        console.log(predictedX);
+        console.log(predictedY);
+
         return {
             x: predictedX,
             y: predictedY
         };
-    }
+    };
 
+    /**
+     * Add given data to current data set then,
+     * replace current data member with given data
+     * @param {Array.<Object>} data - The data to set
+     */
     webgazer.reg.RidgeRegThreaded.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
             //TODO this is a kludge, needs to be fixed
@@ -9866,14 +10039,22 @@ if (typeof exports !== 'undefined') {
             data[i].eyes.right.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.right.patch), data[i].eyes.right.width, data[i].eyes.right.height);
             this.addData(data[i].eyes, data[i].screenPos, data[i].type);
         }
-    }
+    };
 
+    /**
+     * Return the data
+     * @returns {Array.<Object>|*}
+     */
     webgazer.reg.RidgeRegThreaded.prototype.getData = function() {
         return this.dataClicks.data.concat(this.dataTrail.data);
-    }
+    };
 
-
+    /**
+     * The RidgeRegThreaded object name
+     * @type {string}
+     */
     webgazer.reg.RidgeRegThreaded.prototype.name = 'ridge';
+    
 }(window));
 
 (function() {
@@ -9881,15 +10062,14 @@ if (typeof exports !== 'undefined') {
     self.webgazer = self.webgazer || {};
     self.webgazer.util = self.webgazer.util || {};
     self.webgazer.mat = self.webgazer.mat || {};
-
-
+    
     /**
      * Eye class, represents an eye patch detected in the video stream
      * @param {ImageData} patch - the image data corresponding to an eye
-     * @param {number} imagex - x-axis offset from the top-left corner of the video canvas
-     * @param {number} imagey - y-axis offset from the top-left corner of the video canvas
-     * @param {number} width  - width of the eye patch
-     * @param {number} height - height of the eye patch
+     * @param {Number} imagex - x-axis offset from the top-left corner of the video canvas
+     * @param {Number} imagey - y-axis offset from the top-left corner of the video canvas
+     * @param {Number} width  - width of the eye patch
+     * @param {Number} height - height of the eye patch
      */
     self.webgazer.util.Eye = function(patch, imagex, imagey, width, height) {
         this.patch = patch;
@@ -9897,15 +10077,15 @@ if (typeof exports !== 'undefined') {
         this.imagey = imagey;
         this.width = width;
         this.height = height;
-    }
-
-
+    };
+    
+    
     //Data Window class
     //operates like an array but 'wraps' data around to keep the array at a fixed windowSize
     /**
      * DataWindow class - Operates like an array, but 'wraps' data around to keep the array at a fixed windowSize
-     * @param {number} windowSize - defines the maximum size of the window
-     * @param {data} [data] - optional data to seed the DataWindow with
+     * @param {Number} windowSize - defines the maximum size of the window
+     * @param {Array} data - optional data to seed the DataWindow with
      **/
     self.webgazer.util.DataWindow = function(windowSize, data) {
         this.data = [];
@@ -9916,11 +10096,11 @@ if (typeof exports !== 'undefined') {
             this.data = data.slice(data.length-windowSize,data.length);
             this.length = this.data.length;
         }
-    }
+    };
 
     /**
      * [push description]
-     * @param  {Any} entry - item to be inserted. It either grows the DataWindow or replaces the oldest item
+     * @param  {*} entry - item to be inserted. It either grows the DataWindow or replaces the oldest item
      * @return {DataWindow} this
      */
     self.webgazer.util.DataWindow.prototype.push = function(entry) {
@@ -9934,21 +10114,21 @@ if (typeof exports !== 'undefined') {
         this.data[this.index] = entry;
         this.index = (this.index + 1) % this.windowSize;
         return this;
-    }
+    };
 
     /**
      * Get the element at the ind position by wrapping around the DataWindow
-     * @param  {number} ind index of desired entry
-     * @return {Any}
+     * @param  {Number} ind index of desired entry
+     * @return {*}
      */
     self.webgazer.util.DataWindow.prototype.get = function(ind) {
         return this.data[this.getTrueIndex(ind)];
-    }
+    };
 
     /**
      * Gets the true this.data array index given an index for a desired element
-     * @param {number} ind - index of desired entry
-     * @return {number} index of desired entry in this.data
+     * @param {Number} ind - index of desired entry
+     * @return {Number} index of desired entry in this.data
      */
     self.webgazer.util.DataWindow.prototype.getTrueIndex = function(ind) {
         if (this.data.length < this.windowSize) {
@@ -9957,48 +10137,48 @@ if (typeof exports !== 'undefined') {
             //wrap around ind so that we can traverse from oldest to newest
             return (ind + this.index) % this.windowSize;
         }
-    }
+    };
 
     /**
      * Append all the contents of data
-     * @param {array} data - to be inserted
+     * @param {Array} data - to be inserted
      */
     self.webgazer.util.DataWindow.prototype.addAll = function(data) {
         for (var i = 0; i < data.length; i++) {
             this.push(data[i]);
         }
-    }
+    };
 
 
     //Helper functions
     /**
      * Grayscales an image patch. Can be used for the whole canvas, detected face, detected eye, etc.
      * @param  {ImageData} imageData - image data to be grayscaled
-     * @param  {number} imageWidth  - width of image data to be grayscaled
-     * @param  {number} imageHeight - height of image data to be grayscaled
+     * @param  {Number} imageWidth  - width of image data to be grayscaled
+     * @param  {Number} imageHeight - height of image data to be grayscaled
      * @return {ImageData} grayscaledImage
      */
     self.webgazer.util.grayscale = function(imageData, imageWidth, imageHeight){
         //TODO implement ourselves to remove dependency
         return tracking.Image.grayscale(imageData, imageWidth, imageHeight, false);
-    }
+    };
 
     /**
      * Increase contrast of an image
      * @param {ImageData} grayscaleImageSrc - grayscale integer array
-     * @param {number} step - sampling rate, control performance
-     * @param {array} destinationImage - array to hold the resulting image
+     * @param {Number} step - sampling rate, control performance
+     * @param {Array} destinationImage - array to hold the resulting image
      */
     self.webgazer.util.equalizeHistogram = function(grayscaleImageSrc, step, destinationImage) {
         //TODO implement ourselves to remove dependency
         return objectdetect.equalizeHistogram(grayscaleImageSrc, step, destinationImage);
-    }
+    };
 
     /**
      * Gets an Eye object and resizes it to the desired resolution
      * @param  {webgazer.util.Eye} eye - patch to be resized
-     * @param  {number} resizeWidth - desired width
-     * @param  {number} resizeHeight - desired height
+     * @param  {Number} resizeWidth - desired width
+     * @param  {Number} resizeHeight - desired height
      * @return {webgazer.util.Eye} resized eye patch
      */
     self.webgazer.util.resizeEye = function(eye, resizeWidth, resizeHeight) {
@@ -10018,15 +10198,12 @@ if (typeof exports !== 'undefined') {
         tempCanvas.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, resizeWidth, resizeHeight);
 
         return tempCanvas.getContext('2d').getImageData(0, 0, resizeWidth, resizeHeight);
-    }
-
-
-
-
+    };
+    
     /**
      * Checks if the prediction is within the boundaries of the viewport and constrains it
-     * @param  {array} prediction [x,y] predicted gaze coordinates
-     * @return {array} constrained coordinates
+     * @param  {Array} prediction [x,y] - predicted gaze coordinates
+     * @return {Array} constrained coordinates
      */
     self.webgazer.util.bound = function(prediction){
         if(prediction.x < 0)
@@ -10044,8 +10221,13 @@ if (typeof exports !== 'undefined') {
             prediction.y = h;
         }
         return prediction;
-    }
+    };
 
+    /**
+     * Write statistics in debug paragraph panel
+     * @param {HTMLElement} para - The <p> tag where write data
+     * @param {Object} stats - The stats data to output
+     */
     function debugBoxWrite(para, stats) {
         var str = '';
         for (var key in stats) {
@@ -10054,6 +10236,12 @@ if (typeof exports !== 'undefined') {
         para.innerText = str;
     }
 
+    /**
+     * Constructor of DebugBox object,
+     * it insert an paragraph inside a div to the body, in view to display debug data
+     * @param {Number} interval - The log interval
+     * @constructor
+     */
     self.webgazer.util.DebugBox = function(interval) {
         this.para = document.createElement('p');
         this.div = document.createElement('div');
@@ -10069,19 +10257,36 @@ if (typeof exports !== 'undefined') {
                 debugBoxWrite(localThis.para, localThis.stats);
             }, updateInterval);
         }(this));
-    }
+    };
 
+    /**
+     * Add stat data for log
+     * @param {String} key - The data key
+     * @param {*} value - The value
+     */
     self.webgazer.util.DebugBox.prototype.set = function(key, value) {
         this.stats[key] = value;
-    }
+    };
 
+    /**
+     * Initialize stats in case where key does not exist, else
+     * increment value for key
+     * @param {String} key - The key to process
+     * @param {Number} incBy - Value to increment for given key (default: 1)
+     * @param {Number} init - Initial value in case where key does not exist (default: 0)
+     */
     self.webgazer.util.DebugBox.prototype.inc = function(key, incBy, init) {
         if (!this.stats[key]) {
             this.stats[key] = init || 0;
         }
         this.stats[key] += incBy || 1;
-    }
+    };
 
+    /**
+     * Create a button and register the given function to the button click event
+     * @param {String} name - The button name to link
+     * @param {Function} func - The onClick callback
+     */
     self.webgazer.util.DebugBox.prototype.addButton = function(name, func) {
         if (!this.buttons[name]) {
             this.buttons[name] = document.createElement('button');
@@ -10091,8 +10296,14 @@ if (typeof exports !== 'undefined') {
         this.buttons[name] = button;
         button.addEventListener('click', func);
         button.innerText = name;
-    }
+    };
 
+    /**
+     * Search for a canvas elemenet with name, or create on if not exist.
+     * Then send the canvas element as callback parameter.
+     * @param {String} name - The canvas name to send/create
+     * @param {Function} func - The callback function where send canvas
+     */
     self.webgazer.util.DebugBox.prototype.show = function(name, func) {
         if (!this.canvas[name]) {
             this.canvas[name] = document.createElement('canvas');
@@ -10101,19 +10312,19 @@ if (typeof exports !== 'undefined') {
         var canvas = this.canvas[name];
         canvas.getContext('2d').clearRect(0,0, canvas.width, canvas.height);
         func(canvas);
-    }
+    };
 
     /**
      * Kalman Filter constructor
      * Kalman filters work by reducing the amount of noise in a models.
      * https://blog.cordiner.net/2011/05/03/object-tracking-using-a-kalman-filter-matlab/
      *
-     * @param {array of arrays} F  		-> transition matrix
-     * @param {array of arrays} Q		  -> process noise matrix
-     * @param {array of arrays} H 		-> maps between measurement vector and noise matrix
-     * @param {array of arrays} R     -> defines measurement error of the device
-     * @param {array}           P_initial -> the initial state
-     * @param {array}           X_initial -> the initial state of the device
+     * @param {Array.<Array.<Number>>} F - transition matrix
+     * @param {Array.<Array.<Number>>} Q - process noise matrix
+     * @param {Array.<Array.<Number>>} H - maps between measurement vector and noise matrix
+     * @param {Array.<Array.<Number>>} R - defines measurement error of the device
+     * @param {Array} P_initial - the initial state
+     * @param {Array} X_initial - the initial state of the device
      */
     self.webgazer.util.KalmanFilter = function(F, H, Q, R, P_initial, X_initial) {
         this.F = F; // State transition matrix
@@ -10122,13 +10333,12 @@ if (typeof exports !== 'undefined') {
         this.R = R; // Measurement Noise
         this.P = P_initial; //Initial covariance matrix
         this.X = X_initial; //Initial guess of measurement
-    }
-
-
+    };
+    
     /**
      * Get Kalman next filtered value and update the internal state
-     * @param {array} z  	-> the new measurement
-     * @return {array}
+     * @param {Array} z - the new measurement
+     * @return {Array}
      */
     self.webgazer.util.KalmanFilter.prototype.update = function(z) {
 
@@ -10156,19 +10366,19 @@ if (typeof exports !== 'undefined') {
       //Now we correct the internal values of the model
       // correction: X = X + K * (m - H * X)  |  P = (I - K * H) * P
       this.X = add(X_p, mult(K, y));
-      this.P = mult(sub(identity(K.length), mult(K,this.H)), P_p)
+      this.P = mult(sub(identity(K.length), mult(K,this.H)), P_p);
       return transpose(mult(this.H, this.X))[0]; //Transforms the predicted state back into it's measurement form
     }
 
 }());
 
 (function(window, undefined) {
-    console.log('initializing webgazer')
+    console.log('initializing webgazer');
     //strict mode for type safety
-    "use strict"
+    "use strict";
 
     //auto invoke function to bind our own copy of window and undefined
-    
+
     //set up namespaces for modules
     window.webgazer = window.webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
@@ -10176,15 +10386,19 @@ if (typeof exports !== 'undefined') {
     webgazer.params = webgazer.params || {};
 
     //PRIVATE VARIABLES
-    
+
     //video elements
     webgazer.params.videoScale = 1;
     var videoElement = null;
     var videoElementCanvas = null;
-    webgazer.params.videoElementId = 'webgazerVideoFeed'; 
+    webgazer.params.videoElementId = 'webgazerVideoFeed';
     webgazer.params.videoElementCanvasId = 'webgazerVideoCanvas';
     webgazer.params.imgWidth = 1280;
     webgazer.params.imgHeight = 720;
+
+    //Params to clmtrackr and getUserMedia constraints
+    webgazer.params.clmParams = webgazer.params.clmParams || {useWebGL : true};
+    webgazer.params.camConstraints = webgazer.params.camConstraints || { video:true };
 
     //DEBUG variables
     //debug control boolean
@@ -10203,10 +10417,10 @@ if (typeof exports !== 'undefined') {
     gazeDot.style.opacity = '0.7';
 
     var debugVideoLoc = '';
-        
+
     // loop parameters
     var clockStart = performance.now();
-    webgazer.params.dataTimestep = 50; 
+    webgazer.params.dataTimestep = 50;
     var paused = false;
     //registered callback for loop
     var nopCallback = function(data, time) {};
@@ -10216,7 +10430,6 @@ if (typeof exports !== 'undefined') {
     //Describes the source of data so that regression systems may ignore or handle differently the various generating events
     var eventTypes = ['click', 'move'];
     
-
     //movelistener timeout clock parameters
     var moveClock = performance.now();
     webgazer.params.moveTickSize = 50; //milliseconds
@@ -10246,17 +10459,18 @@ if (typeof exports !== 'undefined') {
     var data = [];
     var defaults = {
         'data': [],
-        'settings': {},
+        'settings': {}
     };
 
+    
     //PRIVATE FUNCTIONS
 
     /**
-     * gets the pupil features by following the pipeline which threads an eyes object through each call:
-     * curTracker gets eye patches -> blink detector -> pupil detection 
+     * Gets the pupil features by following the pipeline which threads an eyes object through each call:
+     * curTracker gets eye patches -> blink detector -> pupil detection
      * @param {Canvas} canvas - a canvas which will have the video drawn onto it
-     * @param {number} width - the width of canvas
-     * @param {number} height - the height of canvas
+     * @param {Number} width - the width of canvas
+     * @param {Number} height - the height of canvas
      */
     function getPupilFeatures(canvas, width, height) {
         if (!canvas) {
@@ -10272,15 +10486,15 @@ if (typeof exports !== 'undefined') {
     }
 
     /**
-     * gets the most current frame of video and paints it to a resized version of the canvas with width and height
-     * @param {canvas} - the canvas to paint the video on to
-     * @param {integer} width - the new width of the canvas
-     * @param {integer} height - the new height of the canvas
+     * Gets the most current frame of video and paints it to a resized version of the canvas with width and height
+     * @param {Canvas} canvas - the canvas to paint the video on to
+     * @param {Number} width - the new width of the canvas
+     * @param {Number} height - the new height of the canvas
      */
     function paintCurrentFrame(canvas, width, height) {
         //imgWidth = videoElement.videoWidth * videoScale;
         //imgHeight = videoElement.videoHeight * videoScale;
-        if (canvas.width != width) { 
+        if (canvas.width != width) {
             canvas.width = width;
         }
         if (canvas.height != height) {
@@ -10292,7 +10506,9 @@ if (typeof exports !== 'undefined') {
     }
 
     /**
-     *  paints the video to a canvas and runs the prediction pipeline to get a prediction
+     * Paints the video to a canvas and runs the prediction pipeline to get a prediction
+     * @param {Number|undefined} regModelIndex - The prediction index where looking for
+     * @returns {*}
      */
     function getPrediction(regModelIndex) {
         var predictions = [];
@@ -10307,7 +10523,7 @@ if (typeof exports !== 'undefined') {
         if (regModelIndex !== undefined) {
             return predictions[regModelIndex] == null ? null : {
                 'x' : predictions[regModelIndex].x,
-                'y' : predictions[regModelIndex].y,
+                'y' : predictions[regModelIndex].y
             };
         } else {
             return predictions.length == 0 || predictions[0] == null ? null : {
@@ -10319,7 +10535,7 @@ if (typeof exports !== 'undefined') {
     }
 
     /**
-     * runs every available animation frame if webgazer is not paused
+     * Runs every available animation frame if webgazer is not paused
      */
     var smoothingVals = new webgazer.util.DataWindow(4);
     function loop() {
@@ -10348,8 +10564,12 @@ if (typeof exports !== 'undefined') {
     }
 
     /**
-     * records screen position data based on current pupil feature and passes it
+     * Records screen position data based on current pupil feature and passes it
      * to the regression model.
+     * @param {Number} x - The x screen position
+     * @param {Number} y - The y screen position
+     * @param {String} eventType - The event type to store
+     * @returns {null}
      */
     var recordScreenPosition = function(x, y, eventType) {
         if (paused) {
@@ -10363,17 +10583,19 @@ if (typeof exports !== 'undefined') {
         for (var reg in regs) {
             regs[reg].addData(features, [x, y], eventType);
         }
-    }
+    };
 
     /**
-     * records click data and passes it to the regression model
+     * Records click data and passes it to the regression model
+     * @param {Event} event - The listened event
      */
     var clickListener = function(event) {
         recordScreenPosition(event.clientX, event.clientY, eventTypes[0]); // eventType[0] === 'click'
-    }
+    };
 
     /**
-     * records mouse movement data and passes it to the regression model
+     * Records mouse movement data and passes it to the regression model
+     * @param {Event} event - The listened event
      */
     var moveListener = function(event) {
         if (paused) {
@@ -10387,7 +10609,7 @@ if (typeof exports !== 'undefined') {
             moveClock = now;
         }
         recordScreenPosition(event.clientX, event.clientY, eventTypes[1]); //eventType[1] === 'move'
-    }
+    };
 
     /**
      * Add event listeners for mouse click and move.
@@ -10409,8 +10631,8 @@ if (typeof exports !== 'undefined') {
         document.removeEventListener('mousemove', moveListener, true);
     };
 
-    /** loads the global data and passes it to the regression model 
-     * 
+    /**
+     * Loads the global data and passes it to the regression model
      */
     function loadGlobalData() {
         var storage = JSON.parse(window.localStorage.getItem(localstorageLabel)) || defaults;
@@ -10420,9 +10642,9 @@ if (typeof exports !== 'undefined') {
             regs[reg].setData(storage.data);
         }
     }
-   
+
    /**
-    * constructs the global storage object and adds it to localstorage
+    * Constructs the global storage object and adds it to local storage
     */
     function setGlobalData() {
         var storage = {
@@ -10434,8 +10656,8 @@ if (typeof exports !== 'undefined') {
         //     -> requires duplication of data, but is likely easier on regression model implementors
     }
 
-    /*
-     * clears data from model and global storage
+    /**
+     * Clears data from model and global storage
      */
     function clearData() {
         window.localStorage.set(localstorageLabel, undefined);
@@ -10444,22 +10666,22 @@ if (typeof exports !== 'undefined') {
         }
     }
 
-
     /**
-     * initializes all needed dom elements and begins the loop
+     * Initializes all needed dom elements and begins the loop
+     * @param {URL} videoSrc - The video url to use
      */
     function init(videoSrc) {
         videoElement = document.createElement('video');
-        videoElement.id = webgazer.params.videoElementId; 
+        videoElement.id = webgazer.params.videoElementId;
         videoElement.autoplay = true;
         console.log(videoElement);
         videoElement.style.display = 'none';
 
-        //turn the stream into a magic URL 
-        videoElement.src = videoSrc;  
+        //turn the stream into a magic URL
+        videoElement.src = videoSrc;
         document.body.appendChild(videoElement);
 
-        videoElementCanvas = document.createElement('canvas'); 
+        videoElementCanvas = document.createElement('canvas');
         videoElementCanvas.id = webgazer.params.videoElementCanvasId;
         videoElementCanvas.style.display = 'none';
         document.body.appendChild(videoElementCanvas);
@@ -10476,13 +10698,19 @@ if (typeof exports !== 'undefined') {
         loop();
     }
 
+    
     //PUBLIC FUNCTIONS - CONTROL
 
     /**
-     * starts all state related to webgazer -> dataLoop, video collection, click listener
+     * Starts all state related to webgazer -> dataLoop, video collection, click listener
+     * If starting fails, call `onFail` param function.
+     * @param {Function} onFail - Callback to call in case it is impossible to find user camera
+     * @returns {*}
      */
-    webgazer.begin = function() {
+    webgazer.begin = function(onFail) {
         loadGlobalData();
+
+        onFail = onFail || function() {console.log("No stream")};
 
         if (debugVideoLoc) {
             init(debugVideoLoc);
@@ -10494,18 +10722,16 @@ if (typeof exports !== 'undefined') {
             navigator.webkitGetUserMedia ||
             navigator.mozGetUserMedia;
 
-        if(navigator.getUserMedia != null){ 
-            var options = { 
-                video:true, 
-            }; 	     
-            //request webcam access 
-            navigator.getUserMedia(options, 
+        if(navigator.getUserMedia != null){
+            var options = webgazer.params.camConstraints;
+            //request webcam access
+            navigator.getUserMedia(options,
                     function(stream){
                         console.log('video stream created');
-                        init(window.URL.createObjectURL(stream));                    
-                    }, 
-                    function(e){ 
-                        console.log("No stream"); 
+                        init(window.URL.createObjectURL(stream));
+                    },
+                    function(e){
+                        onFail();
                         videoElement = null;
                     });
         }
@@ -10517,11 +10743,11 @@ if (typeof exports !== 'undefined') {
         }
 
         return webgazer;
-    }
+    };
 
-    /*
-     * checks if webgazer has finished initializing after calling begin()
-     * @return {boolean} if webgazer is ready
+    /**
+     * Checks if webgazer has finished initializing after calling begin()
+     * @returns {boolean} if webgazer is ready
      */
     webgazer.isReady = function() {
         if (videoElementCanvas == null) {
@@ -10529,20 +10755,20 @@ if (typeof exports !== 'undefined') {
         }
         paintCurrentFrame(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
         return videoElementCanvas.width > 0;
-    }
+    };
 
-    /*
-     * stops collection of data and predictions
-     * @return {webgazer} this
+    /**
+     * Stops collection of data and predictions
+     * @returns {webgazer} this
      */
     webgazer.pause = function() {
         paused = true;
         return webgazer;
-    }
+    };
 
-    /*
-     * resumes collection of data and predictions if paused
-     * @return {webgazer} this
+    /**
+     * Resumes collection of data and predictions if paused
+     * @returns {webgazer} this
      */
     webgazer.resume = function() {
         if (!paused) {
@@ -10551,7 +10777,7 @@ if (typeof exports !== 'undefined') {
         paused = false;
         loop();
         return webgazer;
-    }
+    };
 
     /**
      * stops collection of data and removes dom modifications, must call begin() to reset up
@@ -10566,12 +10792,13 @@ if (typeof exports !== 'undefined') {
 
         setGlobalData();
         return webgazer;
-    }
+    };
 
+    
     //PUBLIC FUNCTIONS - DEBUG
 
     /**
-     * returns if the browser is compatible with webgazer
+     * Returns if the browser is compatible with webgazer
      * @return {boolean} if browser is compatible
      */
     webgazer.detectCompatibility = function() {
@@ -10580,10 +10807,10 @@ if (typeof exports !== 'undefined') {
             navigator.mediaDevices.getUserMedia;
 
         return navigator.getUserMedia !== undefined;
-    }
+    };
 
     /**
-     * displays the calibration point for debugging
+     * Displays the calibration point for debugging
      * @return {webgazer} this
      */
     webgazer.showPredictionPoints = function(bool) {
@@ -10591,17 +10818,17 @@ if (typeof exports !== 'undefined') {
         gazeDot.style.left = '-5px';
         gazeDot.style.display = bool ? 'block' : 'none';
         return webgazer;
-    }
+    };
 
     /**
-     *  set a static video file to be used instead of webcam video
-     *  @param {string} videoLoc - video file location
+     *  Set a static video file to be used instead of webcam video
+     *  @param {String} videoLoc - video file location
      *  @return {webgazer} this
      */
     webgazer.setStaticVideo = function(videoLoc) {
        debugVideoLoc = videoLoc;
        return webgazer;
-    }
+    };
 
     /**
      *  Add the mouse click and move listeners that add training data.
@@ -10610,7 +10837,7 @@ if (typeof exports !== 'undefined') {
     webgazer.addMouseEventListeners = function() {
         addMouseEventListeners();
         return webgazer;
-    }
+    };
 
     /**
      *  Remove the mouse click and move listeners that add training data.
@@ -10619,24 +10846,25 @@ if (typeof exports !== 'undefined') {
     webgazer.removeMouseEventListeners = function() {
         removeMouseEventListeners();
         return webgazer;
-    }
+    };
 
     /**
      *  Records current screen position for current pupil features.
-     *  @param {string} x - position on screen in the x axis
-     *  @param {string} y - position on screen in the y axis
+     *  @param {String} x - position on screen in the x axis
+     *  @param {String} y - position on screen in the y axis
      *  @return {webgazer} this
      */
     webgazer.recordScreenPosition = function(x, y) {
         // give this the same weight that a click gets.
         recordScreenPosition(x, y, eventTypes[0]);
         return webgazer;
-    }
+    };
 
+    
     //SETTERS
     /**
-     * sets the tracking module
-     * @param {string} the name of the tracking module to use
+     * Sets the tracking module
+     * @param {String} name - The name of the tracking module to use
      * @return {webgazer} this
      */
     webgazer.setTracker = function(name) {
@@ -10648,13 +10876,13 @@ if (typeof exports !== 'undefined') {
             }
             return webgazer;
         }
-        curTracker = curTrackerMap[name]();    
+        curTracker = curTrackerMap[name]();
         return webgazer;
-    }
+    };
 
     /**
-     * sets the regression module and clears any other regression modules
-     * @param {string} the name of the regression module to use
+     * Sets the regression module and clears any other regression modules
+     * @param {String} name - The name of the regression module to use
      * @return {webgazer} this
      */
     webgazer.setRegression = function(name) {
@@ -10670,33 +10898,33 @@ if (typeof exports !== 'undefined') {
         regs = [regressionMap[name]()];
         regs[0].setData(data);
         return webgazer;
-    }
+    };
 
     /**
-     * adds a new tracker module so that it can be used by setTracker()
-     * @param {string} name - the new name of the tracker
-     * @param {function} constructor - the constructor of the curTracker object
+     * Adds a new tracker module so that it can be used by setTracker()
+     * @param {String} name - the new name of the tracker
+     * @param {Function} constructor - the constructor of the curTracker object
      * @return {webgazer} this
      */
     webgazer.addTrackerModule = function(name, constructor) {
         curTrackerMap[name] = function() {
             contructor();
         };
-    }
+    };
 
     /**
-     * adds a new regression module so that it can be used by setRegression() and addRegression()
-     * @param {string} name - the new name of the regression
-     * @param {function} constructor - the constructor of the regression object
-     * @param {webgazer} this
+     * Adds a new regression module so that it can be used by setRegression() and addRegression()
+     * @param {String} name - the new name of the regression
+     * @param {Function} constructor - the constructor of the regression object
      */
     webgazer.addRegressionModule = function(name, constructor) {
         regressionMap[name] = function() {
             contructor();
         };
-    }
+    };
+    
     /**
-     * adds a new regression module to the list of regression modules, seeding its data from the first regression module
+     * Adds a new regression module to the list of regression modules, seeding its data from the first regression module
      * @param {string} name - the string name of the regression module to add
      * @return {webgazer} this
      */
@@ -10706,59 +10934,59 @@ if (typeof exports !== 'undefined') {
         newReg.setData(data);
         regs.push(newReg);
         return webgazer;
-    }
+    };
 
     /**
-     * sets a callback to be executed on every gaze event (currently all time steps)
-     * @param {function}
-     *      @param {data} - the prediction data
-     *      @param {elapsedTime} - the elapsed time since begin() was called
+     * Sets a callback to be executed on every gaze event (currently all time steps)
+     * @param {function} listener - The callback function to call (it must be like function(data, elapsedTime))
      * @return {webgazer} this
      */
     webgazer.setGazeListener = function(listener) {
         callback = listener;
         return webgazer;
-    }
+    };
 
     /**
-     * removes the callback set by setGazeListener
+     * Removes the callback set by setGazeListener
      * @return {webgazer} this
      */
     webgazer.clearGazeListener = function() {
         callback = nopCallback;
         return webgazer;
-    }
+    };
 
+    
     //GETTERS
     /**
-     * returns the tracker currently in use
+     * Returns the tracker currently in use
      * @return {tracker} an object following the tracker interface
      */
     webgazer.getTracker = function() {
         return curTracker;
-    }
-    
+    };
+
     /**
-     * returns the regression currently in use
-     * @return {Array{regression}} an array of objects following the regression interface
+     * Returns the regression currently in use
+     * @return {Array.<Object>} an array of regression objects following the regression interface
      */
     webgazer.getRegression = function() {
         return regs;
-    }
+    };
 
     /**
-     * requests an immediate prediction
+     * Requests an immediate prediction
      * @return {object} prediction data object
      */
     webgazer.getCurrentPrediction = function() {
-        return getPrediction(); 
-    }
+        return getPrediction();
+    };
 
     /**
      * returns the different event types that may be passed to regressions when calling regression.addData()
-     * @return {array} array of strings where each string is an event type
+     * @return {Array} array of strings where each string is an event type
      */
-    webgazer.params.getEventTypes = function() { 
-        return eventTypes.slice(); 
+    webgazer.params.getEventTypes = function() {
+        return eventTypes.slice();
     }
+    
 }(window));
