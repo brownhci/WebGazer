@@ -5,6 +5,9 @@
     "type": "git",
     "url": "https://github.com/brownhci/WebGazer.git"
   },
+  "scripts": {
+    "build": "rollup -c"
+  },
   "devDependencies": {
     "grunt": "*",
     "grunt-contrib-concat": "*",
