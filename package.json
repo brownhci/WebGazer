@@ -9,6 +9,7 @@
     "grunt": "*",
     "grunt-contrib-concat": "*",
     "grunt-contrib-uglify": "*",
-    "jsdoc": "*"
+    "jsdoc": "*",
+    "rollup": "^0.36.3"
   }
 }
