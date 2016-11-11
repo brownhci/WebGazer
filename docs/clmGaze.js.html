@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>clmGaze.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="self.webgazer.util.DebugBox.html">DebugBox</a><ul class='methods'><li data-type='method'><a href="self.webgazer.util.DebugBox.html#addButton">addButton</a></li><li data-type='method'><a href="self.webgazer.util.DebugBox.html#inc">inc</a></li><li data-type='method'><a href="self.webgazer.util.DebugBox.html#set">set</a></li><li data-type='method'><a href="self.webgazer.util.DebugBox.html#show">show</a></li></ul></li><li><a href="webgazer.BlinkDetector.html">BlinkDetector</a><ul class='methods'><li data-type='method'><a href="webgazer.BlinkDetector.html#detectBlink">detectBlink</a></li><li data-type='method'><a href="webgazer.BlinkDetector.html#setBlinkWindow">setBlinkWindow</a></li></ul></li><li><a href="webgazer.reg.LinearReg.html">LinearReg</a><ul class='methods'><li data-type='method'><a href="webgazer.reg.LinearReg.html#addData">addData</a></li><li data-type='method'><a href="webgazer.reg.LinearReg.html#getData">getData</a></li><li data-type='method'><a href="webgazer.reg.LinearReg.html#predict">predict</a></li><li data-type='method'><a href="webgazer.reg.LinearReg.html#setData">setData</a></li></ul></li><li><a href="webgazer.reg.RidgeReg.html">RidgeReg</a><ul class='methods'><li data-type='method'><a href="webgazer.reg.RidgeReg.html#addData">addData</a></li><li data-type='method'><a href="webgazer.reg.RidgeReg.html#getData">getData</a></li><li data-type='method'><a href="webgazer.reg.RidgeReg.html#predict">predict</a></li><li data-type='method'><a href="webgazer.reg.RidgeReg.html#setData">setData</a></li></ul></li><li><a href="webgazer.reg.RidgeRegThreaded.html">RidgeRegThreaded</a><ul class='methods'><li data-type='method'><a href="webgazer.reg.RidgeRegThreaded.html#addData">addData</a></li><li data-type='method'><a href="webgazer.reg.RidgeRegThreaded.html#getData">getData</a></li><li data-type='method'><a href="webgazer.reg.RidgeRegThreaded.html#predict">predict</a></li><li data-type='method'><a href="webgazer.reg.RidgeRegThreaded.html#setData">setData</a></li></ul></li><li><a href="webgazer.reg.RidgeWeightedReg.html">RidgeWeightedReg</a><ul class='methods'><li data-type='method'><a href="webgazer.reg.RidgeWeightedReg.html#addData">addData</a></li><li data-type='method'><a href="webgazer.reg.RidgeWeightedReg.html#getData">getData</a></li><li data-type='method'><a href="webgazer.reg.RidgeWeightedReg.html#predict">predict</a></li><li data-type='method'><a href="webgazer.reg.RidgeWeightedReg.html#setData">setData</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#getCurrentFixationIndex">getCurrentFixationIndex</a></li><li><a href="global.html#retrain">retrain</a></li><li><a href="global.html#ridge">ridge</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">clmGaze.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>(function(window) {
+    "use strict";
+
+    window.webgazer = window.webgazer || {};
+    webgazer.tracker = webgazer.tracker || {};
+    webgazer.util = webgazer.util || {};
+    webgazer.params = webgazer.params || {};
+
+    /**
+     * Constructor of ClmGaze,
+     * initialize ClmTrackr object
+     * @constructor
+     */
+    var ClmGaze = function() {
+        this.clm = new clm.tracker(webgazer.params.camConstraints);
+        this.clm.init(pModel);
+        var F = [ [1, 0, 0, 0, 1, 0],
+                  [0, 1, 0, 0, 0, 1],
+                  [0, 0, 1, 0, 1, 0],
+                  [0, 0, 0, 1, 0, 1],
+                  [0, 0, 0, 0, 1, 0],
+                  [0, 0, 0, 0, 0, 1]];
+        //Parameters Q and R may require some fine tuning
+        var Q = [ [1/4,  0, 0, 0,  1/2,   0],
+                  [0, 1/4,  0, 0,    0, 1/2],
+                  [0, 0,   1/4, 0, 1/2,   0],
+                  [0, 0,   0,  1/4,  0, 1/2],
+                  [1/2, 0, 1/2, 0,    1,  0],
+                  [0, 1/2,  0,  1/2,  0,  1]];// * delta_t
+        var delta_t = 1/10; // The amount of time between frames
+        Q = numeric.mul(Q, delta_t);
+        var H = [ [1, 0, 0, 0, 0, 0],
+                  [0, 1, 0, 0, 0, 0],
+                  [0, 0, 1, 0, 0, 0],
+                  [0, 0, 0, 1, 0, 0]];
+        var pixel_error = 6.5; //We will need to fine tune this value
+        //This matrix represents the expected measurement error
+        var R = numeric.mul(numeric.identity(4), pixel_error);
+
+        var P_initial = numeric.mul(numeric.identity(6), 0.0001); //Initial covariance matrix
+        var x_initial = [[200], [150], [250], [180], [0], [0]]; // Initial measurement matrix
+
+        this.leftKalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
+        this.rightKalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
+    };
+
+    webgazer.tracker.ClmGaze = ClmGaze;
+
+    /**
+     * Isolates the two patches that correspond to the user's eyes
+     * @param  {Canvas} imageCanvas - canvas corresponding to the webcam stream
+     * @param  {Number} width - of imageCanvas
+     * @param  {Number} height - of imageCanvas
+     * @return {Object} the two eye-patches, first left, then right eye
+     */
+    ClmGaze.prototype.getEyePatches = function(imageCanvas, width, height) {
+
+        if (imageCanvas.width === 0) {
+            return null;
+        }
+
+        var positions = this.clm.track(imageCanvas);
+        var score = this.clm.getScore();
+
+        if (!positions) {
+            return false;
+        }
+
+        //Fit the detected eye in a rectangle
+        var leftOriginX = (positions[23][0]);
+        var leftOriginY = (positions[24][1]);
+        var leftWidth = (positions[25][0] - positions[23][0]);
+        var leftHeight = (positions[26][1] - positions[24][1]);
+        var rightOriginX = (positions[30][0]);
+        var rightOriginY = (positions[29][1]);
+        var rightWidth = (positions[28][0] - positions[30][0]);
+        var rightHeight = (positions[31][1] - positions[29][1]);
+
+        //Apply Kalman Filtering
+        var leftBox = [leftOriginX, leftOriginY, leftOriginX + leftWidth, leftOriginY + leftHeight];
+        leftBox = this.leftKalman.update(leftBox);
+        leftOriginX = Math.round(leftBox[0]);
+        leftOriginY = Math.round(leftBox[1]);
+        leftWidth = Math.round(leftBox[2] - leftBox[0]);
+        leftHeight = Math.round(leftBox[3] - leftBox[1]);
+
+        //Apply Kalman Filtering
+        var rightBox = [rightOriginX, rightOriginY, rightOriginX + rightWidth, rightOriginY + rightHeight];
+        rightBox = this.rightKalman.update(rightBox);
+        rightOriginX = Math.round(rightBox[0]);
+        rightOriginY = Math.round(rightBox[1]);
+        rightWidth = Math.round(rightBox[2] - rightBox[0]);
+        rightHeight = Math.round(rightBox[3] - rightBox[1]);
+
+        if (leftWidth === 0 || rightWidth === 0){
+          console.log('an eye patch had zero width');
+          return null;
+        }
+
+        if (leftHeight === 0 || rightHeight === 0){
+          console.log("an eye patch had zero height");
+          return null;
+        }
+
+        var eyeObjs = {};
+        var leftImageData = imageCanvas.getContext('2d').getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);
+        eyeObjs.left = {
+            patch: leftImageData,
+            imagex: leftOriginX,
+            imagey: leftOriginY,
+            width: leftWidth,
+            height: leftHeight
+        };
+
+        var rightImageData = imageCanvas.getContext('2d').getImageData(rightOriginX, rightOriginY, rightWidth, rightHeight);
+        eyeObjs.right = {
+            patch: rightImageData,
+            imagex: rightOriginX,
+            imagey: rightOriginY,
+            width: rightWidth,
+            height: rightHeight
+        };
+
+        eyeObjs.positions = positions;
+
+        return eyeObjs;
+    };
+
+    /**
+     * The Js_objectdetectGaze object name
+     * @type {string}
+     */
+    ClmGaze.prototype.name = 'clmtrackr';
+    
+}(window));
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Nov 12 2016 00:54:20 GMT+0100 (Paris, Madrid) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

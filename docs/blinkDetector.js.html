@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>blinkDetector.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="self.webgazer.util.DebugBox.html">DebugBox</a><ul class='methods'><li data-type='method'><a href="self.webgazer.util.DebugBox.html#addButton">addButton</a></li><li data-type='method'><a href="self.webgazer.util.DebugBox.html#inc">inc</a></li><li data-type='method'><a href="self.webgazer.util.DebugBox.html#set">set</a></li><li data-type='method'><a href="self.webgazer.util.DebugBox.html#show">show</a></li></ul></li><li><a href="webgazer.BlinkDetector.html">BlinkDetector</a><ul class='methods'><li data-type='method'><a href="webgazer.BlinkDetector.html#detectBlink">detectBlink</a></li><li data-type='method'><a href="webgazer.BlinkDetector.html#setBlinkWindow">setBlinkWindow</a></li></ul></li><li><a href="webgazer.reg.LinearReg.html">LinearReg</a><ul class='methods'><li data-type='method'><a href="webgazer.reg.LinearReg.html#addData">addData</a></li><li data-type='method'><a href="webgazer.reg.LinearReg.html#getData">getData</a></li><li data-type='method'><a href="webgazer.reg.LinearReg.html#predict">predict</a></li><li data-type='method'><a href="webgazer.reg.LinearReg.html#setData">setData</a></li></ul></li><li><a href="webgazer.reg.RidgeReg.html">RidgeReg</a><ul class='methods'><li data-type='method'><a href="webgazer.reg.RidgeReg.html#addData">addData</a></li><li data-type='method'><a href="webgazer.reg.RidgeReg.html#getData">getData</a></li><li data-type='method'><a href="webgazer.reg.RidgeReg.html#predict">predict</a></li><li data-type='method'><a href="webgazer.reg.RidgeReg.html#setData">setData</a></li></ul></li><li><a href="webgazer.reg.RidgeRegThreaded.html">RidgeRegThreaded</a><ul class='methods'><li data-type='method'><a href="webgazer.reg.RidgeRegThreaded.html#addData">addData</a></li><li data-type='method'><a href="webgazer.reg.RidgeRegThreaded.html#getData">getData</a></li><li data-type='method'><a href="webgazer.reg.RidgeRegThreaded.html#predict">predict</a></li><li data-type='method'><a href="webgazer.reg.RidgeRegThreaded.html#setData">setData</a></li></ul></li><li><a href="webgazer.reg.RidgeWeightedReg.html">RidgeWeightedReg</a><ul class='methods'><li data-type='method'><a href="webgazer.reg.RidgeWeightedReg.html#addData">addData</a></li><li data-type='method'><a href="webgazer.reg.RidgeWeightedReg.html#getData">getData</a></li><li data-type='method'><a href="webgazer.reg.RidgeWeightedReg.html#predict">predict</a></li><li data-type='method'><a href="webgazer.reg.RidgeWeightedReg.html#setData">setData</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#getCurrentFixationIndex">getCurrentFixationIndex</a></li><li><a href="global.html#retrain">retrain</a></li><li><a href="global.html#ridge">ridge</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">blinkDetector.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>(function(window) {
+    "use strict";
+    
+    window.webgazer = window.webgazer || {};
+
+    //TODO
+    /**
+     * Constructor for BlinkDetector
+     * @param blinkWindow
+     * @constructor
+     */
+    webgazer.BlinkDetector = function(blinkWindow) {
+        //TODO use DataWindow instead
+        this.blinkData = [];
+        //determines number of previous eyeObj to hold onto
+        this.blinkWindow = blinkWindow || 8;
+
+        //cycles through to replace oldest entry
+        this.blinkWindowIndex = 0;
+    };
+
+    //TODO
+    /**
+     *
+     * @param eyesObj
+     * @returns {*}
+     */
+    webgazer.BlinkDetector.prototype.detectBlink = function(eyesObj) {
+        if (!eyesObj) {
+            return eyesObj;
+        }
+        if (this.blinkData.length &lt; this.blinkWindow) {
+            this.blinkData.push(eyesObj);
+            eyesObj.left.blink = false;
+            eyesObj.right.blink = false;
+            return eyesObj;
+        }
+
+        //replace oldest entry
+        this.blinkData[this.blinkWindowIndex] = eyesObj;
+        this.blinkWindowIndex = (this.blinkWindowIndex + 1) % this.blinkWindow;
+
+        //TODO detect if current eyeObj is different from eyeObj in blinkData;
+
+        eyesObj.left.blink = false;
+        eyesObj.right.blink = false;
+        return eyesObj;
+    };
+
+    //TODO
+    /**
+     *
+     * @param value
+     * @returns {webgazer.BlinkDetector}
+     */
+    webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
+        if (webgazer.utils.isInt(value) &amp;&amp; value > 0) {
+            this.blinkWindow = value;
+        }
+        return this;
+    }
+
+}(window));
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Nov 12 2016 00:54:20 GMT+0100 (Paris, Madrid) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

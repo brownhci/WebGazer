@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>ridgeRegThreaded.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="self.webgazer.util.DebugBox.html">DebugBox</a><ul class='methods'><li data-type='method'><a href="self.webgazer.util.DebugBox.html#addButton">addButton</a></li><li data-type='method'><a href="self.webgazer.util.DebugBox.html#inc">inc</a></li><li data-type='method'><a href="self.webgazer.util.DebugBox.html#set">set</a></li><li data-type='method'><a href="self.webgazer.util.DebugBox.html#show">show</a></li></ul></li><li><a href="webgazer.BlinkDetector.html">BlinkDetector</a><ul class='methods'><li data-type='method'><a href="webgazer.BlinkDetector.html#detectBlink">detectBlink</a></li><li data-type='method'><a href="webgazer.BlinkDetector.html#setBlinkWindow">setBlinkWindow</a></li></ul></li><li><a href="webgazer.reg.LinearReg.html">LinearReg</a><ul class='methods'><li data-type='method'><a href="webgazer.reg.LinearReg.html#addData">addData</a></li><li data-type='method'><a href="webgazer.reg.LinearReg.html#getData">getData</a></li><li data-type='method'><a href="webgazer.reg.LinearReg.html#predict">predict</a></li><li data-type='method'><a href="webgazer.reg.LinearReg.html#setData">setData</a></li></ul></li><li><a href="webgazer.reg.RidgeReg.html">RidgeReg</a><ul class='methods'><li data-type='method'><a href="webgazer.reg.RidgeReg.html#addData">addData</a></li><li data-type='method'><a href="webgazer.reg.RidgeReg.html#getData">getData</a></li><li data-type='method'><a href="webgazer.reg.RidgeReg.html#predict">predict</a></li><li data-type='method'><a href="webgazer.reg.RidgeReg.html#setData">setData</a></li></ul></li><li><a href="webgazer.reg.RidgeRegThreaded.html">RidgeRegThreaded</a><ul class='methods'><li data-type='method'><a href="webgazer.reg.RidgeRegThreaded.html#addData">addData</a></li><li data-type='method'><a href="webgazer.reg.RidgeRegThreaded.html#getData">getData</a></li><li data-type='method'><a href="webgazer.reg.RidgeRegThreaded.html#predict">predict</a></li><li data-type='method'><a href="webgazer.reg.RidgeRegThreaded.html#setData">setData</a></li></ul></li><li><a href="webgazer.reg.RidgeWeightedReg.html">RidgeWeightedReg</a><ul class='methods'><li data-type='method'><a href="webgazer.reg.RidgeWeightedReg.html#addData">addData</a></li><li data-type='method'><a href="webgazer.reg.RidgeWeightedReg.html#getData">getData</a></li><li data-type='method'><a href="webgazer.reg.RidgeWeightedReg.html#predict">predict</a></li><li data-type='method'><a href="webgazer.reg.RidgeWeightedReg.html#setData">setData</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#getCurrentFixationIndex">getCurrentFixationIndex</a></li><li><a href="global.html#retrain">retrain</a></li><li><a href="global.html#ridge">ridge</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">ridgeRegThreaded.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>(function(window) {
+
+    window.webgazer = window.webgazer || {};
+    webgazer.reg = webgazer.reg || {};
+    webgazer.mat = webgazer.mat || {};
+    webgazer.util = webgazer.util || {};
+
+    var ridgeParameter = Math.pow(10,-5);
+    var resizeWidth = 10;
+    var resizeHeight = 6;
+    var dataWindow = 700;
+    var weights = {'X':[0],'Y':[0]};
+    var trailDataWindow = 10;
+
+    /**
+     * Compute eyes size as gray histogram
+     * @param {Object} eyes - The eyes where looking for gray histogram
+     * @returns {Array.&lt;T>} The eyes gray level histogram
+     */
+    function getEyeFeats(eyes) {
+        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
+
+        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
+
+        var histLeft = [];
+        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
+        var histRight = [];
+        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
+
+        var leftGrayArray = Array.prototype.slice.call(histLeft);
+        var rightGrayArray = Array.prototype.slice.call(histRight);
+
+        return leftGrayArray.concat(rightGrayArray);
+    }
+
+    /**
+     * Constructor of RidgeRegThreaded object,
+     * it retrieve data window, and prepare a worker,
+     * this object allow to perform threaded ridge regression
+     * @constructor
+     */
+    webgazer.reg.RidgeRegThreaded = function() {
+        this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
+        this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
+        this.eyeFeaturesClicks = new webgazer.util.DataWindow(dataWindow);
+
+        this.screenXTrailArray = new webgazer.util.DataWindow(trailDataWindow);
+        this.screenYTrailArray = new webgazer.util.DataWindow(trailDataWindow);
+        this.eyeFeaturesTrail = new webgazer.util.DataWindow(trailDataWindow);
+
+        this.dataClicks = new webgazer.util.DataWindow(dataWindow);
+        this.dataTrail = new webgazer.util.DataWindow(dataWindow);
+
+        this.worker = new Worker('ridgeWorker.js');
+        this.worker.onerror = function(err) { console.log(err.message); };
+        this.worker.onmessage = function(evt){
+          weights.X = evt.data.X;
+          weights.Y = evt.data.Y;
+        };
+    };
+
+    /**
+     * Add given data from eyes
+     * @param {Object} eyes - eyes where extract data to add
+     * @param {Object} screenPos - The current screen point
+     * @param {Object} type - The type of performed action
+     */
+    webgazer.reg.RidgeRegThreaded.prototype.addData = function(eyes, screenPos, type) {
+        if (!eyes) {
+            return;
+        }
+        if (eyes.left.blink || eyes.right.blink) {
+            return;
+        }
+        this.worker.postMessage({'eyes':getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
+    };
+
+    /**
+     * Try to predict coordinates from pupil data
+     * after apply linear regression on data set
+     * @param {Object} eyesObj - The current user eyes object
+     * @returns {Object}
+     */
+    webgazer.reg.RidgeRegThreaded.prototype.predict = function(eyesObj) {
+        console.log("LOGGING..");
+        if (!eyesObj) {
+            return null;
+        }
+        var coefficientsX = weights.X;
+        var coefficientsY = weights.Y;
+
+        var eyeFeats = getEyeFeats(eyesObj);
+        var predictedX = 0, predictedY = 0;
+        for(var i=0; i&lt; eyeFeats.length; i++){
+            predictedX += eyeFeats[i] * coefficientsX[i];
+            predictedY += eyeFeats[i] * coefficientsY[i];
+        }
+
+        predictedX = Math.floor(predictedX);
+        predictedY = Math.floor(predictedY);
+
+        console.log("PredicedX");
+        console.log(predictedX);
+        console.log(predictedY);
+
+        return {
+            x: predictedX,
+            y: predictedY
+        };
+    };
+
+    /**
+     * Add given data to current data set then,
+     * replace current data member with given data
+     * @param {Array.&lt;Object>} data - The data to set
+     */
+    webgazer.reg.RidgeRegThreaded.prototype.setData = function(data) {
+        for (var i = 0; i &lt; data.length; i++) {
+            //TODO this is a kludge, needs to be fixed
+            data[i].eyes.left.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.left.patch), data[i].eyes.left.width, data[i].eyes.left.height);
+            data[i].eyes.right.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.right.patch), data[i].eyes.right.width, data[i].eyes.right.height);
+            this.addData(data[i].eyes, data[i].screenPos, data[i].type);
+        }
+    };
+
+    /**
+     * Return the data
+     * @returns {Array.&lt;Object>|*}
+     */
+    webgazer.reg.RidgeRegThreaded.prototype.getData = function() {
+        return this.dataClicks.data.concat(this.dataTrail.data);
+    };
+
+    /**
+     * The RidgeRegThreaded object name
+     * @type {string}
+     */
+    webgazer.reg.RidgeRegThreaded.prototype.name = 'ridge';
+    
+}(window));
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Nov 12 2016 00:54:20 GMT+0100 (Paris, Madrid) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
