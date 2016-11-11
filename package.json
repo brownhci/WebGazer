@@ -6,7 +6,8 @@
     "url": "https://github.com/brownhci/WebGazer.git"
   },
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "build-prod": "rollup --config rollup.config.prod.js"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.18.0",
@@ -16,5 +17,6 @@
     "jsdoc": "*",
     "rollup": "^0.36.3",
     "rollup-plugin-babel": "^2.6.1",
+    "rollup-plugin-uglify": "^1.0.1"
   }
 }
