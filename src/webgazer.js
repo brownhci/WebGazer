@@ -1,3 +1,5 @@
+import { BlinkDetector } from "blinkDetector";
+
 (function(window, undefined) {
     console.log('initializing webgazer');
     //strict mode for type safety
@@ -63,7 +65,7 @@
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
     var curTracker = new webgazer.tracker.ClmGaze();
     var regs = [new webgazer.reg.RidgeReg()];
-    var blinkDetector = new webgazer.BlinkDetector();
+    var blinkDetector = new BlinkDetector();
 
     //lookup tables
     var curTrackerMap = {
