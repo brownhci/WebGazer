@@ -1,3 +1,37 @@
+// 'dependencies/js-objectdetect/js/objectdetect.js',
+//     'dependencies/js-objectdetect/js/objectdetect.eye.js  ',
+//     'dependencies/js-objectdetect/js/objectdetect.frontalface_alt.js  ',
+
+//     'dependencies/tracking.js/build/tracking.js',
+//     'dependencies/tracking.js/build/data/face-min.js',
+//     'dependencies/tracking.js/build/data/eye-min.js',
+
+//     'dependencies/clmtrackr/utils.js',
+
+//     'dependencies/numeric-1.2.6.min.js',
+
+//     'dependencies/clmtrackr/mosse.js',
+//     'dependencies/clmtrackr/jsfeat-min.js',
+//     'dependencies/clmtrackr/frontalface.js',
+//     'dependencies/clmtrackr/jsfeat_detect.js',
+//     'dependencies/clmtrackr/left_eye_filter.js',
+//     'dependencies/clmtrackr/right_eye_filter.js',
+//     'dependencies/clmtrackr/nose_filter.js',
+//     'dependencies/clmtrackr/model_pca_20_svm.js',
+//     'dependencies/clmtrackr/clm.js',
+//     'dependencies/clmtrackr/svmfilter_webgl.js',
+//     'dependencies/clmtrackr/svmfilter_fft.js',
+//     'dependencies/clmtrackr/mossefilter.js'
+
+import "../dependencies/js-objectdetect/js/objectdetect.js";
+import "../dependencies/js-objectdetect/js/objectdetect.eye.js";
+// import "../dependencies/js-objectdetect/js/objectdetect.frontalface_alt.js";
+
+// import "../dependencies/tracking.js/build/tracking.js";
+// import "../dependencies/tracking.js/build/data/face-min.js";
+// import "../dependencies/tracking.js/build/data/eye-min.js";
+
+
 (function(window, undefined) {
     console.log('initializing webgazer');
     //strict mode for type safety
