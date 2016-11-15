@@ -22,10 +22,10 @@ var dataTrail = new self.webgazer.util.DataWindow(dataWindow);
 
 /**
  * Performs ridge regression, according to the Weka code.
- * @param {array} y corresponds to screen coordinates (either x or y) for each of n click events
- * @param {array of arrays} X corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
- * @param {array} ridge ridge parameter
- * @return{array} regression coefficients
+ * @param {Array} y - corresponds to screen coordinates (either x or y) for each of n click events
+ * @param {Array.<Array.<Number>>} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
+ * @param {Array} k - ridge parameter
+ * @return{Array} regression coefficients
  */
 function ridge(y, X, k){
     var nc = X[0].length;
@@ -66,6 +66,11 @@ function ridge(y, X, k){
     return m_Coefficients;
 }
 
+//TODO: still usefull ???
+/**
+ *
+ * @returns {Number}
+ */
 function getCurrentFixationIndex() {
     var index = 0;
     var recentX = this.screenXTrailArray.get(0);
@@ -81,7 +86,10 @@ function getCurrentFixationIndex() {
     return i;
 }
 
-
+/**
+ * Event handler, it store screen position to allow training
+ * @param {Event} event - the receive event
+ */
 self.onmessage = function(event) {
     var data = event.data;
     var screenPos = data['screenPos'];
@@ -100,8 +108,11 @@ self.onmessage = function(event) {
         self.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
     }
     self.needsTraining = true;
-}
+};
 
+/**
+ * Compute coefficient from training data
+ */
 function retrain() {
     if (self.screenXClicksArray.length == 0) {
         return;
