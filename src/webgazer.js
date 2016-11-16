@@ -12,6 +12,17 @@
     webgazer.params = webgazer.params || {};
 
     //PRIVATE VARIABLES
+   
+    /**
+     * Top level control module
+     * @alias module:webgazer
+     * @exports webgazer
+     */
+    //var webgazer = {};
+
+    //params Object to be passed into tracker and regression constructors
+    //contains various potentially useful knowledge like the video size and data collection rates
+    //var params = {};
 
     //video elements
     webgazer.params.videoScale = 1;
@@ -133,7 +144,11 @@
 
     /**
      * Paints the video to a canvas and runs the prediction pipeline to get a prediction
-     * @param {Number|undefined} regModelIndex - The prediction index where looking for
+     * @param {Number|undefined} regModelIndex - If specified, gives a specific regression model prediction, otherwise gives all predictions
+     *  @return {Object} prediction - Object containing the prediction data
+     *  @return {integer} prediction.x - the x screen coordinate predicted
+     *  @return {integer} prediction.y - the y screen coordinate predicted
+     *  @return {Array} prediction.all - if regModelIndex is unset, an array of prediction Objects each with correspodning x and y attributes
      * @returns {*}
      */
     function getPrediction(regModelIndex) {
@@ -601,7 +616,10 @@
 
     /**
      * Requests an immediate prediction
-     * @return {object} prediction data object
+     *  @return {Object} prediction - Object containing the prediction data
+     *  @return {integer} prediction.x - the x screen coordinate predicted
+     *  @return {integer} prediction.y - the y screen coordinate predicted
+     *  @return {Array} prediction.all - if regModelIndex is unset, an array of prediction Objects each with correspodning x and y attributes
      */
     webgazer.getCurrentPrediction = function() {
         return getPrediction();

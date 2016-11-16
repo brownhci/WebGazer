@@ -44,7 +44,7 @@
      * @param  {*} entry - item to be inserted. It either grows the DataWindow or replaces the oldest item
      * @return {DataWindow} this
      */
-    self.webgazer.util.DataWindow.prototype.push = function(entry) {
+    util.DataWindow.prototype.push = function(entry) {
         if (this.data.length < this.windowSize) {
             this.data.push(entry);
             this.length = this.data.length;

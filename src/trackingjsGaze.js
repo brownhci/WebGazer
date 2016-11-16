@@ -5,7 +5,8 @@
     webgazer.tracker = webgazer.tracker || {};
 
     /**
-     * Constructor of TrackingjsGaze object
+     * TrackingjsGaze constructor which uses the trackingjs library in order to find the head and eye positions
+     * @alias module:TrackingjsGaze
      * @constructor
      */
     var TrackingjsGaze = function() {};

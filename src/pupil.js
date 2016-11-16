@@ -1,6 +1,13 @@
 (function(window) {
 
     window.webgazer = window.webgazer || {};
+    
+    //TODO: no pupil ctor !?
+    /**
+     * Contains methods which detect the center of an eye's pupil
+     * @alias module:pupil
+     * @exports pupil
+     */
     webgazer.pupil = webgazer.pupil || {};
     
     /**
@@ -55,7 +62,7 @@
      */
     var getSinglePupil = function (pixels, width, height){
         var summedAreaTable = getSumTable(pixels, width, height);
-        var bestAvgScore = 999999; //want to minimize this score
+        var bestAvgScore = 999999; //want to minimize this score //TODO get int max
         var bestPoint = [0, 0]; //bottom right corner of best fitted pupil
         var bestHalfWidth = 0; //corresponding half width of the best fitted pupil
         var offset = Math.floor(width / 10.0); //padding

@@ -7,11 +7,11 @@
     webgazer.params = webgazer.params || {};
 
     /**
-     * Constructor of ClmGaze,
-     * initialize ClmTrackr object
+     * Constructor for the ClmGaze Object which tracks 
+     * head and eye positions using the clmtracker.js library
      * @constructor
      */
-    var ClmGaze = function() {
+     var ClmGaze = function() {
         this.clm = new clm.tracker(webgazer.params.camConstraints);
         this.clm.init(pModel);
         var F = [ [1, 0, 0, 0, 1, 0],
@@ -127,8 +127,8 @@
     };
 
     /**
-     * The Js_objectdetectGaze object name
-     * @type {string}
+     * The ClmGaze object name
+     * @type {String}
      */
     ClmGaze.prototype.name = 'clmtrackr';
     

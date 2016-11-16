@@ -4,6 +4,7 @@
     self.webgazer = self.webgazer || {};
     self.webgazer.mat = self.webgazer.mat || {};
 
+	// TODO: Should be an matrix object an not array of array of number !
     /**
      * Transposes an mxn array
      * @param {Array.<Array.<Number>>} matrix - of "M x N" dimensionality
@@ -30,7 +31,7 @@
      * @param {Array.<Number>} r - Array of row indices
      * @param {Number} j0 - Initial column index
      * @param {Number} j1 - Final column index
-     * @returns {Array} The sub-matrix matrix(r(:),j0:j1)
+     * @returns {Array.<Array.<Number>>} The sub-matrix matrix(r(:),j0:j1)
      */
     self.webgazer.mat.getMatrix = function(matrix, r, j0, j1){
         var X = new Array(r.length),
@@ -52,7 +53,7 @@
      * @param {Number} i1 - Final row index
      * @param {Number} j0 - Initial column index
      * @param {Number} j1 - Final column index
-     * @return {Array} The sub-matrix matrix(i0:i1,j0:j1)
+     * @return {Array.<Array.<Number>>} The sub-matrix matrix(i0:i1,j0:j1)
      */
     self.webgazer.mat.getSubMatrix = function(matrix, i0, i1, j0, j1){
         var size = j1 - j0 + 1,

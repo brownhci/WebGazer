@@ -5,12 +5,11 @@
     webgazer.tracker = webgazer.tracker || {};
 
     /**
-     * Constructor of Js_objectdetectGaze
-     * @constructor
+     * Constructor for Js_objectdetectGaze which captures face and eye positions using the js_objectdetect library
+     * @alias module:Js_objectdetectGaze
+     * @exports Js_objectdetectGaze
      */
     var Js_objectdetectGaze = function() {};
-
-    webgazer.tracker.Js_objectdetectGaze = Js_objectdetectGaze;
 
     /**
      * Isolates the two patches that correspond to the user's eyes

@@ -5,8 +5,9 @@
     webgazer.pupil = webgazer.pupil || {};
 
     /**
-     * Constructor of LinearReg,
-     * initialize array data
+     * LinearReg class which uses pupil detection and simple linear regression to predict gaze from eye patches
+     * @alias module:LinearReg
+     * @exports LinearReg
      * @constructor
      */
     webgazer.reg.LinearReg = function() {
@@ -18,9 +19,9 @@
     };
 
     /**
-     * Add given data from eyes
-     * @param {Object} eyes - eyes where extract data to add
-     * @param {Object} screenPos - The current screen point
+     * Add given data from eyes to the regression model
+     * @param {Object} eyes - util.eyes Object containing left and right data to extract
+     * @param {Object} screenPos - The current screen point[x,y] position when a training event happens
      * @param {Object} type - The type of performed action
      */
     webgazer.reg.LinearReg.prototype.addData = function(eyes, screenPos, type) {
@@ -41,9 +42,9 @@
     };
 
     /**
-     * Add given data to current data set then,
-     * replace current data member with given data
-     * @param {Array.<Object>} data - The data to set
+     * Seeds the model with initial training data,
+     * in case data is stored in a separate location
+     * @param {Array.<Object>} data - Array of util.eyes objects to set
      */
     webgazer.reg.LinearReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
@@ -53,18 +54,21 @@
     };
 
     /**
-     * Return the data
-     * @returns {Array.<Object>|*}
+     * Return the training data stored in this regression model, *this is not the model itself, but merely its training data
+     * @returns {Array.<Object>|*} the set of training data stored in this regression class
      */
     webgazer.reg.LinearReg.prototype.getData = function() {
         return this.data;
     };
 
+	// TODO: return Point or ScreenCoordinates object to set correctly the doc and get full code base
     /**
      * Try to predict coordinates from pupil data
      * after apply linear regression on data set
      * @param {Object} eyesObj - The current user eyes object
-     * @returns {Object}
+     * @return {Object} prediction - Object containing the prediction data
+     *  @return {integer} prediction.x - the x screen coordinate predicted
+     *  @return {integer} prediction.y - the y screen coordinate predicted 
      */
     webgazer.reg.LinearReg.prototype.predict = function(eyesObj) {
         if (!eyesObj) {
@@ -106,6 +110,6 @@
      * The LinearReg object name
      * @type {string}
      */
-    webgazer.reg.LinearReg.prototype.name = 'simple';
+    webgazer.reg.LinearReg.prototype.name = 'LinearReg';
     
 }(window));

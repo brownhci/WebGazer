@@ -102,7 +102,10 @@
     }
 
     /**
-     * Constructor of RidgeWeightedReg object
+     * Constructor for the RidgeWightedReg Object which uses *weighted* ridge regression to correlate click and mouse movement to eye patch features
+     * The weighting essentially provides a scheduled falloff in influence for mouse movements. This means that mouse moevemnts will only count towards the prediction for a short period of time, unlike unweighted ridge regression where all mouse movements are treated equally.
+     * @alias module:RidgeWightedReg 
+     * @exports RidgeWightedReg 
      * @constructor
      */
     webgazer.reg.RidgeWeightedReg = function() {
@@ -123,9 +126,9 @@
     };
 
     /**
-     * Add given data from eyes
-     * @param {Object} eyes - eyes where extract data to add
-     * @param {Object} screenPos - The current screen point
+     * Add given data from eyes to the regression model
+     * @param {Object} eyes - util.eyes Object containing left and right data to add
+     * @param {Object} screenPos - The current screen [x,y] position when a training event happens
      * @param {Object} type - The type of performed action
      */
     webgazer.reg.RidgeWeightedReg.prototype.addData = function(eyes, screenPos, type) {
@@ -155,10 +158,11 @@
     };
 
     /**
-     * Try to predict coordinates from pupil data
-     * after apply linear regression on data set
-     * @param {Object} eyesObj - The current user eyes object
-     * @returns {Object}
+     * Try to predict coordinates from pupil data based on the current set of training data
+     * @param {Object} eyesObj - util.eyes Object
+     * @returns {Object} prediction - Object containing the prediction data
+     *  @return {integer} prediction.x - the x screen coordinate predicted
+     *  @return {integer} prediction.y - the y screen coordinate predicted
      */
     webgazer.reg.RidgeWeightedReg.prototype.predict = function(eyesObj) {
         if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
@@ -227,9 +231,8 @@
     };
 
     /**
-     * Add given data to current data set then,
-     * replace current data member with given data
-     * @param {Array.<Object>} data - The data to set
+     * Seeds the model with initial training data in case data is stored in a separate location
+     * @param {Array.<Object>} data - The array of util.eyes objects to set
      */
     webgazer.reg.RidgeWeightedReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
@@ -241,8 +244,9 @@
     };
 
     /**
-     * Return the data
-     * @returns {Array.<Object>|*}
+     * Gets the training data stored in this regression model, 
+     * this is not the model itself, but merely its training data
+     * @returns {Array.<Object>|*} the set of training data stored in this regression class
      */
     webgazer.reg.RidgeWeightedReg.prototype.getData = function() {
         return this.dataClicks.data.concat(this.dataTrail.data);
