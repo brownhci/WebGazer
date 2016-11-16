@@ -31,7 +31,7 @@ function ridge(y, X, k){
     var nc = X[0].length;
     var m_Coefficients = new Array(nc);
     var xt = self.webgazer.mat.transpose(X);
-    var solution = new Array();
+    var solution = [];
     var success = true;
     do{
         var ss = self.webgazer.mat.mult(xt,X);
