@@ -60,10 +60,8 @@
         }
 
         var positions = this.clm.track(imageCanvas);
-        var score = this.clm.getScore();
-
         if (!positions) {
-            return false;
+            return null;
         }
 
         //Fit the detected eye in a rectangle
