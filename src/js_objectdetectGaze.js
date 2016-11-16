@@ -13,7 +13,7 @@
 
     /**
      * Isolates the two patches that correspond to the user's eyes
-     * @param  {Canvas} imageCanvas - canvas corresponding to the webcam stream
+     * @param  {HTMLCanvasElement} imageCanvas - canvas corresponding to the webcam stream
      * @param  {Number} width - of imageCanvas
      * @param  {Number} height - of imageCanvas
      * @return {Object} the two eye-patches, first left, then right eye
@@ -121,7 +121,7 @@
 
     /**
      * Performs face detection on the passed canvas
-     * @param {Canvas} imageCanvas - whole video canvas
+     * @param {HTMLCanvasElement} imageCanvas - whole video canvas
      * @param {Number} workingImageWidth - width of imageCanvas
      * @param {Number} workingImageHeight - height of imageCanvas
      * @return {Array.<Array.<Number>>} face - array of rectangle information

@@ -105,7 +105,7 @@
     /**
      * Gets the pupil features by following the pipeline which threads an eyes object through each call:
      * curTracker gets eye patches -> blink detector -> pupil detection
-     * @param {Canvas} canvas - a canvas which will have the video drawn onto it
+     * @param {HTMLCanvasElement} canvas - a canvas which will have the video drawn onto it
      * @param {Number} width - the width of canvas
      * @param {Number} height - the height of canvas
      */
@@ -124,7 +124,7 @@
 
     /**
      * Gets the most current frame of video and paints it to a resized version of the canvas with width and height
-     * @param {Canvas} canvas - the canvas to paint the video on to
+     * @param {HTMLCanvasElement} canvas - the canvas to paint the video on to
      * @param {Number} width - the new width of the canvas
      * @param {Number} height - the new height of the canvas
      */
