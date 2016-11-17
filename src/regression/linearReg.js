@@ -1,3 +1,5 @@
+import * as Core from "../core/core";
+
 /**
  * LinearReg class which uses pupil detection and simple linear regression to predict gaze from eye patches
  * @alias module:LinearReg
@@ -28,7 +30,8 @@ LinearReg.prototype.addData = function (eyes, screenPos, type) {
     if (!eyes) {
         return;
     }
-    webgazer.pupil.getPupils(eyes);
+
+    Core.getPupils(eyes);
     if (!eyes.left.blink) {
         this.leftDatasetX.push([eyes.left.pupil[0][0], screenPos[0]]);
         this.leftDatasetY.push([eyes.left.pupil[0][1], screenPos[1]]);
@@ -90,7 +93,7 @@ LinearReg.prototype.predict = function (eyesObj) {
     var rightSlopeY      = result.equation[0];
     var rightIntersceptY = result.equation[1];
 
-    webgazer.pupil.getPupils(eyesObj);
+    Core.getPupils(eyesObj);
 
     var leftPupilX = eyesObj.left.pupil[0][0];
     var leftPupilY = eyesObj.left.pupil[0][1];
