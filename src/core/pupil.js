@@ -1,6 +1,8 @@
 //TODO: pupil should be inside an eye object, uh uh (it's not a joke !)
-
 //TODO: no pupil ctor !?
+
+import * as Utils from "../utils/util"
+
 /**
  * Contains methods which detect the center of an eye's pupil
  * @alias module:pupil
@@ -98,12 +100,12 @@ export function getPupils(eyesObj) {
         return eyesObj;
     }
     if (!eyesObj.left.blink) {
-        eyesObj.left.pupil = getSinglePupil(Array.prototype.slice.call(webgazer.util.grayscale(eyesObj.left.patch, eyesObj.left.width, eyesObj.left.height)), eyesObj.left.width, eyesObj.left.height);
+        eyesObj.left.pupil = getSinglePupil(Array.prototype.slice.call(Utils.grayscale(eyesObj.left.patch, eyesObj.left.width, eyesObj.left.height)), eyesObj.left.width, eyesObj.left.height);
         eyesObj.left.pupil[0][0] -= eyesObj.left.pupil[1];
         eyesObj.left.pupil[0][1] -= eyesObj.left.pupil[1];
     }
     if (!eyesObj.right.blink) {
-        eyesObj.right.pupil = getSinglePupil(Array.prototype.slice.call(webgazer.util.grayscale(eyesObj.right.patch, eyesObj.right.width, eyesObj.right.height)), eyesObj.right.width, eyesObj.right.height);
+        eyesObj.right.pupil = getSinglePupil(Array.prototype.slice.call(Utils.grayscale(eyesObj.right.patch, eyesObj.right.width, eyesObj.right.height)), eyesObj.right.width, eyesObj.right.height);
         eyesObj.right.pupil[0][0] -= eyesObj.right.pupil[1];
         eyesObj.right.pupil[0][1] -= eyesObj.right.pupil[1];
     }
