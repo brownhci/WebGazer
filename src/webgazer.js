@@ -256,7 +256,7 @@ var WebGazer = (function (window) {
         if (paused) {
             return;
         }
-        var features = getPupilFeatures(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
+        var features = getPupilFeatures(videoElementCanvas, params.imgWidth, params.imgHeight);
         if (regs.length == 0) {
             console.log('regression not set, call setRegression()');
             return null;
@@ -284,7 +284,7 @@ var WebGazer = (function (window) {
         }
 
         var now = performance.now();
-        if (now < moveClock + webgazer.params.moveTickSize) {
+        if (now < moveClock + params.moveTickSize) {
             return;
         } else {
             moveClock = now;
@@ -406,7 +406,7 @@ var WebGazer = (function (window) {
             navigator.mozGetUserMedia;
 
         if (navigator.getUserMedia != null) {
-            var options = webgazer.params.camConstraints;
+            var options = params.camConstraints;
             //request webcam access
             navigator.getUserMedia(options,
                 function (stream) {
@@ -436,7 +436,7 @@ var WebGazer = (function (window) {
         if (videoElementCanvas == null) {
             return false;
         }
-        paintCurrentFrame(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
+        paintCurrentFrame(videoElementCanvas, params.imgWidth, params.imgHeight);
         return (videoElementCanvas.width > 0);
     }
 
