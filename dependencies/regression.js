@@ -237,6 +237,7 @@
            if (typeof method == 'string') {
                return methods[method](data, order);
            }
+        
         });
 
     if (typeof exports !== 'undefined') {
