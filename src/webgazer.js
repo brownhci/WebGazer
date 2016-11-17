@@ -1,36 +1,26 @@
-// 'dependencies/js-objectdetect/js/objectdetect.js',
-//     'dependencies/js-objectdetect/js/objectdetect.eye.js  ',
-//     'dependencies/js-objectdetect/js/objectdetect.frontalface_alt.js  ',
+import {
+  ObjectDetect,
+  Tracking,
+  Numeric,
+  supportsVideo,
+supportsH264BaselineVideo,
+supportsOggTheoraVideo
+} from "../dependencies/dependencies";
 
-//     'dependencies/tracking.js/build/tracking.js',
-//     'dependencies/tracking.js/build/data/face-min.js',
-//     'dependencies/tracking.js/build/data/eye-min.js',
-
-//     'dependencies/clmtrackr/utils.js',
-
-//     'dependencies/numeric-1.2.6.min.js',
-
-//     'dependencies/clmtrackr/mosse.js',
-//     'dependencies/clmtrackr/jsfeat-min.js',
-//     'dependencies/clmtrackr/frontalface.js',
-//     'dependencies/clmtrackr/jsfeat_detect.js',
-//     'dependencies/clmtrackr/left_eye_filter.js',
-//     'dependencies/clmtrackr/right_eye_filter.js',
-//     'dependencies/clmtrackr/nose_filter.js',
-//     'dependencies/clmtrackr/model_pca_20_svm.js',
-//     'dependencies/clmtrackr/clm.js',
-//     'dependencies/clmtrackr/svmfilter_webgl.js',
-//     'dependencies/clmtrackr/svmfilter_fft.js',
-//     'dependencies/clmtrackr/mossefilter.js'
-
-import "../dependencies/js-objectdetect/js/objectdetect.js";
-import "../dependencies/js-objectdetect/js/objectdetect.eye.js";
-// import "../dependencies/js-objectdetect/js/objectdetect.frontalface_alt.js";
-
-// import "../dependencies/tracking.js/build/tracking.js";
-// import "../dependencies/tracking.js/build/data/face-min.js";
-// import "../dependencies/tracking.js/build/data/eye-min.js";
-
+// MISSING DEPS
+// import "../dependencies/clmtrackr/mosse.js";
+// import "../dependencies/clmtrackr/jsfeat-min.js";
+// import "../dependencies/clmtrackr/frontalface.js";
+// import "../dependencies/clmtrackr/jsfeat_detect.js";
+// import "../dependencies/clmtrackr/left_eye_filter.js";
+// import "../dependencies/clmtrackr/right_eye_filter.js";
+// import "../dependencies/clmtrackr/nose_filter.js";
+// import "../dependencies/clmtrackr/model_pca_20_svm.js";
+// import "../dependencies/clmtrackr/clm.js";
+// import "../dependencies/clmtrackr/svmfilter_webgl.js";
+// import "../dependencies/clmtrackr/svmfilter_fft.js";
+// import "../dependencies/clmtrackr/mossefilter.js";
+// import "../dependencies/clmtrackr/utils.js";
 
 import * as Regression from "./regression/regressions";
 import * as Tracker from "./tracker/trackers";
