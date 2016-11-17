@@ -125,7 +125,7 @@ export function LUDecomposition(A, B) {
         piv[i] = i;
     }
     var pivsign = 1;
-    var LUrowi  = new Array();
+    var LUrowi  = [];
     var LUcolj  = new Array(m);
     // Outer loop.
     for (var j = 0; j < n; j++) {
@@ -178,7 +178,7 @@ export function LUDecomposition(A, B) {
         }
     }
     var nx = B[0].length;
-    var X  = self.webgazer.mat.getMatrix(B, piv, 0, nx - 1);
+    var X  = getMatrix(B, piv, 0, nx - 1);
     // Solve L*Y = B(piv,:)
     for (var k = 0; k < n; k++) {
         for (var i = k + 1; i < n; i++) {
@@ -295,5 +295,5 @@ export function QRDecomposition(A, B) {
             }
         }
     }
-    return self.webgazer.mat.getSubMatrix(X, 0, n - 1, 0, nx - 1);
+    return getSubMatrix(X, 0, n - 1, 0, nx - 1);
 }
