@@ -1,3 +1,5 @@
+import * as Mat from "../core/mat";
+
 var ridgeParameter  = Math.pow(10, -5);
 var resizeWidth     = 10;
 var resizeHeight    = 6;
@@ -14,18 +16,18 @@ var trailDataWindow = 10;
 function ridge(y, X, k) {
     var nc             = X[0].length;
     var m_Coefficients = new Array(nc);
-    var xt             = webgazer.mat.transpose(X);
+    var xt             = Mat.transpose(X);
     var solution       = [];
     var success        = true;
     do {
-        var ss = webgazer.mat.mult(xt, X);
+        var ss = Mat.mult(xt, X);
         // Set ridge regression adjustment
         for (var i = 0; i < nc; i++) {
             ss[i][i] = ss[i][i] + k;
         }
 
         // Carry out the regression
-        var bb = webgazer.mat.mult(xt, y);
+        var bb = Mat.mult(xt, y);
         for (var i = 0; i < nc; i++) {
             m_Coefficients[i] = bb[i][0];
         }
@@ -34,7 +36,7 @@ function ridge(y, X, k) {
             if (m_Coefficients.length * n != m_Coefficients.length) {
                 console.log("Array length must be a multiple of m")
             }
-            solution = (ss.length == ss[0].length ? (numeric.LUsolve(numeric.LU(ss, true), bb)) : (webgazer.mat.QRDecomposition(ss, bb)));
+            solution = (ss.length == ss[0].length ? (numeric.LUsolve(numeric.LU(ss, true), bb)) : (Mat.QRDecomposition(ss, bb)));
 
             for (var i = 0; i < nc; i++) {
                 m_Coefficients[i] = solution[i];
