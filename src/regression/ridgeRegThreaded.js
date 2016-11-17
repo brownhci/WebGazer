@@ -90,9 +90,9 @@ RidgeRegThreaded.prototype.addData = function (eyes, screenPos, type) {
  * Gets a prediction based on the current set of training data
  * @param {Object} eyesObj - util.eyes Object
  * @returns {Object} prediction - Object containing the prediction data
- *  @return {integer} prediction.x - the x screen coordinate predicted
- *  @return {integer} prediction.y - the y screen coordinate predicted
  */
+// *  @return {integer} prediction.x - the x screen coordinate predicted
+// *  @return {integer} prediction.y - the y screen coordinate predicted
 RidgeRegThreaded.prototype.predict = function (eyesObj) {
     console.log("LOGGING..");
     if (!eyesObj) {
