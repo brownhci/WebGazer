@@ -9,7 +9,7 @@
     "build-dev": "gulp build",
     "build-prod": "gulp build --production",
     "build-doc": "gulp build-doc",
-    "check-code": "standard \"src/webgazer.js\"",
+    "check-code": "standard \"src/**/*.js\"",
     "test": "gulp run-tests",
     "benchmark": "gulp benchmarks",
     "unit": "gulp units"
@@ -26,6 +26,10 @@
     "rollup": "^0.36.3",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-uglify": "^1.0.1",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-promise": "^3.4.0-0",
+    "eslint-plugin-standard": "^2.0.1",
+    "standard": "^8.5.0"
   },
   "dependencies": {
     "clmtrackr": "github:andyinabox/clmtrackr"
