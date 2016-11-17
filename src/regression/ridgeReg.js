@@ -11,7 +11,7 @@ var trailDataWindow = 10;
  * @param {Array} y - corresponds to screen coordinates (either x or y) for each of n click events
  * @param {Array.<Array.<Number>>} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
  * @param {Number} k - ridge parameter
- * @return{Array} regression coefficients
+ * @returns {Array} regression coefficients
  */
 function ridge(y, X, k) {
     var nc             = X[0].length;
@@ -162,11 +162,10 @@ RidgeReg.prototype.addData = function (eyes, screenPos, type) {
  * Try to predict coordinates from pupil data
  * after apply linear regression on data set of training data
  * @param {Object} eyesObj - The current user eyes object
- * @return {Object} prediction - Object containing the prediction data
- *  @return {integer} prediction.x - the x screen coordinate predicted
- *  @return {integer} prediction.y - the y screen coordinate predicted
- * @returns {Object}
+ * @returns {Object} prediction - Object containing the prediction data
  */
+// *  @return {integer} prediction.x - the x screen coordinate predicted
+// *  @return {integer} prediction.y - the y screen coordinate predicted
 RidgeReg.prototype.predict = function (eyesObj) {
     if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
         return null;
@@ -226,7 +225,7 @@ RidgeReg.prototype.setData = function (data) {
 /**
  * Gets the training data stored in this regression model,
  * this is not the model itself, but merely its training data
- * @return {Array.<Object>|*} The set of training data stored in this regression class
+ * @returns {Array.<Object>|*} The set of training data stored in this regression class
  */
 RidgeReg.prototype.getData = function () {
     return this.dataClicks.data.concat(this.dataTrail.data);

@@ -9,7 +9,7 @@ var trailDataWindow = 10;
  * @param {Array} y - corresponds to screen coordinates (either x or y) for each of n click events
  * @param {Array.<Array.<Number>>} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
  * @param {Array} k - ridge parameter
- * @return{Array} regression coefficients
+ * @returns {Array} regression coefficients
  */
 function ridge(y, X, k) {
     var nc             = X[0].length;
@@ -160,9 +160,9 @@ RidgeWeightedReg.prototype.addData = function (eyes, screenPos, type) {
  * Try to predict coordinates from pupil data based on the current set of training data
  * @param {Object} eyesObj - util.eyes Object
  * @returns {Object} prediction - Object containing the prediction data
- *  @return {integer} prediction.x - the x screen coordinate predicted
- *  @return {integer} prediction.y - the y screen coordinate predicted
  */
+// *  @return {integer} prediction.x - the x screen coordinate predicted
+// *  @return {integer} prediction.y - the y screen coordinate predicted
 RidgeWeightedReg.prototype.predict = function (eyesObj) {
     if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
         return null;

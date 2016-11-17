@@ -24,7 +24,7 @@ var dataTrail  = new self.webgazer.util.DataWindow(dataWindow);
  * @param {Array} y - corresponds to screen coordinates (either x or y) for each of n click events
  * @param {Array.<Array.<Number>>} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
  * @param {Array} k - ridge parameter
- * @return{Array} regression coefficients
+ * @returns {Array} regression coefficients
  */
 function ridge(y, X, k) {
     var nc             = X[0].length;
