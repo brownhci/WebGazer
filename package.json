@@ -15,6 +15,7 @@
     "test": "gulp run-tests",
     "benchmark": "gulp benchmarks",
     "unit": "gulp units",
+    "dep": "gulp build-dependencies",
     "help": "gulp"
   },
   "devDependencies": {
