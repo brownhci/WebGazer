@@ -20,6 +20,10 @@
 // export {supports_h264_baseline_video as supportsH264BaselineVideo};
 // export {supports_ogg_theora_video as supportsOggTheoraVideo};
 
+// 'dependencies/jsfeat/jsfeat.js',
+// 'dependencies/jsfeat/jsfeat_detect.js',
+export {jsfeat as JsFeat};
+
 // 'dependencies/clmtrackr/mosse.js',
 // export {mosseFilter as mosseFilter};
 // export {FFT as fastFourierTransformation};
@@ -28,8 +32,6 @@
 
 // 'dependencies/clmtrackr/frontalface.js',
 
-// 'dependencies/clmtrackr/jsfeat-min.js',
-// 'dependencies/clmtrackr/jsfeat_detect.js',
 // 'dependencies/clmtrackr/left_eye_filter.js',
 // 'dependencies/clmtrackr/right_eye_filter.js',
 // 'dependencies/clmtrackr/nose_filter.js',
