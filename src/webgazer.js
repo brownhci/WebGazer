@@ -1,12 +1,3 @@
-import {
-  ObjectDetect,
-  Tracking,
-  Numeric,
-  supportsVideo,
-supportsH264BaselineVideo,
-supportsOggTheoraVideo
-} from "../dependencies/dependencies";
-
 // MISSING DEPS
 // import "../dependencies/clmtrackr/mosse.js";
 // import "../dependencies/clmtrackr/jsfeat-min.js";
@@ -21,6 +12,17 @@ supportsOggTheoraVideo
 // import "../dependencies/clmtrackr/svmfilter_fft.js";
 // import "../dependencies/clmtrackr/mossefilter.js";
 // import "../dependencies/clmtrackr/utils.js";
+
+import {
+  ObjectDetect,
+  Tracking,
+  Numeric,
+  supportsVideo,
+  supportsH264BaselineVideo,
+  supportsOggTheoraVideo
+  mosseFilter,
+  fastFourierTransformation
+} from "../dependencies/dependencies";
 
 import * as Regression from "./regression/regressions";
 import * as Tracker from "./tracker/trackers";
