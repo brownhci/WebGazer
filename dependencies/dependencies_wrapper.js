@@ -5,42 +5,65 @@
 // 'dependencies/js-objectdetect/js/objectdetect.js',
 // 'dependencies/js-objectdetect/js/objectdetect.eye.js  ',
 // 'dependencies/js-objectdetect/js/objectdetect.frontalface_alt.js  ',
-// export {objectdetect as ObjectDetect};
+export {objectdetect as ObjectDetect};
 
-// 'dependencies/tracking.js/build/tracking.js',
-// 'dependencies/tracking.js/build/data/face-min.js',
-// 'dependencies/tracking.js/build/data/eye-min.js',
-// export {tracking as Tracking};
+// // tracker need to be an external dependency of webgazer package
+// // It can be exported here due to his global location :S weird
+// // 'dependencies/tracking.js/build/tracking.js',
+// // 'dependencies/tracking.js/build/data/face.js',
+// // 'dependencies/tracking.js/build/data/eye.js',
+// // 'dependencies/tracking.js/build/data/mouth.js',
+// export {tracker as Tracking};
 
 // 'dependencies/numeric/numeric-1.2.6.js',
-// export {numeric as Numeric};
-
-// 'dependencies/clmtrackr/utils.js',
-// export {supports_video as supportsVideo};
-// export {supports_h264_baseline_video as supportsH264BaselineVideo};
-// export {supports_ogg_theora_video as supportsOggTheoraVideo};
+export {numeric as Numeric};
 
 // 'dependencies/jsfeat/jsfeat.js',
+// 'dependencies/jsfeat/frontalface.js',
 // 'dependencies/jsfeat/jsfeat_detect.js',
-export {jsfeat as JsFeat};
-
-// 'dependencies/clmtrackr/mosse.js',
-// export {mosseFilter as mosseFilter};
-// export {FFT as fastFourierTransformation};
-
-
-
-// 'dependencies/clmtrackr/frontalface.js',
+export {
+    jsfeat as JsFeat,
+    jsfeat_face as FaceDetector
+};
 
 // 'dependencies/clmtrackr/left_eye_filter.js',
 // 'dependencies/clmtrackr/right_eye_filter.js',
 // 'dependencies/clmtrackr/nose_filter.js',
-// 'dependencies/clmtrackr/model_pca_20_svm.js',
-// 'dependencies/clmtrackr/clm.js',
-// 'dependencies/clmtrackr/svmfilter_webgl.js',
-// 'dependencies/clmtrackr/svmfilter_fft.js',
-// 'dependencies/clmtrackr/mossefilter.js'
+export {
+    left_eye_filter as leftEyeFilter,
+    right_eye_filter as rightEyeFilter,
+    nose_filter as noseFilter,
+};
 
+// 'dependencies/clmtrackr/mossefilter.js',
+// 'dependencies/clmtrackr/mosse.js',
+export {
+    mosseFilterResponses as MosseFilterResponses,
+    mosseFilter as MosseFilter,
+    FFT as fastFourierTransformation
+};
+
+// 'dependencies/clmtrackr/utils.js',
+export {
+    supports_video as supportsVideo,
+    supports_h264_baseline_video as supportsH264BaselineVideo,
+    supports_ogg_theora_video as supportsOggTheoraVideo
+};
+
+// 'dependencies/clmtrackr/clm.js',
+export {clm as ClmTrackr};
+
+// 'dependencies/clmtrackr/model_pca_20_svm.js',
+export {pModel as pcaFilter};
+
+// 'dependencies/clmtrackr/svmfilter.js',
+// 'dependencies/clmtrackr/svmfilter_fft.js',
+// 'dependencies/clmtrackr/svmfilter_webgl.js',
+export {
+    svmFilter as SvmFilter,
+    svmFilterWebGL as SvmFilterWebGL,
+    svmFilterFFT as SvmFilterFFT
+};
 
 
 
