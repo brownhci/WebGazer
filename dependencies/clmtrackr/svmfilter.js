@@ -1,6 +1,6 @@
 "use strict";
 
-var webglFilter = function() {
+var svmFilter = function() {
   
   var gl, canvas;
   var filterWidth, filterHeight, patchWidth, patchHeight, numPatches, canvasWidth, canvasHeight;
@@ -906,7 +906,7 @@ var loadShader = function(gl, shaderSource, shaderType, opt_errorCallback) {
   var compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
   if (!compiled) {
     // Something went wrong during compilation; get the error
-    lastError = gl.getShaderInfoLog(shader);
+    var lastError = gl.getShaderInfoLog(shader);
     errFn("*** Error compiling shader '" + shader + "':" + lastError);
     gl.deleteShader(shader);
     return null;
@@ -941,7 +941,7 @@ var loadProgram = function(gl, shaders, opt_attribs, opt_locations) {
   var linked = gl.getProgramParameter(program, gl.LINK_STATUS);
   if (!linked) {
       // something went wrong with the link
-      lastError = gl.getProgramInfoLog (program);
+      var lastError = gl.getProgramInfoLog (program);
       error("Error in program linking:" + lastError);
 
       gl.deleteProgram(program);

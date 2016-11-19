@@ -1,6 +1,6 @@
 "use strict";
 
-var svmFilter = function() {
+var svmFilterFFT = function() {
   
   var _fft, fft_filters, responses, biases;
   var fft_size, filterLength, filter_width, search_width, num_patches;
