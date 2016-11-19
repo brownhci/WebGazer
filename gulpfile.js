@@ -100,37 +100,40 @@ gulp.task('build-webgazer', function() {
                 //     exclude: 'node_modules/**'
                 // })
             ],
-            context: 'window'
+            context: 'window',
+            globals: {
+                tracking: "Tracking"
+            }
         }
         
     }
     
     rollup.rollup(rollupConfiguration).then(function( bundle ) {
 
-        // bundle.write({
-        //     format: 'amd',
-        //     sourceMap: 'inline',
-        //     dest:   path.join(__dirname, (gutil.env.production) ? './build/webgazer.amd.min.js' : './build/webgazer.amd.js')
-        // });
-        //
-        // bundle.write({
-        //     format: 'cjs',
-        //     sourceMap: 'inline',
-        //     dest:   path.join(__dirname, (gutil.env.production) ? './build/webgazer.cjs.min.js' : './build/webgazer.cjs.js')
-        // });
-        //
+        bundle.write({
+            format: 'amd',
+            sourceMap: 'inline',
+            dest:   path.join(__dirname, (gutil.env.production) ? './build/webgazer.amd.min.js' : './build/webgazer.amd.js')
+        });
+
+        bundle.write({
+            format: 'cjs',
+            sourceMap: 'inline',
+            dest:   path.join(__dirname, (gutil.env.production) ? './build/webgazer.cjs.min.js' : './build/webgazer.cjs.js')
+        });
+
         bundle.write({
             format: 'es',
             sourceMap: 'inline',
             dest:   path.join(__dirname, (gutil.env.production) ? './build/webgazer.es.min.js' : './build/webgazer.es.js')
         });
-        //
-        // bundle.write({
-        //     format:     'iife',
-        //     sourceMap:  'inline',
-        //     moduleName: 'WebGazer',
-        //     dest:       path.join(__dirname, (gutil.env.production) ? './build/webgazer.iife.min.js' : './build/webgazer.iife.js')
-        // });
+
+        bundle.write({
+            format:     'iife',
+            sourceMap:  'inline',
+            moduleName: 'WebGazer',
+            dest:       path.join(__dirname, (gutil.env.production) ? './build/webgazer.iife.min.js' : './build/webgazer.iife.js')
+        });
 
         bundle.write({
             format: 'umd',
@@ -144,33 +147,38 @@ gulp.task('build-webgazer', function() {
 });
 
 gulp.task('build-dependencies', function() {
-
+    
     var dependencies = [
-        // 'dependencies/js-objectdetect/js/objectdetect.js',
-        // 'dependencies/js-objectdetect/js/objectdetect.eye.js  ',
-        // 'dependencies/js-objectdetect/js/objectdetect.frontalface_alt.js  ',
-        
+        'dependencies/js-objectdetect/js/objectdetect.js',
+        'dependencies/js-objectdetect/js/objectdetect.eye.js  ',
+        'dependencies/js-objectdetect/js/objectdetect.frontalface_alt.js  ',
+
         // 'dependencies/tracking.js/build/tracking.js',
         // 'dependencies/tracking.js/build/data/face-min.js',
         // 'dependencies/tracking.js/build/data/eye-min.js',
-        
-        // 'dependencies/numeric/numeric-1.2.6.js',
-        
-        // 'dependencies/clmtrackr/utils.js',
+
+        'dependencies/numeric/numeric-1.2.6.js',
+
+        'dependencies/jsfeat/jsfeat.js',
+        'dependencies/jsfeat/frontalface.js',
+        'dependencies/jsfeat/jsfeat_detect.js',
+
+        'dependencies/clmtrackr/left_eye_filter.js',
+        'dependencies/clmtrackr/right_eye_filter.js',
+        'dependencies/clmtrackr/nose_filter.js',
+        'dependencies/clmtrackr/model_pca_20_svm.js',
+
         'dependencies/clmtrackr/mosse.js',
-        // 'dependencies/clmtrackr/jsfeat-min.js',
-        // 'dependencies/clmtrackr/jsfeat_detect.js',
-        // 'dependencies/clmtrackr/frontalface.js',
-        // 'dependencies/clmtrackr/left_eye_filter.js',
-        // 'dependencies/clmtrackr/right_eye_filter.js',
-        // 'dependencies/clmtrackr/nose_filter.js',
-        // 'dependencies/clmtrackr/model_pca_20_svm.js',
-        // 'dependencies/clmtrackr/clm.js',
-        // 'dependencies/clmtrackr/svmfilter_webgl.js',
-        // 'dependencies/clmtrackr/svmfilter_fft.js',
-        // 'dependencies/clmtrackr/mossefilter.js'
-        
-      'dependencies/dependencies_wrapper.js'
+        'dependencies/clmtrackr/mossefilter.js',
+
+        'dependencies/clmtrackr/utils.js',
+        'dependencies/clmtrackr/clm.js',
+
+        'dependencies/clmtrackr/svmfilter.js',
+        'dependencies/clmtrackr/svmfilter_fft.js',
+        'dependencies/clmtrackr/svmfilter_webgl.js',
+
+        'dependencies/dependencies_wrapper.js'
     ];
 
     for(var fileIndex = 0, numberOfFiles = dependencies.length ; fileIndex < numberOfFiles ; ++fileIndex){
@@ -197,31 +205,8 @@ gulp.task('build', function(){
 /****************
  * DEFAULT TASK *
  ****************/
-
-gulp.task('forOne', function(){
-
-    for(var i = 0 ; i < 10 ; ++i){
-        gutil.log(gutil.colors.cyan("for one:"), gutil.colors.magenta(i));
-    }
-
-    return 1;
-
-});
-
-gulp.task('forTwo', function(){
-
-    for(var i = 0 ; i < 10 ; ++i){
-        gutil.log(gutil.colors.cyan("for two:"), gutil.colors.magenta(i));
-    }
-
-});
-
-gulp.task('default', ['forOne', 'forTwo'], function() {
-// gulp.task('default', function() {
+gulp.task('default', function() {
 
     console.log('Running gulp default task...');
-
-    // gulp.start('forOne');
-    // gulp.start('forTwo');
 
 });
