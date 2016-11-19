@@ -13,17 +13,31 @@
 // import "../dependencies/clmtrackr/mossefilter.js";
 // import "../dependencies/clmtrackr/utils.js";
 
+/**
+ * IMPORT DEPENDENCIES
+ */
+// tracker is located at window.tracking !
+import * as Tracking from "tracking";
+
 import {
   ObjectDetect,
-  Tracking,
+  // Tracking,
   Numeric,
   supportsVideo,
   supportsH264BaselineVideo,
   supportsOggTheoraVideo
-  mosseFilter,
+  MosseFilter,
   fastFourierTransformation
 } from "../dependencies/dependencies";
 
+
+console.log(Tracking);
+console.log(ObjectDetect);
+
+/**
+ * IMPORT SOURCES
+ */
+import * as Core from "./core/core";
 import * as Regression from "./regression/regressions";
 import * as Tracker from "./tracker/trackers";
 import * as Util from "./utils/util";
