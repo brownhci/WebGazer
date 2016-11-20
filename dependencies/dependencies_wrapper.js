@@ -7,13 +7,14 @@
 // 'dependencies/js-objectdetect/js/objectdetect.frontalface_alt.js  ',
 export {objectdetect as ObjectDetect};
 
-// // tracker need to be an external dependency of webgazer package
-// // It can be exported here due to his global location :S weird
-// // 'dependencies/tracking.js/build/tracking.js',
-// // 'dependencies/tracking.js/build/data/face.js',
-// // 'dependencies/tracking.js/build/data/eye.js',
-// // 'dependencies/tracking.js/build/data/mouth.js',
-// export {tracker as Tracking};
+// tracker need to be an external dependency of webgazer package
+// It can be exported here due to his global location :S weird
+// 'dependencies/tracking.js/build/tracking.js',
+// 'dependencies/tracking.js/build/data/face.js',
+// 'dependencies/tracking.js/build/data/eye.js',
+// 'dependencies/tracking.js/build/data/mouth.js',
+var _tracking = window.tracking;
+export {_tracking as Tracking};
 
 // 'dependencies/numeric/numeric-1.2.6.js',
 export {numeric as Numeric};
