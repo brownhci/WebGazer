@@ -1,38 +1,84 @@
-// MISSING DEPS
-// import "../dependencies/clmtrackr/mosse.js";
-// import "../dependencies/clmtrackr/jsfeat-min.js";
-// import "../dependencies/clmtrackr/frontalface.js";
-// import "../dependencies/clmtrackr/jsfeat_detect.js";
-// import "../dependencies/clmtrackr/left_eye_filter.js";
-// import "../dependencies/clmtrackr/right_eye_filter.js";
-// import "../dependencies/clmtrackr/nose_filter.js";
-// import "../dependencies/clmtrackr/model_pca_20_svm.js";
-// import "../dependencies/clmtrackr/clm.js";
-// import "../dependencies/clmtrackr/svmfilter_webgl.js";
-// import "../dependencies/clmtrackr/svmfilter_fft.js";
-// import "../dependencies/clmtrackr/mossefilter.js";
-// import "../dependencies/clmtrackr/utils.js";
-
 /**
  * IMPORT DEPENDENCIES
  */
-// tracker is located at window.tracking !
-import * as Tracking from "tracking";
-
 import {
-  ObjectDetect,
-  // Tracking,
-  Numeric,
-  supportsVideo,
-  supportsH264BaselineVideo,
-  supportsOggTheoraVideo
-  MosseFilter,
-  fastFourierTransformation
-} from "../dependencies/dependencies";
-
-
-console.log(Tracking);
-console.log(ObjectDetect);
+    ObjectDetect,
+    Tracking,
+    Numeric,
+    JsFeat,
+    FaceDetector,
+    leftEyeFilter,
+    rightEyeFilter,
+    noseFilter,
+    MosseFilterResponses,
+    MosseFilter,
+    fastFourierTransformation,
+    supportsVideo,
+    supportsH264BaselineVideo,
+    supportsOggTheoraVideo,
+    ClmTrackr,
+    pcaFilter,
+    SvmFilter,
+    SvmFilterWebGL,
+    SvmFilterFFT
+} from "../build/tmp/dependencies";
+//
+// console.log("ObjectDetect:");
+// console.log(ObjectDetect);
+//
+// console.log("Tracking:");
+// console.log(Tracking);
+//
+// console.log("Numeric:");
+// console.log(Numeric);
+//
+// console.log("JsFeat:");
+// console.log(JsFeat);
+//
+// console.log("FaceDetector:");
+// console.log(FaceDetector);
+//
+// console.log("leftEyeFilter:");
+// console.log(leftEyeFilter);
+//
+// console.log("rightEyeFilter:");
+// console.log(rightEyeFilter);
+//
+// console.log("noseFilter:");
+// console.log(noseFilter);
+//
+// console.log("MosseFilterResponses:");
+// console.log(MosseFilterResponses);
+//
+// console.log("MosseFilter:");
+// console.log(MosseFilter);
+//
+// console.log("fastFourierTransformation:");
+// console.log(fastFourierTransformation);
+//
+// console.log("supportsVideo:");
+// console.log(supportsVideo);
+//
+// console.log("supportsH264BaselineVideo:");
+// console.log(supportsH264BaselineVideo);
+//
+// console.log("supportsOggTheoraVideo:");
+// console.log(supportsOggTheoraVideo);
+//
+// console.log("ClmTrackr:");
+// console.log(ClmTrackr);
+//
+// console.log("pcaFilter:");
+// console.log(pcaFilter);
+//
+// console.log("SvmFilter:");
+// console.log(SvmFilter);
+//
+// console.log("SvmFilterWebGL:");
+// console.log(SvmFilterWebGL);
+//
+// console.log("SvmFilterFFT:");
+// console.log(SvmFilterFFT);
 
 /**
  * IMPORT SOURCES
