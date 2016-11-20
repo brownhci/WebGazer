@@ -6,21 +6,21 @@
     "url": "https://github.com/brownhci/WebGazer.git"
   },
   "scripts": {
-    "build-dep": "gulp build-dependencies",
-    "build-gazer": "gulp build-webgazer",
-    "build-dev": "gulp build",
+    "build": "gulp build",
     "build-prod": "gulp build --production",
-    "build-doc": "gulp build-doc",
-    "check-code": "standard \"src/**/*.js\"",
-    "test": "gulp run-tests",
-    "benchmark": "gulp benchmarks",
-    "unit": "gulp units",
-    "dep": "gulp build-dependencies",
+    "clean": "gulp clean",
+    "doc": "gulp doc",
+    "lint": "gulp lint",
+    "lint2": "standard \"src/**/*.js\"",
+    "test": "gulp test",
+    "benchmark": "gulp benchmark",
+    "unit": "gulp unit",
     "help": "gulp"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.18.0",
     "benchmark": "^2.1.2",
+    "del": "^2.2.2",
     "docdash": "^0.4.0",
     "eslint-config-standard": "^6.2.1",
     "eslint-plugin-promise": "^3.4.0-0",
@@ -41,6 +41,7 @@
     "rollup": "^0.36.3",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-uglify": "^1.0.1",
+    "run-sequence": "^1.2.2",
     "standard": "^8.5.0"
   }
 }
