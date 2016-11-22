@@ -1,11 +1,23 @@
+import {ClmTrackr, pcaFilter} from "../../build/tmp/dependencies";
+// import {WebGazer} from "../core/webgazer.js";
+import {KalmanFilter} from "../utils/KalmanFilter";
+
+// import "../../dependencies/numeric/numeric-1.2.6";
+
 /**
  * Constructor for the ClmGaze Object which tracks
  * head and eye positions using the clmtracker.js library
  * @constructor
  */
 var ClmGaze = function () {
-    this.clm = new clm.tracker(webgazer.params.camConstraints);
-    this.clm.init(pModel);
+
+    // TODO: Don't forget to recreate argument liaisons between clm and WebGAZER params !
+    //
+    //  this.clm = new ClmTrackr.tracker(WebGazer.getParams().camConstraints);
+
+    var params = {video: true};
+    this.clm = new ClmTrackr.tracker(params);
+    this.clm.init(pcaFilter);
     var F = [
         [1, 0, 0, 0, 1, 0],
         [0, 1, 0, 0, 0, 1],
@@ -37,8 +49,8 @@ var ClmGaze = function () {
     var P_initial = numeric.mul(numeric.identity(6), 0.0001); //Initial covariance matrix
     var x_initial = [[200], [150], [250], [180], [0], [0]]; // Initial measurement matrix
 
-    this.leftKalman  = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
-    this.rightKalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
+    this.leftKalman  = new KalmanFilter(F, H, Q, R, P_initial, x_initial);
+    this.rightKalman = new KalmanFilter(F, H, Q, R, P_initial, x_initial);
 };
 
 /**

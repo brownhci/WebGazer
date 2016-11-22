@@ -1,6 +1,6 @@
 "use strict";
 
-var webglFilter = function() {
+var svmFilterWebGL = function() {
 
   /*
    * Textures:

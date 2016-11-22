@@ -1,4 +1,7 @@
 //Helper functions
+// TODO: Break this strong dependency to ObjectDetect
+import {ObjectDetect} from "../../build/tmp/dependencies";
+
 /**
  * Grayscales an image patch. Can be used for the whole canvas, detected face, detected eye, etc.
  * @param  {ImageData} imageData - image data to be grayscaled
@@ -19,7 +22,8 @@ export function grayscale(imageData, imageWidth, imageHeight) {
  */
 export function equalizeHistogram(grayscaleImageSrc, step, destinationImage) {
     //TODO implement ourselves to remove dependency
-    return objectdetect.equalizeHistogram(grayscaleImageSrc, step, destinationImage);
+    var histogram = ObjectDetect.equalizeHistogram(grayscaleImageSrc, step, destinationImage);
+    return histogram;
 }
 
 /**
