@@ -190,7 +190,7 @@ gulp.task('build-webgazer', function() {
             sourceMap: 'inline',
             dest:   path.join(__dirname, (gutil.env.production) ? './build/webgazer.amd.min.js' : './build/webgazer.amd.js')
         });
-
+        
         bundle.write({
             format: 'cjs',
             sourceMap: 'inline',
@@ -205,15 +205,15 @@ gulp.task('build-webgazer', function() {
 
         bundle.write({
             format:     'iife',
-            sourceMap:  'inline',
-            moduleName: 'WebGazer',
+            // sourceMap:  'inline',
+            moduleName: 'WebGazerModule',
             dest:       path.join(__dirname, (gutil.env.production) ? './build/webgazer.iife.min.js' : './build/webgazer.iife.js')
         });
 
         bundle.write({
             format: 'umd',
             // sourceMap: 'inline',
-            moduleName: 'WebGazer',
+            moduleName: 'WebGazerModule',
             dest:   path.join(__dirname, (gutil.env.production) ? './build/webgazer.umd.min.js' : './build/webgazer.umd.js')
         });
 
