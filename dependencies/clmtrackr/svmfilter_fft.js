@@ -1,6 +1,7 @@
 "use strict";
 
-var svmFilterFFT = function() {
+//TODO Unable to override svmFilter name as svmFilterFFT using export/import
+var svmFilter = function() {
   
   var _fft, fft_filters, responses, biases;
   var fft_size, filterLength, filter_width, search_width, num_patches;
