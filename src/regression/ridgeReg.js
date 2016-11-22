@@ -110,7 +110,12 @@ var RidgeReg = function () {
 
     //sets to one second worth of cursor trail
     this.trailTime         = 1000;
-    this.trailDataWindow   = this.trailTime / webgazer.params.moveTickSize;
+
+    //TODO: Uuumm seems to not be okay, maybe a self.parameter
+    //TODO: This is an "couplage fort" !!! Need to break it properly !
+    var moveTickSize = 50;
+    this.trailDataWindow   = this.trailTime / moveTickSize;
+    // this.trailDataWindow   = this.trailTime / WebGazer.getParams().moveTickSize;
     this.screenXTrailArray = new Util.DataWindow(trailDataWindow);
     this.screenYTrailArray = new Util.DataWindow(trailDataWindow);
     this.eyeFeaturesTrail  = new Util.DataWindow(trailDataWindow);
