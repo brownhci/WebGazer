@@ -222,6 +222,7 @@ var clm = {
 						alert("There was a problem setting up webGL programs, falling back to slightly slower javascript version. :(");
 						webglFi = undefined;
 						svmFi = new svmFilter();
+						///!\ this initialization is only available in svmfilter_fft !
 						svmFi.init(weights['raw'], biases['raw'], numPatches, patchSize, searchWindow);
 					}
 				} else if (typeof(svmFilter) !== "undefined") {
