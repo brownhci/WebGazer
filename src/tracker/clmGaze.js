@@ -10,8 +10,14 @@ import {KalmanFilter} from "../utils/KalmanFilter";
  * @constructor
  */
 var ClmGaze = function () {
-    this.clm = new clm.tracker(webgazer.params.camConstraints);
-    this.clm.init(pModel);
+
+    // TODO: Don't forget to recreate argument liaisons between clm and WebGAZER params !
+    //
+    //  this.clm = new ClmTrackr.tracker(WebGazer.getParams().camConstraints);
+
+    var params = {video: true};
+    this.clm = new ClmTrackr.tracker(params);
+    this.clm.init(pcaFilter);
     var F = [
         [1, 0, 0, 0, 1, 0],
         [0, 1, 0, 0, 0, 1],
