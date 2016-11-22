@@ -1,92 +1,10 @@
 /**
- * IMPORT DEPENDENCIES
- */
-import {
-    ObjectDetect,
-    Tracking,
-    Numeric,
-    JsFeat,
-    FaceDetector,
-    leftEyeFilter,
-    rightEyeFilter,
-    noseFilter,
-    MosseFilterResponses,
-    MosseFilter,
-    fastFourierTransformation,
-    supportsVideo,
-    supportsH264BaselineVideo,
-    supportsOggTheoraVideo,
-    ClmTrackr,
-    pcaFilter,
-    SvmFilter,
-    SvmFilterWebGL,
-    SvmFilterFFT
-} from "../build/tmp/dependencies";
-//
-// console.log("ObjectDetect:");
-// console.log(ObjectDetect);
-//
-// console.log("Tracking:");
-// console.log(Tracking);
-//
-// console.log("Numeric:");
-// console.log(Numeric);
-//
-// console.log("JsFeat:");
-// console.log(JsFeat);
-//
-// console.log("FaceDetector:");
-// console.log(FaceDetector);
-//
-// console.log("leftEyeFilter:");
-// console.log(leftEyeFilter);
-//
-// console.log("rightEyeFilter:");
-// console.log(rightEyeFilter);
-//
-// console.log("noseFilter:");
-// console.log(noseFilter);
-//
-// console.log("MosseFilterResponses:");
-// console.log(MosseFilterResponses);
-//
-// console.log("MosseFilter:");
-// console.log(MosseFilter);
-//
-// console.log("fastFourierTransformation:");
-// console.log(fastFourierTransformation);
-//
-// console.log("supportsVideo:");
-// console.log(supportsVideo);
-//
-// console.log("supportsH264BaselineVideo:");
-// console.log(supportsH264BaselineVideo);
-//
-// console.log("supportsOggTheoraVideo:");
-// console.log(supportsOggTheoraVideo);
-//
-// console.log("ClmTrackr:");
-// console.log(ClmTrackr);
-//
-// console.log("pcaFilter:");
-// console.log(pcaFilter);
-//
-// console.log("SvmFilter:");
-// console.log(SvmFilter);
-//
-// console.log("SvmFilterWebGL:");
-// console.log(SvmFilterWebGL);
-//
-// console.log("SvmFilterFFT:");
-// console.log(SvmFilterFFT);
-
-/**
  * IMPORT SOURCES
  */
-import * as Core from "./core/core";
-import * as Regression from "./regression/regressions";
-import * as Tracker from "./tracker/trackers";
-import * as Util from "./utils/util";
+// import * as Core from "./core/core";
+import * as Tracker from "../tracker/trackers";
+import * as Regression from "../regression/regressions";
+import * as Util from "../utils/util";
 
 var WebGazer = (function (window) {
 
@@ -109,8 +27,11 @@ var WebGazer = (function (window) {
         imgWidth:             1280,
         imgHeight:            720,
         //Params to clmtrackr and getUserMedia constraints
-        clmParams:            params.clmParams || {useWebGL: true},
-        camConstraints:       params.camConstraints || {video: true},
+        //TODO: need to allow external params on construcction like below
+        // clmParams:            params.clmParams || {useWebGL: true},
+        // camConstraints:       params.camConstraints || {video: true},
+        clmParams:            {useWebGL: true},
+        camConstraints:       {video: true},
         dataTimestep:         50,
         moveTickSize:         50 //milliseconds
     };
@@ -206,7 +127,8 @@ var WebGazer = (function (window) {
         }
         paintCurrentFrame(canvas, width, height);
         try {
-            return blinkDetector.detectBlink(curTracker.getEyePatches(canvas, width, height));
+            var eyePatch = curTracker.getEyePatches(canvas, width, height);
+            return blinkDetector.detectBlink(eyePatch);
         } catch (err) {
             console.log(err);
             return null;
@@ -411,7 +333,10 @@ var WebGazer = (function (window) {
         videoElement.style.display = 'none';
 
         //turn the stream into a magic URL
-        videoElement.src = videoSrc;
+        // ONLY IF static video !
+        if(videoSrc){
+            videoElement.src = videoSrc;
+        }
         document.body.appendChild(videoElement);
 
         videoElementCanvas               = document.createElement('canvas');
@@ -443,41 +368,76 @@ var WebGazer = (function (window) {
     function begin(onFail) {
         loadGlobalData();
 
-        onFail = onFail || function () {
-                console.log("No stream")
-            };
-
-        if (debugVideoLoc) {
-            init(debugVideoLoc);
-            return webgazer;
-        }
-
-        //SETUP VIDEO ELEMENTS
-        navigator.getUserMedia = navigator.getUserMedia ||
-            navigator.webkitGetUserMedia ||
-            navigator.mozGetUserMedia;
-
-        if (navigator.getUserMedia != null) {
-            var options = params.camConstraints;
-            //request webcam access
-            navigator.getUserMedia(options,
-                function (stream) {
-                    console.log('video stream created');
-                    init(window.URL.createObjectURL(stream));
-                },
-                function (e) {
-                    onFail();
-                    videoElement = null;
-                });
-        }
-        if (!navigator.getUserMedia) {
-            alert("Unfortunately, your browser does not support access to the webcam through the getUserMedia API. Try to use Google Chrome, Mozilla Firefox, Opera, or Microsoft Edge instead.");
-        }
         if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.chrome) {
             alert("WebGazer works only over https. If you are doing local development you need to run a local server.");
         }
 
-        return webgazer;
+        onFail = onFail || function () {
+                videoElement = null;
+                console.log("No stream")
+                alert('There has been a problem retreiving the streams - are you running on file:/// or did you disallow access?');
+            };
+
+        //TODO: Check it #FOLLOW  => Webgazer.html - checkIfReady
+        // If you don't set an staticVideo (not camera)
+        // You will never init WebGazer BUT !!!
+        // after calling begin (in webgazer.html), you will
+        // fall into a loop about isReady that check for an canvas
+        // called videoElementCanvas that will never be init.... damned ! <8-D
+        if (debugVideoLoc) {
+            init(debugVideoLoc);
+            return this;
+        }
+        // else
+        // {
+        //     init();
+        // }
+
+        //SETUP VIDEO ELEMENTS
+        navigator.getUserMedia || (navigator.getUserMedia = navigator.mozGetUserMedia || navigator.webkitGetUserMedia || navigator.msGetUserMedia);
+        window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+
+        if (navigator.getUserMedia) {
+
+            var options = params.camConstraints;
+            navigator.getUserMedia(options, onSuccess, onFail);
+
+        } else {
+            alert("Unfortunately, your browser does not support access to the webcam through the getUserMedia API. Try to use Google Chrome, Mozilla Firefox, Opera, or Microsoft Edge instead.");
+        }
+
+        function onSuccess(stream) {
+            console.log('video stream created');
+            init(window.URL.createObjectURL(stream));
+            // init(window.URL.createObjectURL(stream));
+
+            // var video = document.getElementById('webcam');
+            // video.autoplay = true;
+            // video.src = window.URL.createObjectURL(stream);
+        }
+
+        // navigator.getUserMedia = navigator.getUserMedia ||
+        //     navigator.webkitGetUserMedia ||
+        //     navigator.mozGetUserMedia;
+
+        // if (navigator.getUserMedia != null) {
+        //     var options = params.camConstraints;
+        //     //request webcam access
+        //     navigator.getUserMedia(options,
+        //         function (stream) {
+        //             console.log('video stream created');
+        //             init(window.URL.createObjectURL(stream));
+        //         },
+        //         function (e) {
+        //             onFail();
+        //             videoElement = null;
+        //         });
+        // }
+        // if (!navigator.getUserMedia) {
+        //     alert("Unfortunately, your browser does not support access to the webcam through the getUserMedia API. Try to use Google Chrome, Mozilla Firefox, Opera, or Microsoft Edge instead.");
+        // }
+
+        return this;
     }
 
     /**
@@ -485,7 +445,9 @@ var WebGazer = (function (window) {
      * @returns {boolean} if webgazer is ready
      */
     function isReady() {
+        // TODO: Care if webgazer is not init you will fall into infinit loop
         if (videoElementCanvas == null) {
+            console.log("Not ready yet !");
             return false;
         }
         paintCurrentFrame(videoElementCanvas, params.imgWidth, params.imgHeight);
@@ -507,11 +469,11 @@ var WebGazer = (function (window) {
      */
     function resume() {
         if (!paused) {
-            return webgazer;
+            return this;
         }
         paused = false;
         loop();
-        return webgazer;
+        return this;
     }
 
     /**
@@ -526,7 +488,7 @@ var WebGazer = (function (window) {
         document.body.removeChild(videoElementCanvas);
 
         setGlobalData();
-        return webgazer;
+        return this;
     }
 
 
@@ -552,7 +514,7 @@ var WebGazer = (function (window) {
         showGazeDot           = bool;
         gazeDot.style.left    = '-5px';
         gazeDot.style.display = bool ? 'block' : 'none';
-        return webgazer;
+        return this;
     }
 
     /**
@@ -562,7 +524,7 @@ var WebGazer = (function (window) {
      */
     function setStaticVideo(videoLoc) {
         debugVideoLoc = videoLoc;
-        return webgazer;
+        return this;
     }
 
     /**
@@ -571,7 +533,7 @@ var WebGazer = (function (window) {
      */
     function addMouseEventListeners() {
         addMouseEventListeners();
-        return webgazer;
+        return this;
     }
 
     /**
@@ -580,7 +542,7 @@ var WebGazer = (function (window) {
      */
     function removeMouseEventListeners() {
         removeMouseEventListeners();
-        return webgazer;
+        return this;
     }
 
     /**
@@ -592,7 +554,7 @@ var WebGazer = (function (window) {
     function recordScreenPosition(x, y) {
         // give this the same weight that a click gets.
         recordScreenPosition(x, y, eventTypes[0]);
-        return webgazer;
+        return this;
     }
 
 
@@ -609,10 +571,10 @@ var WebGazer = (function (window) {
             for (var t in curTrackerMap) {
                 console.log(t);
             }
-            return webgazer;
+            return this;
         }
         curTracker = curTrackerMap[name]();
-        return webgazer;
+        return this;
     }
 
     /**
@@ -627,12 +589,12 @@ var WebGazer = (function (window) {
             for (var reg in regressionMap) {
                 console.log(reg);
             }
-            return webgazer;
+            return this;
         }
         data = regs[0].getData();
         regs = [regressionMap[name]()];
         regs[0].setData(data);
-        return webgazer;
+        return this;
     }
 
     /**
@@ -668,7 +630,7 @@ var WebGazer = (function (window) {
         data       = regs[0].getData();
         newReg.setData(data);
         regs.push(newReg);
-        return webgazer;
+        return this;
     }
 
     /**
@@ -678,7 +640,7 @@ var WebGazer = (function (window) {
      */
     function setGazeListener(listener) {
         callback = listener;
-        return webgazer;
+        return this;
     }
 
     /**
@@ -687,7 +649,7 @@ var WebGazer = (function (window) {
      */
     function clearGazeListener() {
         callback = nopCallback;
-        return webgazer;
+        return this;
     }
 
 
@@ -717,6 +679,14 @@ var WebGazer = (function (window) {
      */
     function getCurrentPrediction() {
         return getPrediction();
+    }
+
+    /**
+     * Return the current WebGazer params
+     * @returns {{videoScale: number, videoElementId: string, videoElementCanvasId: string, imgWidth: number, imgHeight: number, clmParams: {useWebGL: boolean}, camConstraints: {video: boolean}, dataTimestep: number, moveTickSize: number}}
+     */
+    function getParams() {
+        return params;
     }
 
     /**
@@ -751,6 +721,7 @@ var WebGazer = (function (window) {
         clearGazeListener:   clearGazeListener,
 
         getTracker:           getTracker,
+        getParams:            getParams,
         getRegression:        getRegression,
         getCurrentPrediction: getCurrentPrediction
     }
