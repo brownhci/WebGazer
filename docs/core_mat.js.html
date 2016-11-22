@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>core/mat.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BlinkDetector.html">BlinkDetector</a></li><li><a href="ClmGaze.html">ClmGaze</a><ul class='methods'><li data-type='method'><a href="ClmGaze.html#getEyePatches">getEyePatches</a></li><li data-type='method'><a href="ClmGaze.html#getEyePatches">getEyePatches</a></li></ul></li><li><a href="DebugBox.html">DebugBox</a><ul class='methods'><li data-type='method'><a href="DebugBox.html#addButton">addButton</a></li><li data-type='method'><a href="DebugBox.html#addButton">addButton</a></li><li data-type='method'><a href="DebugBox.html#inc">inc</a></li><li data-type='method'><a href="DebugBox.html#inc">inc</a></li><li data-type='method'><a href="DebugBox.html#set">set</a></li><li data-type='method'><a href="DebugBox.html#set">set</a></li><li data-type='method'><a href="DebugBox.html#show">show</a></li><li data-type='method'><a href="DebugBox.html#show">show</a></li></ul></li><li><a href="LinearReg.html">LinearReg</a><ul class='methods'><li data-type='method'><a href="LinearReg.html#addData">addData</a></li><li data-type='method'><a href="LinearReg.html#addData">addData</a></li><li data-type='method'><a href="LinearReg.html#getData">getData</a></li><li data-type='method'><a href="LinearReg.html#getData">getData</a></li><li data-type='method'><a href="LinearReg.html#predict">predict</a></li><li data-type='method'><a href="LinearReg.html#predict">predict</a></li><li data-type='method'><a href="LinearReg.html#setData">setData</a></li><li data-type='method'><a href="LinearReg.html#setData">setData</a></li></ul></li><li><a href="module-TrackingjsGaze.html">TrackingjsGaze</a><ul class='methods'><li data-type='method'><a href="module-TrackingjsGaze.html#detectEyes">detectEyes</a></li><li data-type='method'><a href="module-TrackingjsGaze.html#detectEyes">detectEyes</a></li><li data-type='method'><a href="module-TrackingjsGaze.html#detectFace">detectFace</a></li><li data-type='method'><a href="module-TrackingjsGaze.html#detectFace">detectFace</a></li><li data-type='method'><a href="module-TrackingjsGaze.html#findLargestRectangle">findLargestRectangle</a></li><li data-type='method'><a href="module-TrackingjsGaze.html#findLargestRectangle">findLargestRectangle</a></li><li data-type='method'><a href="module-TrackingjsGaze.html#getEyePatches">getEyePatches</a></li><li data-type='method'><a href="module-TrackingjsGaze.html#getEyePatches">getEyePatches</a></li></ul></li><li><a href="RidgeReg.html">RidgeReg</a><ul class='methods'><li data-type='method'><a href="RidgeReg.html#addData">addData</a></li><li data-type='method'><a href="RidgeReg.html#addData">addData</a></li><li data-type='method'><a href="RidgeReg.html#getData">getData</a></li><li data-type='method'><a href="RidgeReg.html#getData">getData</a></li><li data-type='method'><a href="RidgeReg.html#predict">predict</a></li><li data-type='method'><a href="RidgeReg.html#predict">predict</a></li><li data-type='method'><a href="RidgeReg.html#setData">setData</a></li><li data-type='method'><a href="RidgeReg.html#setData">setData</a></li></ul></li><li><a href="RidgeWightedReg.html">RidgeWightedReg</a><ul class='methods'><li data-type='method'><a href="RidgeWightedReg.html#addData">addData</a></li><li data-type='method'><a href="RidgeWightedReg.html#addData">addData</a></li><li data-type='method'><a href="RidgeWightedReg.html#getData">getData</a></li><li data-type='method'><a href="RidgeWightedReg.html#getData">getData</a></li><li data-type='method'><a href="RidgeWightedReg.html#predict">predict</a></li><li data-type='method'><a href="RidgeWightedReg.html#predict">predict</a></li><li data-type='method'><a href="RidgeWightedReg.html#setData">setData</a></li><li data-type='method'><a href="RidgeWightedReg.html#setData">setData</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-Js_objectdetectGaze.html">Js_objectdetectGaze</a><ul class='methods'><li data-type='method'><a href="module-Js_objectdetectGaze.html#detectEyes">detectEyes</a></li><li data-type='method'><a href="module-Js_objectdetectGaze.html#detectEyes">detectEyes</a></li><li data-type='method'><a href="module-Js_objectdetectGaze.html#detectFace">detectFace</a></li><li data-type='method'><a href="module-Js_objectdetectGaze.html#detectFace">detectFace</a></li><li data-type='method'><a href="module-Js_objectdetectGaze.html#findLargestRectangle">findLargestRectangle</a></li><li data-type='method'><a href="module-Js_objectdetectGaze.html#findLargestRectangle">findLargestRectangle</a></li><li data-type='method'><a href="module-Js_objectdetectGaze.html#getEyePatches">getEyePatches</a></li><li data-type='method'><a href="module-Js_objectdetectGaze.html#getEyePatches">getEyePatches</a></li><li data-type='method'><a href="module-Js_objectdetectGaze.html#mergeRectangles">mergeRectangles</a></li><li data-type='method'><a href="module-Js_objectdetectGaze.html#mergeRectangles">mergeRectangles</a></li></ul></li><li><a href="module-RidgeThreadedReg.html">RidgeThreadedReg</a><ul class='methods'><li data-type='method'><a href="module-RidgeThreadedReg.html#addData">addData</a></li><li data-type='method'><a href="module-RidgeThreadedReg.html#addData">addData</a></li><li data-type='method'><a href="module-RidgeThreadedReg.html#getData">getData</a></li><li data-type='method'><a href="module-RidgeThreadedReg.html#getData">getData</a></li><li data-type='method'><a href="module-RidgeThreadedReg.html#predict">predict</a></li><li data-type='method'><a href="module-RidgeThreadedReg.html#predict">predict</a></li><li data-type='method'><a href="module-RidgeThreadedReg.html#setData">setData</a></li><li data-type='method'><a href="module-RidgeThreadedReg.html#setData">setData</a></li></ul></li><li><a href="module-webgazer.html">webgazer</a><ul class='methods'><li data-type='method'><a href="module-webgazer.html#.getEventTypes">getEventTypes</a></li><li data-type='method'><a href="module-webgazer.html#.getEventTypes">getEventTypes</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#bound">bound</a></li><li><a href="global.html#DataWindow">DataWindow</a></li><li><a href="global.html#equalizeHistogram">equalizeHistogram</a></li><li><a href="global.html#Eye">Eye</a></li><li><a href="global.html#getCurrentFixationIndex">getCurrentFixationIndex</a></li><li><a href="global.html#getEyeFeats">getEyeFeats</a></li><li><a href="global.html#getMatrix">getMatrix</a></li><li><a href="global.html#getPupils">getPupils</a></li><li><a href="global.html#getSinglePupil">getSinglePupil</a></li><li><a href="global.html#getSubMatrix">getSubMatrix</a></li><li><a href="global.html#getSumTable">getSumTable</a></li><li><a href="global.html#getValue">getValue</a></li><li><a href="global.html#grayscale">grayscale</a></li><li><a href="global.html#KalmanFilter">KalmanFilter</a></li><li><a href="global.html#LUDecomposition">LUDecomposition</a></li><li><a href="global.html#mult">mult</a></li><li><a href="global.html#QRDecomposition">QRDecomposition</a></li><li><a href="global.html#resizeEye">resizeEye</a></li><li><a href="global.html#retrain">retrain</a></li><li><a href="global.html#ridge">ridge</a></li><li><a href="global.html#transpose">transpose</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">core/mat.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//TODO: mat should be rename Matrix
+//TODO: Matrix should be an object and not a library !
+
+/**
+ * Transposes an mxn array
+ * @param {Array.&lt;Array.&lt;Number>>} matrix - of "M x N" dimensionality
+ * @return {Array.&lt;Array.&lt;Number>>} transposed matrix
+ */
+export function transpose(matrix) {
+    var m                = matrix.length;
+    var n                = matrix[0].length;
+    var transposedMatrix = new Array(n);
+
+    for (var i = 0; i &lt; m; i++) {
+        for (var j = 0; j &lt; n; j++) {
+            if (i === 0) transposedMatrix[j] = new Array(m);
+            transposedMatrix[j][i] = matrix[i][j];
+        }
+    }
+
+    return transposedMatrix;
+}
+
+/**
+ * Get a sub-matrix of matrix
+ * @param {Array.&lt;Array.&lt;Number>>} matrix - original matrix
+ * @param {Array.&lt;Number>} r - Array of row indices
+ * @param {Number} j0 - Initial column index
+ * @param {Number} j1 - Final column index
+ * @returns {Array.&lt;Array.&lt;Number>>} The sub-matrix matrix(r(:),j0:j1)
+ */
+export function getMatrix(matrix, r, j0, j1) {
+    var X = new Array(r.length),
+        m = j1 - j0 + 1;
+
+    for (var i = 0; i &lt; r.length; i++) {
+        X[i] = new Array(m);
+        for (var j = j0; j &lt;= j1; j++) {
+            X[i][j - j0] = matrix[r[i]][j];
+        }
+    }
+    return X;
+}
+
+/**
+ * Get a submatrix of matrix
+ * @param {Array.&lt;Array.&lt;Number>>} matrix - original matrix
+ * @param {Number} i0 - Initial row index
+ * @param {Number} i1 - Final row index
+ * @param {Number} j0 - Initial column index
+ * @param {Number} j1 - Final column index
+ * @return {Array.&lt;Array.&lt;Number>>} The sub-matrix matrix(i0:i1,j0:j1)
+ */
+export function getSubMatrix(matrix, i0, i1, j0, j1) {
+    var size = j1 - j0 + 1,
+        X    = new Array(i1 - i0 + 1);
+
+    for (var i = i0; i &lt;= i1; i++) {
+        var subI = i - i0;
+
+        X[subI] = new Array(size);
+
+        for (var j = j0; j &lt;= j1; j++) {
+            X[subI][j - j0] = matrix[i][j];
+        }
+    }
+    return X;
+}
+
+/**
+ * Linear algebraic matrix multiplication, matrix1 * matrix2
+ * @param {Array.&lt;Array.&lt;Number>>} matrix1
+ * @param {Array.&lt;Array.&lt;Number>>} matrix2
+ * @return {Array.&lt;Array.&lt;Number>>} Matrix product, matrix1 * matrix2
+ */
+export function mult(matrix1, matrix2) {
+
+    if (matrix2.length != matrix1[0].length) {
+        console.log("Matrix inner dimensions must agree.");
+    }
+
+    var X     = new Array(matrix1.length),
+        Bcolj = new Array(matrix1[0].length);
+
+    for (var j = 0; j &lt; matrix2[0].length; j++) {
+        for (var k = 0; k &lt; matrix1[0].length; k++) {
+            Bcolj[k] = matrix2[k][j];
+        }
+        for (var i = 0; i &lt; matrix1.length; i++) {
+
+            if (j === 0)
+                X[i] = new Array(matrix2[0].length);
+
+            var Arowi = matrix1[i];
+            var s     = 0;
+            for (var k = 0; k &lt; matrix1[0].length; k++) {
+                s += Arowi[k] * Bcolj[k];
+            }
+            X[i][j] = s;
+        }
+    }
+    return X;
+}
+
+/**
+ * LUDecomposition to solve A*X = B, based on WEKA code
+ * @param {Array.&lt;Array.&lt;Number>>} A - left matrix of equation to be solved
+ * @param {Array.&lt;Array.&lt;Number>>} B - right matrix of equation to be solved
+ * @return {Array.&lt;Array.&lt;Number>>} X so that L*U*X = B(piv,:)
+ */
+export function LUDecomposition(A, B) {
+    var LU = new Array(A.length);
+
+    for (var i = 0; i &lt; A.length; i++) {
+        LU[i] = new Array(A[0].length);
+        for (var j = 0; j &lt; A[0].length; j++) {
+            LU[i][j] = A[i][j];
+        }
+    }
+
+    var m   = A.length;
+    var n   = A[0].length;
+    var piv = new Array(m);
+    for (var i = 0; i &lt; m; i++) {
+        piv[i] = i;
+    }
+    var pivsign = 1;
+    var LUrowi  = [];
+    var LUcolj  = new Array(m);
+    // Outer loop.
+    for (var j = 0; j &lt; n; j++) {
+        // Make a copy of the j-th column to localize references.
+        for (var i = 0; i &lt; m; i++) {
+            LUcolj[i] = LU[i][j];
+        }
+        // Apply previous transformations.
+        for (var i = 0; i &lt; m; i++) {
+            LUrowi   = LU[i];
+            // Most of the time is spent in the following dot product.
+            var kmax = Math.min(i, j);
+            var s    = 0;
+            for (var k = 0; k &lt; kmax; k++) {
+                s += LUrowi[k] * LUcolj[k];
+            }
+            LUrowi[j] = LUcolj[i] -= s;
+        }
+        // Find pivot and exchange if necessary.
+        var p = j;
+        for (var i = j + 1; i &lt; m; i++) {
+            if (Math.abs(LUcolj[i]) > Math.abs(LUcolj[p])) {
+                p = i;
+            }
+        }
+        if (p != j) {
+            for (var k = 0; k &lt; n; k++) {
+                var t    = LU[p][k];
+                LU[p][k] = LU[j][k];
+                LU[j][k] = t;
+            }
+            var k   = piv[p];
+            piv[p]  = piv[j];
+            piv[j]  = k;
+            pivsign = -pivsign;
+        }
+        // Compute multipliers.
+        if (j &lt; m &amp; LU[j][j] != 0) {
+            for (var i = j + 1; i &lt; m; i++) {
+                LU[i][j] /= LU[j][j];
+            }
+        }
+    }
+    if (B.length != m) {
+        console.log("Matrix row dimensions must agree.");
+    }
+    for (var j = 0; j &lt; n; j++) {
+        if (LU[j][j] == 0) {
+            console.log("Matrix is singular.")
+        }
+    }
+    var nx = B[0].length;
+    var X  = getMatrix(B, piv, 0, nx - 1);
+    // Solve L*Y = B(piv,:)
+    for (var k = 0; k &lt; n; k++) {
+        for (var i = k + 1; i &lt; n; i++) {
+            for (var j = 0; j &lt; nx; j++) {
+                X[i][j] -= X[k][j] * LU[i][k];
+            }
+        }
+    }
+    // Solve U*X = Y;
+    for (var k = n - 1; k >= 0; k--) {
+        for (var j = 0; j &lt; nx; j++) {
+            X[k][j] /= LU[k][k];
+        }
+        for (var i = 0; i &lt; k; i++) {
+            for (var j = 0; j &lt; nx; j++) {
+                X[i][j] -= X[k][j] * LU[i][k];
+            }
+        }
+    }
+    return X;
+}
+
+/**
+ * Least squares solution of A*X = B, based on WEKA code
+ * @param {Array.&lt;Array.&lt;Number>>} A - left side matrix to be solved
+ * @param {Array.&lt;Array.&lt;Number>>} B - a matrix with as many rows as A and any number of columns.
+ * @return {Array.&lt;Array.&lt;Number>>} X - that minimizes the two norms of QR*X-B.
+ */
+export function QRDecomposition(A, B) {
+    // Initialize.
+    var QR = new Array(A.length);
+
+    for (var i = 0; i &lt; A.length; i++) {
+        QR[i] = new Array(A[0].length);
+        for (var j = 0; j &lt; A[0].length; j++) {
+            QR[i][j] = A[i][j];
+        }
+    }
+    var m     = A.length;
+    var n     = A[0].length;
+    var Rdiag = new Array(n);
+    var nrm;
+
+    // Main loop.
+    for (var k = 0; k &lt; n; k++) {
+        // Compute 2-norm of k-th column without under/overflow.
+        nrm = 0;
+        for (var i = k; i &lt; m; i++) {
+            nrm = Math.hypot(nrm, QR[i][k]);
+        }
+        if (nrm != 0) {
+            // Form k-th Householder vector.
+            if (QR[k][k] &lt; 0) {
+                nrm = -nrm;
+            }
+            for (var i = k; i &lt; m; i++) {
+                QR[i][k] /= nrm;
+            }
+            QR[k][k] += 1;
+
+            // Apply transformation to remaining columns.
+            for (var j = k + 1; j &lt; n; j++) {
+                var s = 0;
+                for (var i = k; i &lt; m; i++) {
+                    s += QR[i][k] * QR[i][j];
+                }
+                s = -s / QR[k][k];
+                for (var i = k; i &lt; m; i++) {
+                    QR[i][j] += s * QR[i][k];
+                }
+            }
+        }
+        Rdiag[k] = -nrm;
+    }
+    if (B.length != m) {
+        console.log("Matrix row dimensions must agree.");
+    }
+    for (var j = 0; j &lt; n; j++) {
+        if (Rdiag[j] == 0)
+            console.log("Matrix is rank deficient");
+    }
+    // Copy right hand side
+    var nx = B[0].length;
+    var X  = new Array(B.length);
+    for (var i = 0; i &lt; B.length; i++) {
+        X[i] = new Array(B[0].length);
+    }
+    for (var i = 0; i &lt; B.length; i++) {
+        for (var j = 0; j &lt; B[0].length; j++) {
+            X[i][j] = B[i][j];
+        }
+    }
+    // Compute Y = transpose(Q)*B
+    for (var k = 0; k &lt; n; k++) {
+        for (var j = 0; j &lt; nx; j++) {
+            var s = 0.0;
+            for (var i = k; i &lt; m; i++) {
+                s += QR[i][k] * X[i][j];
+            }
+            s = -s / QR[k][k];
+            for (var i = k; i &lt; m; i++) {
+                X[i][j] += s * QR[i][k];
+            }
+        }
+    }
+    // Solve R*X = Y;
+    for (var k = n - 1; k >= 0; k--) {
+        for (var j = 0; j &lt; nx; j++) {
+            X[k][j] /= Rdiag[k];
+        }
+        for (var i = 0; i &lt; k; i++) {
+            for (var j = 0; j &lt; nx; j++) {
+                X[i][j] -= X[k][j] * QR[i][k];
+            }
+        }
+    }
+    return getSubMatrix(X, 0, n - 1, 0, nx - 1);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Nov 22 2016 16:59:29 GMT+0100 (Paris, Madrid) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

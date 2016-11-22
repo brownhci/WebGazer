@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Home - Documentation</title>
+    <title>tracker/trackingjsGaze.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,70 +27,183 @@
 
 <div id="main">
     
+    <h1 class="page-title">tracker/trackingjsGaze.js</h1>
+    
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * TrackingjsGaze constructor which uses the trackingjs library in order to find the head and eye positions
+ * @alias module:TrackingjsGaze
+ * @constructor
+ */
+var TrackingjsGaze = function () {
+};
 
+/**
+ * The TrackingjsGaze object name
+ * @type {string}
+ */
+TrackingjsGaze.prototype.name = 'trackingjs';
 
+/**
+ * Isolates the two patches that correspond to the user's eyes
+ * @param  {HTMLCanvasElement} imageCanvas - canvas corresponding to the webcam stream
+ * @param  {Number} width - of imageCanvas
+ * @param  {Number} height - of imageCanvas
+ * @return {Object} the two eye-patches, first left, then right eye
+ */
+TrackingjsGaze.prototype.getEyePatches = function (imageCanvas, width, height) {
 
+    if (imageCanvas.width == 0) {
+        return null;
+    }
 
+    //current ImageData that correspond to the working image.
+    //It can be the whole canvas if the face detection failed or only the upper half of the face to avoid unnecessary computations
+    var workingImage = imageCanvas.getContext('2d').getImageData(0, 0, width, height);
 
+    var face = this.detectFace(workingImage, width, height);
 
+    //offsets of the working image from the top left corner of the video canvas
+    var offsetX = 0;
+    var offsetY = 0;
 
+    //if face has been detected
+    if (face.length > 0 &amp;&amp; !isNaN(face[0]) &amp;&amp; !isNaN(face[1]) &amp;&amp; !isNaN(face[2]) &amp;&amp; !isNaN(face[3])) {
+        //working image is restricted on upper half of detected face
+        workingImage = imageCanvas.getContext('2d').getImageData(Math.floor(face[0]), Math.floor(face[1]), Math.floor(face[2]), Math.floor(face[3] / 2));
+        width        = Math.floor(face[2]);
+        height       = Math.floor(face[3] / 2);
+        //offset from detected face
+        offsetX      = Math.floor(face[0]);
+        offsetY      = Math.floor(face[1]);
+    }
 
+    var eyes = this.detectEyes(workingImage, width, height);
+    console.log(eyes);
+    if (eyes == null) {
+        return null;
+    }
 
-    
+    var eyeObjs       = {};
+    var leftImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[0][0]) + offsetX, Math.floor(eyes[0][1]) + offsetY, Math.floor(eyes[0][2]), Math.floor(eyes[0][3]));
+    eyeObjs.left      = {
+        patch:  leftImageData,
+        imagex: eyes[0][0] + offsetX,
+        imagey: eyes[0][1] + offsetY,
+        width:  eyes[0][2],
+        height: eyes[0][3]
+    };
 
+    var rightImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[1][0]) + offsetX, Math.floor(eyes[1][1]) + offsetY, Math.floor(eyes[1][2]), Math.floor(eyes[1][3]));
+    eyeObjs.right      = {
+        patch:  rightImageData,
+        imagex: eyes[1][0] + offsetX,
+        imagey: eyes[1][1] + offsetY,
+        width:  eyes[1][2],
+        height: eyes[1][3]
+    };
 
-    <section class="readme">
-        <article><h1><a href="https://webgazer.cs.brown.edu">WebGazer.js</a></h1><p>WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js can run only if the user consents in giving access to their webcam. </p>
-<ul>
-<li><a href="https://webgazer.cs.brown.edu">Official website</a></li>
-<li><a href="https://webgazer.cs.brown.edu/documentation">Documentation</a></li>
-<li><a href="https://github.com/brownhci/WebGazer/wiki/Top-Level-API">API Docs</a></li>
-</ul>
-<h2>Features</h2><ul>
-<li>Real time gaze prediction on most major browsers</li>
-<li>No special hardware - WebGazer.js uses common webcams</li>
-<li>Self-calibration from clicks and cursor movements</li>
-<li>Easy to integrate with a few lines of JavaScript</li>
-<li>Swappable components for eye detection</li>
-<li>Multiple gaze prediction models</li>
-</ul>
-<h2>How to install</h2><p>Download the webgazer.js file located <a href="https://webgazer.cs.brown.edu/#download">here</a> or use the file build/webgazer.js from <a href="https://github.com/brownhci/WebGazer.git">this</a> repository.</p>
-<p>If you want to build the repository from source follow these instructions:</p>
-<pre class="prettyprint source"><code>git clone https://github.com/brownhci/WebGazer.git
-cd build
-./build_library</code></pre><h2>Examples</h2><p>Examples of how WebGazer.js works can be found <a href="https://webgazer.cs.brown.edu/#examples">here</a>.</p>
-<h2>Browser Support</h2><p>The following browsers support WebGazer.js:</p>
-<ul>
-<li>Google Chrome</li>
-<li>Microsoft Edge</li>
-<li>Mozilla Firefox</li>
-<li>Opera</li>
-</ul>
-<p>Your browser needs to support the getUserMedia API as seen <a href="http://caniuse.com/#feat=stream">here</a>.</p>
-<h2>Citation</h2><pre class="prettyprint source"><code>@inproceedings{papoutsaki2016webgazer,
-author     = {Alexandra Papoutsaki and Patsorn Sangkloy and James Laskey and Nediyana Daskalova and Jeff Huang and James Hays},
-title      = {{WebGazer}: Scalable Webcam Eye Tracking Using User Interactions},
-booktitle  = {Proceedings of the 25th International Joint Conference on Artificial Intelligence (IJCAI-16)},
-pages      = {3839--3845},
-year       = {2016},
-organization={AAAI}
-}</code></pre><h2>Who We Are</h2><ul>
-<li>Alexandra Papoutsaki</li>
-<li>James Laskey</li>
-<li>Aaron Gokaslan</li>
-<li>Jeff Huang</li>
-</ul>
-<h2>License</h2><p>Copyright (C) 2016 <a href="http://hci.cs.brown.edu">Brown HCI Group</a></p>
-<p>Licensed under GPLv3.</p></article>
+    if (leftImageData.width == 0 || rightImageData.width == 0) {
+        console.log('an eye patch had zero width');
+        return null;
+    }
+
+    return eyeObjs;
+};
+
+/**
+ * Performs eye detection on the passed working image
+ * @param {ImageData} workingImage - either the whole canvas or the upper half of the head
+ * @param {Number} width - width of working image
+ * @param {Number} height - height of working image
+ * @return {Array} eyes - array of rectangle information.
+ */
+TrackingjsGaze.prototype.detectEyes = function (workingImage, width, height) {
+    var eyes             = [];
+    var intermediateEyes = [];
+    var pixels           = workingImage.data;
+    tracking.ViolaJones.detect(pixels, width, height, 0.5, 2, 1.7, 0.1, tracking.ViolaJones.classifiers['eye']).forEach(function (rect) {
+        var intermediateEye = [rect.x, rect.y, rect.width, rect.height];
+        intermediateEyes.push(intermediateEye);
+    });
+    if (intermediateEyes.length > 1) {
+        //find the two eyes with the shortest y distance
+        var minimumYDistance = 1000;
+        var eyes             = [];
+
+        for (var i = 0; i &lt; intermediateEyes.length; i++) {
+            for (var j = i + 1; j &lt; intermediateEyes.length; j++) {
+                var YDistance = Math.abs(Math.floor(intermediateEyes[i][1]) - Math.floor(intermediateEyes[j][1]));
+                if (YDistance &lt;= minimumYDistance) {
+                    minimumYDistance = YDistance;
+                    eyes[0]          = intermediateEyes[i];
+                    eyes[1]          = intermediateEyes[j];
+                }
+            }
+        }
+
+        eyes.sort(function (a, b) {
+            return a[0] - b[0]
+        });
+        return eyes;
+    }
+    else {
+        console.log('tracking.js could not detect two eyes in the video');
+        return null;
+    }
+};
+
+/**
+ * Performs face detection on the passed canvas
+ * @param {ImageData} workingImage - whole video canvas
+ * @param {Number} width - width of imageCanvas
+ * @param {Number} height - height of imageCanvas
+ * @return {Array} face - array of rectangle information
+ */
+TrackingjsGaze.prototype.detectFace = function (workingImage, width, height) {
+    var intermediateFaces = [];
+    var face              = [];
+
+    // Detect faces in the image
+    var pixels = workingImage.data;
+    tracking.ViolaJones.detect(pixels, width, height, 2, 1.25, 2, 0.1, tracking.ViolaJones.classifiers['face']).forEach(function (rect) {
+        var intermediateFace = [rect.x, rect.y, rect.width, rect.height];
+        intermediateFaces.push(intermediateFace);
+    });
+    face = this.findLargestRectangle(intermediateFaces);
+    return face;
+};
+
+/**
+ * Goes through an array of rectangles and returns the one with the largest area
+ * @param {Array.&lt;Array.&lt;Number>>} rectangles - array of arrays of format [xCoordinate, yCoordinate, width, height]
+ * @return {Array} largestRectangle = [xCoordinate, yCoordinate, width, height]
+ */
+TrackingjsGaze.prototype.findLargestRectangle = function (rectangles) {
+    var largestArea      = 0;
+    var area             = 0;
+    var largestRectangle = [];
+    for (var i = 0; i &lt; rectangles.length; ++i) {
+        area = rectangles[i][2] * rectangles[i][3];
+        if (area > largestArea) {
+            largestArea      = area;
+            largestRectangle = rectangles[i];
+        }
+    }
+    return largestRectangle;
+};
+
+export {TrackingjsGaze};
+</code></pre>
+        </article>
     </section>
-
-
 
 
 

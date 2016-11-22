@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Home - Documentation</title>
+    <title>webgazer - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,70 +27,835 @@
 
 <div id="main">
     
+    <h1 class="page-title">webgazer</h1>
+    
 
     
 
 
 
+
+<section>
+
+<header>
+    
+        
+            
+        
+            
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Top level control module</div>
+        
+
+        
+            
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="core_webgazer.js.html">core/webgazer.js</a>, <a href="core_webgazer.js.html#line23">line 23</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="core_webgazer.js.html">core/webgazer.js</a>, <a href="core_webgazer.js.html#line23">line 23</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getEventTypes"><span class="type-signature">(static) </span>getEventTypes<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
+
     
 
 
 
 
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="core_webgazer.js.html">core/webgazer.js</a>, <a href="core_webgazer.js.html#line696">line 696</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
 
 
 
 
+
+<div class="description">
+    returns the different event types that may be passed to regressions when calling regression.addData()
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    array of strings where each string is an event type
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+    </dd>
+</dl>
 
     
 
 
-    <section class="readme">
-        <article><h1><a href="https://webgazer.cs.brown.edu">WebGazer.js</a></h1><p>WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js can run only if the user consents in giving access to their webcam. </p>
-<ul>
-<li><a href="https://webgazer.cs.brown.edu">Official website</a></li>
-<li><a href="https://webgazer.cs.brown.edu/documentation">Documentation</a></li>
-<li><a href="https://github.com/brownhci/WebGazer/wiki/Top-Level-API">API Docs</a></li>
-</ul>
-<h2>Features</h2><ul>
-<li>Real time gaze prediction on most major browsers</li>
-<li>No special hardware - WebGazer.js uses common webcams</li>
-<li>Self-calibration from clicks and cursor movements</li>
-<li>Easy to integrate with a few lines of JavaScript</li>
-<li>Swappable components for eye detection</li>
-<li>Multiple gaze prediction models</li>
-</ul>
-<h2>How to install</h2><p>Download the webgazer.js file located <a href="https://webgazer.cs.brown.edu/#download">here</a> or use the file build/webgazer.js from <a href="https://github.com/brownhci/WebGazer.git">this</a> repository.</p>
-<p>If you want to build the repository from source follow these instructions:</p>
-<pre class="prettyprint source"><code>git clone https://github.com/brownhci/WebGazer.git
-cd build
-./build_library</code></pre><h2>Examples</h2><p>Examples of how WebGazer.js works can be found <a href="https://webgazer.cs.brown.edu/#examples">here</a>.</p>
-<h2>Browser Support</h2><p>The following browsers support WebGazer.js:</p>
-<ul>
-<li>Google Chrome</li>
-<li>Microsoft Edge</li>
-<li>Mozilla Firefox</li>
-<li>Opera</li>
-</ul>
-<p>Your browser needs to support the getUserMedia API as seen <a href="http://caniuse.com/#feat=stream">here</a>.</p>
-<h2>Citation</h2><pre class="prettyprint source"><code>@inproceedings{papoutsaki2016webgazer,
-author     = {Alexandra Papoutsaki and Patsorn Sangkloy and James Laskey and Nediyana Daskalova and Jeff Huang and James Hays},
-title      = {{WebGazer}: Scalable Webcam Eye Tracking Using User Interactions},
-booktitle  = {Proceedings of the 25th International Joint Conference on Artificial Intelligence (IJCAI-16)},
-pages      = {3839--3845},
-year       = {2016},
-organization={AAAI}
-}</code></pre><h2>Who We Are</h2><ul>
-<li>Alexandra Papoutsaki</li>
-<li>James Laskey</li>
-<li>Aaron Gokaslan</li>
-<li>Jeff Huang</li>
-</ul>
-<h2>License</h2><p>Copyright (C) 2016 <a href="http://hci.cs.brown.edu">Brown HCI Group</a></p>
-<p>Licensed under GPLv3.</p></article>
-    </section>
+        
+            
+
+    
+
+    <h4 class="name" id=".getEventTypes"><span class="type-signature">(static) </span>getEventTypes<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
+
+    
 
 
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="core_webgazer.js.html">core/webgazer.js</a>, <a href="core_webgazer.js.html#line696">line 696</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    returns the different event types that may be passed to regressions when calling regression.addData()
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    array of strings where each string is an event type
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        
+            
+        
+            
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Top level control module</div>
+        
+
+        
+            
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="core_webgazer.js.html">core/webgazer.js</a>, <a href="core_webgazer.js.html#line23">line 23</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="core_webgazer.js.html">core/webgazer.js</a>, <a href="core_webgazer.js.html#line23">line 23</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getEventTypes"><span class="type-signature">(static) </span>getEventTypes<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="core_webgazer.js.html">core/webgazer.js</a>, <a href="core_webgazer.js.html#line696">line 696</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    returns the different event types that may be passed to regressions when calling regression.addData()
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    array of strings where each string is an event type
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getEventTypes"><span class="type-signature">(static) </span>getEventTypes<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="core_webgazer.js.html">core/webgazer.js</a>, <a href="core_webgazer.js.html#line696">line 696</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    returns the different event types that may be passed to regressions when calling regression.addData()
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    array of strings where each string is an event type
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
