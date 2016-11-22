@@ -176,9 +176,9 @@ gulp.task('build-webgazer', function() {
                 // })
             ],
             context: 'window',
-            globals: {
-                tracking: "Tracking"
-            }
+            // globals: {
+            //     tracking: "Tracking"
+            // }
         }
 
     }
