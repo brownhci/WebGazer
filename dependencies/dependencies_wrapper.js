@@ -17,7 +17,9 @@ var _tracking = window.tracking;
 export {_tracking as Tracking};
 
 // 'dependencies/numeric/numeric-1.2.6.js',
-export {numeric as Numeric};
+// var numeric = numeric;
+// export {numeric as numeric};
+// export {numeric};
 
 // 'dependencies/jsfeat/jsfeat.js',
 // 'dependencies/jsfeat/frontalface.js',
