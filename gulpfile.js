@@ -245,4 +245,24 @@ gulp.task('clean', ['build-clean'], function(){
 /****************
  * DEFAULT TASK *
  ****************/
-gulp.task('default', ['']);
+gulp.task('default', function(){
+
+    gutil.log("Available commands using:", gutil.colors.blue("npm run"));
+    gutil.log(gutil.colors.blue("npm run"), gutil.colors.cyan("help"), " - Display this help.");
+    gutil.log(gutil.colors.blue("npm run"), gutil.colors.cyan("build"), " - Will build the dependencies and WebGazer module, with development environment.");
+    gutil.log(gutil.colors.blue("npm run"), gutil.colors.cyan("build-prod"), " - Will build the dependencies and WebGazer module, with production environment (minimized sources).");
+    gutil.log(gutil.colors.blue("npm run"), gutil.colors.cyan("clean"), " - Will delete builds and tmp folder.");
+    gutil.log(gutil.colors.blue("npm run"), gutil.colors.cyan("doc"), " - Will generate the documentation accordingly to the JsDoc code comments.");
+    gutil.log(gutil.colors.blue("npm run"), gutil.colors.cyan("lint"), gutil.colors.yellow(" - (IN DEV) Will check sources files about standard javascript style, typo and error (require before any git push)."));
+    gutil.log(gutil.colors.blue("npm run"), gutil.colors.cyan("lint2"), " - Will check sources files about standard javascript style, typo and error. (require before any git push, to keep code consistency).");
+    gutil.log(gutil.colors.blue("npm run"), gutil.colors.cyan("test"), " - Will run karma server for units tests and benchmarks. (require before any git push, to avoid code regression)");
+    gutil.log(gutil.colors.blue("npm run"), gutil.colors.cyan("benchmark"), " - Will run benchmarks.");
+    gutil.log(gutil.colors.blue("npm run"), gutil.colors.cyan("unit"), " - Will run unit tests.");
+
+    
+    gutil.log("In case you have", gutil.colors.blue("gulp"), "installed globally, you could use also:");
+    gutil.log(gutil.colors.blue("gulp"), gutil.colors.cyan("build-dependencies"), " - Will build only the dependencies.");
+    gutil.log(gutil.colors.blue("gulp"), gutil.colors.cyan("build-webgazer"), " - Will build only WebGazer module.");
+    gutil.log(gutil.colors.blue("gulp"), gutil.colors.cyan("build-clean"), " - Will delete only dependencies builds.");
+    
+});
