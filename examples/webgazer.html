@@ -15,79 +15,86 @@
 </div>
 
 
-<script src="../build/webgazer.umd.js" type="application/javascript"></script>
-<script type="application/javascript">
+	<script src="../dependencies/numeric/numeric-1.2.6.js" type="application/javascript"></script>
+	<script src="../build/webgazer.iife.js" type="application/javascript"></script>
+
+	<!--TODO: this script should be an compiled app,
+	<!--TODO: in that way we don't need to include webgazer lib !!! -->
+	<script type="application/javascript">
     window.onload = function () {
 
-        var gazer = new WebGazer();
+		var gazer = WebGazerModule.WebGazer;
 
-        gazer.setRegression('ridge') /* currently must set regression and tracker */
-                .setTracker('clmtrackr')
-                .setGazeListener(function (data, clock) {
-                    //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
-                    //   console.log(clock); /* elapsed time in milliseconds since WebGazer.begin() was called */
-                })
-                .begin()
-                .showPredictionPoints(true);
-        /* shows a square every 100 milliseconds where current prediction is */
+//		gazer.init()
+		gazer.setRegression('ridge') /* currently must set regression and tracker */
+				.setTracker('clmtrackr')
+				.setGazeListener(function (data, clock) {
+					//   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
+					//   console.log(clock); /* elapsed time in milliseconds since WebGazer.begin() was called */
+				})
+				.begin()
+				.showPredictionPoints(true);
+		/* shows a square every 100 milliseconds where current prediction is */
 
-        var width = 320;
-        var height = 240;
-        var topDist = '0px';
-        var leftDist = '0px';
+		var width    = 320;
+		var height   = 240;
+		var topDist  = '0px';
+		var leftDist = '0px';
 
-        var setup = function () {
-            var video = document.getElementById('webgazerVideoFeed');
-            video.style.display = 'block';
-            video.style.position = 'absolute';
-            video.style.top = topDist;
-            video.style.left = leftDist;
-            video.width = width;
-            video.height = height;
-            video.style.margin = '0px';
+		var setup = function () {
+			var video            = document.getElementById('webgazerVideoFeed');
+			video.style.display  = 'block';
+			video.style.position = 'absolute';
+			video.style.top      = topDist;
+			video.style.left     = leftDist;
+			video.width          = width;
+			video.height         = height;
+			video.style.margin   = '0px';
 
-            params.imgWidth = width;
-            params.imgHeight = height;
+			//Uuuh why need i to add "params", was it global ?
+			var params = {};
+			params.imgWidth  = width;
+			params.imgHeight = height;
 
-            var overlay = document.createElement('canvas');
-            overlay.id = 'overlay';
-            overlay.style.position = 'absolute';
-            overlay.width = width;
-            overlay.height = height;
-            overlay.style.top = topDist;
-            overlay.style.left = leftDist;
-            overlay.style.margin = '0px';
+			var overlay            = document.createElement('canvas');
+			overlay.id             = 'overlay';
+			overlay.style.position = 'absolute';
+			overlay.width          = width;
+			overlay.height         = height;
+			overlay.style.top      = topDist;
+			overlay.style.left     = leftDist;
+			overlay.style.margin   = '0px';
 
-            document.body.appendChild(overlay);
+			document.body.appendChild(overlay);
 
-            var cl = gazer.getTracker().clm;
+			var cl = gazer.getTracker().clm;
 
-            function drawLoop () {
-                requestAnimFrame(drawLoop);
-                overlay.getContext('2d').clearRect(0, 0, width, height);
-                if (cl.getCurrentPosition()) {
-                    cl.draw(overlay);
-                }
-            }
+			function drawLoop() {
+				requestAnimFrame(drawLoop);
+				overlay.getContext('2d').clearRect(0, 0, width, height);
+				if (cl.getCurrentPosition()) {
+					cl.draw(overlay);
+				}
+			}
 
-            drawLoop();
-        };
+			drawLoop();
+		};
 
-        function checkIfReady () {
-            if (gazer.isReady()) {
-                setup();
-            } else {
-                setTimeout(checkIfReady, 100);
-            }
-        }
+		function checkIfReady() {
+			if (gazer.isReady()) {
+				setup(); //will be never called because gazer.willNeverReady()!
+			} else {
+				setTimeout(checkIfReady, 1000);
+			}
+		}
 
-        setTimeout(checkIfReady, 100);
-    };
+		setTimeout(checkIfReady, 1000);
+	};
 
-    window.onbeforeunload = function () {
-        //gazer.end(); //Uncomment if you want to save the data even if you reload the page.
-        window.localStorage.clear(); //Comment out if you want to save data across different sessions
-    }
+	window.onbeforeunload = function () {
+		//gazer.end(); //Uncomment if you want to save the data even if you reload the page.
+		window.localStorage.clear(); //Comment out if you want to save data across different sessions
+	}
 </script>
 
 </body>
