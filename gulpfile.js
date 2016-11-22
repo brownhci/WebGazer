@@ -127,9 +127,9 @@ gulp.task('build-dependencies', function() {
         'dependencies/clmtrackr/utils.js',
         'dependencies/clmtrackr/clm.js',
 
-        'dependencies/clmtrackr/svmfilter.js',
+        // 'dependencies/clmtrackr/svmfilter.js',
         'dependencies/clmtrackr/svmfilter_fft.js',
-        'dependencies/clmtrackr/svmfilter_webgl.js',
+        // 'dependencies/clmtrackr/svmfilter_webgl.js',
 
         'dependencies/dependencies_wrapper.js'
     ];
