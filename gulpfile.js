@@ -152,7 +152,7 @@ gulp.task('build-webgazer', function() {
     if (gutil.env.production) {
 
         rollupConfiguration = {
-            entry:   path.join(__dirname, './src/webgazer.js'),
+            entry:   path.join(__dirname, './src/main.js'),
             plugins: [
                 // babel({
                 //     presets: [
@@ -169,7 +169,7 @@ gulp.task('build-webgazer', function() {
     } else {
 
         rollupConfiguration = {
-            entry:   path.join(__dirname, './src/webgazer.js'),
+            entry:   path.join(__dirname, './src/main.js'),
             plugins: [
                 // babel({
                 //     exclude: 'node_modules/**'
