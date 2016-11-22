@@ -1,4 +1,5 @@
 import * as Mat from "../core/mat";
+import * as Util from "../utils/util";
 
 var ridgeParameter  = Math.pow(10, -5);
 var resizeWidth     = 10;
@@ -58,16 +59,16 @@ function ridge(y, X, k) {
  * @returns {Array.<T>} The eyes gray level histogram
  */
 function getEyeFeats(eyes) {
-    var resizedLeft  = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
-    var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
+    var resizedLeft  = Util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+    var resizedright = Util.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
-    var leftGray  = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-    var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
+    var leftGray  = Util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+    var rightGray = Util.grayscale(resizedright.data, resizedright.width, resizedright.height);
 
     var histLeft = [];
-    webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
+    Util.equalizeHistogram(leftGray, 5, histLeft);
     var histRight = [];
-    webgazer.util.equalizeHistogram(rightGray, 5, histRight);
+    Util.equalizeHistogram(rightGray, 5, histRight);
 
     var leftGrayArray  = Array.prototype.slice.call(histLeft);
     var rightGrayArray = Array.prototype.slice.call(histRight);
@@ -103,20 +104,20 @@ function getCurrentFixationIndex() {
  * @constructor
  */
 var RidgeReg = function () {
-    this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
-    this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
-    this.eyeFeaturesClicks  = new webgazer.util.DataWindow(dataWindow);
+    this.screenXClicksArray = new Util.DataWindow(dataWindow);
+    this.screenYClicksArray = new Util.DataWindow(dataWindow);
+    this.eyeFeaturesClicks  = new Util.DataWindow(dataWindow);
 
     //sets to one second worth of cursor trail
     this.trailTime         = 1000;
     this.trailDataWindow   = this.trailTime / webgazer.params.moveTickSize;
-    this.screenXTrailArray = new webgazer.util.DataWindow(trailDataWindow);
-    this.screenYTrailArray = new webgazer.util.DataWindow(trailDataWindow);
-    this.eyeFeaturesTrail  = new webgazer.util.DataWindow(trailDataWindow);
-    this.trailTimes        = new webgazer.util.DataWindow(trailDataWindow);
+    this.screenXTrailArray = new Util.DataWindow(trailDataWindow);
+    this.screenYTrailArray = new Util.DataWindow(trailDataWindow);
+    this.eyeFeaturesTrail  = new Util.DataWindow(trailDataWindow);
+    this.trailTimes        = new Util.DataWindow(trailDataWindow);
 
-    this.dataClicks = new webgazer.util.DataWindow(dataWindow);
-    this.dataTrail  = new webgazer.util.DataWindow(dataWindow);
+    this.dataClicks = new Util.DataWindow(dataWindow);
+    this.dataTrail  = new Util.DataWindow(dataWindow);
 };
 
 
