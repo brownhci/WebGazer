@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Home - Documentation</title>
+    <title>core/pupil.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,70 +27,132 @@
 
 <div id="main">
     
+    <h1 class="page-title">core/pupil.js</h1>
+    
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//TODO: pupil should be inside an eye object, uh uh (it's not a joke !)
+//TODO: no pupil ctor !?
 
+import * as Utils from "../utils/util"
 
+/**
+ * Contains methods which detect the center of an eye's pupil
+ * @alias module:pupil
+ * @exports pupil
+ */
+/**
+ * Returns intensity value at x,y position of a pixels image
+ * @param {Array} pixels - array of size width*height
+ * @param {Number} x -  input x value
+ * @param {Number} y - input y value
+ * @param {Number} width - width of pixels image
+ * @returns {Number} - intensity value in [0,255]
+ */
+export function getValue(pixels, x, y, width) {
+    return pixels[y * width + x];
+}
 
+/**
+ * Computes summation area table/integral image of a pixel matrix
+ * @param {Array} pixels value of eye area
+ * @param {Number} width - of image in 'pixels'
+ * @param {Number} height - of image in 'pixels'
+ * @returns {Array} - integral image
+ */
+export function getSumTable(pixels, width, height) {
+    var integralImage = new Array(width);
+    var sumx          = 0;
+    var sumy          = 0;
 
+    for (var i = 0; i &lt; width; i++) {
+        integralImage[i]    = new Array(height);
+        sumx += getValue(pixels, i, 0, width);
+        integralImage[i][0] = sumx;
+    }
 
+    for (var i = 0; i &lt; height; i++) {
+        sumy += getValue(pixels, 0, i, width);
+        integralImage[0][i] = sumy;
+    }
 
+    for (var x = 1; x &lt; width; x++) {
+        for (var y = 1; y &lt; height; y++) {
+            integralImage[x][y] = getValue(pixels, x, y, width) + integralImage[x - 1][y] + integralImage[x][y - 1] - integralImage[x - 1][y - 1];
+        }
+    }
+    return integralImage;
+}
 
+/**
+ * Detects a pupil in a set of pixels
+ * @param  {Array} pixels - patch of pixels to look for pupil into
+ * @param  {Number} width  - of pixel patch
+ * @param  {Number} height - of pixel patch
+ * @return {Array} coordinate of the bottom right corner and width of the best fitted pupil
+ */
+export function getSinglePupil(pixels, width, height) {
+    var summedAreaTable = getSumTable(pixels, width, height);
+    var bestAvgScore    = 999999; //want to minimize this score
+    var bestPoint       = [0, 0]; //bottom right corner of best fitted pupil
+    var bestHalfWidth   = 0; //corresponding half width of the best fitted pupil
+    var offset          = Math.floor(width / 10.0); //padding
+    //halfWidth could also start at 1, but this makes it faster
+    for (var halfWidth = Math.floor(height / 10.0); halfWidth &lt; width / 2; halfWidth++) {
+        //think of a sliding rectangular window of width halfWidth*2 that goes through the whole eye pixel matrix and does the following:
+        //1) computes the irisArea, which is the total intensity of the iris
+        //2) computes the scleraIrisArea, which is multiple rows of pixels including the sclera and iris.
+        //3) computes avg, which is the intensity of the area divided by the number of pixels.
+        //start at the bottom right of the rectangle!not top left
+        for (var x = halfWidth; x &lt; width - offset; x++) {
+            for (var y = halfWidth; y &lt; height - offset; y++) {
+                //evaluate area by the formula found on wikipedia about the summed area table: I(D)+I(A)-I(B)-I(C)
+                var irisArea       = summedAreaTable[x + offset][y + offset] + summedAreaTable[x + offset - halfWidth][y + offset - halfWidth] - summedAreaTable[x + offset][y + offset - halfWidth] - summedAreaTable[x + offset - halfWidth][y + offset];
+                var avgScore       = 1.0 * irisArea / ((halfWidth + 1) * (halfWidth + 1)) + 1;
+                //summation area table again
+                var scleraIrisArea = ((1.0 * summedAreaTable[width - 1 - offset][y + offset] + summedAreaTable[0 + offset][y + offset - halfWidth] - summedAreaTable[0 + offset][y + offset] - summedAreaTable[width - 1 - offset][y + offset - halfWidth]) - irisArea);
+                //minimize avgScore/scleraIrisArea. 150 is too high, might have to change since it's closer to white
+                if ((avgScore) / scleraIrisArea &lt; bestAvgScore &amp;&amp; avgScore &lt; 150) {
+                    bestAvgScore  = (avgScore) / scleraIrisArea;
+                    bestPoint     = [x + offset, y + offset];
+                    bestHalfWidth = halfWidth;
+                }
+            }
+        }
+    }
+    return [bestPoint, bestHalfWidth];
+}
 
-
-    
-
-
-    <section class="readme">
-        <article><h1><a href="https://webgazer.cs.brown.edu">WebGazer.js</a></h1><p>WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js can run only if the user consents in giving access to their webcam. </p>
-<ul>
-<li><a href="https://webgazer.cs.brown.edu">Official website</a></li>
-<li><a href="https://webgazer.cs.brown.edu/documentation">Documentation</a></li>
-<li><a href="https://github.com/brownhci/WebGazer/wiki/Top-Level-API">API Docs</a></li>
-</ul>
-<h2>Features</h2><ul>
-<li>Real time gaze prediction on most major browsers</li>
-<li>No special hardware - WebGazer.js uses common webcams</li>
-<li>Self-calibration from clicks and cursor movements</li>
-<li>Easy to integrate with a few lines of JavaScript</li>
-<li>Swappable components for eye detection</li>
-<li>Multiple gaze prediction models</li>
-</ul>
-<h2>How to install</h2><p>Download the webgazer.js file located <a href="https://webgazer.cs.brown.edu/#download">here</a> or use the file build/webgazer.js from <a href="https://github.com/brownhci/WebGazer.git">this</a> repository.</p>
-<p>If you want to build the repository from source follow these instructions:</p>
-<pre class="prettyprint source"><code>git clone https://github.com/brownhci/WebGazer.git
-cd build
-./build_library</code></pre><h2>Examples</h2><p>Examples of how WebGazer.js works can be found <a href="https://webgazer.cs.brown.edu/#examples">here</a>.</p>
-<h2>Browser Support</h2><p>The following browsers support WebGazer.js:</p>
-<ul>
-<li>Google Chrome</li>
-<li>Microsoft Edge</li>
-<li>Mozilla Firefox</li>
-<li>Opera</li>
-</ul>
-<p>Your browser needs to support the getUserMedia API as seen <a href="http://caniuse.com/#feat=stream">here</a>.</p>
-<h2>Citation</h2><pre class="prettyprint source"><code>@inproceedings{papoutsaki2016webgazer,
-author     = {Alexandra Papoutsaki and Patsorn Sangkloy and James Laskey and Nediyana Daskalova and Jeff Huang and James Hays},
-title      = {{WebGazer}: Scalable Webcam Eye Tracking Using User Interactions},
-booktitle  = {Proceedings of the 25th International Joint Conference on Artificial Intelligence (IJCAI-16)},
-pages      = {3839--3845},
-year       = {2016},
-organization={AAAI}
-}</code></pre><h2>Who We Are</h2><ul>
-<li>Alexandra Papoutsaki</li>
-<li>James Laskey</li>
-<li>Aaron Gokaslan</li>
-<li>Jeff Huang</li>
-</ul>
-<h2>License</h2><p>Copyright (C) 2016 <a href="http://hci.cs.brown.edu">Brown HCI Group</a></p>
-<p>Licensed under GPLv3.</p></article>
+/**
+ * Given an object with two eye patches it finds the location of the detected pupils
+ * @param  {Object} eyesObj - left and right detected eye patches
+ * @return {Object} eyesObj - updated eye patches with information about pupils' locations
+ */
+export function getPupils(eyesObj) {
+    if (!eyesObj) {
+        return eyesObj;
+    }
+    if (!eyesObj.left.blink) {
+        eyesObj.left.pupil = getSinglePupil(Array.prototype.slice.call(Utils.grayscale(eyesObj.left.patch, eyesObj.left.width, eyesObj.left.height)), eyesObj.left.width, eyesObj.left.height);
+        eyesObj.left.pupil[0][0] -= eyesObj.left.pupil[1];
+        eyesObj.left.pupil[0][1] -= eyesObj.left.pupil[1];
+    }
+    if (!eyesObj.right.blink) {
+        eyesObj.right.pupil = getSinglePupil(Array.prototype.slice.call(Utils.grayscale(eyesObj.right.patch, eyesObj.right.width, eyesObj.right.height)), eyesObj.right.width, eyesObj.right.height);
+        eyesObj.right.pupil[0][0] -= eyesObj.right.pupil[1];
+        eyesObj.right.pupil[0][1] -= eyesObj.right.pupil[1];
+    }
+    return eyesObj;
+}
+</code></pre>
+        </article>
     </section>
-
-
 
 
 

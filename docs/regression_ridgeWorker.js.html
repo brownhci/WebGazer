@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Home - Documentation</title>
+    <title>regression/ridgeWorker.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,70 +27,153 @@
 
 <div id="main">
     
+    <h1 class="page-title">regression/ridgeWorker.js</h1>
+    
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>console.log('thread starting');
+importScripts('../src/util.js', '../src/mat.js');
+var ridgeParameter  = Math.pow(10, -5);
+var resizeWidth     = 10;
+var resizeHeight    = 6;
+var dataWindow      = 700;
+var trailDataWindow = 10;
+var trainInterval   = 500;
+
+var screenXClicksArray = new self.webgazer.util.DataWindow(dataWindow);
+var screenYClicksArray = new self.webgazer.util.DataWindow(dataWindow);
+var eyeFeaturesClicks  = new self.webgazer.util.DataWindow(dataWindow);
+
+var screenXTrailArray = new self.webgazer.util.DataWindow(trailDataWindow);
+var screenYTrailArray = new self.webgazer.util.DataWindow(trailDataWindow);
+var eyeFeaturesTrail  = new self.webgazer.util.DataWindow(trailDataWindow);
+
+var dataClicks = new self.webgazer.util.DataWindow(dataWindow);
+var dataTrail  = new self.webgazer.util.DataWindow(dataWindow);
 
 
+/**
+ * Performs ridge regression, according to the Weka code.
+ * @param {Array} y - corresponds to screen coordinates (either x or y) for each of n click events
+ * @param {Array.&lt;Array.&lt;Number>>} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
+ * @param {Array} k - ridge parameter
+ * @returns {Array} regression coefficients
+ */
+function ridge(y, X, k) {
+    var nc             = X[0].length;
+    var m_Coefficients = new Array(nc);
+    var xt             = self.webgazer.mat.transpose(X);
+    var solution       = [];
+    var success        = true;
+    do {
+        var ss = self.webgazer.mat.mult(xt, X);
+        // Set ridge regression adjustment
+        for (var i = 0; i &lt; nc; i++) {
+            ss[i][i] = ss[i][i] + k;
+        }
 
+        // Carry out the regression
+        var bb = self.webgazer.mat.mult(xt, y);
+        for (var i = 0; i &lt; nc; i++) {
+            m_Coefficients[i] = bb[i][0];
+        }
+        try {
+            var n = (m_Coefficients.length != 0 ? m_Coefficients.length / m_Coefficients.length : 0);
+            if (m_Coefficients.length * n != m_Coefficients.length) {
+                console.log("Array length must be a multiple of m")
+            }
+            solution = (ss.length == ss[0].length ? (self.webgazer.mat.LUDecomposition(ss, bb)) : (self.webgazer.mat.QRDecomposition(ss, bb)));
 
+            for (var i = 0; i &lt; nc; i++) {
+                m_Coefficients[i] = solution[i][0];
+            }
+            success = true;
+        }
+        catch (ex) {
+            k *= 10;
+            console.log(ex);
+            success = false;
+        }
+    } while (!success);
+    return m_Coefficients;
+}
 
+//TODO: still usefull ???
+/**
+ *
+ * @returns {Number}
+ */
+function getCurrentFixationIndex() {
+    var index   = 0;
+    var recentX = this.screenXTrailArray.get(0);
+    var recentY = this.screenYTrailArray.get(0);
+    for (var i = this.screenXTrailArray.length - 1; i >= 0; i--) {
+        var currX             = this.screenXTrailArray.get(i);
+        var currY             = this.screenYTrailArray.get(i);
+        var euclideanDistance = Math.sqrt(Math.pow((currX - recentX), 2) + Math.pow((currY - recentY), 2));
+        if (euclideanDistance > 72) {
+            return i + 1;
+        }
+    }
+    return i;
+}
 
+/**
+ * Event handler, it store screen position to allow training
+ * @param {Event} event - the receive event
+ */
+self.onmessage = function (event) {
+    var data      = event.data;
+    var screenPos = data['screenPos'];
+    var eyes      = data['eyes'];
+    var type      = data['type'];
+    if (type === 'click') {
+        self.screenXClicksArray.push([screenPos[0]]);
+        self.screenYClicksArray.push([screenPos[1]]);
 
+        self.eyeFeaturesClicks.push(eyes);
+    } else if (type === 'move') {
+        self.screenXTrailArray.push([screenPos[0]]);
+        self.screenYTrailArray.push([screenPos[1]]);
 
+        self.eyeFeaturesTrail.push(eyes);
+        self.dataTrail.push({'eyes': eyes, 'screenPos': screenPos, 'type': type});
+    }
+    self.needsTraining = true;
+};
 
-    
+/**
+ * Compute coefficient from training data
+ */
+function retrain() {
+    if (self.screenXClicksArray.length == 0) {
+        return;
+    }
+    if (!self.needsTraining) {
+        return;
+    }
+    var screenXArray = self.screenXClicksArray.data.concat(self.screenXTrailArray.data);
+    var screenYArray = self.screenYClicksArray.data.concat(self.screenYTrailArray.data);
+    var eyeFeatures  = self.eyeFeaturesClicks.data.concat(self.eyeFeaturesTrail.data);
 
+    var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
+    var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter);
+    console.log(coefficientsX);
+    self.postMessage({'X': coefficientsX, 'Y': coefficientsY});
+    self.needsTraining = false;
+}
 
-    <section class="readme">
-        <article><h1><a href="https://webgazer.cs.brown.edu">WebGazer.js</a></h1><p>WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js can run only if the user consents in giving access to their webcam. </p>
-<ul>
-<li><a href="https://webgazer.cs.brown.edu">Official website</a></li>
-<li><a href="https://webgazer.cs.brown.edu/documentation">Documentation</a></li>
-<li><a href="https://github.com/brownhci/WebGazer/wiki/Top-Level-API">API Docs</a></li>
-</ul>
-<h2>Features</h2><ul>
-<li>Real time gaze prediction on most major browsers</li>
-<li>No special hardware - WebGazer.js uses common webcams</li>
-<li>Self-calibration from clicks and cursor movements</li>
-<li>Easy to integrate with a few lines of JavaScript</li>
-<li>Swappable components for eye detection</li>
-<li>Multiple gaze prediction models</li>
-</ul>
-<h2>How to install</h2><p>Download the webgazer.js file located <a href="https://webgazer.cs.brown.edu/#download">here</a> or use the file build/webgazer.js from <a href="https://github.com/brownhci/WebGazer.git">this</a> repository.</p>
-<p>If you want to build the repository from source follow these instructions:</p>
-<pre class="prettyprint source"><code>git clone https://github.com/brownhci/WebGazer.git
-cd build
-./build_library</code></pre><h2>Examples</h2><p>Examples of how WebGazer.js works can be found <a href="https://webgazer.cs.brown.edu/#examples">here</a>.</p>
-<h2>Browser Support</h2><p>The following browsers support WebGazer.js:</p>
-<ul>
-<li>Google Chrome</li>
-<li>Microsoft Edge</li>
-<li>Mozilla Firefox</li>
-<li>Opera</li>
-</ul>
-<p>Your browser needs to support the getUserMedia API as seen <a href="http://caniuse.com/#feat=stream">here</a>.</p>
-<h2>Citation</h2><pre class="prettyprint source"><code>@inproceedings{papoutsaki2016webgazer,
-author     = {Alexandra Papoutsaki and Patsorn Sangkloy and James Laskey and Nediyana Daskalova and Jeff Huang and James Hays},
-title      = {{WebGazer}: Scalable Webcam Eye Tracking Using User Interactions},
-booktitle  = {Proceedings of the 25th International Joint Conference on Artificial Intelligence (IJCAI-16)},
-pages      = {3839--3845},
-year       = {2016},
-organization={AAAI}
-}</code></pre><h2>Who We Are</h2><ul>
-<li>Alexandra Papoutsaki</li>
-<li>James Laskey</li>
-<li>Aaron Gokaslan</li>
-<li>Jeff Huang</li>
-</ul>
-<h2>License</h2><p>Copyright (C) 2016 <a href="http://hci.cs.brown.edu">Brown HCI Group</a></p>
-<p>Licensed under GPLv3.</p></article>
+setInterval(retrain, trainInterval);
+
+</code></pre>
+        </article>
     </section>
-
-
 
 
 

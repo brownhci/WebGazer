@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Home - Documentation</title>
+    <title>utils/DataWindow.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,70 +27,89 @@
 
 <div id="main">
     
+    <h1 class="page-title">utils/DataWindow.js</h1>
+    
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//Data Window class
+//operates like an array but 'wraps' data around to keep the array at a fixed windowSize
+/**
+ * DataWindow class - Operates like an array, but 'wraps' data around to keep the array at a fixed windowSize
+ * @param {Number} windowSize - defines the maximum size of the window
+ * @param {Array} data - optional data to seed the DataWindow with
+ **/
+var DataWindow = function (windowSize, data) {
+    this.data       = [];
+    this.windowSize = windowSize;
+    this.index      = 0;
+    this.length     = 0;
+    if (data) {
+        this.data   = data.slice(data.length - windowSize, data.length);
+        this.length = this.data.length;
+    }
+};
 
+/**
+ * [push description]
+ * @param  {*} entry - item to be inserted. It either grows the DataWindow or replaces the oldest item
+ * @return {DataWindow} this
+ */
+DataWindow.prototype.push = function (entry) {
+    if (this.data.length &lt; this.windowSize) {
+        this.data.push(entry);
+        this.length = this.data.length;
+        return this;
+    }
 
+    //replace oldest entry by wrapping around the DataWindow
+    this.data[this.index] = entry;
+    this.index            = (this.index + 1) % this.windowSize;
+    return this;
+};
 
+/**
+ * Get the element at the ind position by wrapping around the DataWindow
+ * @param  {Number} ind index of desired entry
+ * @return {*}
+ */
+DataWindow.prototype.get = function (ind) {
+    return this.data[this.getTrueIndex(ind)];
+};
 
+/**
+ * Gets the true this.data array index given an index for a desired element
+ * @param {Number} ind - index of desired entry
+ * @return {Number} index of desired entry in this.data
+ */
+DataWindow.prototype.getTrueIndex = function (ind) {
+    if (this.data.length &lt; this.windowSize) {
+        return ind;
+    } else {
+        //wrap around ind so that we can traverse from oldest to newest
+        return (ind + this.index) % this.windowSize;
+    }
+};
 
+/**
+ * Append all the contents of data
+ * @param {Array} data - to be inserted
+ */
+DataWindow.prototype.addAll = function (data) {
+    for (var i = 0; i &lt; data.length; i++) {
+        this.push(data[i]);
+    }
+};
 
-
-
-
-    
-
-
-    <section class="readme">
-        <article><h1><a href="https://webgazer.cs.brown.edu">WebGazer.js</a></h1><p>WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js can run only if the user consents in giving access to their webcam. </p>
-<ul>
-<li><a href="https://webgazer.cs.brown.edu">Official website</a></li>
-<li><a href="https://webgazer.cs.brown.edu/documentation">Documentation</a></li>
-<li><a href="https://github.com/brownhci/WebGazer/wiki/Top-Level-API">API Docs</a></li>
-</ul>
-<h2>Features</h2><ul>
-<li>Real time gaze prediction on most major browsers</li>
-<li>No special hardware - WebGazer.js uses common webcams</li>
-<li>Self-calibration from clicks and cursor movements</li>
-<li>Easy to integrate with a few lines of JavaScript</li>
-<li>Swappable components for eye detection</li>
-<li>Multiple gaze prediction models</li>
-</ul>
-<h2>How to install</h2><p>Download the webgazer.js file located <a href="https://webgazer.cs.brown.edu/#download">here</a> or use the file build/webgazer.js from <a href="https://github.com/brownhci/WebGazer.git">this</a> repository.</p>
-<p>If you want to build the repository from source follow these instructions:</p>
-<pre class="prettyprint source"><code>git clone https://github.com/brownhci/WebGazer.git
-cd build
-./build_library</code></pre><h2>Examples</h2><p>Examples of how WebGazer.js works can be found <a href="https://webgazer.cs.brown.edu/#examples">here</a>.</p>
-<h2>Browser Support</h2><p>The following browsers support WebGazer.js:</p>
-<ul>
-<li>Google Chrome</li>
-<li>Microsoft Edge</li>
-<li>Mozilla Firefox</li>
-<li>Opera</li>
-</ul>
-<p>Your browser needs to support the getUserMedia API as seen <a href="http://caniuse.com/#feat=stream">here</a>.</p>
-<h2>Citation</h2><pre class="prettyprint source"><code>@inproceedings{papoutsaki2016webgazer,
-author     = {Alexandra Papoutsaki and Patsorn Sangkloy and James Laskey and Nediyana Daskalova and Jeff Huang and James Hays},
-title      = {{WebGazer}: Scalable Webcam Eye Tracking Using User Interactions},
-booktitle  = {Proceedings of the 25th International Joint Conference on Artificial Intelligence (IJCAI-16)},
-pages      = {3839--3845},
-year       = {2016},
-organization={AAAI}
-}</code></pre><h2>Who We Are</h2><ul>
-<li>Alexandra Papoutsaki</li>
-<li>James Laskey</li>
-<li>Aaron Gokaslan</li>
-<li>Jeff Huang</li>
-</ul>
-<h2>License</h2><p>Copyright (C) 2016 <a href="http://hci.cs.brown.edu">Brown HCI Group</a></p>
-<p>Licensed under GPLv3.</p></article>
+export {DataWindow};
+</code></pre>
+        </article>
     </section>
-
-
 
 
 
