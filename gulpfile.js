@@ -175,7 +175,7 @@ gulp.task('build-webgazer', function() {
                 //     exclude: 'node_modules/**'
                 // })
             ],
-            context: 'window',
+            context: 'window'
             // globals: {
             //     tracking: "Tracking"
             // }
