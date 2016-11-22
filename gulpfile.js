@@ -190,7 +190,7 @@ gulp.task('build-webgazer', function() {
             sourceMap: 'inline',
             dest:   path.join(__dirname, (gutil.env.production) ? './build/webgazer.amd.min.js' : './build/webgazer.amd.js')
         });
-        
+
         bundle.write({
             format: 'cjs',
             sourceMap: 'inline',
@@ -221,12 +221,26 @@ gulp.task('build-webgazer', function() {
 
 });
 
+/**
+ * Delete Temp Files & Folders
+ */
 gulp.task('build-clean', function(){
 
     // Delete Temp Files & Folders
     return del(['build/tmp/*.js']);
 
 });
+
+/**
+ * Delete Temp and Builds Files
+ */
+gulp.task('clean', ['build-clean'], function(){
+
+    // Delete Build Files AND tmp Folder
+    return del(['build/webgazer.*.js']);
+
+});
+
 
 /****************
  * DEFAULT TASK *
