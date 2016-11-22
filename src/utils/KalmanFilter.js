@@ -1,3 +1,5 @@
+import * as Mat from "../core/mat";
+
 /**
  * Kalman Filter constructor
  * Kalman filters work by reducing the amount of noise in a models.
@@ -28,7 +30,7 @@ KalmanFilter.prototype.update = function (z) {
 
     // Here, we define all the different matrix operations we will need
     var add  = numeric.add, sub = numeric.sub, inv = numeric.inv, identity = numeric.identity;
-    var mult = webgazer.mat.mult, transpose = webgazer.mat.transpose;
+    var mult = Mat.mult, transpose = Mat.transpose;
     //TODO cache variables like the transpose of H
 
     // prediction: X = F * X  |  P = F * P * F' + Q
