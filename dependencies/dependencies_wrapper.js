@@ -61,9 +61,10 @@ export {pModel as pcaFilter};
 // 'dependencies/clmtrackr/svmfilter_fft.js',
 // 'dependencies/clmtrackr/svmfilter_webgl.js',
 export {
-    svmFilter as SvmFilter,
-    svmFilterWebGL as SvmFilterWebGL,
-    svmFilterFFT as SvmFilterFFT
+    // svmFilter as SvmFilter,
+    // svmFilterWebGL as SvmFilter,
+    // svmFilterFFT as SvmFilter
+    svmFilter as SvmFilter
 };
 
 
