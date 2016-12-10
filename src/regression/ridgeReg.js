@@ -58,22 +58,13 @@ function ridge(y, X, k) {
  * @param {Object} eyes - The eyes where looking for gray histogram
  * @returns {Array.<T>} The eyes gray level histogram
  */
-function getEyeFeats(eyes) {
-    var resizedLeft  = Util.resizeEye(eyes.left, resizeWidth, resizeHeight);
-    var resizedright = Util.resizeEye(eyes.right, resizeWidth, resizeHeight);
+function getEyeFeats ( eyes ) {
 
-    var leftGray  = Util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-    var rightGray = Util.grayscale(resizedright.data, resizedright.width, resizedright.height);
+    var leftFeat  = getEyeFeat( eyes.left );
+    var rightFeat = getEyeFeat( eyes.right );
 
-    var histLeft = [];
-    Util.equalizeHistogram(leftGray, 5, histLeft);
-    var histRight = [];
-    Util.equalizeHistogram(rightGray, 5, histRight);
+    return leftFeat.concat( rightFeat );
 
-    var leftGrayArray  = Array.prototype.slice.call(histLeft);
-    var rightGrayArray = Array.prototype.slice.call(histRight);
-
-    return leftGrayArray.concat(rightGrayArray);
 }
 
 //TODO: still usefull ???
@@ -95,7 +86,17 @@ function getCurrentFixationIndex() {
     }
     return i;
 }
+function getEyeFeat ( eye ) {
 
+    var resizeEye = Util.resizeEye( eye, resizeWidth, resizeHeight );
+    var greyscale = Util.grayscale( resizeEye.data, resizeEye.width, resizeEye.height );
+    var histogram = [];
+
+    Util.equalizeHistogram( greyscale, 5, histogram );
+
+    return Array.prototype.slice.call( histogram );
+
+}
 
 /**
  * Constructor for the RidgeReg Object which uses unweighted ridge regression to correlate click and mouse movement to eye patch features
