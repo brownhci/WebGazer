@@ -53,6 +53,15 @@ export function getSumTable(pixels, width, height) {
     return integralImage;
     
 }
+
+//evaluate area by the formula found on wikipedia about the summed area table: I(D)+I(A)-I(B)-I(C)
+function getIrisArea(summedAreaTable, offset, currentWidth, x, y) {
+
+    return summedAreaTable[x + offset][y + offset]
+        + summedAreaTable[x + offset - currentWidth][y + offset - currentWidth]
+        - summedAreaTable[x + offset][y + offset - currentWidth]
+        - summedAreaTable[x + offset - currentWidth][y + offset]
+
 }
 
 /**
@@ -112,26 +121,33 @@ export function getSinglePupil(pixels, width, height) {
 
 }
 
+function updatePupilForEye(eye) {
+
+    var eyeWidth  = eye.width;
+    var eyeHeight = eye.height;
+
+    if (!eye.blink) {
+        eye.pupil = getSinglePupil(Array.prototype.slice.call(Utils.grayscale(eye.patch, eyeWidth, eyeHeight)), eyeWidth, eyeHeight);
+        eye.pupil[0][0] -= eye.pupil[1];
+        eye.pupil[0][1] -= eye.pupil[1];
+    }
+    
 }
 
 /**
  * Given an object with two eye patches it finds the location of the detected pupils
- * @param  {Object} eyesObj - left and right detected eye patches
+ * @param  {Object} eyes - left and right detected eye patches
  * @return {Object} eyesObj - updated eye patches with information about pupils' locations
  */
-export function getPupils(eyesObj) {
-    if (!eyesObj) {
-        return eyesObj;
+export function getPupils(eyes) {
+    
+    if (!eyes) {
+        return null;
     }
-    if (!eyesObj.left.blink) {
-        eyesObj.left.pupil = getSinglePupil(Array.prototype.slice.call(Utils.grayscale(eyesObj.left.patch, eyesObj.left.width, eyesObj.left.height)), eyesObj.left.width, eyesObj.left.height);
-        eyesObj.left.pupil[0][0] -= eyesObj.left.pupil[1];
-        eyesObj.left.pupil[0][1] -= eyesObj.left.pupil[1];
-    }
-    if (!eyesObj.right.blink) {
-        eyesObj.right.pupil = getSinglePupil(Array.prototype.slice.call(Utils.grayscale(eyesObj.right.patch, eyesObj.right.width, eyesObj.right.height)), eyesObj.right.width, eyesObj.right.height);
-        eyesObj.right.pupil[0][0] -= eyesObj.right.pupil[1];
-        eyesObj.right.pupil[0][1] -= eyesObj.right.pupil[1];
-    }
-    return eyesObj;
+
+    updatePupilForEye(eyes.left)
+    updatePupilForEye(eyes.right)
+
+    return eyes;
+    
 }
