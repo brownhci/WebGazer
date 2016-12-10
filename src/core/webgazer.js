@@ -15,7 +15,6 @@ var WebGazer = (function (window) {
      * @alias module:webgazer
      * @exports webgazer
      */
-    //var webgazer = {};
 
     //params Object to be passed into tracker and regression constructors
     //contains various potentially useful knowledge like the video size and data collection rates
@@ -149,15 +148,20 @@ var WebGazer = (function (window) {
     function paintCurrentFrame(canvas, width, height) {
         //imgWidth = videoElement.videoWidth * videoScale;
         //imgHeight = videoElement.videoHeight * videoScale;
-        if (canvas.width != width) {
-            canvas.width = width;
-        }
-        if (canvas.height != height) {
-            canvas.height = height;
-        }
+        // if (canvas.width != width) {
+        //     canvas.width = width;
+        // }
+        // if (canvas.height != height) {
+        //     canvas.height = height;
+        // }
 
-        var ctx = canvas.getContext('2d');
-        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        // Compare if different will require an useless conditional check for any change,
+        // instead of simply set the value (and if they are equals there is no more loss time)
+        canvas.width = width;
+        canvas.height = height;
+
+        // instead of accessing an object property, just use what is here
+        canvas.getContext('2d').drawImage(videoElement, 0, 0, width, height);
     }
 
     /**
