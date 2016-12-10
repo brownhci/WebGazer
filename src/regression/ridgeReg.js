@@ -1,7 +1,7 @@
 import * as Mat from "../core/mat";
 import * as Util from "../utils/util";
 
-var ridgeParameter  = Math.pow(10, -5);
+var ridgeParameter  = Math.pow( 10, -5 );
 var resizeWidth     = 10;
 var resizeHeight    = 6;
 var dataWindow      = 700;
@@ -98,27 +98,34 @@ function getEyeFeat ( eye ) {
  * @constructor
  */
 var RidgeReg = function () {
-    this.screenXClicksArray = new Util.DataWindow(dataWindow);
-    this.screenYClicksArray = new Util.DataWindow(dataWindow);
-    this.eyeFeaturesClicks  = new Util.DataWindow(dataWindow);
+
+    this.screenXClicksArray = new Util.DataWindow( dataWindow );
+    this.screenYClicksArray = new Util.DataWindow( dataWindow );
+    this.eyeFeaturesClicks  = new Util.DataWindow( dataWindow );
 
     //sets to one second worth of cursor trail
-    this.trailTime         = 1000;
+    this.trailTime = 1000;
 
     //TODO: Uuumm seems to not be okay, maybe a self.parameter
-    //TODO: This is an "couplage fort" !!! Need to break it properly !
-    var moveTickSize = 50;
+    //TODO: This is an "strong coupling" !!! Need to break it properly !
+    var moveTickSize       = 50;
     this.trailDataWindow   = this.trailTime / moveTickSize;
     // this.trailDataWindow   = this.trailTime / WebGazer.getParams().moveTickSize;
-    this.screenXTrailArray = new Util.DataWindow(trailDataWindow);
-    this.screenYTrailArray = new Util.DataWindow(trailDataWindow);
-    this.eyeFeaturesTrail  = new Util.DataWindow(trailDataWindow);
-    this.trailTimes        = new Util.DataWindow(trailDataWindow);
+    this.screenXTrailArray = new Util.DataWindow( trailDataWindow );
+    this.screenYTrailArray = new Util.DataWindow( trailDataWindow );
+    this.eyeFeaturesTrail  = new Util.DataWindow( trailDataWindow );
+    this.trailTimes        = new Util.DataWindow( trailDataWindow );
 
-    this.dataClicks = new Util.DataWindow(dataWindow);
-    this.dataTrail  = new Util.DataWindow(dataWindow);
+    this.dataClicks = new Util.DataWindow( dataWindow );
+    this.dataTrail  = new Util.DataWindow( dataWindow );
+
+    function _getNewImageDataForEye ( eye ) {
+
+        return new ImageData( new Uint8ClampedArray( eye.patch ), eye.width, eye.height );
+
+    }
+
 };
-
 
 /**
  * The RidgeReg object name
@@ -132,30 +139,30 @@ RidgeReg.prototype.name = 'ridge';
  * @param {Object} screenPos - The current screen [x,y] position when a training event happens
  * @param {Object} type - The type of performed action
  */
-RidgeReg.prototype.addData = function (eyes, screenPos, type) {
-    if (!eyes) {
+RidgeReg.prototype.addData = function ( eyes, screenPos, type ) {
+    if ( !eyes ) {
         return;
     }
-    if (eyes.left.blink || eyes.right.blink) {
+    if ( eyes.left.blink || eyes.right.blink ) {
         return;
     }
-    if (type === 'click') {
-        this.screenXClicksArray.push([screenPos[0]]);
-        this.screenYClicksArray.push([screenPos[1]]);
+    if ( type === 'click' ) {
+        this.screenXClicksArray.push( [ screenPos[ 0 ] ] );
+        this.screenYClicksArray.push( [ screenPos[ 1 ] ] );
 
-        this.eyeFeaturesClicks.push(getEyeFeats(eyes));
-        this.dataClicks.push({'eyes': eyes, 'screenPos': screenPos, 'type': type});
-    } else if (type === 'move') {
-        this.screenXTrailArray.push([screenPos[0]]);
-        this.screenYTrailArray.push([screenPos[1]]);
+        this.eyeFeaturesClicks.push( getEyeFeats( eyes ) );
+        this.dataClicks.push( { 'eyes': eyes, 'screenPos': screenPos, 'type': type } );
+    } else if ( type === 'move' ) {
+        this.screenXTrailArray.push( [ screenPos[ 0 ] ] );
+        this.screenYTrailArray.push( [ screenPos[ 1 ] ] );
 
-        this.eyeFeaturesTrail.push(getEyeFeats(eyes));
-        this.trailTimes.push(performance.now());
-        this.dataTrail.push({'eyes': eyes, 'screenPos': screenPos, 'type': type});
+        this.eyeFeaturesTrail.push( getEyeFeats( eyes ) );
+        this.trailTimes.push( performance.now() );
+        this.dataTrail.push( { 'eyes': eyes, 'screenPos': screenPos, 'type': type } );
     }
 
-    eyes.left.patch  = Array.from(eyes.left.patch.data);
-    eyes.right.patch = Array.from(eyes.right.patch.data);
+    eyes.left.patch  = Array.from( eyes.left.patch.data );
+    eyes.right.patch = Array.from( eyes.right.patch.data );
 };
 
 /**
@@ -256,8 +263,7 @@ RidgeReg.prototype.setData = function ( data ) {
  * @returns {Array.<Object>|*} The set of training data stored in this regression class
  */
 RidgeReg.prototype.getData = function () {
-    return this.dataClicks.data.concat(this.dataTrail.data);
+    return this.dataClicks.data.concat( this.dataTrail.data );
 };
 
-
-export {RidgeReg};
+export { RidgeReg };

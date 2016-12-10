@@ -6,13 +6,13 @@ import * as Core from "../core/core";
  * @exports LinearReg
  * @constructor
  */
-var LinearReg = function () {
+var LinearReg = function() {
     this.leftDatasetX  = [];
     this.leftDatasetY  = [];
     this.rightDatasetX = [];
     this.rightDatasetY = [];
     this.data          = [];
-};
+}
 
 /**
  * The LinearReg object name
@@ -103,6 +103,7 @@ LinearReg.prototype.predict = function (eyesObj) {
 
     var predictedX = Math.floor((((leftSlopeX * leftPupilX) + leftIntersceptX) + ((rightSlopeX * rightPupilX) + rightIntersceptX)) / 2);
     var predictedY = Math.floor((((leftSlopeY * leftPupilY) + leftIntersceptY) + ((rightSlopeY * rightPupilY) + rightIntersceptY)) / 2);
+    
     return {
         x: predictedX,
         y: predictedY

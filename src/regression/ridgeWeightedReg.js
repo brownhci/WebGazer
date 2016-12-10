@@ -15,11 +15,13 @@ var trailDataWindow = 10;
  * @returns {Array} regression coefficients
  */
 function ridge(y, X, k) {
+    
     var nc             = X[0].length;
     var m_Coefficients = new Array(nc);
     var xt             = Mat.transpose(X);
     var solution       = [];
     var success        = true;
+    
     do {
         var ss = Mat.mult(xt, X);
         // Set ridge regression adjustment
