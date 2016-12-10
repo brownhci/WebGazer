@@ -1,3 +1,5 @@
+import * as Util from "../utils/util";
+
 var ridgeParameter  = Math.pow(10, -5);
 var resizeWidth     = 10;
 var resizeHeight    = 6;
@@ -42,16 +44,17 @@ function updateWeights(event) {
  * @exports RidgeThreadedReg
  */
 var RidgeRegThreaded = function () {
-    this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
-    this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
-    this.eyeFeaturesClicks  = new webgazer.util.DataWindow(dataWindow);
 
-    this.screenXTrailArray = new webgazer.util.DataWindow(trailDataWindow);
-    this.screenYTrailArray = new webgazer.util.DataWindow(trailDataWindow);
-    this.eyeFeaturesTrail  = new webgazer.util.DataWindow(trailDataWindow);
+    this.screenXClicksArray = new Util.DataWindow(dataWindow);
+    this.screenYClicksArray = new Util.DataWindow(dataWindow);
+    this.eyeFeaturesClicks  = new Util.DataWindow(dataWindow);
 
-    this.dataClicks = new webgazer.util.DataWindow(dataWindow);
-    this.dataTrail  = new webgazer.util.DataWindow(dataWindow);
+    this.screenXTrailArray = new Util.DataWindow(trailDataWindow);
+    this.screenYTrailArray = new Util.DataWindow(trailDataWindow);
+    this.eyeFeaturesTrail  = new Util.DataWindow(trailDataWindow);
+
+    this.dataClicks = new Util.DataWindow(dataWindow);
+    this.dataTrail  = new Util.DataWindow(dataWindow);
 
     this.worker           = new Worker('ridgeWorker.js');
     this.worker.onerror   = function (err) {

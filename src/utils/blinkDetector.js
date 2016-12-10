@@ -1,3 +1,5 @@
+import * as Util from "../utils/util";
+
 /**
  * Constructor for BlinkDetector
  * @param blinkWindow
@@ -36,7 +38,9 @@ BlinkDetector.prototype.detectBlink = function (eyesObj) {
 };
 
 BlinkDetector.prototype.setBlinkWindow = function (value) {
-    if (webgazer.utils.isInt(value) && value > 0) {
+
+    //TODO MISSING METHOD
+    if (Util.isInt(value) && value > 0) {
         this.blinkWindow = value;
     }
     return this;

@@ -1,3 +1,6 @@
+import * as Mat from "../core/mat";
+import * as Util from "../utils/util";
+
 var ridgeParameter  = Math.pow(10, -5);
 var resizeWidth     = 10;
 var resizeHeight    = 6;
@@ -14,18 +17,18 @@ var trailDataWindow = 10;
 function ridge(y, X, k) {
     var nc             = X[0].length;
     var m_Coefficients = new Array(nc);
-    var xt             = webgazer.mat.transpose(X);
+    var xt             = Mat.transpose(X);
     var solution       = [];
     var success        = true;
     do {
-        var ss = webgazer.mat.mult(xt, X);
+        var ss = Mat.mult(xt, X);
         // Set ridge regression adjustment
         for (var i = 0; i < nc; i++) {
             ss[i][i] = ss[i][i] + k;
         }
 
         // Carry out the regression
-        var bb = webgazer.mat.mult(xt, y);
+        var bb = Mat.mult(xt, y);
         for (var i = 0; i < nc; i++) {
             m_Coefficients[i] = bb[i][0];
         }
@@ -34,7 +37,7 @@ function ridge(y, X, k) {
             if (m_Coefficients.length * n != m_Coefficients.length) {
                 console.log("Array length must be a multiple of m")
             }
-            solution = (ss.length == ss[0].length ? (numeric.LUsolve(numeric.LU(ss, true), bb)) : (webgazer.mat.QRDecomposition(ss, bb)));
+            solution = (ss.length == ss[0].length ? (numeric.LUsolve(numeric.LU(ss, true), bb)) : (Mat.QRDecomposition(ss, bb)));
 
             for (var i = 0; i < nc; i++) {
                 m_Coefficients[i] = solution[i];
@@ -95,26 +98,30 @@ function getCurrentFixationIndex() {
 
 /**
  * Constructor for the RidgeWightedReg Object which uses *weighted* ridge regression to correlate click and mouse movement to eye patch features
- * The weighting essentially provides a scheduled falloff in influence for mouse movements. This means that mouse moevemnts will only count towards the prediction for a short period of time, unlike unweighted ridge regression where all mouse movements are treated equally.
+ * The weighting essentially provides a scheduled falloff in influence for mouse movements. This means that mouse moevemnts will only count towards the prediction for a short period of time, unlike
+ * unweighted ridge regression where all mouse movements are treated equally.
  * @alias module:RidgeWightedReg
  * @exports RidgeWightedReg
  * @constructor
  */
 var RidgeWeightedReg = function () {
-    this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
-    this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
-    this.eyeFeaturesClicks  = new webgazer.util.DataWindow(dataWindow);
+
+    this.screenXClicksArray = new Util.DataWindow(dataWindow);
+    this.screenYClicksArray = new Util.DataWindow(dataWindow);
+    this.eyeFeaturesClicks  = new Util.DataWindow(dataWindow);
 
     //sets to one second worth of cursor trail
     this.trailTime         = 1000;
-    this.trailDataWindow   = this.trailTime / webgazer.params.moveTickSize;
-    this.screenXTrailArray = new webgazer.util.DataWindow(trailDataWindow);
-    this.screenYTrailArray = new webgazer.util.DataWindow(trailDataWindow);
-    this.eyeFeaturesTrail  = new webgazer.util.DataWindow(trailDataWindow);
-    this.trailTimes        = new webgazer.util.DataWindow(trailDataWindow);
+    this.trailDataWindow   = this.trailTime / 50;
+    // this.trailDataWindow   = this.trailTime / WebGazer.getParams().moveTickSize;
+    this.screenXTrailArray = new Util.DataWindow(trailDataWindow);
+    this.screenYTrailArray = new Util.DataWindow(trailDataWindow);
+    this.eyeFeaturesTrail  = new Util.DataWindow(trailDataWindow);
+    this.trailTimes        = new Util.DataWindow(trailDataWindow);
 
-    this.dataClicks = new webgazer.util.DataWindow(dataWindow);
-    this.dataTrail  = new webgazer.util.DataWindow(dataWindow);
+    this.dataClicks = new Util.DataWindow(dataWindow);
+    this.dataTrail  = new Util.DataWindow(dataWindow);
+
 };
 
 
