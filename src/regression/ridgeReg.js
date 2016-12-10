@@ -9,48 +9,60 @@ var trailDataWindow = 10;
 
 /**
  * Performs ridge regression, according to the Weka code.
- * @param {Array} y - corresponds to screen coordinates (either x or y) for each of n click events
+ * @param {Array} screenCoordinates - corresponds to screen coordinates (either x or y) for each of n click events
  * @param {Array.<Array.<Number>>} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
- * @param {Number} k - ridge parameter
+ * @param {Number} ridgeParameter - ridge parameter
  * @returns {Array} regression coefficients
  */
-function ridge(y, X, k) {
-    var nc             = X[0].length;
-    var m_Coefficients = new Array(nc);
-    var xt             = Mat.transpose(X);
-    var solution       = [];
-    var success        = true;
+function ridge ( screenCoordinates, X, ridgeParameter ) {
+
+    var numberOfClick          = X[ 0 ].length;
+    var matrixTranspose        = Mat.transpose( X );
+    var ss                     = Mat.mult( matrixTranspose, X );
+    var bb                     = Mat.mult( matrixTranspose, screenCoordinates );
+    var regressionCoefficients = new Array( numberOfClick );
+    //var   numberOfCoefficients   = 0;
+    var solution               = [];
+    var success                = true;
+    var i;
+    var j;
+
     do {
-        var ss = Mat.mult(xt, X);
-        // Set ridge regression adjustment
-        for (var i = 0; i < nc; i++) {
-            ss[i][i] = ss[i][i] + k;
+
+        for ( i = 0 ; i < numberOfClick ; i++ ) {
+            ss[ i ][ i ]                = ss[ i ][ i ] + ridgeParameter; // Set ridge regression adjustment
+            regressionCoefficients[ i ] = bb[ i ][ 0 ]; // Carry out the regression
         }
 
-        // Carry out the regression
-        var bb = Mat.mult(xt, y);
-        for (var i = 0; i < nc; i++) {
-            m_Coefficients[i] = bb[i][0];
-        }
         try {
-            var n = (m_Coefficients.length != 0 ? m_Coefficients.length / m_Coefficients.length : 0);
-            if (m_Coefficients.length * n != m_Coefficients.length) {
-                console.log("Array length must be a multiple of m")
-            }
-            solution = (ss.length == ss[0].length ? (numeric.LUsolve(numeric.LU(ss, true), bb)) : (Mat.QRDecomposition(ss, bb)));
 
-            for (var i = 0; i < nc; i++) {
-                m_Coefficients[i] = solution[i];
+            // TODO: this is always true... where is the subtlety ?
+            // numberOfCoefficients = regressionCoefficients.length;
+            // if (numberOfCoefficients * numberOfCoefficients / numberOfCoefficients !== numberOfCoefficients) {
+            //     console.log("Array length must be a multiple of m");
+            // }
+
+            solution = (ss.length === ss[ 0 ].length) ? (numeric.LUsolve( numeric.LU( ss, true ), bb )) : (Mat.QRDecomposition( ss, bb ));
+
+            for ( j = 0 ; j < numberOfClick ; j++ ) {
+                regressionCoefficients[ j ] = solution[ j ];
             }
             success = true;
-        }
-        catch (ex) {
-            k *= 10;
-            console.log(ex);
+
+        } catch ( error ) {
+
+            //TODO: logger instead ?
+            console.log( error );
+
+            ridgeParameter *= 10;
             success = false;
+
         }
-    } while (!success);
-    return m_Coefficients;
+
+    } while ( !success );
+
+    return regressionCoefficients;
+
 }
 
 /**
@@ -154,41 +166,50 @@ RidgeReg.prototype.addData = function (eyes, screenPos, type) {
  */
 // *  @return {integer} prediction.x - the x screen coordinate predicted
 // *  @return {integer} prediction.y - the y screen coordinate predicted
-RidgeReg.prototype.predict = function (eyesObj) {
-    if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
+RidgeReg.prototype.predict = function ( eyesObj ) {
+
+    if ( !eyesObj || this.eyeFeaturesClicks.length == 0 ) {
         return null;
     }
-    var acceptTime = performance.now() - this.trailTime;
-    var trailX     = [];
-    var trailY     = [];
-    var trailFeat  = [];
-    for (var i = 0; i < this.trailDataWindow; i++) {
-        if (this.trailTimes.get(i) > acceptTime) {
-            trailX.push(this.screenXTrailArray.get(i));
-            trailY.push(this.screenYTrailArray.get(i));
-            trailFeat.push(this.eyeFeaturesTrail.get(i));
+
+    var acceptTime        = performance.now() - this.trailTime;
+    var eyesFeats         = getEyeFeats( eyesObj );
+    var numberOfEyesFeats = eyesFeats.length;
+    var trailX            = [];
+    var trailY            = [];
+    var trailFeat         = [];
+    var predictedX        = 0;
+    var predictedY        = 0;
+    var screenXArray;
+    var screenYArray;
+    var eyeFeatures;
+    var coefficientsX;
+    var coefficientsY;
+    var i;
+    var j;
+
+    for ( i = 0 ; i < this.trailDataWindow ; i++ ) {
+        if ( this.trailTimes.get( i ) > acceptTime ) {
+            trailX.push( this.screenXTrailArray.get( i ) );
+            trailY.push( this.screenYTrailArray.get( i ) );
+            trailFeat.push( this.eyeFeaturesTrail.get( i ) );
         }
     }
 
-    var screenXArray = this.screenXClicksArray.data.concat(trailX);
-    var screenYArray = this.screenYClicksArray.data.concat(trailY);
-    var eyeFeatures  = this.eyeFeaturesClicks.data.concat(trailFeat);
+    screenXArray = this.screenXClicksArray.data.concat( trailX );
+    screenYArray = this.screenYClicksArray.data.concat( trailY );
+    eyeFeatures  = this.eyeFeaturesClicks.data.concat( trailFeat );
 
-    var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
-    var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter);
+    coefficientsX = ridge( screenXArray, eyeFeatures, ridgeParameter );
+    coefficientsY = ridge( screenYArray, eyeFeatures, ridgeParameter );
 
-    var eyeFeats   = getEyeFeats(eyesObj);
-    var predictedX = 0;
-    for (var i = 0; i < eyeFeats.length; i++) {
-        predictedX += eyeFeats[i] * coefficientsX[i];
-    }
-    var predictedY = 0;
-    for (var i = 0; i < eyeFeats.length; i++) {
-        predictedY += eyeFeats[i] * coefficientsY[i];
+    for ( j = 0 ; j < numberOfEyesFeats ; j++ ) {
+        predictedX += eyesFeats[ j ] * coefficientsX[ j ];
+        predictedY += eyesFeats[ j ] * coefficientsY[ j ];
     }
 
-    predictedX = Math.floor(predictedX);
-    predictedY = Math.floor(predictedY);
+    predictedX = Math.floor( predictedX );
+    predictedY = Math.floor( predictedY );
 
     return {
         x: predictedX,
@@ -201,13 +222,32 @@ RidgeReg.prototype.predict = function (eyesObj) {
  * in case data is stored in a separate location
  * @param {Array.<Object>} data - The array data of util.eyes objects to set
  */
-RidgeReg.prototype.setData = function (data) {
-    for (var i = 0; i < data.length; i++) {
-        //TODO this is a kludge, needs to be fixed
-        data[i].eyes.left.patch  = new ImageData(new Uint8ClampedArray(data[i].eyes.left.patch), data[i].eyes.left.width, data[i].eyes.left.height);
-        data[i].eyes.right.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.right.patch), data[i].eyes.right.width, data[i].eyes.right.height);
-        this.addData(data[i].eyes, data[i].screenPos, data[i].type);
+RidgeReg.prototype.setData = function ( data ) {
+
+    //TODO this is a kludge, needs to be fixed
+    //[TV:23-11-2016] Still a kludge ?
+
+    var dataLength  = data.length;
+    var currentData = undefined;
+    var eyes        = {};
+    var leftEye     = {};
+    var rightEye    = {};
+    var i;
+
+    for ( i = 0 ; i < dataLength ; ++i ) {
+
+        currentData = data[ i ];
+        eyes        = currentData.eyes;
+        leftEye     = eyes.left;
+        rightEye    = eyes.right;
+
+        leftEye.patch  = _getNewImageDataForEye( leftEye );
+        rightEye.patch = _getNewImageDataForEye( rightEye );
+
+        this.addData( eyes, currentData.screenPos, currentData.type );
+
     }
+
 };
 
 /**

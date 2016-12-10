@@ -79,25 +79,35 @@ export function mult(matrix1, matrix2) {
         console.log("Matrix inner dimensions must agree.");
     }
 
-    var X     = new Array(matrix1.length),
-        Bcolj = new Array(matrix1[0].length);
+    var X                            = new Array( matrix1.length );
+    var Bcolj                        = new Array( matrix1[ 0 ].length );
+    var firstMatrixLength            = matrix1.length;
+    var firstMatrixFirstIndexLength  = matrix1[ 0 ].length;
+    var secondMatrixFirstIndexLength = matrix2[ 0 ].length;
+    var Arowi                        = undefined;
+    var s                            = 0;
+    var i, j, k, l;
 
-    for (var j = 0; j < matrix2[0].length; j++) {
-        for (var k = 0; k < matrix1[0].length; k++) {
-            Bcolj[k] = matrix2[k][j];
+    for (i = 0; i < secondMatrixFirstIndexLength; i++) {
+
+        for (j = 0; j < firstMatrixFirstIndexLength; j++) {
+            Bcolj[j] = matrix2[j][i];
         }
-        for (var i = 0; i < matrix1.length; i++) {
 
-            if (j === 0)
-                X[i] = new Array(matrix2[0].length);
+        for (k = 0; k < firstMatrixLength; k++) {
 
-            var Arowi = matrix1[i];
-            var s     = 0;
-            for (var k = 0; k < matrix1[0].length; k++) {
-                s += Arowi[k] * Bcolj[k];
+            if (i === 0) {
+                X[ k ] = new Array( secondMatrixFirstIndexLength );
             }
-            X[i][j] = s;
+
+            Arowi = matrix1[k];
+            s     = 0;
+            for (l = 0; l < firstMatrixFirstIndexLength; l++) {
+                s += Arowi[l] * Bcolj[l];
+            }
+            X[k][i] = s;
         }
+
     }
     return X;
 }
@@ -210,15 +220,15 @@ export function LUDecomposition(A, B) {
 export function QRDecomposition(A, B) {
     // Initialize.
     var QR = new Array(A.length);
+    var m     = A.length;
+    var n     = A[0].length;
 
-    for (var i = 0; i < A.length; i++) {
-        QR[i] = new Array(A[0].length);
-        for (var j = 0; j < A[0].length; j++) {
+    for (var i = 0; i < m; i++) {
+        QR[i] = new Array(n);
+        for (var j = 0; j < n; j++) {
             QR[i][j] = A[i][j];
         }
     }
-    var m     = A.length;
-    var n     = A[0].length;
 
     var rDiag = new Array(n);
     var nrm;

@@ -235,12 +235,27 @@ RidgeWeightedReg.prototype.predict = function (eyesObj) {
  * @param {Array.<Object>} data - The array of util.eyes objects to set
  */
 RidgeWeightedReg.prototype.setData = function (data) {
-    for (var i = 0; i < data.length; i++) {
-        //TODO this is a kludge, needs to be fixed
-        data[i].eyes.left.patch  = new ImageData(new Uint8ClampedArray(data[i].eyes.left.patch), data[i].eyes.left.width, data[i].eyes.left.height);
-        data[i].eyes.right.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.right.patch), data[i].eyes.right.width, data[i].eyes.right.height);
-        this.addData(data[i].eyes, data[i].screenPos, data[i].type);
+
+    var dataLength  = data.length;
+    var currentData = undefined;
+    var eyes        = undefined;
+    var leftEye     = undefined;
+    var rightEye    = undefined;
+    var i;
+    
+    for (i = 0; i < dataLength; i++) {
+        
+        currentData = data[i];
+        eyes        = currentData.eyes;
+        leftEye     = eyes.left;
+        rightEye    = eyes.right;
+
+        leftEye.patch  = new ImageData(new Uint8ClampedArray(leftEye.patch), leftEye.width, leftEye.height);
+        rightEye.patch = new ImageData(new Uint8ClampedArray(rightEye.patch), rightEye.width, rightEye.height);
+        this.addData(eyes, currentData.screenPos, currentData.type);
+        
     }
+    
 };
 
 /**

@@ -28,27 +28,31 @@ export function getValue(pixels, x, y, width) {
  * @returns {Array} - integral image
  */
 export function getSumTable(pixels, width, height) {
-    var integralImage = new Array(width);
-    var sumx          = 0;
-    var sumy          = 0;
 
-    for (var i = 0; i < width; i++) {
+    var integralImage = new Array( width );
+    var sumX          = 0, sumY = 0;
+    var i, j, x, y;
+
+    for (i = 0 ; i < width; i++) {
         integralImage[i]    = new Array(height);
-        sumx += getValue(pixels, i, 0, width);
-        integralImage[i][0] = sumx;
+        sumX += getValue(pixels, i, 0, width);
+        integralImage[i][0] = sumX;
     }
 
-    for (var i = 0; i < height; i++) {
-        sumy += getValue(pixels, 0, i, width);
-        integralImage[0][i] = sumy;
+    for (j = 0 ; j < height; j++) {
+        sumY += getValue(pixels, 0, j, width);
+        integralImage[0][j] = sumY;
     }
 
-    for (var x = 1; x < width; x++) {
-        for (var y = 1; y < height; y++) {
+    for (x = 1 ; x < width; x++) {
+        for (y = 1 ; y < height; y++) {
             integralImage[x][y] = getValue(pixels, x, y, width) + integralImage[x - 1][y] + integralImage[x][y - 1] - integralImage[x - 1][y - 1];
         }
     }
+    
     return integralImage;
+    
+}
 }
 
 /**
@@ -59,35 +63,55 @@ export function getSumTable(pixels, width, height) {
  * @return {Array} coordinate of the bottom right corner and width of the best fitted pupil
  */
 export function getSinglePupil(pixels, width, height) {
-    var summedAreaTable = getSumTable(pixels, width, height);
-    var bestAvgScore    = 999999; //want to minimize this score
-    var bestPoint       = [0, 0]; //bottom right corner of best fitted pupil
-    var bestHalfWidth   = 0; //corresponding half width of the best fitted pupil
-    var offset          = Math.floor(width / 10.0); //padding
+
+    var summedAreaTable  = getSumTable( pixels, width, height );
+    var bestAverageScore = Number.MAX_VALUE; //want to minimize this score
+    var bestPoint        = [ 0, 0 ]; //bottom right corner of best fitted pupil
+    var bestHalfWidth    = 0; //corresponding half width of the best fitted pupil
+    var offset           = Math.floor( width / 10.0 ); //padding
+    var currentWidth     = Math.floor( height / 10.0 );
+    var halfWidth        = width / 2;
+    var irisArea         = 0;
+    var averageScore     = 0;
+    var scleraIrisArea   = 0;
+    var x, y;
+
     //halfWidth could also start at 1, but this makes it faster
-    for (var halfWidth = Math.floor(height / 10.0); halfWidth < width / 2; halfWidth++) {
-        //think of a sliding rectangular window of width halfWidth*2 that goes through the whole eye pixel matrix and does the following:
+    for ( ; currentWidth < halfWidth; ++currentWidth) {
+        //think of a sliding rectangular window of width currentWidth*2 that goes through the whole eye pixel matrix and does the following:
         //1) computes the irisArea, which is the total intensity of the iris
         //2) computes the scleraIrisArea, which is multiple rows of pixels including the sclera and iris.
         //3) computes avg, which is the intensity of the area divided by the number of pixels.
-        //start at the bottom right of the rectangle!not top left
-        for (var x = halfWidth; x < width - offset; x++) {
-            for (var y = halfWidth; y < height - offset; y++) {
-                //evaluate area by the formula found on wikipedia about the summed area table: I(D)+I(A)-I(B)-I(C)
-                var irisArea       = summedAreaTable[x + offset][y + offset] + summedAreaTable[x + offset - halfWidth][y + offset - halfWidth] - summedAreaTable[x + offset][y + offset - halfWidth] - summedAreaTable[x + offset - halfWidth][y + offset];
-                var avgScore       = 1.0 * irisArea / ((halfWidth + 1) * (halfWidth + 1)) + 1;
-                //summation area table again
-                var scleraIrisArea = ((1.0 * summedAreaTable[width - 1 - offset][y + offset] + summedAreaTable[0 + offset][y + offset - halfWidth] - summedAreaTable[0 + offset][y + offset] - summedAreaTable[width - 1 - offset][y + offset - halfWidth]) - irisArea);
+        //start at the bottom right of the rectangle ! not top left
+        for (x = currentWidth; x < width - offset; ++x) {
+            for (y = currentWidth; y < height - offset; ++y) {
+
+                irisArea     = getIrisArea(summedAreaTable, offset, currentWidth, x, y);
+                averageScore = 1.0 * irisArea / ((currentWidth + 1) * (currentWidth + 1)) + 1;
+                
+                ///TODO: equation in bracket can be factorize => Speed
+                scleraIrisArea = (
+                    (1.0 * summedAreaTable[width - 1 - offset][y + offset]
+                    + summedAreaTable[0 + offset][y + offset - currentWidth]
+                    - summedAreaTable[0 + offset][y + offset]
+                    - summedAreaTable[width - 1 - offset][y + offset - currentWidth])
+                    - irisArea
+                );
+
                 //minimize avgScore/scleraIrisArea. 150 is too high, might have to change since it's closer to white
-                if ((avgScore) / scleraIrisArea < bestAvgScore && avgScore < 150) {
-                    bestAvgScore  = (avgScore) / scleraIrisArea;
-                    bestPoint     = [x + offset, y + offset];
-                    bestHalfWidth = halfWidth;
+                if ((averageScore / scleraIrisArea) < bestAverageScore && averageScore < 150) {
+                    bestAverageScore = (averageScore) / scleraIrisArea;
+                    bestPoint        = [x + offset, y + offset];
+                    bestHalfWidth    = currentWidth;
                 }
             }
         }
     }
+
     return [bestPoint, bestHalfWidth];
+
+}
+
 }
 
 /**
