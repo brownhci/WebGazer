@@ -404,10 +404,6 @@ var WebGazer = (function (window) {
             init(debugVideoLoc);
             return this;
         }
-        // else
-        // {
-        //     init();
-        // }
 
         //SETUP VIDEO ELEMENTS
         navigator.getUserMedia || (navigator.getUserMedia = navigator.mozGetUserMedia || navigator.webkitGetUserMedia || navigator.msGetUserMedia);
@@ -425,33 +421,7 @@ var WebGazer = (function (window) {
         function onSuccess(stream) {
             console.log('video stream created');
             init(window.URL.createObjectURL(stream));
-            // init(window.URL.createObjectURL(stream));
-
-            // var video = document.getElementById('webcam');
-            // video.autoplay = true;
-            // video.src = window.URL.createObjectURL(stream);
         }
-
-        // navigator.getUserMedia = navigator.getUserMedia ||
-        //     navigator.webkitGetUserMedia ||
-        //     navigator.mozGetUserMedia;
-
-        // if (navigator.getUserMedia != null) {
-        //     var options = params.camConstraints;
-        //     //request webcam access
-        //     navigator.getUserMedia(options,
-        //         function (stream) {
-        //             console.log('video stream created');
-        //             init(window.URL.createObjectURL(stream));
-        //         },
-        //         function (e) {
-        //             onFail();
-        //             videoElement = null;
-        //         });
-        // }
-        // if (!navigator.getUserMedia) {
-        //     alert("Unfortunately, your browser does not support access to the webcam through the getUserMedia API. Try to use Google Chrome, Mozilla Firefox, Opera, or Microsoft Edge instead.");
-        // }
 
         return this;
     }
