@@ -40,7 +40,8 @@ BlinkDetector.prototype.detectBlink = function (eyesObj) {
 BlinkDetector.prototype.setBlinkWindow = function (value) {
 
     //TODO MISSING METHOD
-    if (Util.isInt(value) && value > 0) {
+    if (value > 0) {
+//    if (Util.isInt(value) && value > 0) {
         this.blinkWindow = value;
     }
     return this;
