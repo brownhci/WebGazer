@@ -213,11 +213,9 @@ RidgeWeightedReg.prototype.predict = function (eyesObj) {
 
     var eyeFeats   = getEyeFeats(eyesObj);
     var predictedX = 0;
-    for (var i = 0; i < eyeFeats.length; i++) {
-        predictedX += eyeFeats[i] * coefficientsX[i];
-    }
     var predictedY = 0;
     for (var i = 0; i < eyeFeats.length; i++) {
+        predictedX += eyeFeats[i] * coefficientsX[i];
         predictedY += eyeFeats[i] * coefficientsY[i];
     }
 
