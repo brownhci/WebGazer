@@ -21,9 +21,6 @@ function getEyeFeats(eyes) {
 
 }
 
-function updateWeights(event) {
-    console.log(event.data);
-    this.weights = event.data;
 function getEyeFeat(eye) {
 
     var resizeEye = Util.resizeEye(eye, resizeWidth, resizeHeight);
