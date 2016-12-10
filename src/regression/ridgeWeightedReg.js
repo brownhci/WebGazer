@@ -67,24 +67,6 @@ function getEyeFeats(eyes) {
 
 }
 
-//TODO: still usefull ???
-/**
- *
- * @returns {Number}
- */
-function getCurrentFixationIndex() {
-    var index   = 0;
-    var recentX = this.screenXTrailArray.get(0);
-    var recentY = this.screenYTrailArray.get(0);
-    for (var i = this.screenXTrailArray.length - 1; i >= 0; i--) {
-        var currX             = this.screenXTrailArray.get(i);
-        var currY             = this.screenYTrailArray.get(i);
-        var euclideanDistance = Math.sqrt(Math.pow((currX - recentX), 2) + Math.pow((currY - recentY), 2));
-        if (euclideanDistance > 72) {
-            return i + 1;
-        }
-    }
-    return i;
 function getEyeFeat(eye) {
 
     var resizeEye = Util.resizeEye( eye, resizeWidth, resizeHeight );
