@@ -1,20 +1,22 @@
 (function(window) {
-    "use strict"
+    "use strict";
 
     window.webgazer = window.webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
 
-    var TrackingjsGaze = function() {
-
-    }
+    /**
+     * Constructor of TrackingjsGaze object
+     * @constructor
+     */
+    var TrackingjsGaze = function() {};
 
     webgazer.tracker.TrackingjsGaze = TrackingjsGaze;
 
     /**
      * Isolates the two patches that correspond to the user's eyes
      * @param  {Canvas} imageCanvas - canvas corresponding to the webcam stream
-     * @param  {number} width - of imageCanvas
-     * @param  {number} height - of imageCanvas
+     * @param  {Number} width - of imageCanvas
+     * @param  {Number} height - of imageCanvas
      * @return {Object} the two eye-patches, first left, then right eye
      */
     TrackingjsGaze.prototype.getEyePatches = function(imageCanvas, width, height) {
@@ -75,14 +77,14 @@
         }
 
         return eyeObjs;
-    }
+    };
 
     /**
      * Performs eye detection on the passed working image
      * @param {ImageData} workingImage - either the whole canvas or the upper half of the head
-     * @param {number} width - width of working image
-     * @param {number} height - height of working image
-     * @return{array} eyes - array of rectangle information. 
+     * @param {Number} width - width of working image
+     * @param {Number} height - height of working image
+     * @return {Array} eyes - array of rectangle information. 
      */
     TrackingjsGaze.prototype.detectEyes = function(workingImage, width, height){         
         var eyes = [];
@@ -117,14 +119,14 @@
             console.log('tracking.js could not detect two eyes in the video');
             return null;
         }
-    }
+    };
 
     /**
      * Performs face detection on the passed canvas
      * @param {ImageData} workingImage - whole video canvas
-     * @param {number} width - width of imageCanvas
-     * @param {number} height - height of imageCanvas
-     * @return{array} face - array of rectangle information
+     * @param {Number} width - width of imageCanvas
+     * @param {Number} height - height of imageCanvas
+     * @return {Array} face - array of rectangle information
      */
     TrackingjsGaze.prototype.detectFace = function(workingImage, width, height){
         var intermediateFaces = [];
@@ -138,12 +140,12 @@
         });
         face = this.findLargestRectangle(intermediateFaces);
         return face;
-    }
+    };
 
     /**
      * Goes through an array of rectangles and returns the one with the largest area
-     * @param {array of arrays} rectangles array of arrays of format [xCoordinate, yCoordinate, width, height]
-     * @return{array} largestRectangle = [xCoordinate, yCoordinate, width, height]
+     * @param {Array.<Array.<Number>>} rectangles - array of arrays of format [xCoordinate, yCoordinate, width, height]
+     * @return {Array} largestRectangle = [xCoordinate, yCoordinate, width, height]
      */
     TrackingjsGaze.prototype.findLargestRectangle = function(rectangles){
         var largestArea = 0;
@@ -157,7 +159,12 @@
             }
         }
         return largestRectangle;
-    }
+    };
 
+    /**
+     * The TrackingjsGaze object name
+     * @type {string}
+     */
     TrackingjsGaze.prototype.name = 'trackingjs';
+    
 }(window));

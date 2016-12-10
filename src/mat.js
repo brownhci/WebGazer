@@ -1,13 +1,13 @@
 (function() {
-    "use strict"
+    "use strict";
 
     self.webgazer = self.webgazer || {};
     self.webgazer.mat = self.webgazer.mat || {};
 
     /**
      * Transposes an mxn array
-     * @param {array of arrays} matrix - of mxn dimensionality
-     * @return {array of arrays} transposed matrix
+     * @param {Array.<Array.<Number>>} matrix - of "M x N" dimensionality
+     * @return {Array.<Array.<Number>>} transposed matrix
      */
     self.webgazer.mat.transpose = function(matrix){
         var m = matrix.length;
@@ -22,15 +22,15 @@
         }
 
         return transposedMatrix;
-    }
+    };
 
     /**
-     * Get a submatrix of matrix
-     * @param [array of arrays] matrix - original matrix
-     * @param [array] r - Array of row indices.
-     * @param [number] j0 - Initial column index
-     * @param [number] j1 - Final column index
-     * @return [array of arrays] X is the submatrix matrix(r(:),j0:j1)
+     * Get a sub-matrix of matrix
+     * @param {Array.<Array.<Number>>} matrix - original matrix
+     * @param {Array.<Number>} r - Array of row indices
+     * @param {Number} j0 - Initial column index
+     * @param {Number} j1 - Final column index
+     * @returns {Array} The sub-matrix matrix(r(:),j0:j1)
      */
     self.webgazer.mat.getMatrix = function(matrix, r, j0, j1){
         var X = new Array(r.length),
@@ -43,16 +43,16 @@
             }
         }
         return X;
-    }
+    };
 
     /**
      * Get a submatrix of matrix
-     * @param [array of arrays] matrix - original matrix
-     * @param [number] i0 - Initial row index
-     * @param [number] i1 - Final row index
-     * @param [number] j0 - Initial column index
-     * @param [number] j1 - Final column index
-     * @return matrix(i0:i1,j0:j1)
+     * @param {Array.<Array.<Number>>} matrix - original matrix
+     * @param {Number} i0 - Initial row index
+     * @param {Number} i1 - Final row index
+     * @param {Number} j0 - Initial column index
+     * @param {Number} j1 - Final column index
+     * @return {Array} The sub-matrix matrix(i0:i1,j0:j1)
      */
     self.webgazer.mat.getSubMatrix = function(matrix, i0, i1, j0, j1){
         var size = j1 - j0 + 1,
@@ -68,13 +68,13 @@
             }
         }
         return X;
-    }
+    };
 
     /**
      * Linear algebraic matrix multiplication, matrix1 * matrix2
-     * @param {array of arrays} matrix1
-     * @param {array of arrays} matrix2
-     * @return {array of arrays} Matrix product, matrix1 * matrix2
+     * @param {Array.<Array.<Number>>} matrix1
+     * @param {Array.<Array.<Number>>} matrix2
+     * @return {Array.<Array.<Number>>} Matrix product, matrix1 * matrix2
      */
     self.webgazer.mat.mult = function(matrix1, matrix2){
 
@@ -103,14 +103,14 @@
             }
         }
         return X;
-    }
+    };
 
 
     /**
      * LUDecomposition to solve A*X = B, based on WEKA code
-     * @param{array of arrays} A - left matrix of equation to be solved
-     * @param{array of arrays} B - right matrix of equation to be solved
-     * @return {array of arrays} X so that L*U*X = B(piv,:)
+     * @param {Array.<Array.<Number>>} A - left matrix of equation to be solved
+     * @param {Array.<Array.<Number>>} B - right matrix of equation to be solved
+     * @return {Array.<Array.<Number>>} X so that L*U*X = B(piv,:)
      */
     self.webgazer.mat.LUDecomposition = function(A,B){
         var LU = new Array(A.length);
@@ -203,17 +203,17 @@
             }
         }
         return X;
-    }
+    };
 
     /**
      * Least squares solution of A*X = B, based on WEKA code
-     * @param [array of arrays] A - left side matrix to be solved
-     * @param [array of arrays] B - a matrix with as many rows as A and any number of columns.
-     * @return [array of arrays] X - that minimizes the two norms of QR*X-B.
+     * @param {Array.<Array.<Number>>} A - left side matrix to be solved
+     * @param {Array.<Array.<Number>>} B - a matrix with as many rows as A and any number of columns.
+     * @return {Array.<Array.<Number>>} X - that minimizes the two norms of QR*X-B.
      */
     self.webgazer.mat.QRDecomposition = function(A, B){
         // Initialize.
-        QR = new Array(A.length);
+        var QR = new Array(A.length);
 
         for (var i = 0; i < A.length; i++){
             QR[i] = new Array(A[0].length);
@@ -266,7 +266,7 @@
         }
         // Copy right hand side
         var nx = B[0].length;
-        X = new Array(B.length);
+        var X = new Array(B.length);
         for(var i=0; i<B.length; i++){
             X[i] = new Array(B[0].length);
         }
@@ -301,4 +301,5 @@
         }
         return self.webgazer.mat.getSubMatrix(X,0,n-1,0,nx-1);
     }
+    
 }());

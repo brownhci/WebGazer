@@ -1,20 +1,22 @@
 (function(window) {
-    "use strict"
+    "use strict";
 
     window.webgazer = window.webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
 
-    var Js_objectdetectGaze = function() {
-
-    }
+    /**
+     * Constructor of Js_objectdetectGaze
+     * @constructor
+     */
+    var Js_objectdetectGaze = function() {};
 
     webgazer.tracker.Js_objectdetectGaze = Js_objectdetectGaze;
 
     /**
      * Isolates the two patches that correspond to the user's eyes
      * @param  {Canvas} imageCanvas - canvas corresponding to the webcam stream
-     * @param  {number} width - of imageCanvas
-     * @param  {number} height - of imageCanvas
+     * @param  {Number} width - of imageCanvas
+     * @param  {Number} height - of imageCanvas
      * @return {Object} the two eye-patches, first left, then right eye
      */
     Js_objectdetectGaze.prototype.getEyePatches = function(imageCanvas, width, height) {
@@ -74,14 +76,14 @@
         }
 
         return eyeObjs;
-    }
+    };
 
     /**
      * Performs eye detection on the passed workingImage
      * @param {ImageData} workingImage - either the whole canvas or the upper half of the head
-     * @param {number} width - width of working image
-     * @param {number} height - height of working image
-     * @return{array} eyes - array of rectangle information. 
+     * @param {Number} workingImageWidth - width of working image
+     * @param {Number} workingImageHeight - height of working image
+     * @return {Array} eyes - array of rectangle information.
      */
     Js_objectdetectGaze.prototype.detectEyes = function(workingImage, workingImageWidth, workingImageHeight){    
 
@@ -116,14 +118,14 @@
             console.log('js_objectdetect could not detect two eyes in the video');
             return null;
         }
-    }
+    };
 
     /**
      * Performs face detection on the passed canvas
-     * @param {canvas} imageCanvas - whole video canvas
-     * @param {number} width - width of imageCanvas
-     * @param {number} height - height of imageCanvas
-     * @return{array} face - array of rectangle information
+     * @param {Canvas} imageCanvas - whole video canvas
+     * @param {Number} workingImageWidth - width of imageCanvas
+     * @param {Number} workingImageHeight - height of imageCanvas
+     * @return {Array.<Array.<Number>>} face - array of rectangle information
      */
     Js_objectdetectGaze.prototype.detectFace = function(imageCanvas, workingImageWidth, workingImageHeight){
         var intermediateFaces = [];
@@ -139,12 +141,12 @@
         face[2] *= workingImageWidth / detector.canvas.width;
         face[3] *= workingImageHeight / detector.canvas.height;
         return face;
-    }
+    };
 
     /**
      * Goes through an array of rectangles and returns the one with the largest area
-     * @param {array of arrays} rectangles array of arrays of format [xCoordinate, yCoordinate, width, height]
-     * @return{array} largestRectangle = [xCoordinate, yCoordinate, width, height]
+     * @param {Array.<Array.<Number>>} rectangles - array of arrays of format [xCoordinate, yCoordinate, width, height]
+     * @return {Array} largestRectangle = [xCoordinate, yCoordinate, width, height]
      */
     Js_objectdetectGaze.prototype.findLargestRectangle = function(rectangles){
         var largestArea = 0;
@@ -158,13 +160,13 @@
             }
         }
         return largestRectangle;
-    }
+    };
 
     /**
      * Merges detected rectangles in clusters
      * Taken from trackingjs and modified slightly to reflect that rectangles are arrays and not objects
-     * @param  {array of arrays} rects rectangles to me clustered
-     * @return {array of arrays} result merged rectangles
+     * @param  {Array.<Array.<Number>>} rects - rectangles to me clustered
+     * @return {Array.<Array.<Number>>} result merged rectangles
      */
     Js_objectdetectGaze.prototype.mergeRectangles = function(rects){
         var disjointSet = new tracking.DisjointSet(rects.length);
@@ -217,7 +219,11 @@
         });
         return result;
     };
-
-
+    
+    /**
+     * The Js_objectdetectGaze object name
+     * @type {string}
+     */
     Js_objectdetectGaze.prototype.name = 'js_objectdetect';
+
 }(window));
