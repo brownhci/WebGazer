@@ -145,8 +145,8 @@
         var leftImageData = imageCanvas.getContext('2d').getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);
         eyeObjs.left = {
             patch: leftImageData,
-            imagex: leftOriginX,
-            imagey: leftOriginY,
+            imageX: leftOriginX,
+            imageY: leftOriginY,
             width: leftWidth,
             height: leftHeight
         };
@@ -154,8 +154,8 @@
         var rightImageData = imageCanvas.getContext('2d').getImageData(rightOriginX, rightOriginY, rightWidth, rightHeight);
         eyeObjs.right = {
             patch: rightImageData,
-            imagex: rightOriginX,
-            imagey: rightOriginY,
+            imageX: rightOriginX,
+            imageY: rightOriginY,
             width: rightWidth,
             height: rightHeight
         };

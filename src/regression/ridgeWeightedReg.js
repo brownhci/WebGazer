@@ -134,6 +134,7 @@ RidgeWeightedReg.prototype.addData = function (eyes, screenPos, type) {
     if (!eyes) {
         return;
     }
+    
     if (eyes.left.blink || eyes.right.blink) {
         return;
     }
@@ -164,13 +165,16 @@ RidgeWeightedReg.prototype.addData = function (eyes, screenPos, type) {
 // *  @return {integer} prediction.x - the x screen coordinate predicted
 // *  @return {integer} prediction.y - the y screen coordinate predicted
 RidgeWeightedReg.prototype.predict = function (eyesObj) {
+
     if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
         return null;
     }
+
     var acceptTime = performance.now() - this.trailTime;
     var trailX     = [];
     var trailY     = [];
     var trailFeat  = [];
+
     for (var i = 0; i < this.trailDataWindow; i++) {
         if (this.trailTimes.get(i) > acceptTime) {
             trailX.push(this.screenXTrailArray.get(i));
@@ -180,25 +184,33 @@ RidgeWeightedReg.prototype.predict = function (eyesObj) {
     }
 
     var len              = this.eyeFeaturesClicks.data.length;
-    var weightedEyeFeats = Array(len);
-    var weightedXArray   = Array(len);
-    var weightedYArray   = Array(len);
-    for (var i = 0; i < len; i++) {
-        var weight = Math.sqrt(1 / (len - i)); // access from oldest to newest so should start with low weight and increase steadily
+    var weightedEyeFeats = new Array(len);
+    var weightedXArray   = new Array(len);
+    var weightedYArray   = new Array(len);
+
+    for (var j = 0; j < len; j++) {
+
+        var weight = Math.sqrt(1 / (len - j));
+        // access from oldest to newest so should start with low weight and increase steadily
         //abstraction is leaking...
-        var trueIndex = this.eyeFeaturesClicks.getTrueIndex(i);
-        for (var j = 0; j < this.eyeFeaturesClicks.data[trueIndex].length; j++) {
-            var val = this.eyeFeaturesClicks.data[trueIndex][j] * weight;
-            if (weightedEyeFeats[trueIndex] != undefined) {
+        var trueIndex = this.eyeFeaturesClicks.getTrueIndex(j);
+
+        for (var k = 0; k < this.eyeFeaturesClicks.data[trueIndex].length; k++) {
+
+            var val = this.eyeFeaturesClicks.data[trueIndex][k] * weight;
+            if (weightedEyeFeats[trueIndex]) {
                 weightedEyeFeats[trueIndex].push(val);
             } else {
                 weightedEyeFeats[trueIndex] = [val];
             }
+
         }
-        weightedXArray[trueIndex] = this.screenXClicksArray.get(i).slice(0, this.screenXClicksArray.get(i).length);
-        weightedYArray[trueIndex] = this.screenYClicksArray.get(i).slice(0, this.screenYClicksArray.get(i).length);
-        weightedXArray[i][0]      = weightedXArray[i][0] * weight;
-        weightedYArray[i][0]      = weightedYArray[i][0] * weight;
+
+        weightedXArray[trueIndex] = this.screenXClicksArray.get(j).slice(0, this.screenXClicksArray.get(j).length);
+        weightedYArray[trueIndex] = this.screenYClicksArray.get(j).slice(0, this.screenYClicksArray.get(j).length);
+        weightedXArray[j][0]      = weightedXArray[j][0] * weight;
+        weightedYArray[j][0]      = weightedYArray[j][0] * weight;
+
     }
 
     var screenXArray = weightedXArray.concat(trailX);

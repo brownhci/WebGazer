@@ -95,6 +95,7 @@ RidgeRegThreaded.prototype.addData = function (eyes, screenPos, type) {
 // *  @return {integer} prediction.y - the y screen coordinate predicted
 RidgeRegThreaded.prototype.predict = function (eyesObj) {
     console.log("LOGGING..");
+
     if (!eyesObj) {
         return null;
     }
@@ -110,10 +111,6 @@ RidgeRegThreaded.prototype.predict = function (eyesObj) {
 
     predictedX = Math.floor(predictedX);
     predictedY = Math.floor(predictedY);
-
-    console.log("PredicedX");
-    console.log(predictedX);
-    console.log(predictedY);
 
     return {
         x: predictedX,

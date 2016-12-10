@@ -87,6 +87,7 @@ var WebGazer = (function (window) {
             return new Tracker.Js_objectdetectGaze();
         }
     };
+    
     var regressionMap = {
         'ridge':         function () {
             return new Regression.RidgeReg();
@@ -122,10 +123,13 @@ var WebGazer = (function (window) {
      * @param {Number} height - the height of canvas
      */
     function getPupilFeatures(canvas, width, height) {
+
         if (!canvas) {
             return;
         }
+
         paintCurrentFrame(canvas, width, height);
+
         try {
             var eyePatch = curTracker.getEyePatches(canvas, width, height);
             return blinkDetector.detectBlink(eyePatch);
@@ -133,6 +137,7 @@ var WebGazer = (function (window) {
             console.log(err);
             return null;
         }
+
     }
 
     /**
@@ -167,24 +172,31 @@ var WebGazer = (function (window) {
     function getPrediction(regModelIndex) {
         var predictions = [];
         var features    = getPupilFeatures(videoElementCanvas, params.imgWidth, params.imgHeight);
+
         if (regs.length == 0) {
             console.log('regression not set, call setRegression()');
             return null;
         }
+
         for (var reg in regs) {
             predictions.push(regs[reg].predict(features));
         }
+
         if (regModelIndex !== undefined) {
+
             return predictions[regModelIndex] == null ? null : {
                 'x': predictions[regModelIndex].x,
                 'y': predictions[regModelIndex].y
             };
+
         } else {
+
             return predictions.length == 0 || predictions[0] == null ? null : {
                 'x':   predictions[0].x,
                 'y':   predictions[0].y,
                 'all': predictions
             };
+
         }
     }
 

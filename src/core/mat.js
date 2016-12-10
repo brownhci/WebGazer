@@ -219,15 +219,16 @@ export function QRDecomposition(A, B) {
     }
     var m     = A.length;
     var n     = A[0].length;
-    var Rdiag = new Array(n);
+
+    var rDiag = new Array(n);
     var nrm;
 
     // Main loop.
     for (var k = 0; k < n; k++) {
         // Compute 2-norm of k-th column without under/overflow.
         nrm = 0;
-        for (var i = k; i < m; i++) {
-            nrm = Math.hypot(nrm, QR[i][k]);
+        for (var l = k; l < m; l++) {
+            nrm = Math.hypot(nrm, QR[l][k]);
         }
         if (nrm != 0) {
             // Form k-th Householder vector.
@@ -251,13 +252,13 @@ export function QRDecomposition(A, B) {
                 }
             }
         }
-        Rdiag[k] = -nrm;
+        rDiag[k] = -nrm;
     }
     if (B.length != m) {
         console.log("Matrix row dimensions must agree.");
     }
     for (var j = 0; j < n; j++) {
-        if (Rdiag[j] == 0)
+        if (rDiag[j] == 0)
             console.log("Matrix is rank deficient");
     }
     // Copy right hand side
@@ -287,7 +288,7 @@ export function QRDecomposition(A, B) {
     // Solve R*X = Y;
     for (var k = n - 1; k >= 0; k--) {
         for (var j = 0; j < nx; j++) {
-            X[k][j] /= Rdiag[k];
+            X[k][j] /= rDiag[k];
         }
         for (var i = 0; i < k; i++) {
             for (var j = 0; j < nx; j++) {

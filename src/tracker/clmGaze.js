@@ -38,10 +38,12 @@ var ClmGaze = function () {
     ];// * delta_t
     var delta_t     = 1 / 10; // The amount of time between frames
     Q               = numeric.mul(Q, delta_t);
-    var H           = [[1, 0, 0, 0, 0, 0],
+    var H           = [
+        [1, 0, 0, 0, 0, 0],
         [0, 1, 0, 0, 0, 0],
         [0, 0, 1, 0, 0, 0],
-        [0, 0, 0, 1, 0, 0]];
+        [0, 0, 0, 1, 0, 0]
+    ];
     var pixel_error = 6.5; //We will need to fine tune this value
     //This matrix represents the expected measurement error
     var R = numeric.mul(numeric.identity(4), pixel_error);
@@ -117,8 +119,8 @@ ClmGaze.prototype.getEyePatches = function (imageCanvas, width, height) {
     var leftImageData = imageCanvas.getContext('2d').getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);
     eyeObjs.left      = {
         patch:  leftImageData,
-        imagex: leftOriginX,
-        imagey: leftOriginY,
+        imageX: leftOriginX,
+        imageY: leftOriginY,
         width:  leftWidth,
         height: leftHeight
     };
@@ -126,8 +128,8 @@ ClmGaze.prototype.getEyePatches = function (imageCanvas, width, height) {
     var rightImageData = imageCanvas.getContext('2d').getImageData(rightOriginX, rightOriginY, rightWidth, rightHeight);
     eyeObjs.right      = {
         patch:  rightImageData,
-        imagex: rightOriginX,
-        imagey: rightOriginY,
+        imageX: rightOriginX,
+        imageY: rightOriginY,
         width:  rightWidth,
         height: rightHeight
     };
