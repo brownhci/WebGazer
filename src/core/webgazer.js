@@ -174,8 +174,9 @@ var WebGazer = (function (window) {
      * @returns {*}
      */
     function getPrediction(regModelIndex) {
+
         var predictions = [];
-        var features    = getPupilFeatures(videoElementCanvas, params.imgWidth, params.imgHeight);
+        var features    = getPupilFeatures( videoElementCanvas, params.imgWidth, params.imgHeight );
 
         if (regs.length == 0) {
             console.log('regression not set, call setRegression()');
