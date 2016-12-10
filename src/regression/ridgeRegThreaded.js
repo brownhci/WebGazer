@@ -62,6 +62,14 @@ var RidgeRegThreaded = function () {
         weights.X = evt.data.X;
         weights.Y = evt.data.Y;
     };
+
+
+    function _getNewImageDataForEye(eye) {
+
+        return new ImageData(new Uint8ClampedArray(eye.patch), eye.width, eye.height);
+
+    }
+
 };
 
 
