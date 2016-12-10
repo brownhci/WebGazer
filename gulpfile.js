@@ -8,7 +8,8 @@ var del = require('del')
 var gulp = require('gulp')
 var gutil = require('gulp-util')
 var gulpif = require('gulp-if')
-var runSequence = require('run-sequence');
+var runSequence = require('run-sequence')
+var benchmark = require('gulp-benchmark')
 
 var jsdoc = require('gulp-jsdoc3')
 var plumber = require('gulp-plumber')
@@ -52,6 +53,10 @@ gulp.task('test', ['unit', 'benchmark'], function(){
 gulp.task('benchmark', function() {
 
     gutil.log('No benchmarks yet...');
+
+    return gulp.src([
+    ])
+        .pipe(benchmark());
 
 });
 
