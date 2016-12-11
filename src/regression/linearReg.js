@@ -54,10 +54,17 @@ LinearReg.prototype.addData = function (eyes, screenPos, type) {
  * @param {Array.<Object>} data - Array of util.eyes objects to set
  */
 LinearReg.prototype.setData = function (data) {
-    for (var i = 0; i < data.length; i++) {
-        this.addData(data[i].eyes, data[i].screenPos, data[i].type);
+
+    var currentData = undefined;
+    var dataLength = data.length;
+    var i;
+    for ( i = 0; i < dataLength; i++) {
+        currentData = data[i];
+        this.addData(currentData.eyes, currentData.screenPos, currentData.type);
     }
+
     this.data = data;
+
 };
 
 /**

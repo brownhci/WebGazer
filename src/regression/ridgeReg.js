@@ -185,7 +185,7 @@ RidgeReg.prototype.addData = function ( eyes, screenPos, type ) {
 // *  @return {integer} prediction.y - the y screen coordinate predicted
 RidgeReg.prototype.predict = function ( eyesObj ) {
 
-    if ( !eyesObj || this.eyeFeaturesClicks.length == 0 ) {
+    if ( !eyesObj || !this.eyeFeaturesClicks.length ) {
         return null;
     }
 
