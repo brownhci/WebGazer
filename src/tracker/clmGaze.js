@@ -70,6 +70,10 @@ ClmGaze.prototype.name = 'clmtrackr';
  */
 ClmGaze.prototype.getEyePatches = function (imageCanvas, width, height) {
 
+    if (!imageCanvas) {
+        return null;
+    }
+    
     if (imageCanvas.width === 0) {
         return null;
     }
