@@ -121,6 +121,10 @@ export function getSinglePupil(pixels, width, height) {
 
 }
 
+/**
+ * todo
+ * @param eye
+ */
 function updatePupilForEye(eye) {
 
     var eyeWidth  = eye.width;
