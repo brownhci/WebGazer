@@ -18,8 +18,8 @@ function ridge ( screenCoordinates, X, ridgeParameter ) {
 
     var numberOfClick          = X[ 0 ].length;
     var matrixTranspose        = Mat.transpose( X );
-    var ss                     = Mat.mult( matrixTranspose, X );
-    var bb                     = Mat.mult( matrixTranspose, screenCoordinates );
+    var ss                     = Mat.multiply( matrixTranspose, X );
+    var bb                     = Mat.multiply( matrixTranspose, screenCoordinates );
     var regressionCoefficients = new Array( numberOfClick );
     //var   numberOfCoefficients   = 0;
     var solution               = [];

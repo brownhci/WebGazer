@@ -30,7 +30,7 @@ KalmanFilter.prototype.update = function (z) {
 
     // Here, we define all the different matrix operations we will need
     var add  = numeric.add, sub = numeric.sub, inv = numeric.inv, identity = numeric.identity;
-    var mult = Mat.mult, transpose = Mat.transpose;
+    var mult = Mat.multiply, transpose = Mat.transpose;
     //TODO cache variables like the transpose of H
 
     // prediction: X = F * X  |  P = F * P * F' + Q

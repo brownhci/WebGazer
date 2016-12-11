@@ -23,14 +23,14 @@ function ridge(y, X, k) {
     var success        = true;
     
     do {
-        var ss = Mat.mult(xt, X);
+        var ss = Mat.multiply(xt, X);
         // Set ridge regression adjustment
         for (var i = 0; i < nc; i++) {
             ss[i][i] = ss[i][i] + k;
         }
 
         // Carry out the regression
-        var bb = Mat.mult(xt, y);
+        var bb = Mat.multiply(xt, y);
         for (var i = 0; i < nc; i++) {
             m_Coefficients[i] = bb[i][0];
         }
