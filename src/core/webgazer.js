@@ -178,7 +178,7 @@ var WebGazer = (function (window) {
         var predictions = [];
         var features    = getPupilFeatures( videoElementCanvas, params.imgWidth, params.imgHeight );
 
-        if (regs.length == 0) {
+        if (regs.length === 0) {
             console.log('regression not set, call setRegression()');
             return null;
         }
@@ -189,14 +189,14 @@ var WebGazer = (function (window) {
 
         if (regModelIndex !== undefined) {
 
-            return predictions[regModelIndex] == null ? null : {
+            return predictions[regModelIndex] === null ? null : {
                 'x': predictions[regModelIndex].x,
                 'y': predictions[regModelIndex].y
             };
 
         } else {
 
-            return predictions.length == 0 || predictions[0] == null ? null : {
+            return predictions.length === 0 || predictions[0] === null ? null : {
                 'x':   predictions[0].x,
                 'y':   predictions[0].y,
                 'all': predictions
@@ -433,10 +433,11 @@ var WebGazer = (function (window) {
      */
     function isReady() {
         // TODO: Care if webgazer is not init you will fall into infinit loop
-        if (videoElementCanvas == null) {
+        if (videoElementCanvas === null) {
             console.log("Not ready yet !");
             return false;
         }
+
         paintCurrentFrame(videoElementCanvas, params.imgWidth, params.imgHeight);
         return (videoElementCanvas.width > 0);
     }
@@ -552,7 +553,7 @@ var WebGazer = (function (window) {
      * @return {webgazer} this
      */
     function setTracker(name) {
-        if (curTrackerMap[name] == undefined) {
+        if (!curTrackerMap[name]) {
             console.log('Invalid tracker selection');
             console.log('Options are: ');
             for (var t in curTrackerMap) {
@@ -570,7 +571,7 @@ var WebGazer = (function (window) {
      * @return {webgazer} this
      */
     function setRegression(name) {
-        if (regressionMap[name] == undefined) {
+        if (!regressionMap[name]) {
             console.log('Invalid regression selection');
             console.log('Options are: ');
             for (var reg in regressionMap) {
@@ -578,6 +579,7 @@ var WebGazer = (function (window) {
             }
             return this;
         }
+
         data = regs[0].getData();
         regs = [regressionMap[name]()];
         regs[0].setData(data);
