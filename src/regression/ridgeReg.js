@@ -69,8 +69,8 @@ function ridge ( screenCoordinates, X, ridgeParameter ) {
  * Compute eyes size as gray histogram
  * @param {Object} eyes - The eyes where looking for gray histogram
  * @returns {Array.<T>} The eyes gray level histogram
- */
-function getEyeFeats ( eyes ) {
+ */ 
+function getEyesFeats ( eyes ) {
 
     var leftFeat  = getEyeFeat( eyes.left );
     var rightFeat = getEyeFeat( eyes.right );
@@ -150,13 +150,13 @@ RidgeReg.prototype.addData = function ( eyes, screenPos, type ) {
         this.screenXClicksArray.push( [ screenPos[ 0 ] ] );
         this.screenYClicksArray.push( [ screenPos[ 1 ] ] );
 
-        this.eyeFeaturesClicks.push( getEyeFeats( eyes ) );
+        this.eyeFeaturesClicks.push( getEyesFeats( eyes ) );
         this.dataClicks.push( { 'eyes': eyes, 'screenPos': screenPos, 'type': type } );
     } else if ( type === 'move' ) {
         this.screenXTrailArray.push( [ screenPos[ 0 ] ] );
         this.screenYTrailArray.push( [ screenPos[ 1 ] ] );
 
-        this.eyeFeaturesTrail.push( getEyeFeats( eyes ) );
+        this.eyeFeaturesTrail.push( getEyesFeats( eyes ) );
         this.trailTimes.push( performance.now() );
         this.dataTrail.push( { 'eyes': eyes, 'screenPos': screenPos, 'type': type } );
     }
@@ -180,7 +180,7 @@ RidgeReg.prototype.predict = function ( eyesObj ) {
     }
 
     var acceptTime        = performance.now() - this.trailTime;
-    var eyesFeats         = getEyeFeats( eyesObj );
+    var eyesFeats         = getEyesFeats( eyesObj );
     var numberOfEyesFeats = eyesFeats.length;
     var trailX            = [];
     var trailY            = [];

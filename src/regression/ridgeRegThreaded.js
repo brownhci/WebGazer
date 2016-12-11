@@ -12,7 +12,7 @@ var trailDataWindow = 10;
  * @param {Object} eyes - The eyes where looking for gray histogram
  * @returns {Array.<T>} The eyes gray level histogram
  */
-function getEyeFeats(eyes) {
+function getEyesFeats(eyes) {
 
     var leftFeat  = getEyeFeat( eyes.left );
     var rightFeat = getEyeFeat( eyes.right );
@@ -23,9 +23,9 @@ function getEyeFeats(eyes) {
 
 function getEyeFeat(eye) {
 
-    var resizeEye = Util.resizeEye(eye, resizeWidth, resizeHeight);
-     var   greyscale = Util.grayscale(resizeEye.data, resizeEye.width, resizeEye.height);
-      var  histogram = [];
+    var resizeEye = Util.resizeEye( eye, resizeWidth, resizeHeight );
+    var greyscale = Util.grayscale( resizeEye.data, resizeEye.width, resizeEye.height );
+    var histogram = [];
 
     Util.equalizeHistogram(greyscale, 5, histogram);
 
@@ -92,7 +92,7 @@ RidgeRegThreaded.prototype.addData = function (eyes, screenPos, type) {
     if (eyes.left.blink || eyes.right.blink) {
         return;
     }
-    this.worker.postMessage({'eyes': getEyeFeats(eyes), 'screenPos': screenPos, 'type': type});
+    this.worker.postMessage({'eyes': getEyesFeats(eyes), 'screenPos': screenPos, 'type': type});
 };
 
 /**
@@ -109,7 +109,7 @@ RidgeRegThreaded.prototype.predict = function (eyesObj) {
         return null;
     }
 
-    var eyesFeats         = getEyeFeats( eyesObj );
+    var eyesFeats         = getEyesFeats( eyesObj );
     var numberOfEyesFeats = eyesFeats.length;
     var coefficientsX     = weights.X;
     var coefficientsY     = weights.Y;
