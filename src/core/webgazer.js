@@ -389,7 +389,7 @@ var WebGazer = (function (window) {
             alert("WebGazer works only over https. If you are doing local development you need to run a local server.");
         }
 
-        onFail = onFail || function () {
+        onFail = onFail || function onFailCallback() {
                 videoElement = null;
                 console.log("No stream")
                 alert('There has been a problem retreiving the streams - are you running on file:/// or did you disallow access?');
