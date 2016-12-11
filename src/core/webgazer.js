@@ -175,13 +175,13 @@ var WebGazer = (function (window) {
      */
     function getPrediction(regModelIndex) {
 
-        var predictions = [];
-        var features    = getPupilFeatures( videoElementCanvas, params.imgWidth, params.imgHeight );
-
         if (regs.length === 0) {
             console.log('regression not set, call setRegression()');
             return null;
         }
+
+        var predictions = [];
+        var features    = getPupilFeatures( videoElementCanvas, params.imgWidth, params.imgHeight );
 
         for (var reg in regs) {
             predictions.push(regs[reg].predict(features));
@@ -395,6 +395,11 @@ var WebGazer = (function (window) {
                 alert('There has been a problem retreiving the streams - are you running on file:/// or did you disallow access?');
             };
 
+        function onSuccess(stream) {
+            console.log('Video stream created');
+            init(window.URL.createObjectURL(stream));
+        }
+
         //TODO: Check it #FOLLOW  => Webgazer.html - checkIfReady
         // If you don't set an staticVideo (not camera)
         // You will never init WebGazer BUT !!!
@@ -417,11 +422,6 @@ var WebGazer = (function (window) {
 
         } else {
             alert("Unfortunately, your browser does not support access to the webcam through the getUserMedia API. Try to use Google Chrome, Mozilla Firefox, Opera, or Microsoft Edge instead.");
-        }
-
-        function onSuccess(stream) {
-            console.log('video stream created');
-            init(window.URL.createObjectURL(stream));
         }
 
         return this;
