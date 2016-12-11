@@ -126,7 +126,7 @@ var WebGazer = (function (window, params) {
     /**
      * Runs every available animation frame if webgazer is not paused
      */
-    var _smoothingVals = new Util.DataWindow(4);
+    var _smoothingVals = new Util.DataWindow(4, null);
     //PRIVATE FUNCTIONS
 
     /**
@@ -232,7 +232,7 @@ var WebGazer = (function (window, params) {
         
         _paintCurrentFrame( _videoElementCanvas, _params.imgWidth, _params.imgHeight );
 
-        var gazeData    = _getPrediction();
+        var gazeData    = _getPrediction(null);
         var elapsedTime = performance.now() - _clockStart;
 
         _callback(gazeData, elapsedTime);

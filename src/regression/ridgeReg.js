@@ -99,27 +99,27 @@ function getEyeFeat ( eye ) {
  */
 var RidgeReg = function (params) {
 
-    this.screenXClicksArray = new Util.DataWindow( dataWindow );
-    this.screenYClicksArray = new Util.DataWindow( dataWindow );
-    this.eyeFeaturesClicks  = new Util.DataWindow( dataWindow );
     var _params = {
         trailTime: 1000,
         moveTickSize: 50
     }
     Object.assign(_params, params)
 
+    this.screenXClicksArray = new Util.DataWindow( dataWindow, null );
+    this.screenYClicksArray = new Util.DataWindow( dataWindow, null );
+    this.eyeFeaturesClicks  = new Util.DataWindow( dataWindow, null );
 
     //sets to one second worth of cursor trail
     this.trailTime = _params.trailTime;
     this.trailDataWindow   = this.trailTime / _params.moveTickSize;
     // this.trailDataWindow   = this.trailTime / WebGazer.getParams().moveTickSize;
-    this.screenXTrailArray = new Util.DataWindow( trailDataWindow );
-    this.screenYTrailArray = new Util.DataWindow( trailDataWindow );
-    this.eyeFeaturesTrail  = new Util.DataWindow( trailDataWindow );
-    this.trailTimes        = new Util.DataWindow( trailDataWindow );
+    this.screenXTrailArray = new Util.DataWindow( trailDataWindow, null );
+    this.screenYTrailArray = new Util.DataWindow( trailDataWindow, null );
+    this.eyeFeaturesTrail  = new Util.DataWindow( trailDataWindow, null );
+    this.trailTimes        = new Util.DataWindow( trailDataWindow, null );
 
-    this.dataClicks = new Util.DataWindow( dataWindow );
-    this.dataTrail  = new Util.DataWindow( dataWindow );
+    this.dataClicks = new Util.DataWindow( dataWindow, null );
+    this.dataTrail  = new Util.DataWindow( dataWindow, null );
 
     function _getNewImageDataForEye ( eye ) {
 
