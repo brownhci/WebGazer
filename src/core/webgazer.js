@@ -175,8 +175,8 @@ var WebGazer = (function (window) {
      */
     function getPrediction(regModelIndex) {
 
-        if (regs.length === 0) {
-            console.log('regression not set, call setRegression()');
+        if (!regs.length) {
+            console.log('Regression not set, call setRegression()');
             return null;
         }
 
@@ -187,20 +187,26 @@ var WebGazer = (function (window) {
             predictions.push(regs[reg].predict(features));
         }
 
-        if (regModelIndex !== undefined) {
+        if (regModelIndex && regModelIndex >= 0) {
 
-            return predictions[regModelIndex] === null ? null : {
-                'x': predictions[regModelIndex].x,
-                'y': predictions[regModelIndex].y
+            var predictionForIndex = predictions[regModelIndex];
+            return (!predictionForIndex) ? null : {
+                'x': predictionForIndex.x,
+                'y': predictionForIndex.y
+            };
+
+        } else if (predictions.length) {
+
+            var firstPrediction = predictions[0];
+            return (!firstPrediction) ? null : {
+                'x':   firstPrediction.x,
+                'y':   firstPrediction.y,
+                'all': predictions
             };
 
         } else {
 
-            return predictions.length === 0 || predictions[0] === null ? null : {
-                'x':   predictions[0].x,
-                'y':   predictions[0].y,
-                'all': predictions
-            };
+            return null;
 
         }
     }
@@ -248,7 +254,8 @@ var WebGazer = (function (window) {
             return;
         }
         var features = getPupilFeatures(videoElementCanvas, params.imgWidth, params.imgHeight);
-        if (regs.length == 0) {
+
+        if (!regs.length) {
             console.log('regression not set, call setRegression()');
             return null;
         }
