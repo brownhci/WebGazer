@@ -18,8 +18,7 @@ var WebGazer = (function (window) {
 
     //params Object to be passed into tracker and regression constructors
     //contains various potentially useful knowledge like the video size and data collection rates
-    //var params = {};
-    var params             = {
+    var _params             = {
         videoScale:           1,
         videoElementId:       'webgazerVideoFeed',
         videoElementCanvasId: 'webgazerVideoCanvas',
@@ -34,48 +33,48 @@ var WebGazer = (function (window) {
         dataTimestep:         50,
         moveTickSize:         50 //milliseconds
     };
-    var videoElement       = null;
-    var videoElementCanvas = null;
+    var _videoElement       = null;
+    var _videoElementCanvas = null;
 
     //DEBUG variables
-    var showGazeDot            = false;
+    var _showGazeDot            = false;
     //debug element (starts offscreen)
-    var gazeDot                = document.createElement('div');
-    gazeDot.style.position     = 'fixed';
-    gazeDot.style.zIndex       = 99999;
-    gazeDot.style.left         = '-5px'; //'-999em';
-    gazeDot.style.top          = '-5px';
-    gazeDot.style.width        = '10px';
-    gazeDot.style.height       = '10px';
-    gazeDot.style.background   = 'red';
-    gazeDot.style.display      = 'none';
-    gazeDot.style.borderRadius = '100%';
-    gazeDot.style.opacity      = '0.7';
+    var _gazeDot                = document.createElement('div');
+    _gazeDot.style.position     = 'fixed';
+    _gazeDot.style.zIndex       = 99999;
+    _gazeDot.style.left         = '-5px'; //'-999em';
+    _gazeDot.style.top          = '-5px';
+    _gazeDot.style.width        = '10px';
+    _gazeDot.style.height       = '10px';
+    _gazeDot.style.background   = 'red';
+    _gazeDot.style.display      = 'none';
+    _gazeDot.style.borderRadius = '100%';
+    _gazeDot.style.opacity      = '0.7';
 
-    var debugVideoLoc = '';
+    var _staticVideoSource = '';
     // loop parameters
-    var clockStart    = performance.now();
-    // webgazer.params.dataTimestep = 50;
+    var _clockStart    = performance.now();
+    // webgazer._params.dataTimestep = 50;
     var paused        = false;
     //registered callback for loop
-    var nopCallback   = function (data, time) {
+    var _nopCallback   = function (data, time) {
     };
-    var callback      = nopCallback;
+    var _callback      = _nopCallback;
 
     //Types that regression systems should handle
     //Describes the source of data so that regression systems may ignore or handle differently the various generating events
-    var eventTypes = ['click', 'move'];
+    var _eventTypes = ['click', 'move'];
 
     //movelistener timeout clock parameters
-    var moveClock = performance.now();
+    var _moveClock = performance.now();
 
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
-    var curTracker    = new Tracker.ClmGaze();
-    var regs          = [new Regression.RidgeReg()];
-    var blinkDetector = new Util.BlinkDetector();
+    var _tracker       = new Tracker.ClmGaze();
+    var _regressions   = [ new Regression.RidgeReg() ];
+    var _blinkDetector = new Util.BlinkDetector();
 
     //lookup tables
-    var curTrackerMap = {
+    var _trackersMap = {
         'clmtrackr':       function () {
             return new Tracker.ClmGaze();
         },
@@ -87,7 +86,7 @@ var WebGazer = (function (window) {
         }
     };
     
-    var regressionMap = {
+    var _regressionsMap = {
         'ridge':         function () {
             return new Regression.RidgeReg();
         },
@@ -103,35 +102,39 @@ var WebGazer = (function (window) {
     };
 
     //localstorage name
-    var localstorageLabel = 'webgazerGlobalData';
+    var _localStorageLabel = 'webgazerGlobalData';
     //settings object for future storage of settings
-    var settings          = {};
-    var data              = [];
-    var defaults          = {
-        'data':     [],
-        'settings': {}
+    var _settings          = {};
+    var _data              = [];
+    var _defaults          = {
+        'data':     _data,
+        'settings': _settings
     };
-
-//PRIVATE FUNCTIONS
+    
+    /**
+     * Runs every available animation frame if webgazer is not paused
+     */
+    var _smoothingVals = new Util.DataWindow(4);
+    //PRIVATE FUNCTIONS
 
     /**
      * Gets the pupil features by following the pipeline which threads an eyes object through each call:
-     * curTracker gets eye patches -> blink detector -> pupil detection
+     * _tracker gets eye patches -> blink detector -> pupil detection
      * @param {HTMLCanvasElement} canvas - a canvas which will have the video drawn onto it
      * @param {Number} width - the width of canvas
      * @param {Number} height - the height of canvas
      */
-    function getPupilFeatures(canvas, width, height) {
+    function _getPupilFeatures(canvas, width, height) {
 
         if (!canvas) {
             return;
         }
 
         try {
-            var eyePatch = curTracker.getEyePatches(canvas, width, height);
-            return blinkDetector.detectBlink(eyePatch);
+            var eyePatch = _tracker.getEyePatches(canvas, width, height);
+            return _blinkDetector.detectBlink(eyePatch);
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return null;
         }
 
@@ -143,9 +146,9 @@ var WebGazer = (function (window) {
      * @param {Number} width - the new width of the canvas
      * @param {Number} height - the new height of the canvas
      */
-    function paintCurrentFrame(canvas, width, height) {
-        //imgWidth = videoElement.videoWidth * videoScale;
-        //imgHeight = videoElement.videoHeight * videoScale;
+    function _paintCurrentFrame(canvas, width, height) {
+        //imgWidth = _videoElement.videoWidth * videoScale;
+        //imgHeight = _videoElement.videoHeight * videoScale;
         // if (canvas.width != width) {
         //     canvas.width = width;
         // }
@@ -159,7 +162,7 @@ var WebGazer = (function (window) {
         canvas.height = height;
 
         // instead of accessing an object property, just use what is here
-        canvas.getContext('2d').drawImage(videoElement, 0, 0, width, height);
+        canvas.getContext('2d').drawImage(_videoElement, 0, 0, width, height);
     }
 
     /**
@@ -171,18 +174,18 @@ var WebGazer = (function (window) {
      *  @return {Array} prediction.all - if regModelIndex is unset, an array of prediction Objects each with correspodning x and y attributes
      * @returns {*}
      */
-    function getPrediction(regModelIndex) {
+    function _getPrediction(regModelIndex) {
 
-        if (!regs.length) {
+        if (!_regressions.length) {
             console.log('Regression not set, call setRegression()');
             return null;
         }
 
         var predictions = [];
-        var features    = getPupilFeatures( videoElementCanvas, params.imgWidth, params.imgHeight );
+        var features    = _getPupilFeatures( _videoElementCanvas, _params.imgWidth, _params.imgHeight );
 
-        for (var reg in regs) {
-            predictions.push(regs[reg].predict(features));
+        for (var reg in _regressions) {
+            predictions.push(_regressions[reg].predict(features));
         }
 
         if (regModelIndex && regModelIndex >= 0) {
@@ -208,36 +211,31 @@ var WebGazer = (function (window) {
 
         }
     }
-
-    /**
-     * Runs every available animation frame if webgazer is not paused
-     */
-    var smoothingVals = new Util.DataWindow(4);
-
-    function loop() {
+    
+    function _loop() {
 
         if (!paused) {
-            requestAnimationFrame(loop);
+            requestAnimationFrame(_loop);
         }
         
-        paintCurrentFrame( videoElementCanvas, params.imgWidth, params.imgHeight );
+        _paintCurrentFrame( _videoElementCanvas, _params.imgWidth, _params.imgHeight );
 
-        var gazeData    = getPrediction();
-        var elapsedTime = performance.now() - clockStart;
+        var gazeData    = _getPrediction();
+        var elapsedTime = performance.now() - _clockStart;
 
-        callback(gazeData, elapsedTime);
+        _callback(gazeData, elapsedTime);
 
-        if (gazeData && showGazeDot) {
-            smoothingVals.push(gazeData);
+        if (gazeData && _showGazeDot) {
+            _smoothingVals.push(gazeData);
             var x   = 0;
             var y   = 0;
-            var len = smoothingVals.length;
-            for (var d in smoothingVals.data) {
-                x += smoothingVals.get(d).x;
-                y += smoothingVals.get(d).y;
+            var len = _smoothingVals.length;
+            for (var d in _smoothingVals.data) {
+                x += _smoothingVals.get(d).x;
+                y += _smoothingVals.get(d).y;
             }
             var pred                = Util.bound({'x': x / len, 'y': y / len});
-            gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
+            _gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
         }
         
     }
@@ -250,20 +248,20 @@ var WebGazer = (function (window) {
      * @param {String} eventType - The event type to store
      * @returns {null}
      */
-    var recordScreenPosition = function (x, y, eventType) {
+    var _recordScreenPosition = function (x, y, eventType) {
         if (paused) {
             return null;
         }
 
-        if (!regs.length) {
+        if (!_regressions.length) {
             console.log('regression not set, call setRegression()');
             return null;
         }
 
-        var features = getPupilFeatures(videoElementCanvas, params.imgWidth, params.imgHeight);
+        var features = _getPupilFeatures(_videoElementCanvas, _params.imgWidth, _params.imgHeight);
 
-        for (var reg in regs) {
-            regs[reg].addData(features, [x, y], eventType);
+        for (var reg in _regressions) {
+            _regressions[reg].addData(features, [x, y], eventType);
         }
     };
 
@@ -271,69 +269,69 @@ var WebGazer = (function (window) {
      * Records click data and passes it to the regression model
      * @param {Event} event - The listened event
      */
-    var clickListener = function (event) {
-        recordScreenPosition(event.clientX, event.clientY, eventTypes[0]); // eventType[0] === 'click'
+    var _clickListener = function (event) {
+        _recordScreenPosition(event.clientX, event.clientY, _eventTypes[0]); // eventType[0] === 'click'
     };
 
     /**
      * Records mouse movement data and passes it to the regression model
      * @param {Event} event - The listened event
      */
-    var moveListener = function (event) {
+    var _moveListener = function (event) {
         if (paused) {
             return;
         }
 
         var now = performance.now();
-        if (now < moveClock + params.moveTickSize) {
+        if (now < _moveClock + _params.moveTickSize) {
             return;
         } else {
-            moveClock = now;
+            _moveClock = now;
         }
-        recordScreenPosition(event.clientX, event.clientY, eventTypes[1]); //eventType[1] === 'move'
+        _recordScreenPosition(event.clientX, event.clientY, _eventTypes[1]); //eventType[1] === 'move'
     };
 
     /**
      * Add event listeners for mouse click and move.
      */
-    var addMouseEventListeners = function () {
+    var _addMouseEventListeners = function () {
         //third argument set to true so that we get event on 'capture' instead of 'bubbling'
         //this prevents a client using event.stopPropagation() preventing our access to the click
-        document.addEventListener('click', clickListener, true);
-        document.addEventListener('mousemove', moveListener, true);
+        document.addEventListener('click', _clickListener, true);
+        document.addEventListener('mousemove', _moveListener, true);
     };
 
     /**
      * Remove event listeners for mouse click and move.
      */
-    var removeMouseEventListeners = function () {
+    var _removeMouseEventListeners = function () {
         // must set third argument to same value used in addMouseEventListeners
         // for this to work.
-        document.removeEventListener('click', clickListener, true);
-        document.removeEventListener('mousemove', moveListener, true);
+        document.removeEventListener('click', _clickListener, true);
+        document.removeEventListener('mousemove', _moveListener, true);
     };
 
     /**
      * Loads the global data and passes it to the regression model
      */
-    function loadGlobalData() {
-        var storage = JSON.parse(window.localStorage.getItem(localstorageLabel)) || defaults;
-        settings    = storage.settings;
-        data        = storage.data;
-        for (var reg in regs) {
-            regs[reg].setData(data);
+    function _loadGlobalData() {
+        var storage = JSON.parse(window.localStorage.getItem(_localStorageLabel)) || _defaults;
+        _settings    = storage.settings;
+        _data        = storage.data;
+        for (var reg in _regressions) {
+            _regressions[reg].setData(_data);
         }
     }
 
     /**
      * Constructs the global storage object and adds it to local storage
      */
-    function setGlobalData() {
+    function _setGlobalData() {
         var storage = {
-            'settings': settings,
-            'data':     regs[0].getData() || data
+            'settings': _settings,
+            'data':     _regressions[0].getData() || _data
         };
-        window.localStorage.setItem(localstorageLabel, JSON.stringify(storage));
+        window.localStorage.setItem(_localStorageLabel, JSON.stringify(storage));
         //TODO data should probably be stored in webgazer object instead of each regression model
         //     -> requires duplication of data, but is likely easier on regression model implementors
     }
@@ -341,10 +339,10 @@ var WebGazer = (function (window) {
     /**
      * Clears data from model and global storage
      */
-    function clearData() {
-        window.localStorage.set(localstorageLabel, undefined);
-        for (var reg in regs) {
-            regs[reg].setData([]);
+    function _clearData() {
+        window.localStorage.set(_localStorageLabel, undefined);
+        for (var reg in _regressions) {
+            _regressions[reg].setData([]);
         }
     }
 
@@ -352,35 +350,36 @@ var WebGazer = (function (window) {
      * Initializes all needed dom elements and begins the loop
      * @param {URL} videoSrc - The video url to use
      */
-    function init(videoSrc) {
-        videoElement          = document.createElement('video');
-        videoElement.id       = params.videoElementId;
-        videoElement.autoplay = true;
-        console.log(videoElement);
-        videoElement.style.display = 'none';
+    function _init(videoSrc) {
+        _videoElement          = document.createElement('video');
+        _videoElement.id       = _params.videoElementId;
+        _videoElement.autoplay = true;
+        _videoElement.style.backgroundColor = 'red';
+//        _videoElement.style.display = 'none';
 
         //turn the stream into a magic URL
         // ONLY IF static video !
         if(videoSrc){
-            videoElement.src = videoSrc;
+            _videoElement.src = videoSrc;
         }
-        document.body.appendChild(videoElement);
+        document.body.appendChild(_videoElement);
 
-        videoElementCanvas               = document.createElement('canvas');
-        videoElementCanvas.id            = params.videoElementCanvasId;
-        videoElementCanvas.style.display = 'none';
-        document.body.appendChild(videoElementCanvas);
+        _videoElementCanvas               = document.createElement('canvas');
+        _videoElementCanvas.id            = _params.videoElementCanvasId;
+        _videoElementCanvas.style.backgroundColor = 'green';
+//        _videoElementCanvas.style.display = 'none';
+        document.body.appendChild(_videoElementCanvas);
 
-        addMouseEventListeners();
+        _addMouseEventListeners();
 
-        document.body.appendChild(gazeDot);
+        document.body.appendChild(_gazeDot);
 
         //BEGIN CALLBACK LOOP
         paused = false;
 
-        clockStart = performance.now();
+        _clockStart = performance.now();
 
-        loop();
+        _loop();
     }
 
 
@@ -393,21 +392,21 @@ var WebGazer = (function (window) {
      * @returns {*}
      */
     function begin(onFail) {
-        loadGlobalData();
+        _loadGlobalData();
 
         if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.chrome) {
             alert("WebGazer works only over https. If you are doing local development you need to run a local server.");
         }
 
         onFail = onFail || function onFailCallback() {
-                videoElement = null;
+                _videoElement = null;
                 console.log("No stream")
                 alert('There has been a problem retreiving the streams - are you running on file:/// or did you disallow access?');
             };
 
         function onSuccess(stream) {
             console.log('Video stream created');
-            init(window.URL.createObjectURL(stream));
+            _init(window.URL.createObjectURL(stream));
         }
 
         //TODO: Check it #FOLLOW  => Webgazer.html - checkIfReady
@@ -415,9 +414,9 @@ var WebGazer = (function (window) {
         // You will never init WebGazer BUT !!!
         // after calling begin (in webgazer.html), you will
         // fall into a loop about isReady that check for an canvas
-        // called videoElementCanvas that will never be init.... damned ! <8-D
-        if (debugVideoLoc) {
-            init(debugVideoLoc);
+        // called _videoElementCanvas that will never be init.... damned ! <8-D
+        if (_staticVideoSource) {
+            _init(_staticVideoSource);
             return this;
         }
 
@@ -427,7 +426,7 @@ var WebGazer = (function (window) {
 
         if (navigator.getUserMedia) {
 
-            var options = params.camConstraints;
+            var options = _params.camConstraints;
             navigator.getUserMedia(options, onSuccess, onFail);
 
         } else {
@@ -443,13 +442,13 @@ var WebGazer = (function (window) {
      */
     function isReady() {
         // TODO: Care if webgazer is not init you will fall into infinit loop
-        if (videoElementCanvas === null) {
+        if (_videoElementCanvas === null) {
             console.log("Not ready yet !");
             return false;
         }
 
-        paintCurrentFrame(videoElementCanvas, params.imgWidth, params.imgHeight);
-        return (videoElementCanvas.width > 0);
+        _paintCurrentFrame(_videoElementCanvas, _params.imgWidth, _params.imgHeight);
+        return (_videoElementCanvas.width > 0);
     }
 
     /**
@@ -470,7 +469,7 @@ var WebGazer = (function (window) {
             return this;
         }
         paused = false;
-        loop();
+        _loop();
         return this;
     }
 
@@ -482,10 +481,10 @@ var WebGazer = (function (window) {
         //loop may run an extra time and fail due to removed elements
         paused = true;
         //remove video element and canvas
-        document.body.removeChild(videoElement);
-        document.body.removeChild(videoElementCanvas);
+        document.body.removeChild(_videoElement);
+        document.body.removeChild(_videoElementCanvas);
 
-        setGlobalData();
+        _setGlobalData();
         return this;
     }
 
@@ -509,9 +508,9 @@ var WebGazer = (function (window) {
      * @return {webgazer} this
      */
     function showPredictionPoints(bool) {
-        showGazeDot           = bool;
-        gazeDot.style.left    = '-5px';
-        gazeDot.style.display = bool ? 'block' : 'none';
+        _showGazeDot           = bool;
+        _gazeDot.style.left    = '-5px';
+        _gazeDot.style.display = bool ? 'block' : 'none';
         return this;
     }
 
@@ -521,7 +520,7 @@ var WebGazer = (function (window) {
      *  @return {webgazer} this
      */
     function setStaticVideo(videoLoc) {
-        debugVideoLoc = videoLoc;
+        _staticVideoSource = videoLoc;
         return this;
     }
 
@@ -530,7 +529,7 @@ var WebGazer = (function (window) {
      *  @return {webgazer} this
      */
     function addMouseEventListeners() {
-        addMouseEventListeners();
+        _addMouseEventListeners();
         return this;
     }
 
@@ -539,7 +538,7 @@ var WebGazer = (function (window) {
      *  @return {webgazer} this
      */
     function removeMouseEventListeners() {
-        removeMouseEventListeners();
+        _removeMouseEventListeners();
         return this;
     }
 
@@ -551,7 +550,7 @@ var WebGazer = (function (window) {
      */
     function recordScreenPosition(x, y) {
         // give this the same weight that a click gets.
-        recordScreenPosition(x, y, eventTypes[0]);
+        _recordScreenPosition(x, y, _eventTypes[0]);
         return this;
     }
 
@@ -563,15 +562,15 @@ var WebGazer = (function (window) {
      * @return {webgazer} this
      */
     function setTracker(name) {
-        if (!curTrackerMap[name]) {
+        if (!_trackersMap[name]) {
             console.log('Invalid tracker selection');
             console.log('Options are: ');
-            for (var t in curTrackerMap) {
+            for (var t in _trackersMap) {
                 console.log(t);
             }
             return this;
         }
-        curTracker = curTrackerMap[name]();
+        _tracker = _trackersMap[name]();
         return this;
     }
 
@@ -581,30 +580,30 @@ var WebGazer = (function (window) {
      * @return {webgazer} this
      */
     function setRegression(name) {
-        if (!regressionMap[name]) {
+        if (!_regressionsMap[name]) {
             console.log('Invalid regression selection');
             console.log('Options are: ');
-            for (var reg in regressionMap) {
+            for (var reg in _regressionsMap) {
                 console.log(reg);
             }
             return this;
         }
 
-        data = regs[0].getData();
-        regs = [regressionMap[name]()];
-        regs[0].setData(data);
+        _data = _regressions[0].getData();
+        _regressions = [_regressionsMap[name]()];
+        _regressions[0].setData(_data);
         return this;
     }
 
     /**
      * Adds a new tracker module so that it can be used by setTracker()
      * @param {String} name - the new name of the tracker
-     * @param {Function} constructor - the constructor of the curTracker object
+     * @param {Function} constructor - the constructor of the _tracker object
      * @return {webgazer} this
      */
     function addTrackerModule(name, constructor) {
-        curTrackerMap[name] = function () {
-            contructor();
+        _trackersMap[name] = function () {
+            constructor();
         };
     }
 
@@ -614,8 +613,8 @@ var WebGazer = (function (window) {
      * @param {Function} constructor - the constructor of the regression object
      */
     function addRegressionModule(name, constructor) {
-        regressionMap[name] = function () {
-            contructor();
+        _regressionsMap[name] = function () {
+            constructor();
         };
     }
 
@@ -625,10 +624,10 @@ var WebGazer = (function (window) {
      * @return {webgazer} this
      */
     function addRegression(name) {
-        var newReg = regressionMap[name]();
-        data       = regs[0].getData();
-        newReg.setData(data);
-        regs.push(newReg);
+        var newReg = _regressionsMap[name]();
+        _data       = _regressions[0].getData();
+        newReg.setData(_data);
+        _regressions.push(newReg);
         return this;
     }
 
@@ -638,7 +637,7 @@ var WebGazer = (function (window) {
      * @return {webgazer} this
      */
     function setGazeListener(listener) {
-        callback = listener;
+        _callback = listener;
         return this;
     }
 
@@ -647,7 +646,7 @@ var WebGazer = (function (window) {
      * @return {webgazer} this
      */
     function clearGazeListener() {
-        callback = nopCallback;
+        _callback = _nopCallback;
         return this;
     }
 
@@ -658,7 +657,7 @@ var WebGazer = (function (window) {
      * @return {tracker} an object following the tracker interface
      */
     function getTracker() {
-        return curTracker;
+        return _tracker;
     }
 
     /**
@@ -666,7 +665,7 @@ var WebGazer = (function (window) {
      * @return {Array.<Object>} an array of regression objects following the regression interface
      */
     function getRegression() {
-        return regs;
+        return _regressions;
     }
 
     /**
@@ -677,23 +676,24 @@ var WebGazer = (function (window) {
      *  @return {Array} prediction.all - if regModelIndex is unset, an array of prediction Objects each with correspodning x and y attributes
      */
     function getCurrentPrediction() {
-        return getPrediction();
+        return _getPrediction();
     }
 
     /**
      * Return the current WebGazer params
-     * @returns {{videoScale: number, videoElementId: string, videoElementCanvasId: string, imgWidth: number, imgHeight: number, clmParams: {useWebGL: boolean}, camConstraints: {video: boolean}, dataTimestep: number, moveTickSize: number}}
+     * @returns {{videoScale: number, videoElementId: string, videoElementCanvasId: string, imgWidth: number, imgHeight: number, clmParams: {useWebGL: boolean}, camConstraints: {video: boolean},
+     *     dataTimestep: number, moveTickSize: number}}
      */
     function getParams() {
-        return params;
+        return _params;
     }
 
     /**
      * returns the different event types that may be passed to regressions when calling regression.addData()
      * @return {Array} array of strings where each string is an event type
      */
-    params.getEventTypes = function () {
-        return eventTypes.slice();
+    _params.getEventTypes = function () {
+        return _eventTypes.slice();
     };
 
     //PUBLIC INTERFACE
