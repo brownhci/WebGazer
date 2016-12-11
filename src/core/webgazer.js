@@ -127,8 +127,6 @@ var WebGazer = (function (window) {
             return;
         }
 
-        paintCurrentFrame(canvas, width, height);
-
         try {
             var eyePatch = curTracker.getEyePatches(canvas, width, height);
             return blinkDetector.detectBlink(eyePatch);
@@ -217,6 +215,13 @@ var WebGazer = (function (window) {
     var smoothingVals = new Util.DataWindow(4);
 
     function loop() {
+
+        if (!paused) {
+            requestAnimationFrame(loop);
+        }
+        
+        paintCurrentFrame( videoElementCanvas, params.imgWidth, params.imgHeight );
+
         var gazeData    = getPrediction();
         var elapsedTime = performance.now() - clockStart;
 
@@ -234,11 +239,7 @@ var WebGazer = (function (window) {
             var pred                = Util.bound({'x': x / len, 'y': y / len});
             gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
         }
-
-        if (!paused) {
-            //setTimeout(loop, webgazer.params.dataTimestep);
-            requestAnimationFrame(loop);
-        }
+        
     }
 
     /**
@@ -251,14 +252,16 @@ var WebGazer = (function (window) {
      */
     var recordScreenPosition = function (x, y, eventType) {
         if (paused) {
-            return;
+            return null;
         }
-        var features = getPupilFeatures(videoElementCanvas, params.imgWidth, params.imgHeight);
 
         if (!regs.length) {
             console.log('regression not set, call setRegression()');
             return null;
         }
+
+        var features = getPupilFeatures(videoElementCanvas, params.imgWidth, params.imgHeight);
+
         for (var reg in regs) {
             regs[reg].addData(features, [x, y], eventType);
         }
