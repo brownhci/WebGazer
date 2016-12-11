@@ -84,17 +84,21 @@ ClmGaze.prototype.getEyePatches = function (imageCanvas, width, height) {
     }
 
     //Fit the detected eye in a rectangle
+    var canvasContext = imageCanvas.getContext('2d');
+
     var leftOriginX  = (positions[23][0]);
     var leftOriginY  = (positions[24][1]);
     var leftWidth    = (positions[25][0] - positions[23][0]);
     var leftHeight   = (positions[26][1] - positions[24][1]);
+    var leftBox = [leftOriginX, leftOriginY, leftOriginX + leftWidth, leftOriginY + leftHeight];
+
     var rightOriginX = (positions[30][0]);
     var rightOriginY = (positions[29][1]);
     var rightWidth   = (positions[28][0] - positions[30][0]);
     var rightHeight  = (positions[31][1] - positions[29][1]);
+    var rightBox = [rightOriginX, rightOriginY, rightOriginX + rightWidth, rightOriginY + rightHeight];
 
     //Apply Kalman Filtering
-    var leftBox = [leftOriginX, leftOriginY, leftOriginX + leftWidth, leftOriginY + leftHeight];
     leftBox     = this.leftKalman.update(leftBox);
     leftOriginX = Math.round(leftBox[0]);
     leftOriginY = Math.round(leftBox[1]);
@@ -102,7 +106,6 @@ ClmGaze.prototype.getEyePatches = function (imageCanvas, width, height) {
     leftHeight  = Math.round(leftBox[3] - leftBox[1]);
 
     //Apply Kalman Filtering
-    var rightBox = [rightOriginX, rightOriginY, rightOriginX + rightWidth, rightOriginY + rightHeight];
     rightBox     = this.rightKalman.update(rightBox);
     rightOriginX = Math.round(rightBox[0]);
     rightOriginY = Math.round(rightBox[1]);
@@ -110,37 +113,32 @@ ClmGaze.prototype.getEyePatches = function (imageCanvas, width, height) {
     rightHeight  = Math.round(rightBox[3] - rightBox[1]);
 
     if (leftWidth === 0 || rightWidth === 0) {
-        console.log('an eye patch had zero width');
+        console.log('An eye patch had zero width');
         return null;
     }
 
     if (leftHeight === 0 || rightHeight === 0) {
-        console.log("an eye patch had zero height");
+        console.log('An eye patch had zero height');
         return null;
     }
 
-    var eyeObjs       = {};
-    var leftImageData = imageCanvas.getContext('2d').getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);
-    eyeObjs.left      = {
-        patch:  leftImageData,
-        imageX: leftOriginX,
-        imageY: leftOriginY,
-        width:  leftWidth,
-        height: leftHeight
+    return {
+        positions: positions,
+        left: {
+            patch:  canvasContext.getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight),
+            imageX: leftOriginX,
+            imageY: leftOriginY,
+            width:  leftWidth,
+            height: leftHeight
+        },
+        right: {
+            patch:  canvasContext.getImageData(rightOriginX, rightOriginY, rightWidth, rightHeight),
+            imageX: rightOriginX,
+            imageY: rightOriginY,
+            width:  rightWidth,
+            height: rightHeight
+        }
     };
-
-    var rightImageData = imageCanvas.getContext('2d').getImageData(rightOriginX, rightOriginY, rightWidth, rightHeight);
-    eyeObjs.right      = {
-        patch:  rightImageData,
-        imageX: rightOriginX,
-        imageY: rightOriginY,
-        width:  rightWidth,
-        height: rightHeight
-    };
-
-    eyeObjs.positions = positions;
-
-    return eyeObjs;
 };
 
 export {ClmGaze}
