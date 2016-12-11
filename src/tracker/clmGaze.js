@@ -48,6 +48,7 @@ var ClmGaze = function (params) {
 
     this.leftKalman  = new KalmanFilter(F, H, Q, R, P_initial, x_initial);
     this.rightKalman = new KalmanFilter(F, H, Q, R, P_initial, x_initial);
+
 };
 
 /**
