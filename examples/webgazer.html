@@ -70,7 +70,7 @@
 			var cl = gazer.getTracker().clm;
 
 			function drawLoop() {
-				requestAnimFrame(drawLoop);
+				requestAnimationFrame(drawLoop);
 				overlay.getContext('2d').clearRect(0, 0, width, height);
 				if (cl.getCurrentPosition()) {
 					cl.draw(overlay);
