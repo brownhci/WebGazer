@@ -56,7 +56,7 @@ var RidgeRegThreaded = function () {
 
     this.worker           = new Worker('ridgeWorker.js');
     this.worker.onerror   = function (err) {
-        console.log(err.message);
+        console.error(err.message);
     };
     this.worker.onmessage = function (evt) {
         weights.X = evt.data.X;
