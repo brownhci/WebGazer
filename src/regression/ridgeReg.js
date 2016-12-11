@@ -52,7 +52,7 @@ function ridge ( screenCoordinates, X, ridgeParameter ) {
         } catch ( error ) {
 
             //TODO: logger instead ?
-            console.log( error );
+            console.error( error );
 
             ridgeParameter *= 10;
             success = false;
