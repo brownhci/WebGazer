@@ -142,29 +142,37 @@ RidgeReg.prototype.name = 'ridge';
  * @param {Object} type - The type of performed action
  */
 RidgeReg.prototype.addData = function ( eyes, screenPos, type ) {
+    
     if ( !eyes ) {
         return;
     }
+    
     if ( eyes.left.blink || eyes.right.blink ) {
         return;
     }
+    
     if ( type === 'click' ) {
+        
         this.screenXClicksArray.push( [ screenPos[ 0 ] ] );
         this.screenYClicksArray.push( [ screenPos[ 1 ] ] );
 
         this.eyeFeaturesClicks.push( getEyesFeats( eyes ) );
         this.dataClicks.push( { 'eyes': eyes, 'screenPos': screenPos, 'type': type } );
+        
     } else if ( type === 'move' ) {
+        
         this.screenXTrailArray.push( [ screenPos[ 0 ] ] );
         this.screenYTrailArray.push( [ screenPos[ 1 ] ] );
 
         this.eyeFeaturesTrail.push( getEyesFeats( eyes ) );
         this.trailTimes.push( performance.now() );
         this.dataTrail.push( { 'eyes': eyes, 'screenPos': screenPos, 'type': type } );
+        
     }
 
     eyes.left.patch  = Array.from( eyes.left.patch.data );
     eyes.right.patch = Array.from( eyes.right.patch.data );
+    
 };
 
 /**
@@ -224,6 +232,7 @@ RidgeReg.prototype.predict = function ( eyesObj ) {
         x: predictedX,
         y: predictedY
     };
+    
 };
 
 /**

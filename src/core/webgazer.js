@@ -250,6 +250,8 @@ var WebGazer = (function (window, params) {
             _gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
         }
         
+        
+        
     }
 
     /**
@@ -363,6 +365,7 @@ var WebGazer = (function (window, params) {
      * @param {URL} videoSrc - The video url to use
      */
     function _init(videoSrc) {
+
         _videoElement          = document.createElement('video');
         _videoElement.id       = _params.videoElementId;
         _videoElement.autoplay = true;
@@ -693,7 +696,7 @@ var WebGazer = (function (window, params) {
 
     /**
      * Return the current WebGazer params
-     * @returns {{videoScale: number, videoElementId: string, videoElementCanvasId: string, imgWidth: number, imgHeight: number, clmParams: {useWebGL: boolean}, camConstraints: {video: boolean},
+     * @returns {{videoScale: number, videoElementId: string, videoElementCanvasId: string, imgWidth: number, imgHeight: number, trackerParams: {useWebGL: boolean}, camConstraints: {video: boolean},
      *     dataTimestep: number, moveTickSize: number}}
      */
     function getParams() {

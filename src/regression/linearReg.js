@@ -27,11 +27,13 @@ LinearReg.prototype.name = 'simple';
  * @param {Object} type - The type of performed action
  */
 LinearReg.prototype.addData = function (eyes, screenPos, type) {
+
     if (!eyes) {
         return;
     }
 
     Core.getPupils(eyes);
+
     if (!eyes.left.blink) {
         this.leftDatasetX.push([eyes.left.pupil[0][0], screenPos[0]]);
         this.leftDatasetY.push([eyes.left.pupil[0][1], screenPos[1]]);
@@ -41,7 +43,9 @@ LinearReg.prototype.addData = function (eyes, screenPos, type) {
         this.rightDatasetX.push([eyes.right.pupil[0][0], screenPos[0]]);
         this.rightDatasetY.push([eyes.right.pupil[0][1], screenPos[1]]);
     }
+
     this.data.push({'eyes': eyes, 'screenPos': screenPos, 'type': type});
+
 };
 
 /**
@@ -74,40 +78,43 @@ LinearReg.prototype.getData = function () {
  *  @return {integer} prediction.y - the y screen coordinate predicted
  */
 LinearReg.prototype.predict = function (eyesObj) {
-    if (!eyesObj) {
+
+    if ( !eyesObj ) {
         return null;
     }
-    var result          = regression('linear', this.leftDatasetX);
-    var leftSlopeX      = result.equation[0];
-    var leftIntersceptX = result.equation[1];
 
-    result              = regression('linear', this.leftDatasetY);
-    var leftSlopeY      = result.equation[0];
-    var leftIntersceptY = result.equation[1];
+    var result         = regression( 'linear', this.leftDatasetX );
+    var leftSlopeX     = result.equation[ 0 ];
+    var leftInterceptX = result.equation[ 1 ];
 
-    result               = regression('linear', this.rightDatasetX);
-    var rightSlopeX      = result.equation[0];
-    var rightIntersceptX = result.equation[1];
+    result             = regression( 'linear', this.leftDatasetY );
+    var leftSlopeY     = result.equation[ 0 ];
+    var leftInterceptY = result.equation[ 1 ];
 
-    result               = regression('linear', this.rightDatasetY);
-    var rightSlopeY      = result.equation[0];
-    var rightIntersceptY = result.equation[1];
+    result              = regression( 'linear', this.rightDatasetX );
+    var rightSlopeX     = result.equation[ 0 ];
+    var rightInterceptX = result.equation[ 1 ];
 
-    Core.getPupils(eyesObj);
+    result              = regression( 'linear', this.rightDatasetY );
+    var rightSlopeY     = result.equation[ 0 ];
+    var rightInterceptY = result.equation[ 1 ];
 
-    var leftPupilX = eyesObj.left.pupil[0][0];
-    var leftPupilY = eyesObj.left.pupil[0][1];
+    Core.getPupils( eyesObj );
 
-    var rightPupilX = eyesObj.right.pupil[0][0];
-    var rightPupilY = eyesObj.right.pupil[0][1];
+    var leftPupilX = eyesObj.left.pupil[ 0 ][ 0 ];
+    var leftPupilY = eyesObj.left.pupil[ 0 ][ 1 ];
 
-    var predictedX = Math.floor((((leftSlopeX * leftPupilX) + leftIntersceptX) + ((rightSlopeX * rightPupilX) + rightIntersceptX)) / 2);
-    var predictedY = Math.floor((((leftSlopeY * leftPupilY) + leftIntersceptY) + ((rightSlopeY * rightPupilY) + rightIntersceptY)) / 2);
-    
+    var rightPupilX = eyesObj.right.pupil[ 0 ][ 0 ];
+    var rightPupilY = eyesObj.right.pupil[ 0 ][ 1 ];
+
+    var predictedX = Math.floor( (((leftSlopeX * leftPupilX) + leftInterceptX) + ((rightSlopeX * rightPupilX) + rightInterceptX)) / 2 );
+    var predictedY = Math.floor( (((leftSlopeY * leftPupilY) + leftInterceptY) + ((rightSlopeY * rightPupilY) + rightInterceptY)) / 2 );
+
     return {
         x: predictedX,
         y: predictedY
     };
+
 };
 
 export {LinearReg};
