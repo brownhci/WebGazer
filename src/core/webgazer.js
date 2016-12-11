@@ -311,7 +311,7 @@ var WebGazer = (function (window) {
         settings    = storage.settings;
         data        = storage.data;
         for (var reg in regs) {
-            regs[reg].setData(storage.data);
+            regs[reg].setData(data);
         }
     }
 
