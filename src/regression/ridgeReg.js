@@ -97,19 +97,21 @@ function getEyeFeat ( eye ) {
  * @exports RidgeReg
  * @constructor
  */
-var RidgeReg = function () {
+var RidgeReg = function (params) {
 
     this.screenXClicksArray = new Util.DataWindow( dataWindow );
     this.screenYClicksArray = new Util.DataWindow( dataWindow );
     this.eyeFeaturesClicks  = new Util.DataWindow( dataWindow );
+    var _params = {
+        trailTime: 1000,
+        moveTickSize: 50
+    }
+    Object.assign(_params, params)
+
 
     //sets to one second worth of cursor trail
-    this.trailTime = 1000;
-
-    //TODO: Uuumm seems to not be okay, maybe a self.parameter
-    //TODO: This is an "strong coupling" !!! Need to break it properly !
-    var moveTickSize       = 50;
-    this.trailDataWindow   = this.trailTime / moveTickSize;
+    this.trailTime = _params.trailTime;
+    this.trailDataWindow   = this.trailTime / _params.moveTickSize;
     // this.trailDataWindow   = this.trailTime / WebGazer.getParams().moveTickSize;
     this.screenXTrailArray = new Util.DataWindow( trailDataWindow );
     this.screenYTrailArray = new Util.DataWindow( trailDataWindow );

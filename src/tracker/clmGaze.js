@@ -9,13 +9,8 @@ import {KalmanFilter} from "../utils/KalmanFilter";
  * head and eye positions using the clmtracker.js library
  * @constructor
  */
-var ClmGaze = function () {
+var ClmGaze = function (params) {
 
-    // TODO: Don't forget to recreate argument liaisons between clm and WebGAZER params !
-    //
-    //  this.clm = new ClmTrackr.tracker(WebGazer.getParams().camConstraints);
-
-    var params = {video: true};
     this.clm = new ClmTrackr.tracker(params);
     this.clm.init(pcaFilter);
     var F = [

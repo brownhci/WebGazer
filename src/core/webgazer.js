@@ -6,7 +6,7 @@ import * as Tracker from "../tracker/trackers";
 import * as Regression from "../regression/regressions";
 import * as Util from "../utils/util";
 
-var WebGazer = (function (window) {
+var WebGazer = (function (window, params) {
 
     //PRIVATE VARIABLES
 
@@ -24,15 +24,27 @@ var WebGazer = (function (window) {
         videoElementCanvasId: 'webgazerVideoCanvas',
         imgWidth:             1280,
         imgHeight:            720,
-        //Params to clmtrackr and getUserMedia constraints
-        //TODO: need to allow external params on construcction like below
-        // clmParams:            params.clmParams || {useWebGL: true},
-        // camConstraints:       params.camConstraints || {video: true},
-        clmParams:            {useWebGL: true},
-        camConstraints:       {video: true},
+        trackerParams:        {
+            constantVelocity:  true,
+            searchWindow:      11,
+            useWebGL:          true,
+            scoreThreshold:    0.5,
+            stopOnConvergence: false,
+            weightPoints:      undefined,
+            sharpenResponse:   false
+        },
+        regressionParams: {
+            trailTime: 1000,
+            moveTickSize:         50 //milliseconds
+        },
+        camConstraints:       {
+            video: true
+        },
         dataTimestep:         50,
         moveTickSize:         50 //milliseconds
     };
+    Object.assign( _params, params );
+    
     var _videoElement       = null;
     var _videoElementCanvas = null;
 
@@ -69,35 +81,35 @@ var WebGazer = (function (window) {
     var _moveClock = performance.now();
 
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
-    var _tracker       = new Tracker.ClmGaze();
+    var _tracker       = new Tracker.ClmGaze(_params.trackerParams);
     var _regressions   = [ new Regression.RidgeReg() ];
     var _blinkDetector = new Util.BlinkDetector();
 
     //lookup tables
     var _trackersMap = {
         'clmtrackr':       function () {
-            return new Tracker.ClmGaze();
+            return new Tracker.ClmGaze(_params.trackerParams);
         },
         'trackingjs':      function () {
-            return new Tracker.TrackingjsGaze();
+            return new Tracker.TrackingjsGaze(_params.trackerParams);
         },
         'js_objectdetect': function () {
-            return new Tracker.Js_objectdetectGaze();
+            return new Tracker.Js_objectdetectGaze(_params.trackerParams);
         }
     };
     
     var _regressionsMap = {
         'ridge':         function () {
-            return new Regression.RidgeReg();
+            return new Regression.RidgeReg(_params.regressionParams);
         },
         'weightedRidge': function () {
-            return new Regression.RidgeWeightedReg();
+            return new Regression.RidgeWeightedReg(_params.regressionParams);
         },
         'threadedRidge': function () {
-            return new Regression.RidgeRegThreaded();
+            return new Regression.RidgeRegThreaded(_params.regressionParams);
         },
         'linear':        function () {
-            return new Regression.LinearReg();
+            return new Regression.LinearReg(_params.regressionParams);
         }
     };
 
@@ -725,6 +737,6 @@ var WebGazer = (function (window) {
         getCurrentPrediction: getCurrentPrediction
     }
 
-})(window);
+})(window, webgazerBadGlobalParams);
 
 export {WebGazer};
