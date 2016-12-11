@@ -234,6 +234,10 @@ RidgeReg.prototype.setData = function ( data ) {
     //TODO this is a kludge, needs to be fixed
     //[TV:23-11-2016] Still a kludge ?
 
+    if(!data) {
+        return;
+    }
+
     var dataLength  = data.length;
     var currentData = undefined;
     var eyes        = {};
