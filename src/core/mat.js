@@ -6,305 +6,480 @@
  * @param {Array.<Array.<Number>>} matrix - of "M x N" dimensionality
  * @return {Array.<Array.<Number>>} transposed matrix
  */
-export function transpose(matrix) {
-    var m                = matrix.length;
-    var n                = matrix[0].length;
-    var transposedMatrix = new Array(n);
+export function transpose ( matrix ) {
 
-    for (var i = 0; i < m; i++) {
-        for (var j = 0; j < n; j++) {
-            if (i === 0) transposedMatrix[j] = new Array(m);
-            transposedMatrix[j][i] = matrix[i][j];
+    var matrixLength           = matrix.length;
+    var firstIndexMatrixLength = matrix[ 0 ].length;
+    var transposedMatrix       = new Array( firstIndexMatrixLength );
+    var i, j;
+
+    for ( i = 0 ; i < matrixLength ; i++ ) {
+        for ( j = 0 ; j < firstIndexMatrixLength ; j++ ) {
+            if ( i === 0 ) {
+                transposedMatrix[ j ] = new Array( matrixLength );
+            }
+            transposedMatrix[ j ][ i ] = matrix[ i ][ j ];
         }
     }
 
     return transposedMatrix;
+
 }
 
 /**
  * Get a sub-matrix of matrix
  * @param {Array.<Array.<Number>>} matrix - original matrix
- * @param {Array.<Number>} r - Array of row indices
- * @param {Number} j0 - Initial column index
- * @param {Number} j1 - Final column index
+ * @param {Array.<Number>} row - Array of row indices
+ * @param {Number} initialColumnIndex - Initial column index
+ * @param {Number} finalColumnIndex - Final column index
  * @returns {Array.<Array.<Number>>} The sub-matrix matrix(r(:),j0:j1)
  */
-export function getMatrix(matrix, r, j0, j1) {
-    var X = new Array(r.length),
-        m = j1 - j0 + 1;
+export function getMatrix ( matrix, row, initialColumnIndex, finalColumnIndex ) {
 
-    for (var i = 0; i < r.length; i++) {
-        X[i] = new Array(m);
-        for (var j = j0; j <= j1; j++) {
-            X[i][j - j0] = matrix[r[i]][j];
+    var newMatrix        = new Array( row.length );
+    var deltaColumnIndex = finalColumnIndex - initialColumnIndex + 1;
+    var numberOfRow      = row.length;
+    var rowIndex, columnIndex;
+
+    for ( rowIndex = 0 ; rowIndex < numberOfRow ; rowIndex++ ) {
+        newMatrix[ rowIndex ] = new Array( deltaColumnIndex );
+        for ( columnIndex = initialColumnIndex ; columnIndex <= finalColumnIndex ; columnIndex++ ) {
+            newMatrix[ rowIndex ][ columnIndex - initialColumnIndex ] = matrix[ row[ rowIndex ] ][ columnIndex ];
         }
     }
-    return X;
+
+    return newMatrix;
+
 }
 
 /**
  * Get a submatrix of matrix
  * @param {Array.<Array.<Number>>} matrix - original matrix
- * @param {Number} i0 - Initial row index
- * @param {Number} i1 - Final row index
- * @param {Number} j0 - Initial column index
- * @param {Number} j1 - Final column index
+ * @param {Number} initialRowIndex - Initial row index
+ * @param {Number} finalRowIndex - Final row index
+ * @param {Number} initialColumnIndex - Initial column index
+ * @param {Number} finalColumnIndex - Final column index
  * @return {Array.<Array.<Number>>} The sub-matrix matrix(i0:i1,j0:j1)
  */
-export function getSubMatrix(matrix, i0, i1, j0, j1) {
-    var size = j1 - j0 + 1,
-        X    = new Array(i1 - i0 + 1);
+export function getSubMatrix ( matrix, initialRowIndex, finalRowIndex, initialColumnIndex, finalColumnIndex ) {
 
-    for (var i = i0; i <= i1; i++) {
-        var subI = i - i0;
+    var size      = finalColumnIndex - initialColumnIndex + 1;
+    var subMatrix = new Array( finalRowIndex - initialRowIndex + 1 );
+    var subIndex  = 0;
+    var rowIndex, columnIndex;
 
-        X[subI] = new Array(size);
+    for ( rowIndex = initialRowIndex ; rowIndex <= finalRowIndex ; rowIndex++ ) {
 
-        for (var j = j0; j <= j1; j++) {
-            X[subI][j - j0] = matrix[i][j];
+        subIndex              = rowIndex - initialRowIndex;
+        subMatrix[ subIndex ] = new Array( size );
+
+        for ( columnIndex = initialColumnIndex ; columnIndex <= finalColumnIndex ; columnIndex++ ) {
+            subMatrix[ subIndex ][ columnIndex - initialColumnIndex ] = matrix[ rowIndex ][ columnIndex ];
         }
     }
-    return X;
+
+    return subMatrix;
+
 }
 
 /**
  * Linear algebraic matrix multiplication, matrix1 * matrix2
- * @param {Array.<Array.<Number>>} matrix1
- * @param {Array.<Array.<Number>>} matrix2
+ * @param {Array.<Array.<Number>>} firstMatrix
+ * @param {Array.<Array.<Number>>} secondMatrix
  * @return {Array.<Array.<Number>>} Matrix product, matrix1 * matrix2
  */
-export function mult(matrix1, matrix2) {
+export function multiply ( firstMatrix, secondMatrix ) {
 
-    if (matrix2.length != matrix1[0].length) {
-        console.log("Matrix inner dimensions must agree.");
-    }
-
-    var X                            = new Array( matrix1.length );
-    var Bcolj                        = new Array( matrix1[ 0 ].length );
-    var firstMatrixLength            = matrix1.length;
-    var firstMatrixFirstIndexLength  = matrix1[ 0 ].length;
-    var secondMatrixFirstIndexLength = matrix2[ 0 ].length;
-    var Arowi                        = undefined;
-    var s                            = 0;
+    var firstMatrixLength     = firstMatrix.length;
+    var firstMatrixRowLength  = firstMatrix[ 0 ].length;
+    var secondMatrixLength    = secondMatrix.length;
+    var secondMatrixRowLength = secondMatrix[ 0 ].length;
+    var multipliedMatrix      = new Array( firstMatrixLength );
+    var secondMatrixColumn    = new Array( firstMatrixRowLength );
+    var firstMatrixRow        = undefined;
+    var multiplicationResult  = 0;
     var i, j, k, l;
 
-    for (i = 0; i < secondMatrixFirstIndexLength; i++) {
+    if ( secondMatrixLength !== firstMatrixRowLength ) {
+        console.warn( "Matrix inner dimensions must agree." );
+    }
 
-        for (j = 0; j < firstMatrixFirstIndexLength; j++) {
-            Bcolj[j] = matrix2[j][i];
+    for ( i = 0 ; i < secondMatrixRowLength ; i++ ) {
+
+        for ( j = 0 ; j < firstMatrixRowLength ; j++ ) {
+            secondMatrixColumn[ j ] = secondMatrix[ j ][ i ];
         }
 
-        for (k = 0; k < firstMatrixLength; k++) {
+        for ( k = 0 ; k < firstMatrixLength ; k++ ) {
 
-            if (i === 0) {
-                X[ k ] = new Array( secondMatrixFirstIndexLength );
+            if ( i === 0 ) {
+                multipliedMatrix[ k ] = new Array( secondMatrixRowLength );
             }
 
-            Arowi = matrix1[k];
-            s     = 0;
-            for (l = 0; l < firstMatrixFirstIndexLength; l++) {
-                s += Arowi[l] * Bcolj[l];
+            firstMatrixRow       = firstMatrix[ k ];
+            multiplicationResult = 0;
+            for ( l = 0 ; l < firstMatrixRowLength ; l++ ) {
+                multiplicationResult += firstMatrixRow[ l ] * secondMatrixColumn[ l ];
             }
-            X[k][i] = s;
+            multipliedMatrix[ k ][ i ] = multiplicationResult;
         }
 
     }
-    return X;
+
+    return multipliedMatrix;
+
 }
 
 /**
  * LUDecomposition to solve A*X = B, based on WEKA code
- * @param {Array.<Array.<Number>>} A - left matrix of equation to be solved
- * @param {Array.<Array.<Number>>} B - right matrix of equation to be solved
+ * @param {Array.<Array.<Number>>} leftMatrix - left matrix of equation to be solved
+ * @param {Array.<Array.<Number>>} rightMatrix - right matrix of equation to be solved
  * @return {Array.<Array.<Number>>} X so that L*U*X = B(piv,:)
  */
-export function LUDecomposition(A, B) {
-    var LU = new Array(A.length);
+export function LUDecomposition ( leftMatrix, rightMatrix ) {
 
-    for (var i = 0; i < A.length; i++) {
-        LU[i] = new Array(A[0].length);
-        for (var j = 0; j < A[0].length; j++) {
-            LU[i][j] = A[i][j];
-        }
+    var leftMatrixLength     = leftMatrix.length;
+    var leftMatrixRowLength  = leftMatrix[ 0 ].length;
+    var rightMatrixLength    = rightMatrix.length;
+    var rightMatrixRowLength = rightMatrix[ 0 ].length;
+    var pivotSign            = 1;
+
+    var LU            = new Array( leftMatrixLength );
+    var cacheLURow    = new Array( leftMatrixLength );
+    var cacheLUColumn = new Array( leftMatrixLength );
+    var pivot         = new Array( leftMatrixLength );
+    var resultMatrix  = getMatrix( rightMatrix, pivot, 0, rightMatrixRowLength - 1 );
+
+    if ( rightMatrixLength !== leftMatrixLength ) {
+        console.warn( "Matrix row dimensions must agree." );
     }
 
-    var m   = A.length;
-    var n   = A[0].length;
-    var piv = new Array(m);
-    for (var i = 0; i < m; i++) {
-        piv[i] = i;
-    }
-    var pivsign = 1;
-    var LUrowi  = [];
-    var LUcolj  = new Array(m);
-    // Outer loop.
-    for (var j = 0; j < n; j++) {
-        // Make a copy of the j-th column to localize references.
-        for (var i = 0; i < m; i++) {
-            LUcolj[i] = LU[i][j];
-        }
-        // Apply previous transformations.
-        for (var i = 0; i < m; i++) {
-            LUrowi   = LU[i];
-            // Most of the time is spent in the following dot product.
-            var kmax = Math.min(i, j);
-            var s    = 0;
-            for (var k = 0; k < kmax; k++) {
-                s += LUrowi[k] * LUcolj[k];
+    function fillLUMatrix () {
+
+        var i, j;
+
+        for ( i = 0 ; i < leftMatrixLength ; i++ ) {
+            LU[ i ] = new Array( leftMatrixRowLength );
+            for ( j = 0 ; j < leftMatrixRowLength ; j++ ) {
+                LU[ i ][ j ] = leftMatrix[ i ][ j ];
             }
-            LUrowi[j] = LUcolj[i] -= s;
         }
-        // Find pivot and exchange if necessary.
-        var p = j;
-        for (var i = j + 1; i < m; i++) {
-            if (Math.abs(LUcolj[i]) > Math.abs(LUcolj[p])) {
+
+    }
+
+    function fillPivot () {
+
+        var i;
+
+        for ( i = 0 ; i < leftMatrixLength ; i++ ) {
+            pivot[ i ] = i;
+        }
+
+    }
+
+    function copyColumnToLocalizeReference ( columnIndex ) {
+
+        var i;
+
+        for ( i = 0 ; i < leftMatrixLength ; i++ ) {
+            cacheLUColumn[ i ] = LU[ i ][ columnIndex ];
+        }
+
+    }
+
+    function applyPreviousTransformation ( j ) {
+
+        var kMax   = 0;
+        var result = 0;
+        var i, k;
+
+        for ( i = 0 ; i < leftMatrixLength ; i++ ) {
+            cacheLURow = LU[ i ];
+            // Most of the time is spent in the following dot product.
+            kMax       = Math.min( i, j );
+            result     = 0;
+            for ( k = 0 ; k < kMax ; k++ ) {
+                result += cacheLURow[ k ] * cacheLUColumn[ k ];
+            }
+            cacheLURow[ j ] = cacheLUColumn[ i ] -= result;
+        }
+
+    }
+
+    function findPivotAndExchange ( j ) {
+
+        var p                  = j;
+        var tempPivotValueForP = undefined;
+        var tempLUValue        = undefined;
+        var i, k;
+
+        // Find
+        for ( i = j + 1 ; i < leftMatrixLength ; i++ ) {
+            if ( Math.abs( cacheLUColumn[ i ] ) > Math.abs( cacheLUColumn[ p ] ) ) {
                 p = i;
             }
         }
-        if (p != j) {
-            for (var k = 0; k < n; k++) {
-                var t    = LU[p][k];
-                LU[p][k] = LU[j][k];
-                LU[j][k] = t;
+
+        // Exchange
+        if ( p != j ) {
+
+            for ( k = 0 ; k < leftMatrixRowLength ; k++ ) {
+                tempLUValue  = LU[ p ][ k ];
+                LU[ p ][ k ] = LU[ j ][ k ];
+                LU[ j ][ k ] = tempLUValue;
             }
-            var k   = piv[p];
-            piv[p]  = piv[j];
-            piv[j]  = k;
-            pivsign = -pivsign;
+            tempPivotValueForP = pivot[ p ];
+            pivot[ p ]         = pivot[ j ];
+            pivot[ j ]         = tempPivotValueForP;
+            pivotSign          = -pivotSign;
+
         }
-        // Compute multipliers.
-        if (j < m & LU[j][j] != 0) {
-            for (var i = j + 1; i < m; i++) {
-                LU[i][j] /= LU[j][j];
+
+    }
+
+    function computeMultipliers ( j ) {
+
+        var i;
+
+        if ( j < leftMatrixLength && LU[ j ][ j ] !== 0 ) {
+            for ( i = j + 1 ; i < leftMatrixLength ; i++ ) {
+                LU[ i ][ j ] /= LU[ j ][ j ];
             }
         }
+
     }
-    if (B.length != m) {
-        console.log("Matrix row dimensions must agree.");
-    }
-    for (var j = 0; j < n; j++) {
-        if (LU[j][j] == 0) {
-            console.log("Matrix is singular.")
+
+    function checkSingularMatrix () {
+
+        var i;
+
+        for ( i = 0 ; i < leftMatrixRowLength ; i++ ) {
+            if ( LU[ i ][ i ] === 0 ) {
+                console.warn( "Matrix is singular." )
+            }
         }
+
     }
-    var nx = B[0].length;
-    var X  = getMatrix(B, piv, 0, nx - 1);
+
     // Solve L*Y = B(piv,:)
-    for (var k = 0; k < n; k++) {
-        for (var i = k + 1; i < n; i++) {
-            for (var j = 0; j < nx; j++) {
-                X[i][j] -= X[k][j] * LU[i][k];
+    function solveLower () {
+
+        var i, j, k;
+
+        for ( i = 0 ; i < leftMatrixRowLength ; i++ ) {
+            for ( j = i + 1 ; j < leftMatrixRowLength ; j++ ) {
+                for ( k = 0 ; k < rightMatrixRowLength ; k++ ) {
+                    resultMatrix[ j ][ k ] -= resultMatrix[ i ][ k ] * LU[ j ][ i ];
+                }
             }
         }
+
     }
+
     // Solve U*X = Y;
-    for (var k = n - 1; k >= 0; k--) {
-        for (var j = 0; j < nx; j++) {
-            X[k][j] /= LU[k][k];
-        }
-        for (var i = 0; i < k; i++) {
-            for (var j = 0; j < nx; j++) {
-                X[i][j] -= X[k][j] * LU[i][k];
+    function solveUpper () {
+
+        var i, j, k, l;
+
+        for ( i = leftMatrixRowLength - 1 ; i >= 0 ; i-- ) {
+            for ( j = 0 ; j < rightMatrixRowLength ; j++ ) {
+                resultMatrix[ i ][ j ] /= LU[ i ][ i ];
+            }
+            for ( k = 0 ; k < i ; k++ ) {
+                for ( l = 0 ; l < rightMatrixRowLength ; l++ ) {
+                    resultMatrix[ k ][ l ] -= resultMatrix[ i ][ l ] * LU[ k ][ i ];
+                }
             }
         }
+
     }
-    return X;
+
+    fillLUMatrix();
+    fillPivot();
+
+    // Outer loop.
+    for ( var j = 0 ; j < leftMatrixRowLength ; j++ ) {
+
+        // Make a copy of the j-th column to localize references.
+        copyColumnToLocalizeReference( j );
+
+        // Apply previous transformations.
+        applyPreviousTransformation( j );
+
+        // Find pivot and exchange if necessary.
+        findPivotAndExchange( j );
+
+        // Compute multipliers.
+        computeMultipliers( j );
+
+    }
+
+    checkSingularMatrix();
+
+    solveLower();
+    solveUpper();
+
+    return resultMatrix;
+
 }
 
 /**
  * Least squares solution of A*X = B, based on WEKA code
- * @param {Array.<Array.<Number>>} A - left side matrix to be solved
- * @param {Array.<Array.<Number>>} B - a matrix with as many rows as A and any number of columns.
+ * @param {Array.<Array.<Number>>} leftMatrix - left side matrix to be solved
+ * @param {Array.<Array.<Number>>} rightMatrix - a matrix with as many rows as A and any number of columns.
  * @return {Array.<Array.<Number>>} X - that minimizes the two norms of QR*X-B.
  */
-export function QRDecomposition(A, B) {
-    // Initialize.
-    var QR = new Array(A.length);
-    var m     = A.length;
-    var n     = A[0].length;
+export function QRDecomposition ( leftMatrix, rightMatrix ) {
 
-    for (var i = 0; i < m; i++) {
-        QR[i] = new Array(n);
-        for (var j = 0; j < n; j++) {
-            QR[i][j] = A[i][j];
-        }
+    var leftMatrixLength     = leftMatrix.length;
+    var leftMatrixRowLength  = leftMatrix[ 0 ].length;
+    var rightMatrixLength    = rightMatrix.length;
+    var rightMatrixRowLength = rightMatrix[ 0 ].length;
+
+    var QR             = new Array( leftMatrixLength );
+    var matrixDiagonal = new Array( leftMatrixRowLength );
+    var resultMatrix   = new Array( rightMatrixLength );
+    var norm           = 0;
+
+    if ( rightMatrixLength != leftMatrixLength ) {
+        console.warn( "Matrix row dimensions must agree." );
     }
 
-    var rDiag = new Array(n);
-    var nrm;
+    function fillQRMatrix () {
+
+        var i, j;
+
+        for ( i = 0 ; i < leftMatrixLength ; i++ ) {
+            QR[ i ] = new Array( leftMatrixRowLength );
+            for ( j = 0 ; j < leftMatrixRowLength ; j++ ) {
+                QR[ i ][ j ] = leftMatrix[ i ][ j ];
+            }
+        }
+
+    }
+
+    function formHouseholderVector ( k ) {
+
+        if ( QR[ k ][ k ] < 0 ) {
+            norm = -norm;
+        }
+
+        var i;
+        for ( i = k ; i < leftMatrixLength ; i++ ) {
+            QR[ i ][ k ] /= norm;
+        }
+
+        QR[ k ][ k ] += 1;
+
+    }
+
+    function applyTransformationToRemainingColumns ( k ) {
+
+        var result = undefined;
+        var i, j, l;
+
+        for ( i = k + 1 ; i < leftMatrixRowLength ; i++ ) {
+            result = 0;
+            for ( j = k ; j < leftMatrixLength ; j++ ) {
+                result += QR[ j ][ k ] * QR[ j ][ i ];
+            }
+            result = -result / QR[ k ][ k ];
+            for ( l = k ; l < leftMatrixLength ; l++ ) {
+                QR[ l ][ i ] += result * QR[ l ][ k ];
+            }
+        }
+
+    }
+
+    function checkMatrixRank () {
+
+        var i;
+
+        for ( i = 0 ; i < leftMatrixRowLength ; i++ ) {
+            if ( matrixDiagonal[ i ] === 0 ) {
+                console.warn( "Matrix is rank deficient" );
+            }
+        }
+
+    }
+
+    function copyRightHandSide () {
+
+        var i, j;
+
+        for ( i = 0 ; i < rightMatrixLength ; i++ ) {
+            resultMatrix[ i ] = new Array( rightMatrixRowLength );
+            for ( j = 0 ; j < rightMatrixRowLength ; j++ ) {
+                resultMatrix[ i ][ j ] = rightMatrix[ i ][ j ];
+            }
+        }
+
+    }
+
+    // Compute Y = transpose(Q)*B
+    function computeMatrixResults () {
+
+        var result = 0.0;
+        var i, j, k, l;
+
+        for ( i = 0 ; i < leftMatrixRowLength ; i++ ) {
+            for ( j = 0 ; j < rightMatrixRowLength ; j++ ) {
+                result = 0.0;
+                for ( k = i ; k < leftMatrixLength ; k++ ) {
+                    result += QR[ k ][ i ] * resultMatrix[ k ][ j ];
+                }
+                result = -result / QR[ i ][ i ];
+                for ( l = i ; l < leftMatrixLength ; l++ ) {
+                    resultMatrix[ l ][ j ] += result * QR[ l ][ i ];
+                }
+            }
+        }
+
+    }
+
+    // Solve R*X = Y;
+    function solve () {
+
+        var i, j, k, l;
+
+        for ( i = leftMatrixRowLength - 1 ; i >= 0 ; i-- ) {
+            for ( j = 0 ; j < rightMatrixRowLength ; j++ ) {
+                resultMatrix[ i ][ j ] /= matrixDiagonal[ i ];
+            }
+            for ( k = 0 ; k < i ; k++ ) {
+                for ( l = 0 ; l < rightMatrixRowLength ; l++ ) {
+                    resultMatrix[ k ][ l ] -= resultMatrix[ i ][ l ] * QR[ k ][ i ];
+                }
+            }
+        }
+
+    }
+
+    fillQRMatrix();
 
     // Main loop.
-    for (var k = 0; k < n; k++) {
-        // Compute 2-norm of k-th column without under/overflow.
-        nrm = 0;
-        for (var l = k; l < m; l++) {
-            nrm = Math.hypot(nrm, QR[l][k]);
-        }
-        if (nrm != 0) {
-            // Form k-th Householder vector.
-            if (QR[k][k] < 0) {
-                nrm = -nrm;
-            }
-            for (var i = k; i < m; i++) {
-                QR[i][k] /= nrm;
-            }
-            QR[k][k] += 1;
+    for ( var k = 0 ; k < leftMatrixRowLength ; k++ ) {
 
-            // Apply transformation to remaining columns.
-            for (var j = k + 1; j < n; j++) {
-                var s = 0;
-                for (var i = k; i < m; i++) {
-                    s += QR[i][k] * QR[i][j];
-                }
-                s = -s / QR[k][k];
-                for (var i = k; i < m; i++) {
-                    QR[i][j] += s * QR[i][k];
-                }
-            }
+        // Compute 2-norm of k-th column without under/overflow.
+        norm = 0;
+
+        for ( var l = k ; l < leftMatrixLength ; l++ ) {
+            norm = Math.hypot( norm, QR[ l ][ k ] );
         }
-        rDiag[k] = -nrm;
-    }
-    if (B.length != m) {
-        console.log("Matrix row dimensions must agree.");
-    }
-    for (var j = 0; j < n; j++) {
-        if (rDiag[j] == 0)
-            console.log("Matrix is rank deficient");
-    }
-    // Copy right hand side
-    var nx = B[0].length;
-    var X  = new Array(B.length);
-    for (var i = 0; i < B.length; i++) {
-        X[i] = new Array(B[0].length);
-    }
-    for (var i = 0; i < B.length; i++) {
-        for (var j = 0; j < B[0].length; j++) {
-            X[i][j] = B[i][j];
+
+        if ( norm !== 0 ) {
+            formHouseholderVector( k );
+            applyTransformationToRemainingColumns( k );
         }
+
+        matrixDiagonal[ k ] = -norm;
     }
-    // Compute Y = transpose(Q)*B
-    for (var k = 0; k < n; k++) {
-        for (var j = 0; j < nx; j++) {
-            var s = 0.0;
-            for (var i = k; i < m; i++) {
-                s += QR[i][k] * X[i][j];
-            }
-            s = -s / QR[k][k];
-            for (var i = k; i < m; i++) {
-                X[i][j] += s * QR[i][k];
-            }
-        }
-    }
-    // Solve R*X = Y;
-    for (var k = n - 1; k >= 0; k--) {
-        for (var j = 0; j < nx; j++) {
-            X[k][j] /= rDiag[k];
-        }
-        for (var i = 0; i < k; i++) {
-            for (var j = 0; j < nx; j++) {
-                X[i][j] -= X[k][j] * QR[i][k];
-            }
-        }
-    }
-    return getSubMatrix(X, 0, n - 1, 0, nx - 1);
+
+    checkMatrixRank();
+    copyRightHandSide();
+    computeMatrixResults();
+    solve();
+
+    return getSubMatrix( resultMatrix, 0, leftMatrixRowLength - 1, 0, rightMatrixRowLength - 1 );
+
 }
