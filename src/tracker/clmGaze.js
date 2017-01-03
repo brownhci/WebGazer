@@ -11,8 +11,7 @@ import {KalmanFilter} from "../utils/KalmanFilter";
  */
 var ClmGaze = function (params) {
 
-    this.clm = new ClmTrackr.tracker(params);
-    this.clm.init(pcaFilter);
+
     var F = [
         [1, 0, 0, 0, 1, 0],
         [0, 1, 0, 0, 0, 1],
@@ -46,6 +45,8 @@ var ClmGaze = function (params) {
     var P_initial = numeric.mul(numeric.identity(6), 0.0001); //Initial covariance matrix
     var x_initial = [[200], [150], [250], [180], [0], [0]]; // Initial measurement matrix
 
+    this.clm = new ClmTrackr.tracker(params);
+    this.clm.init(pcaFilter);
     this.leftKalman  = new KalmanFilter(F, H, Q, R, P_initial, x_initial);
     this.rightKalman = new KalmanFilter(F, H, Q, R, P_initial, x_initial);
 
@@ -65,32 +66,33 @@ ClmGaze.prototype.name = 'clmtrackr';
 ClmGaze.prototype.getEyePatches = function (imageCanvas) {
 
     if (!imageCanvas) {
+        console.error("Unable to process null canvas !");
         return null;
     }
     
-    if (imageCanvas.width === 0) {
+    if (imageCanvas.height === 0 || imageCanvas.width === 0) {
+        console.error("Unable to process canvas with null height or width");
         return null;
     }
 
     var positions = this.clm.track(imageCanvas);
     if (!positions) {
+        console.error("Invalid tracking position !!!");
         return null;
     }
 
     //Fit the detected eye in a rectangle
     var canvasContext = imageCanvas.getContext('2d');
-
+    if(!canvasContext) {
+        console.error("Unable to process null canvas context !!!");
+        return null;
+    }
+    
     var leftOriginX  = (positions[23][0]);
     var leftOriginY  = (positions[24][1]);
     var leftWidth    = (positions[25][0] - positions[23][0]);
     var leftHeight   = (positions[26][1] - positions[24][1]);
     var leftBox = [leftOriginX, leftOriginY, leftOriginX + leftWidth, leftOriginY + leftHeight];
-
-    var rightOriginX = (positions[30][0]);
-    var rightOriginY = (positions[29][1]);
-    var rightWidth   = (positions[28][0] - positions[30][0]);
-    var rightHeight  = (positions[31][1] - positions[29][1]);
-    var rightBox = [rightOriginX, rightOriginY, rightOriginX + rightWidth, rightOriginY + rightHeight];
 
     //Apply Kalman Filtering
     leftBox     = this.leftKalman.update(leftBox);
@@ -99,6 +101,17 @@ ClmGaze.prototype.getEyePatches = function (imageCanvas) {
     leftWidth   = Math.round(leftBox[2] - leftBox[0]);
     leftHeight  = Math.round(leftBox[3] - leftBox[1]);
 
+    if (leftWidth === 0 || leftHeight === 0) {
+        console.error('Left eye patch had zero width or height !!!');
+        return null;
+    }
+
+    var rightOriginX = (positions[30][0]);
+    var rightOriginY = (positions[29][1]);
+    var rightWidth   = (positions[28][0] - positions[30][0]);
+    var rightHeight  = (positions[31][1] - positions[29][1]);
+    var rightBox = [rightOriginX, rightOriginY, rightOriginX + rightWidth, rightOriginY + rightHeight];
+    
     //Apply Kalman Filtering
     rightBox     = this.rightKalman.update(rightBox);
     rightOriginX = Math.round(rightBox[0]);
@@ -106,13 +119,8 @@ ClmGaze.prototype.getEyePatches = function (imageCanvas) {
     rightWidth   = Math.round(rightBox[2] - rightBox[0]);
     rightHeight  = Math.round(rightBox[3] - rightBox[1]);
 
-    if (leftWidth === 0 || rightWidth === 0) {
-        console.log('An eye patch had zero width');
-        return null;
-    }
-
-    if (leftHeight === 0 || rightHeight === 0) {
-        console.log('An eye patch had zero height');
+    if (rightWidth === 0 || rightHeight === 0) {
+        console.error('Right eye patch had zero width or height !!!');
         return null;
     }
 
