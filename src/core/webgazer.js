@@ -133,17 +133,15 @@ var WebGazer = (function (window, params) {
      * Gets the pupil features by following the pipeline which threads an eyes object through each call:
      * _tracker gets eye patches -> blink detector -> pupil detection
      * @param {HTMLCanvasElement} canvas - a canvas which will have the video drawn onto it
-     * @param {Number} width - the width of canvas
-     * @param {Number} height - the height of canvas
      */
-    function _getPupilFeatures(canvas, width, height) {
+    function _getPupilFeatures(canvas) {
 
         if (!canvas) {
             return;
         }
 
         try {
-            var eyePatch = _tracker.getEyePatches(canvas, width, height);
+            var eyePatch = _tracker.getEyePatches(canvas);
             return _blinkDetector.detectBlink(eyePatch);
         } catch (err) {
             console.error(err);
@@ -154,27 +152,20 @@ var WebGazer = (function (window, params) {
 
     /**
      * Gets the most current frame of video and paints it to a resized version of the canvas with width and height
-     * @param {HTMLCanvasElement} canvas - the canvas to paint the video on to
-     * @param {Number} width - the new width of the canvas
-     * @param {Number} height - the new height of the canvas
+     * @param {HTMLCanvasElement} canvas - the canvas to paint the video onto
      */
-    function _paintCurrentFrame(canvas, width, height) {
+    function _paintCurrentFrame(canvas) {
         //imgWidth = _videoElement.videoWidth * videoScale;
         //imgHeight = _videoElement.videoHeight * videoScale;
-        // if (canvas.width != width) {
-        //     canvas.width = width;
-        // }
-        // if (canvas.height != height) {
-        //     canvas.height = height;
-        // }
-
-        // Compare if different will require an useless conditional check for any change,
-        // instead of simply set the value (and if they are equals there is no more loss time)
-        canvas.width = width;
-        canvas.height = height;
+        var videoWidth = (_videoElement.width) ? _videoElement.width : (_videoElement.clientWidth) ? _videoElement.clientWidth : 800;
+        var videoHeight = (_videoElement.height) ? _videoElement.height : (_videoElement.clientHeight) ? _videoElement.clientHeight : 600;
+        canvas.width = videoWidth;
+        canvas.height = videoHeight;
+//        canvas.width = width;
+//        canvas.height = height;
 
         // instead of accessing an object property, just use what is here
-        canvas.getContext('2d').drawImage(_videoElement, 0, 0, width, height);
+        canvas.getContext('2d').drawImage(_videoElement, 0, 0,videoWidth, videoHeight);
     }
 
     /**
