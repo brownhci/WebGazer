@@ -187,7 +187,7 @@ var WebGazer = (function (window, params) {
         }
 
         var predictions = [];
-        var features    = _getPupilFeatures( _videoElementCanvas, _params.imgWidth, _params.imgHeight );
+        var features    = _getPupilFeatures( _videoElementCanvas );
 
         for (var reg in _regressions) {
             predictions.push(_regressions[reg].predict(features));
