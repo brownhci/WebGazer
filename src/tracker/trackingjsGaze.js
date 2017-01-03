@@ -19,127 +19,190 @@ TrackingjsGaze.prototype.name = 'trackingjs';
  * @param  {Number} height - of imageCanvas
  * @return {Object} the two eye-patches, first left, then right eye
  */
-TrackingjsGaze.prototype.getEyePatches = function (imageCanvas, width, height) {
+TrackingjsGaze.prototype.getEyePatches = function ( imageCanvas, width, height ) {
 
-    if (imageCanvas.width == 0) {
+    // Check input consistency
+    if ( !imageCanvas ) {
+        console.error( "Unable to process null canvas !" );
         return null;
     }
 
+    var canvasWidth = imageCanvas.width;
+    if ( !canvasWidth ) {
+        console.error( "Unable to process canvas with null width !!!" );
+        return null;
+    }
+
+    var canvasHeight = imageCanvas.height;
+    if ( !canvasHeight ) {
+        console.error( "Unable to process canvas with null height !!!" );
+        return null;
+    }
+
+    var canvasContext = imageCanvas.getContext( '2d' );
+    if ( !canvasContext ) {
+        console.error( "Unable to process null canvas context !!!" );
+        return null;
+    }
+
+    /*
+     FACE DETECTION
+     */
+    var face = this.detectFace( imageCanvas, canvasWidth, canvasHeight );
+    if ( !face || !face.length ) {
+        console.error( "Unable to process empty or null faces !!!" );
+        return null;
+    }
+
+    var faceOffsetX = Math.floor( face[ 0 ] );
+    if ( isNaN( faceOffsetX ) ) {
+        console.error( "Unable to process x offset as NaN value !!!" );
+        return null;
+    }
+
+    var faceOffsetY = Math.floor( face[ 1 ] );
+    if ( isNaN( faceOffsetY ) ) {
+        console.error( "Unable to process y offset as NaN value !!!" );
+        return null;
+    }
+
+    var faceWidth = Math.floor( face[ 2 ] );
+    if ( isNaN( faceWidth ) ) {
+        console.error( "Unable to process face width as NaN value !!!" );
+        return null;
+    }
+
+    var faceHalfHeight = Math.floor( face[ 3 ] / 2 );
+    if ( isNaN( faceHalfHeight ) ) {
+        console.error( "Unable to process face height as NaN value !!!" );
+        return null;
+    }
+
+    /*
+     EYES DETECTION
+     */
     //current ImageData that correspond to the working image.
     //It can be the whole canvas if the face detection failed or only the upper half of the face to avoid unnecessary computations
-    var workingImage = imageCanvas.getContext('2d').getImageData(0, 0, width, height);
+    //Todo: The eyes are located only in a small portion of the image !
+    //Todo: Need to defined precisely witch region about the returned context instead the half face !
+    var workingImage = canvasContext.getImageData( faceOffsetX, faceOffsetY, faceWidth, faceHalfHeight );
 
-    var face = this.detectFace(workingImage, width, height);
-
-    //offsets of the working image from the top left corner of the video canvas
-    var offsetX = 0;
-    var offsetY = 0;
-
-    //if face has been detected
-    if (face.length > 0 && !isNaN(face[0]) && !isNaN(face[1]) && !isNaN(face[2]) && !isNaN(face[3])) {
-        //working image is restricted on upper half of detected face
-        workingImage = imageCanvas.getContext('2d').getImageData(Math.floor(face[0]), Math.floor(face[1]), Math.floor(face[2]), Math.floor(face[3] / 2));
-        width        = Math.floor(face[2]);
-        height       = Math.floor(face[3] / 2);
-        //offset from detected face
-        offsetX      = Math.floor(face[0]);
-        offsetY      = Math.floor(face[1]);
-    }
-
-    var eyes = this.detectEyes(workingImage, width, height);
-    console.log(eyes);
-    if (eyes == null) {
+    var eyes = this.detectEyes( workingImage );
+    if ( !eyes || eyes.length !== 2 ) {
+        console.error( "Unable to process null or single eye !!!" );
         return null;
     }
 
-    var eyeObjs       = {};
-    var leftImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[0][0]) + offsetX, Math.floor(eyes[0][1]) + offsetY, Math.floor(eyes[0][2]), Math.floor(eyes[0][3]));
-    eyeObjs.left      = {
-        patch:  leftImageData,
-        imageX: eyes[0][0] + offsetX,
-        imageY: eyes[0][1] + offsetY,
-        width:  eyes[0][2],
-        height: eyes[0][3]
-    };
-
-    var rightImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[1][0]) + offsetX, Math.floor(eyes[1][1]) + offsetY, Math.floor(eyes[1][2]), Math.floor(eyes[1][3]));
-    eyeObjs.right      = {
-        patch:  rightImageData,
-        imageX: eyes[1][0] + offsetX,
-        imageY: eyes[1][1] + offsetY,
-        width:  eyes[1][2],
-        height: eyes[1][3]
-    };
-
-    if (leftImageData.width == 0 || rightImageData.width == 0) {
-        console.log('an eye patch had zero width');
+    var leftEyeOffsetX = Math.floor( eyes[ 0 ][ 0 ] ) + faceOffsetX;
+    var leftEyeOffsetY = Math.floor( eyes[ 0 ][ 1 ] ) + faceOffsetY;
+    var leftEyeWidth   = Math.floor( eyes[ 0 ][ 2 ] );
+    var leftEyeHeight  = Math.floor( eyes[ 0 ][ 3 ] );
+    if ( !leftEyeWidth || !leftEyeHeight ) {
+        console.error( 'The left eye had zero width or height !!!' );
         return null;
     }
 
-    return eyeObjs;
+    var rightEyeOffsetX = Math.floor( eyes[ 1 ][ 0 ] ) + faceOffsetX;
+    var rightEyeOffsetY = Math.floor( eyes[ 1 ][ 1 ] ) + faceOffsetY;
+    var rightEyeWidth   = Math.floor( eyes[ 1 ][ 2 ] );
+    var rightEyeHeight  = Math.floor( eyes[ 1 ][ 3 ] );
+    if ( !rightEyeWidth || !rightEyeHeight ) {
+        console.error( 'The right eye had zero width or height !!!' );
+        return null;
+    }
+
+    return {
+        left:  {
+            patch:  canvasContext.getImageData( leftEyeOffsetX, leftEyeOffsetY, leftEyeWidth, leftEyeHeight ),
+            imageX: leftEyeOffsetX,
+            imageY: leftEyeOffsetY,
+            width:  leftEyeWidth,
+            height: leftEyeHeight
+        },
+        right: {
+            patch:  canvasContext.getImageData( rightEyeOffsetX, rightEyeOffsetY, rightEyeWidth, rightEyeHeight ),
+            imageX: rightEyeOffsetX,
+            imageY: rightEyeOffsetY,
+            width:  rightEyeWidth,
+            height: rightEyeHeight
+        }
+    };
 };
 
 /**
  * Performs eye detection on the passed working image
- * @param {ImageData} workingImage - either the whole canvas or the upper half of the head
- * @param {Number} width - width of working image
- * @param {Number} height - height of working image
+ * @param {ImageData} imageData - either the whole canvas or the upper half of the head
  * @return {Array} eyes - array of rectangle information.
  */
-TrackingjsGaze.prototype.detectEyes = function (workingImage, width, height) {
+TrackingjsGaze.prototype.detectEyes = function ( imageData ) {
+
+    var ViolaJones       = tracking.ViolaJones;
+    var pixels           = imageData.data;
+    var width            = imageData.width;
+    var height           = imageData.height;
     var eyes             = [];
     var intermediateEyes = [];
-    var pixels           = workingImage.data;
-    tracking.ViolaJones.detect(pixels, width, height, 0.5, 2, 1.7, 0.1, tracking.ViolaJones.classifiers['eye']).forEach(function (rect) {
-        var intermediateEye = [rect.x, rect.y, rect.width, rect.height];
-        intermediateEyes.push(intermediateEye);
-    });
-    if (intermediateEyes.length > 1) {
-        //find the two eyes with the shortest y distance
-        var minimumYDistance = 1000;
-        var eyes             = [];
 
-        for (var i = 0; i < intermediateEyes.length; i++) {
-            for (var j = i + 1; j < intermediateEyes.length; j++) {
-                var YDistance = Math.abs(Math.floor(intermediateEyes[i][1]) - Math.floor(intermediateEyes[j][1]));
-                if (YDistance <= minimumYDistance) {
-                    minimumYDistance = YDistance;
-                    eyes[0]          = intermediateEyes[i];
-                    eyes[1]          = intermediateEyes[j];
-                }
-            }
-        }
+    ViolaJones
+        .detect( pixels, width, height, 0.5, 2, 1.7, 0.1, ViolaJones.classifiers[ 'eye' ] )
+        .forEach( function ( rect ) {
+            intermediateEyes.push( [ rect.x, rect.y, rect.width, rect.height ] );
+        } );
 
-        eyes.sort(function (a, b) {
-            return a[0] - b[0]
-        });
-        return eyes;
-    }
-    else {
-        console.log('tracking.js could not detect two eyes in the video');
+    var numberOfintermediateEyes = intermediateEyes.length;
+    if ( numberOfintermediateEyes <= 1 ) {
+        console.log( 'tracking.js could not detect two eyes in the video' );
         return null;
     }
+
+    //find the two eyes with the shortest y distance
+    var minimumYDistance = Number.MAX_VALUE;
+    var YDistance        = 0;
+    var firstEye         = null;
+    var secondEye        = null;
+    var i, j;
+    for ( i = 0 ; i < numberOfintermediateEyes ; i++ ) {
+        firstEye = intermediateEyes[ i ];
+        for ( j = i + 1 ; j < numberOfintermediateEyes ; j++ ) {
+            secondEye = intermediateEyes[ j ];
+            YDistance = Math.abs( Math.floor( firstEye[ 1 ] ) - Math.floor( secondEye[ 1 ] ) );
+            if ( YDistance < minimumYDistance ) {
+                minimumYDistance = YDistance;
+                eyes[ 0 ]        = firstEye;
+                eyes[ 1 ]        = secondEye;
+            }
+        }
+    }
+
+    eyes.sort( function ( a, b ) {
+        return a[ 0 ] - b[ 0 ]
+    } );
+
+    return eyes;
+
 };
 
 /**
  * Performs face detection on the passed canvas
- * @param {ImageData} workingImage - whole video canvas
- * @param {Number} width - width of imageCanvas
- * @param {Number} height - height of imageCanvas
+ * @param {ImageData} imageData - whole video canvas
  * @return {Array} face - array of rectangle information
  */
-TrackingjsGaze.prototype.detectFace = function (workingImage, width, height) {
-    var intermediateFaces = [];
-    var face              = [];
+TrackingjsGaze.prototype.detectFace = function ( imageData ) {
 
-    // Detect faces in the image
-    var pixels = workingImage.data;
-    tracking.ViolaJones.detect(pixels, width, height, 2, 1.25, 2, 0.1, tracking.ViolaJones.classifiers['face']).forEach(function (rect) {
-        var intermediateFace = [rect.x, rect.y, rect.width, rect.height];
-        intermediateFaces.push(intermediateFace);
-    });
-    face = this.findLargestRectangle(intermediateFaces);
-    return face;
+    var ViolaJones        = tracking.ViolaJones;
+    var width             = imageData.width;
+    var height            = imageData.height;
+    var pixels            = imageData.data;
+    var intermediateFaces = [];
+
+    ViolaJones
+        .detect( pixels, width, height, 2, 1.25, 2, 0.1, ViolaJones.classifiers[ 'face' ] )
+        .forEach( function ( rect ) {
+            intermediateFaces.push( [ rect.x, rect.y, rect.width, rect.height ] );
+        } );
+
+    return this.findLargestRectangle( intermediateFaces );
+
 };
 
 /**
@@ -147,18 +210,22 @@ TrackingjsGaze.prototype.detectFace = function (workingImage, width, height) {
  * @param {Array.<Array.<Number>>} rectangles - array of arrays of format [xCoordinate, yCoordinate, width, height]
  * @return {Array} largestRectangle = [xCoordinate, yCoordinate, width, height]
  */
-TrackingjsGaze.prototype.findLargestRectangle = function (rectangles) {
+TrackingjsGaze.prototype.findLargestRectangle = function ( rectangles ) {
+
+    var largestRectangle = [];
     var largestArea      = 0;
     var area             = 0;
-    var largestRectangle = [];
-    for (var i = 0; i < rectangles.length; ++i) {
-        area = rectangles[i][2] * rectangles[i][3];
-        if (area > largestArea) {
+
+    for ( var i = 0, numberOfRectangles = rectangles.length ; i < numberOfRectangles ; ++i ) {
+        area = rectangles[ i ][ 2 ] * rectangles[ i ][ 3 ];
+        if ( area > largestArea ) {
             largestArea      = area;
-            largestRectangle = rectangles[i];
+            largestRectangle = rectangles[ i ];
         }
     }
+
     return largestRectangle;
+
 };
 
-export {TrackingjsGaze};
+export { TrackingjsGaze };
