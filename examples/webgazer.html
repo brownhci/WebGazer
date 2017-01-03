@@ -34,59 +34,59 @@
 			 .showPredictionPoints( true );
 		/* shows a square every 100 milliseconds where current prediction is */
 
-		var width    = 320;
-		var height   = 240;
-		var topDist  = '0px';
-		var leftDist = '0px';
+//		var width    = 1280;
+//		var height   = 720;
+//		var topDist  = '0px';
+//		var leftDist = '0px';
 
-		var setup = function () {
-			var video            = document.getElementById('webgazerVideoFeed');
-			video.style.display  = 'block';
-			video.style.position = 'absolute';
-			video.style.top      = topDist;
-			video.style.left     = leftDist;
-			video.width          = width;
-			video.height         = height;
-			video.style.margin   = '0px';
+//		var setup = function () {
+//			var video            = document.getElementById('webgazerVideoFeed');
+//			video.style.display  = 'block';
+//			video.style.position = 'absolute';
+//			video.style.top      = topDist;
+//			video.style.left     = leftDist;
+//			video.width          = width;
+//			video.height         = height;
+//			video.style.margin   = '0px';
 
 			//Uuuh why need i to add "params", was it global ?
-			var params = {};
-			params.imgWidth  = width;
-			params.imgHeight = height;
+//			var params = {};
+//			params.imgWidth  = width;
+//			params.imgHeight = height;
 
-			var overlay            = document.createElement('canvas');
-			overlay.id             = 'overlay';
-			overlay.style.position = 'absolute';
-			overlay.width          = width;
-			overlay.height         = height;
-			overlay.style.top      = topDist;
-			overlay.style.left     = leftDist;
-			overlay.style.margin   = '0px';
-
-			document.body.appendChild(overlay);
-
-			var cl = gazer.getTracker().clm;
-
-			function drawLoop() {
-				requestAnimationFrame(drawLoop);
-				overlay.getContext('2d').clearRect(0, 0, width, height);
-				if (cl.getCurrentPosition()) {
-					cl.draw(overlay);
-				}
-			}
-
-			drawLoop();
-		};
-
-		function checkIfReady() {
-			if (gazer.isReady()) {
-				setup(); //will be never called because gazer.willNeverReady()!
-			} else {
-				setTimeout(checkIfReady, 1000);
-			}
-		}
-
-		setTimeout(checkIfReady, 1000);
+//			var overlay            = document.createElement('canvas');
+//			overlay.id             = 'overlay';
+//			overlay.style.position = 'absolute';
+//			overlay.width          = width;
+//			overlay.height         = height;
+//			overlay.style.top      = topDist;
+//			overlay.style.left     = leftDist;
+//			overlay.style.margin   = '0px';
+//
+//			document.body.appendChild(overlay);
+//
+//			var cl = gazer.getTracker().clm;
+//
+//			function drawLoop() {
+//				requestAnimationFrame(drawLoop);
+//				overlay.getContext('2d').clearRect(0, 0, width, height);
+//				if (cl.getCurrentPosition()) {
+//					cl.draw(overlay);
+//				}
+//			}
+//
+//			drawLoop();
+//		};
+//
+//		function checkIfReady() {
+//			if (gazer.isReady()) {
+//				setup(); //will be never called because gazer.willNeverReady()!
+//			} else {
+//				setTimeout(checkIfReady, 1000);
+//			}
+//		}
+//
+//		setTimeout(checkIfReady, 1000);
 	};
 
 	window.onbeforeunload = function () {
