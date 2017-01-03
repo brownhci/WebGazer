@@ -63,6 +63,8 @@ var WebGazer = (function (window, params) {
     _gazeDot.style.borderRadius = '100%';
     _gazeDot.style.opacity      = '0.7';
 
+    var _showFaceTracker = true;
+
     var _staticVideoSource = '';
     // loop parameters
     var _clockStart    = performance.now();
@@ -241,7 +243,12 @@ var WebGazer = (function (window, params) {
             _gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
         }
         
-        
+        if(_showFaceTracker && _tracker instanceof Tracker.ClmGaze) {
+            var cl = _tracker.clm;
+            if (cl.getCurrentPosition()) {
+                cl.draw(_videoElementCanvas);
+            }
+        }
         
     }
 
