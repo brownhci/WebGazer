@@ -21,22 +21,24 @@
  * @param {Number} interval - The log interval
  * @constructor
  */
-var DebugBox = function (interval) {
-    this.para = document.createElement('p');
-    this.div  = document.createElement('div');
-    this.div.appendChild(this.para);
-    document.body.appendChild(this.div);
+var DebugBox = function ( interval ) {
+
+    this.para = document.createElement( 'p' );
+    this.div  = document.createElement( 'div' );
+    this.div.appendChild( this.para );
+    document.body.appendChild( this.div );
 
     this.buttons = {};
     this.canvas  = {};
     this.stats   = {};
 
     var updateInterval = interval || 300;
-    (function (localThis) {
-        setInterval(function () {
-            localThis.write(localThis.para, localThis.stats);
-        }, updateInterval);
-    }(this));
+    (function ( localThis ) {
+        setInterval( function () {
+            localThis.write( localThis.para, localThis.stats );
+        }, updateInterval );
+    }( this ));
+
 };
 
 /**
@@ -44,8 +46,10 @@ var DebugBox = function (interval) {
  * @param {String} key - The data key
  * @param {*} value - The value
  */
-DebugBox.prototype.set = function (key, value) {
-    this.stats[key] = value;
+DebugBox.prototype.set = function ( key, value ) {
+
+    this.stats[ key ] = value;
+
 };
 
 /**
@@ -55,11 +59,13 @@ DebugBox.prototype.set = function (key, value) {
  * @param {Number} incBy - Value to increment for given key (default: 1)
  * @param {Number} init - Initial value in case where key does not exist (default: 0)
  */
-DebugBox.prototype.inc = function (key, incBy, init) {
-    if (!this.stats[key]) {
-        this.stats[key] = init || 0;
+DebugBox.prototype.inc = function ( key, incBy, init ) {
+
+    if ( !this.stats[ key ] ) {
+        this.stats[ key ] = init || 0;
     }
-    this.stats[key] += incBy || 1;
+    this.stats[ key ] += incBy || 1;
+
 };
 
 /**
@@ -67,15 +73,17 @@ DebugBox.prototype.inc = function (key, incBy, init) {
  * @param {String} name - The button name to link
  * @param {Function} func - The onClick callback
  */
-DebugBox.prototype.addButton = function (name, func) {
-    if (!this.buttons[name]) {
-        this.buttons[name] = document.createElement('button');
-        this.div.appendChild(this.buttons[name]);
+DebugBox.prototype.addButton = function ( name, func ) {
+
+    if ( !this.buttons[ name ] ) {
+        this.buttons[ name ] = document.createElement( 'button' );
+        this.div.appendChild( this.buttons[ name ] );
     }
-    var button         = this.buttons[name];
-    this.buttons[name] = button;
-    button.addEventListener('click', func);
+    var button           = this.buttons[ name ];
+    this.buttons[ name ] = button;
+    button.addEventListener( 'click', func );
     button.innerText = name;
+
 };
 
 /**
@@ -84,22 +92,27 @@ DebugBox.prototype.addButton = function (name, func) {
  * @param {String} name - The canvas name to send/create
  * @param {Function} func - The callback function where send canvas
  */
-DebugBox.prototype.show = function (name, func) {
-    if (!this.canvas[name]) {
-        this.canvas[name] = document.createElement('canvas');
-        this.div.appendChild(this.canvas[name]);
+DebugBox.prototype.show = function ( name, func ) {
+
+    if ( !this.canvas[ name ] ) {
+        this.canvas[ name ] = document.createElement( 'canvas' );
+        this.div.appendChild( this.canvas[ name ] );
     }
-    var canvas = this.canvas[name];
-    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-    func(canvas);
+    var canvas = this.canvas[ name ];
+    canvas.getContext( '2d' )
+          .clearRect( 0, 0, canvas.width, canvas.height );
+    func( canvas );
+
 };
 
-DebugBox.prototype.write = function (para, stats) {
+DebugBox.prototype.write = function ( para, stats ) {
+
     var str = '';
-    for (var key in stats) {
-        str += key + ': ' + stats[key] + '\n';
+    for ( var key in stats ) {
+        str += key + ': ' + stats[ key ] + '\n';
     }
     para.innerText = str;
+    
 };
 
-export {DebugBox};
+export { DebugBox };

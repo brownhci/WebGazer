@@ -42,14 +42,16 @@ export function resizeEye(eye, resizeWidth, resizeHeight) {
     canvas.getContext('2d').putImageData(eye.patch, 0, 0);
 
     var tempCanvas = document.createElement('canvas');
-
     tempCanvas.width  = resizeWidth;
     tempCanvas.height = resizeHeight;
 
     // save the canvas into temp canvas
-    tempCanvas.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, resizeWidth, resizeHeight);
+    return tempCanvas
+        .getContext( '2d' )
+        .drawImage( canvas, 0, 0, canvas.width, canvas.height, 0, 0, resizeWidth, resizeHeight )
+        .getImageData( 0, 0, resizeWidth, resizeHeight );
 
-    return tempCanvas.getContext('2d').getImageData(0, 0, resizeWidth, resizeHeight);
+//    return tempCanvas.getContext('2d').getImageData(0, 0, resizeWidth, resizeHeight);
 }
 
 /**
@@ -58,12 +60,18 @@ export function resizeEye(eye, resizeWidth, resizeHeight) {
  * @return {Array} constrained coordinates
  */
 export function bound(prediction) {
-    if (prediction.x < 0)
+    
+    if (prediction.x < 0) {
         prediction.x = 0;
-    if (prediction.y < 0)
+    }
+    
+    if (prediction.y < 0) {
         prediction.y = 0;
+    }
+    
     var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    
     if (prediction.x > w) {
         prediction.x = w;
     }
@@ -71,7 +79,9 @@ export function bound(prediction) {
     if (prediction.y > h) {
         prediction.y = h;
     }
+    
     return prediction;
+    
 }
 
 export {BlinkDetector} from "./blinkDetector";
