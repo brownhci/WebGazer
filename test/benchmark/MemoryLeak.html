@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script type="text/javascript">
+	function LeakMemory() {
+		var i;
+		for (i = 0; i < 5000; i++) {
+			var parentDiv = document.createElement("<div onClick='foo()'>");
+		}
+	}
+</script>
+<input type="button" value="Memory Leaking Insert" onclick="LeakMemory()" />
+
+</body>
+</html>

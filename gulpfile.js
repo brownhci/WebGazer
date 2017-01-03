@@ -55,6 +55,12 @@ gulp.task('benchmark', function() {
     gutil.log('No benchmarks yet...');
 
     return gulp.src([
+        // 'test/benchmark/core/Base.js',
+        // 'test/benchmark/core/ReturnStatement.js',
+        // 'test/benchmark/core/array/Array.js',
+        // 'test/benchmark/core/IfStatement.js',
+        'test/benchmark/core/ForStatement.js',
+        // 'test/benchmark/core/ObjectOrNotObject.js'
     ])
         .pipe(benchmark());
 
