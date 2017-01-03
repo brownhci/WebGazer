@@ -68,4 +68,4 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 
 Copyright (C) 2016 [Brown HCI Group](http://hci.cs.brown.edu)
 
-Licensed under GPLv3.
+Licensed under GPLv3. Companies with an evaluation of less than $10M can use WebGazer.js under LGPLv3.
