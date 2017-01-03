@@ -738,6 +738,6 @@ var WebGazer = (function (window, params) {
         getCurrentPrediction: getCurrentPrediction
     }
 
-})(window, webgazerBadGlobalParams);
+})(window);
 
 export {WebGazer};
