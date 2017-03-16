@@ -534,7 +534,7 @@
      */
     webgazer.addTrackerModule = function(name, constructor) {
         curTrackerMap[name] = function() {
-            contructor();
+            return new constructor();
         };
     };
 
@@ -545,7 +545,7 @@
      */
     webgazer.addRegressionModule = function(name, constructor) {
         regressionMap[name] = function() {
-            contructor();
+            return new constructor();
         };
     };
     
