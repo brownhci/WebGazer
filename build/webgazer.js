@@ -1,3 +1,10 @@
+/** WebGazer.js: Scalable Webcam EyeTracking Using User Interactions 
+ * 
+ * Copyright (c) 2016, Brown HCI Group 
+
+* Licensed under GPLv3. Companies with a valuation of less than $10M can use WebGazer.js under LGPLv3. 
+*/
+
 /**
  * Real-time object detector based on the Viola Jones Framework.
  * Compatible to OpenCV Haar Cascade Classifiers (stump based only).
@@ -10908,7 +10915,7 @@ var mosseFilterResponses = function() {
      */
     webgazer.addTrackerModule = function(name, constructor) {
         curTrackerMap[name] = function() {
-            contructor();
+            return new constructor();
         };
     };
 
@@ -10919,7 +10926,7 @@ var mosseFilterResponses = function() {
      */
     webgazer.addRegressionModule = function(name, constructor) {
         regressionMap[name] = function() {
-            contructor();
+            return new constructor();
         };
     };
     
