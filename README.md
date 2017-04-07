@@ -56,7 +56,6 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 	}
 
 
-
 ## Who We Are
 
 * Alexandra Papoutsaki
