@@ -10607,6 +10607,9 @@ var mosseFilterResponses = function() {
      * Runs every available animation frame if webgazer is not paused
      */
     var smoothingVals = new webgazer.util.DataWindow(4);
+    var average_x = new Array(3);
+    var average_y = new Array(3);
+    var i = 0;
     function loop() {
         var gazeData = getPrediction();
         var elapsedTime = performance.now() - clockStart;
@@ -10630,6 +10633,28 @@ var mosseFilterResponses = function() {
             } else {
               slowDown=true;
             }
+            average_x[i] = pred.x;
+            average_y[i] = pred.y;
+            if (i == 2) {
+              var x = 0;
+              for(count = 0; count < 3; count++){
+                x+=average_x[count];
+              }
+              x=x/3;
+              var y = 0;
+              for(count = 0; count < 3; count++){
+                y+=average_y[count];
+              }
+              y=y/3;
+              drawCoordinates('yellow',x,y);
+              
+              i = 0;
+              average_x = new Array(3);
+              average_y = new Array(3);
+            } else {
+              i++;
+            }
+
         }
 
         if (!paused) {
