@@ -10495,21 +10495,36 @@ var mosseFilterResponses = function() {
         'settings': {}
     };
 
+    // used to print only every 2nd dot
+    var slowDown = false;
+
 
     //PRIVATE FUNCTIONS
 
+    /**
+    * adds a click event to the window
+    * draws a "black" dot where the click occurred
+    * @param {e} e - the event click
+    */
     document.onclick = function(e){
       var cursorX = e.pageX;
       var cursorY = e.pageY;
-      //checkCursor();
       drawCoordinates('black',cursorX,cursorY);
     }
 
-    function checkCursor(){
-      alert("Cursor at: " + cursorX + ", " + cursorY); //used to be alert
-      //drawCoordinates("black",cursorX,cursorY);
+    /**
+    * Alerts the user of the cursor position, used for debugging & testing
+    */
+    function checkCursor(){ //used to test
+      alert("Cursor at: " + cursorX + ", " + cursorY);
     }
 
+    /**
+    * This draws the point (x,y) onto the canvas in the HTML
+    * @param {colour} colour - The colour of the circle to plot
+    * @param {x} x - The x co-ordinate of the desired point to plot
+    * @param {y} y - The y co-ordinate of the desired point to plot
+    */
     function drawCoordinates(colour,x,y){
         console.log("drawCoordinates");
         var ctx = document.getElementById("canvas").getContext('2d');
@@ -10608,8 +10623,13 @@ var mosseFilterResponses = function() {
                 y += smoothingVals.get(d).y;
             }
             var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
-            gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
-            drawCoordinates('blue',pred.x,pred.y);
+            if (slowDown){
+              gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
+              drawCoordinates('blue',pred.x,pred.y);
+              slowDown=false;
+            } else {
+              slowDown=true;
+            }
         }
 
         if (!paused) {
