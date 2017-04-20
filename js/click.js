@@ -1,9 +1,8 @@
-var canvas = document.querySelector("#canvas");
-canvas.addEventListener("click", getPosition, false);
+var canvas = document.querySelector("#mydiv");
 
 var pointSize = 3;
 
-function getPosition(event){
+function getClickPosition(event){
   var rect = canvas.getBoundingClientRect();
   var x = event.clientX - rect.left;
   var y = event.clientY - rect.top;
@@ -17,3 +16,5 @@ function drawCoordinates(x,y){
     ctx.arc(x, y, pointSize, 0, Math.PI * 2, true);
     ctx.fill();
 }
+
+canvas.addEventListener("click", getClickPosition, false);
