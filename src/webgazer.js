@@ -229,8 +229,8 @@
             average_x[i] = pred.x;
             average_y[i] = pred.y;
             if (i == 2) {
-              var x = 0;
-              var y = 0;
+              x = 0;
+              y = 0;
               for(count = 0; count < 3; count++){
                 x+=average_x[count];
                 y+=average_y[count];
