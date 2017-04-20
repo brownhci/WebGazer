@@ -55,7 +55,7 @@
     //Types that regression systems should handle
     //Describes the source of data so that regression systems may ignore or handle differently the various generating events
     var eventTypes = ['click', 'move'];
-    
+
     //movelistener timeout clock parameters
     var moveClock = performance.now();
     webgazer.params.moveTickSize = 50; //milliseconds
@@ -88,8 +88,29 @@
         'settings': {}
     };
 
-    
+
     //PRIVATE FUNCTIONS
+
+    document.onclick = function(e){
+      var cursorX = e.pageX;
+      var cursorY = e.pageY;
+      //checkCursor();
+      drawCoordinates('black',cursorX,cursorY);
+    }
+
+    function checkCursor(){
+      alert("Cursor at: " + cursorX + ", " + cursorY); //used to be alert
+      //drawCoordinates("black",cursorX,cursorY);
+    }
+
+    function drawCoordinates(colour,x,y){
+        console.log("drawCoordinates");
+        var ctx = document.getElementById("canvas").getContext('2d');
+        ctx.fillStyle = colour; // Red color
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2, true);
+        ctx.fill();
+    }
 
     /**
      * Gets the pupil features by following the pipeline which threads an eyes object through each call:
@@ -181,6 +202,7 @@
             }
             var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
             gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
+            drawCoordinates('blue',pred.x,pred.y);
         }
 
         if (!paused) {
@@ -324,7 +346,7 @@
         loop();
     }
 
-    
+
     //PUBLIC FUNCTIONS - CONTROL
 
     /**
@@ -420,7 +442,7 @@
         return webgazer;
     };
 
-    
+
     //PUBLIC FUNCTIONS - DEBUG
 
     /**
@@ -486,7 +508,7 @@
         return webgazer;
     };
 
-    
+
     //SETTERS
     /**
      * Sets the tracking module
@@ -548,7 +570,7 @@
             return new constructor();
         };
     };
-    
+
     /**
      * Adds a new regression module to the list of regression modules, seeding its data from the first regression module
      * @param {string} name - the string name of the regression module to add
@@ -581,7 +603,7 @@
         return webgazer;
     };
 
-    
+
     //GETTERS
     /**
      * Returns the tracker currently in use
@@ -614,5 +636,5 @@
     webgazer.params.getEventTypes = function() {
         return eventTypes.slice();
     }
-    
+
 }(window));
