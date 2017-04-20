@@ -230,17 +230,15 @@
             average_y[i] = pred.y;
             if (i == 2) {
               var x = 0;
-              for(count = 0; count < 3; count++){
-                x+=average_x[count];
-              }
-              x=x/3;
               var y = 0;
               for(count = 0; count < 3; count++){
+                x+=average_x[count];
                 y+=average_y[count];
               }
+              x=x/3;
               y=y/3;
               drawCoordinates('yellow',x,y);
-              
+
               i = 0;
               average_x = new Array(3);
               average_y = new Array(3);
