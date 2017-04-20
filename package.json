@@ -10,5 +10,8 @@
     "grunt-contrib-concat": "*",
     "grunt-contrib-uglify": "*",
     "jsdoc": "*"
+  },
+  "dependencies": {
+    "jquery": "^3.2.1"
   }
 }
