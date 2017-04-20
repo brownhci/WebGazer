@@ -1,4 +1,4 @@
-var canvas = document.querySelector("#mydiv");
+var canvas = document.querySelector("#canvas");
 
 var pointSize = 3;
 
@@ -11,7 +11,7 @@ function getClickPosition(event){
 
 function drawCoordinates(x,y){
     var ctx = document.getElementById("canvas").getContext("2d");
-    ctx.fillStyle = "#ff2626"; // Red color
+    ctx.fillStyle = "blue"; // Red color
     ctx.beginPath();
     ctx.arc(x, y, pointSize, 0, Math.PI * 2, true);
     ctx.fill();

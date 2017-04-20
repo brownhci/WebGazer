@@ -9951,18 +9951,6 @@ var mosseFilterResponses = function() {
         return leftGrayArray.concat(rightGrayArray);
     }
 
-    var cursorX;
-    var cursorY;
-    document.onclick = function(e){
-      cursorX = e.pageX;
-      cursorY = e.pageY;
-      checkCursor();
-    }
-    //setInterval(checkCursor, 10000);
-    function checkCursor(){
-      alert("Cursor at: " + cursorX + ", " + cursorY); //used to be alert
-    }
-
     /**
      * Constructor of RidgeRegThreaded object,
      * it retrieve data window, and prepare a worker,
@@ -10408,6 +10396,31 @@ var mosseFilterResponses = function() {
     webgazer.params.imgWidth = 1280;
     webgazer.params.imgHeight = 720;
 
+    var cursorX;
+    var cursorY;
+    document.onclick = function(e){
+      cursorX = e.pageX;
+      cursorY = e.pageY;
+      checkCursor();
+    }
+    //setInterval(checkCursor, 10000);
+    function checkCursor(){
+      alert("Cursor at: " + cursorX + ", " + cursorY); //used to be alert
+      drawCoordinates(cursorX,cursorY);
+    }
+
+    function drawCoordinates(x,y){
+        console.log("drawCoordinates");
+
+        var ctx = document.getElementById("webgazerVideoCanvas").getContext('2d');
+        ctx.fillStyle = 'blue'; // Red color
+        //ctx.fillRect(x,y,10,10);
+        ctx.beginPath();
+        ctx.arc(x, y, 10, 0, Math.PI * 2, true);
+        ctx.fill();
+        //document.body.appendChild(ctx);
+    }
+
     //Params to clmtrackr and getUserMedia constraints
     webgazer.params.clmParams = webgazer.params.clmParams || {useWebGL : true};
     webgazer.params.camConstraints = webgazer.params.camConstraints || { video:true };
@@ -10603,11 +10616,11 @@ var mosseFilterResponses = function() {
      * @param {Event} event - The listened event
      */
     var clickListener = function(event) {
-        clicker(event);
+        //clicker(event);
         recordScreenPosition(event.clientX, event.clientY, eventTypes[0]); // eventType[0] === 'click'
     };
 
-    var clicker = function getClickPosition(event){
+    /*var clicker = function getClickPosition(event){
 
       var x = event.x;
       var y = event.y;
@@ -10627,7 +10640,7 @@ var mosseFilterResponses = function() {
         ctx.beginPath();
         ctx.arc(x, y, 10, 0, Math.PI * 2, true);
         ctx.fill();
-    }
+    }*/
 
     /**
      * Records mouse movement data and passes it to the regression model
