@@ -10606,7 +10606,9 @@ var mosseFilterResponses = function() {
     /**
      * Runs every available animation frame if webgazer is not paused
      */
-    var smoothingVals = new webgazer.util.DataWindow(4);
+    var smoothingVals = new webgazer.util.DataWindow(4
+
+    //make empty array
     var average_x = new Array(3);
     var average_y = new Array(3);
     var i = 0;
@@ -10626,29 +10628,29 @@ var mosseFilterResponses = function() {
                 y += smoothingVals.get(d).y;
             }
             var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
-            if (slowDown){
+
+            if (slowDown){ // prints only every second one
               gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
-              drawCoordinates('blue',pred.x,pred.y);
+              drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
               slowDown=false;
             } else {
               slowDown=true;
             }
-            average_x[i] = pred.x;
+            average_x[i] = pred.x; //add to averages
             average_y[i] = pred.y;
-            if (i == 2) {
-              var x = 0;
+
+            if (i == 2) { // after 3 adds them all up and gets the average
+              x = 0;
+              y = 0;
               for(count = 0; count < 3; count++){
                 x+=average_x[count];
-              }
-              x=x/3;
-              var y = 0;
-              for(count = 0; count < 3; count++){
                 y+=average_y[count];
               }
+              x=x/3;
               y=y/3;
-              drawCoordinates('yellow',x,y);
-              
-              i = 0;
+              drawCoordinates('yellow',x,y); // yellow is every third plot
+
+              i = 0; //clears all variables
               average_x = new Array(3);
               average_y = new Array(3);
             } else {
