@@ -62,9 +62,9 @@ var mosseFilterResponses = function() {
 
     if (dist == 0) {
       if (toAlert){
-      alert("Please check your camera lighting, the facial recognition is not working optimally");
-      toAlert=false;
-    }
+        alert("Please check your camera lighting, the facial recognition is not working optimally");
+        toAlert=false;
+      }
       console.log("a patchresponse was monotone, causing normalization to fail. Leaving it unchanged.")
       response = response.map(function() {return 1});
     } else {
