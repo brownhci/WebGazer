@@ -6077,16 +6077,16 @@ var webglFilter = function() {
    * 0 : raw filter
    * 1 : patches
    * 2 : finished response
-   * 3 : grad/lbp treated patches 
+   * 3 : grad/lbp treated patches
    * 4 : sobel filter
    * 5 : lbp filter
-   * 
+   *
    * Routing:
    *         (              )  0/4/5 --\
    *         (              )          _\|
    * 1 ----> ( ---------->3 ) ----------> 2
    *         lbpResponse/      patchResponse
-   *         gradientResponse  
+   *         gradientResponse
    */
 
   var gl, canvas;
@@ -6099,7 +6099,7 @@ var webglFilter = function() {
   var drawOutRectangles, drawOutImages, drawOutLayer;
   var patchCells, textureWidth, textureHeight, patchSize, patchArray;
   var biases;
-  
+
   var lbpResponseProgram;
   var lbo, lbpTexCoordLocation, lbpTexCoordBuffer, lbpPositionLocation, lbpAPositionBuffer;
 
@@ -6141,10 +6141,10 @@ var webglFilter = function() {
     "}"
   ].join('\n');
   var gradientResponseFS;
-  
+
   var patchResponseVS;
   var patchResponseFS;
-  
+
   var drawResponsesVS = [
     "attribute vec2 a_texCoord_draw;",
     "attribute vec2 a_position_draw;",
@@ -6174,7 +6174,7 @@ var webglFilter = function() {
     "   v_select = a_patchChoice_draw;",
     "}"
   ].join('\n');
-  
+
   var drawResponsesFS = [
     "precision mediump float;",
     "",
@@ -6212,7 +6212,7 @@ var webglFilter = function() {
     "  gl_FragColor = res;",
     "}"
   ].join('\n');
-  
+
   this.init = function(filters, bias, nP, pW, pH, fW, fH) {
     // we assume filterVector goes from left to right, rowwise, i.e. row-major order
 
@@ -6220,13 +6220,13 @@ var webglFilter = function() {
       alert("filter width and height must be same size!");
       return;
     }
-    
+
     // if filter width is not odd, alert
     if (fW % 2 == 0 || fH % 2 == 0) {
       alert("filters used in svm must be of odd dimensions!");
       return;
     }
-    
+
     // setup variables
     biases = bias;
     filterWidth = fW;
@@ -6290,7 +6290,7 @@ var webglFilter = function() {
       "  gl_FragColor = colorSum;",
       "}"
     ].join('\n');
-    
+
     patchResponseVS = [
       "attribute vec2 a_texCoord;",
       "attribute vec2 a_position;",
@@ -6402,14 +6402,14 @@ var webglFilter = function() {
     document.body.appendChild(canvas);
     // TODO : isolate this library from webgl-util.js
     gl = setupWebGL(canvas, {premultipliedAlpha: false, preserveDrawingBuffer : true, antialias : false});
-    
+
 
     // check for float textures support and fail if not
     if (!gl.getExtension("OES_texture_float")) {
       alert("Your graphics card does not support floating point textures! :(");
       return;
     }
-    
+
     /** insert filters into textures **/
     if ('raw' in filters) {
       insertFilter(filters['raw'], gl.TEXTURE0)
@@ -6425,7 +6425,7 @@ var webglFilter = function() {
     }
 
     /** calculate vertices for calculating responses **/
-    
+
     // vertex rectangles to draw out
     var rectangles = [];
     var halfFilter = (filterWidth-1)/2;
@@ -6434,19 +6434,19 @@ var webglFilter = function() {
       yOffset = i*patchHeight;
       //first triangle
       rectangles = rectangles.concat(
-        [halfFilter, yOffset+halfFilter, 
+        [halfFilter, yOffset+halfFilter,
         patchWidth-halfFilter, yOffset+halfFilter,
         halfFilter, yOffset+patchHeight-halfFilter]
       );
       //second triangle
       rectangles = rectangles.concat(
-        [halfFilter, yOffset+patchHeight-halfFilter, 
+        [halfFilter, yOffset+patchHeight-halfFilter,
         patchWidth-halfFilter, yOffset+halfFilter,
         patchWidth-halfFilter, yOffset+patchHeight-halfFilter]
       );
     }
     rectangles = new Float32Array(rectangles);
-    
+
     // image rectangles to draw out
     var irectangles = [];
     for (var i = 0;i < rectangles.length;i++) {
@@ -6468,19 +6468,19 @@ var webglFilter = function() {
         yOffset = i * (2/numBlocks);
         //first triangle
         gradRectangles = gradRectangles.concat(
-          [-1.0, topCoord - yOffset, 
+          [-1.0, topCoord - yOffset,
           1.0, topCoord - yOffset,
           -1.0, bottomCoord - yOffset]
         );
         //second triangle
         gradRectangles = gradRectangles.concat(
-          [-1.0, bottomCoord - yOffset, 
+          [-1.0, bottomCoord - yOffset,
           1.0, topCoord - yOffset,
           1.0, bottomCoord - yOffset]
         );
       }
       gradRectangles = new Float32Array(gradRectangles);
-      
+
       topCoord = 1.0 - 1/(patchHeight*numBlocks);
       bottomCoord = 1.0 - 1/numBlocks + 1/(patchHeight*numBlocks);
       // calculate position of image rectangles to draw out
@@ -6489,13 +6489,13 @@ var webglFilter = function() {
         yOffset = i * (1/numBlocks);
         //first triangle
         gradIRectangles = gradIRectangles.concat(
-          [0.0, topCoord - yOffset, 
+          [0.0, topCoord - yOffset,
           1.0, topCoord - yOffset,
           0.0, bottomCoord - yOffset]
         );
         //second triangle
         gradIRectangles = gradIRectangles.concat(
-          [0.0, bottomCoord - yOffset, 
+          [0.0, bottomCoord - yOffset,
           1.0, topCoord - yOffset,
           1.0, bottomCoord - yOffset]
         );
@@ -6511,7 +6511,7 @@ var webglFilter = function() {
     for (var i = 0;i < numPatches;i++) {
       yOffset = i*newCanvasBlockHeight;
       indexOffset = i*12;
-      
+
       //first triangle
       drawOutRectangles[indexOffset] = 0.0;
       drawOutRectangles[indexOffset+1] = yOffset;
@@ -6519,7 +6519,7 @@ var webglFilter = function() {
       drawOutRectangles[indexOffset+3] = yOffset;
       drawOutRectangles[indexOffset+4] = 0.0;
       drawOutRectangles[indexOffset+5] = yOffset+newCanvasBlockHeight;
-      
+
       //second triangle
       drawOutRectangles[indexOffset+6] = 0.0;
       drawOutRectangles[indexOffset+7] = yOffset+newCanvasBlockHeight;
@@ -6528,7 +6528,7 @@ var webglFilter = function() {
       drawOutRectangles[indexOffset+10] = newCanvasWidth;
       drawOutRectangles[indexOffset+11] = yOffset+newCanvasBlockHeight;
     }
-    
+
     // images
     drawOutImages = new Float32Array(numPatches*12);
     var halfFilterWidth = ((filterWidth-1)/2)/patchWidth;
@@ -6537,7 +6537,7 @@ var webglFilter = function() {
     for (var i = 0;i < numPatches;i++) {
       yOffset = Math.floor(i / 4)*patchHeightT;
       indexOffset = i*12;
-      
+
       //first triangle
       drawOutImages[indexOffset] = halfFilterWidth;
       drawOutImages[indexOffset+1] = yOffset+halfFilterHeight;
@@ -6545,7 +6545,7 @@ var webglFilter = function() {
       drawOutImages[indexOffset+3] = yOffset+halfFilterHeight;
       drawOutImages[indexOffset+4] = halfFilterWidth;
       drawOutImages[indexOffset+5] = yOffset+patchHeightT-halfFilterHeight;
-      
+
       //second triangle
       drawOutImages[indexOffset+6] = halfFilterWidth;
       drawOutImages[indexOffset+7] = yOffset+patchHeightT-halfFilterHeight;
@@ -6554,7 +6554,7 @@ var webglFilter = function() {
       drawOutImages[indexOffset+10] = 1.0-halfFilterWidth;
       drawOutImages[indexOffset+11] = yOffset+patchHeightT-halfFilterHeight;
     }
-    
+
     // layer
     drawOutLayer = new Float32Array(numPatches*6);
     var layernum;
@@ -6568,7 +6568,7 @@ var webglFilter = function() {
       drawOutLayer[indexOffset+4] = layernum;
       drawOutLayer[indexOffset+5] = layernum;
     }
-    
+
     /** set up programs and load attributes etc **/
 
     if ('sobel' in filters) {
@@ -6584,7 +6584,7 @@ var webglFilter = function() {
       gl.bufferData(gl.ARRAY_BUFFER, gradRectangles, gl.STATIC_DRAW);
       gl.enableVertexAttribArray(gradPositionLocation);
       gl.vertexAttribPointer(gradPositionLocation, 2, gl.FLOAT, false, 0, 0);
-      
+
       // set up texture positions
       gradTexCoordLocation = gl.getAttribLocation(gradientResponseProgram, "a_texCoord");
       gradTexCoordBuffer = gl.createBuffer();
@@ -6592,7 +6592,7 @@ var webglFilter = function() {
       gl.bufferData(gl.ARRAY_BUFFER, gradIRectangles, gl.STATIC_DRAW);
       gl.enableVertexAttribArray(gradTexCoordLocation);
       gl.vertexAttribPointer(gradTexCoordLocation, 2, gl.FLOAT, false, 0, 0);
-      
+
       // set up patches texture in gradientResponseProgram
       gl.uniform1i(gl.getUniformLocation(gradientResponseProgram, "u_patches"), 1);
     }
@@ -6609,7 +6609,7 @@ var webglFilter = function() {
       gl.bufferData(gl.ARRAY_BUFFER, gradRectangles, gl.STATIC_DRAW);
       gl.enableVertexAttribArray(lbpPositionLocation);
       gl.vertexAttribPointer(lbpPositionLocation, 2, gl.FLOAT, false, 0, 0);
-      
+
       // set up texture positions
       gradTexCoordLocation = gl.getAttribLocation(lbpResponseProgram, "a_texCoord");
       lbpTexCoordBuffer = gl.createBuffer();
@@ -6627,21 +6627,21 @@ var webglFilter = function() {
     var drFragmentShader = loadShader(gl, drawResponsesFS, gl.FRAGMENT_SHADER);
     patchDrawProgram = createProgram(gl, [drVertexShader, drFragmentShader]);
     gl.useProgram(patchDrawProgram);
-    
+
     // set the resolution/dimension of the canvas
     var resolutionLocation = gl.getUniformLocation(patchDrawProgram, "u_resolutiondraw");
     gl.uniform2f(resolutionLocation, newCanvasWidth, newCanvasHeight);
-    
+
     // set u_responses
     var responsesLocation = gl.getUniformLocation(patchDrawProgram, "u_responses");
     gl.uniform1i(responsesLocation, 2);
-    
+
     // setup patchresponse program
     var prVertexShader = loadShader(gl, patchResponseVS, gl.VERTEX_SHADER);
     var prFragmentShader = loadShader(gl, patchResponseFS, gl.FRAGMENT_SHADER);
     patchResponseProgram = createProgram(gl, [prVertexShader, prFragmentShader]);
     gl.useProgram(patchResponseProgram);
-    
+
     // set up vertices with rectangles
     var positionLocation = gl.getAttribLocation(patchResponseProgram, "a_position");
     apositionBuffer = gl.createBuffer();
@@ -6649,7 +6649,7 @@ var webglFilter = function() {
     gl.bufferData(gl.ARRAY_BUFFER, rectangles, gl.STATIC_DRAW);
     gl.enableVertexAttribArray(positionLocation);
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-    
+
     // set up texture positions
     texCoordLocation = gl.getAttribLocation(patchResponseProgram, "a_texCoord");
     texCoordBuffer = gl.createBuffer();
@@ -6684,7 +6684,7 @@ var webglFilter = function() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, patchWidth, patchHeight*numBlocks, 0, gl.RGBA, gl.FLOAT, null);
-    
+
     // set up response framebuffer
     fbo = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
@@ -6702,9 +6702,9 @@ var webglFilter = function() {
 
   this.getRawResponses = function(patches) {
     // TODO: check patches correct length/dimension
-    
+
     insertPatches(patches);
-    
+
     // switch to correct program
     gl.useProgram(patchResponseProgram);
 
@@ -6713,32 +6713,32 @@ var webglFilter = function() {
 
     // set u_filters to point to correct filter
     gl.uniform1i(gl.getUniformLocation(patchResponseProgram, "u_filters"), 0);
-      
+
     // set up vertices with rectangles
     var positionLocation = gl.getAttribLocation(patchResponseProgram, "a_position");
     gl.bindBuffer(gl.ARRAY_BUFFER, apositionBuffer);
     gl.enableVertexAttribArray(positionLocation);
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-    
+
     // set up texture positions
     var texCoordLocation = gl.getAttribLocation(patchResponseProgram, "a_texCoord");
     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
     gl.enableVertexAttribArray(texCoordLocation);
     gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
-    
+
     // set framebuffer to the original one if not already using it
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-    
+
     gl.viewport(0, 0, patchWidth, patchHeight*numBlocks);
-    
+
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER)
-    
+
     // draw to framebuffer
     gl.drawArrays(gl.TRIANGLES, 0, patchCells*6);
-    
+
     //gl.finish();
-    
+
     var responses = drawOut('raw');
 
     return responses;
@@ -6760,7 +6760,7 @@ var webglFilter = function() {
     gl.bindBuffer(gl.ARRAY_BUFFER, gradAPositionBuffer);
     gl.enableVertexAttribArray(gradPositionLocation);
     gl.vertexAttribPointer(gradPositionLocation, 2, gl.FLOAT, false, 0, 0);
-    
+
     // set up texture positions
     var gradTexCoordLocation = gl.getAttribLocation(gradientResponseProgram, "a_texCoord");
     gl.bindBuffer(gl.ARRAY_BUFFER, gradTexCoordBuffer);
@@ -6781,7 +6781,7 @@ var webglFilter = function() {
     /* calculate responses */
 
     gl.useProgram(patchResponseProgram);
-    
+
     // set patches and filters to point to correct textures
     gl.uniform1i(gl.getUniformLocation(patchResponseProgram, "u_filters"), 4);
     gl.uniform1i(gl.getUniformLocation(patchResponseProgram, "u_patches"), 3);
@@ -6796,13 +6796,13 @@ var webglFilter = function() {
     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
     gl.enableVertexAttribArray(texCoordLocation);
     gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
-    
+
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.viewport(0, 0, patchWidth, patchHeight*numBlocks);
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER)
-    
+
     // draw to framebuffer
     gl.drawArrays(gl.TRIANGLES, 0, patchCells*6);
 
@@ -6829,7 +6829,7 @@ var webglFilter = function() {
     gl.bindBuffer(gl.ARRAY_BUFFER, lbpAPositionBuffer);
     gl.enableVertexAttribArray(lbpPositionLocation);
     gl.vertexAttribPointer(lbpPositionLocation, 2, gl.FLOAT, false, 0, 0);
-    
+
     // set up texture positions
     var lbpTexCoordLocation = gl.getAttribLocation(lbpResponseProgram, "a_texCoord");
     gl.bindBuffer(gl.ARRAY_BUFFER, lbpTexCoordBuffer);
@@ -6864,13 +6864,13 @@ var webglFilter = function() {
     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
     gl.enableVertexAttribArray(texCoordLocation);
     gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
-    
+
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.viewport(0, 0, patchWidth, patchHeight*numBlocks);
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER)
-    
+
     // draw to framebuffer
     gl.drawArrays(gl.TRIANGLES, 0, patchCells*6);
 
@@ -6892,7 +6892,7 @@ var webglFilter = function() {
           patchesIndex1 = i*4;
           patchesIndex2 = (j*patchWidth) + k;
           patchArrayIndex = ((patchSize*i) + patchesIndex2)*4;
-          
+
           //set r with first patch
           if (patchesIndex1 < numPatches) {
             patchArray[patchArrayIndex] = patches[patchesIndex1][patchesIndex2];
@@ -6920,7 +6920,7 @@ var webglFilter = function() {
         }
       }
     }
-    
+
     // pass texture into an uniform
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, patchTex);
@@ -6978,64 +6978,64 @@ var webglFilter = function() {
   var drawOut = function(type) {
     // switch programs
     gl.useProgram(patchDrawProgram);
-    
+
     // bind canvas buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, newCanvasWidth, newCanvasHeight);
-    
+
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER)
 
     gl.bindBuffer(gl.ARRAY_BUFFER, drawRectBuffer);
     gl.bufferData(
-      gl.ARRAY_BUFFER, 
-      drawOutRectangles, 
+      gl.ARRAY_BUFFER,
+      drawOutRectangles,
       gl.STATIC_DRAW);
     var positionLocation = gl.getAttribLocation(patchDrawProgram, "a_position_draw");
     gl.enableVertexAttribArray(positionLocation);
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-    
+
     gl.bindBuffer(gl.ARRAY_BUFFER, drawImageBuffer);
     gl.bufferData(
-      gl.ARRAY_BUFFER, 
-      drawOutImages, 
+      gl.ARRAY_BUFFER,
+      drawOutImages,
       gl.STATIC_DRAW);
     var textureLocation = gl.getAttribLocation(patchDrawProgram, "a_texCoord_draw");
     gl.enableVertexAttribArray(textureLocation);
     gl.vertexAttribPointer(textureLocation, 2, gl.FLOAT, false, 0, 0);
-    
+
     gl.bindBuffer(gl.ARRAY_BUFFER, drawLayerBuffer);
     gl.bufferData(
-      gl.ARRAY_BUFFER, 
-      drawOutLayer, 
+      gl.ARRAY_BUFFER,
+      drawOutLayer,
       gl.STATIC_DRAW);
     var layerLocation = gl.getAttribLocation(patchDrawProgram, "a_patchChoice_draw");
     gl.enableVertexAttribArray(layerLocation);
     gl.vertexAttribPointer(layerLocation, 1, gl.FLOAT, false, 0, 0);
-    
+
     // draw out
     gl.drawArrays(gl.TRIANGLES, 0, numPatches*6);
 
     var responses = getOutput();
-    
+
     responses = unpackToFloat(responses);
-    
+
     // split
     responses = splitArray(responses, numPatches);
-    
+
     // add bias
     responses = addBias(responses, biases[type]);
-    
+
     // normalize responses to lie within [0,1]
     var rl = responses.length;
-    
+
     for (var i = 0;i < rl;i++) {
       responses[i] = normalizeFilterMatrix(responses[i]);
     }
 
     return responses;
   }
-  
+
   var addBias = function(responses, bias) {
     // do a little trick to add bias in the logit function
     var biasMult;
@@ -7047,7 +7047,7 @@ var webglFilter = function() {
     }
     return responses;
   }
-  
+
   var splitArray = function(array, parts) {
     var sp = [];
     var al = array.length;
@@ -7060,12 +7060,12 @@ var webglFilter = function() {
         }
         ta = [];
       }
-      ta.push(array[i]); 
+      ta.push(array[i]);
     }
     sp.push(ta);
     return sp;
   }
-  
+
   var getOutput = function() {
     // get data
     var pixelValues = new Uint8Array(4*canvas.width*canvas.height);
@@ -7073,7 +7073,7 @@ var webglFilter = function() {
     // return
     return pixelValues;
   }
-  
+
   var unpackToFloat = function(array) {
     // convert packed floats to proper floats : see http://stackoverflow.com/questions/9882716/packing-float-into-vec4-how-does-this-code-work
     var newArray = [];
@@ -7083,20 +7083,21 @@ var webglFilter = function() {
     }
     return newArray;
   }
-  
+
   var normalizeFilterMatrix = function(response) {
     // normalize responses to lie within [0,1]
     var msize = response.length;
     var max = 0;
     var min = 1;
-    
+
     for (var i = 0;i < msize;i++) {
       max = response[i] > max ? response[i] : max;
       min = response[i] < min ? response[i] : min;
     }
     var dist = max-min;
-    
+
     if (dist == 0) {
+      alert("Please check your camera lighting, the facial recognition is not working optimally");
       console.log("a patchresponse was monotone, causing normalization to fail. Leaving it unchanged.")
       response = response.map(function() {return 1});
     } else {
@@ -7104,7 +7105,7 @@ var webglFilter = function() {
         response[i] = (response[i]-min)/dist;
       }
     }
-    
+
     return response
   }
 };
@@ -7143,7 +7144,7 @@ var webglFilter = function() {
  */
 
 (function() {
-  
+
   /**
    * Wrapped logging function.
    * @param {string} msg The message to log.
@@ -7423,34 +7424,34 @@ var webglFilter = function() {
 "use strict";
 
 var svmFilter = function() {
-  
+
   var _fft, fft_filters, responses, biases;
   var fft_size, filterLength, filter_width, search_width, num_patches;
   var temp_imag_part, temp_real_part;
-  
+
   // fft function
   this.fft_inplace = function(array, _im_part) {
       // in-place
-      
+
       if (typeof _im_part == "undefined") {
         _im_part = temp_imag_part;
       }
-      
+
       for (var i = 0;i < filterLength;i++) {
         _im_part[i] = 0.0;
       }
-      
+
       _fft.real_fft2d(array,_im_part);
-      
+
       return [array, _im_part];
   }
-  
+
   this.ifft = function(rn, cn) {
       // in-place
       _fft.real_ifft2d(rn, cn);
       return rn;
   }
-  
+
   var complex_mult_inplace = function(cn1, cn2) {
       // in-place, cn1 is the one modified
       var temp1, temp2;
@@ -7461,11 +7462,11 @@ var svmFilter = function() {
           cn1[1][r] = temp2;
       }
   }
-  
+
   this.init = function(filter_input, bias_input, numPatches, filterWidth, searchWidth) {
-    
+
     var temp, fft, offset;
-    
+
     // calculate needed size of fft (has to be power of two)
     fft_size = upperPowerOfTwo(filterWidth-1+searchWidth);
     filterLength = fft_size*fft_size;
@@ -7474,25 +7475,25 @@ var svmFilter = function() {
     fft_filters = Array(numPatches);
     var fft_filter;
     var edge = (filterWidth-1)/2;
-    
+
     for (var i = 0;i < numPatches;i++) {
       var flar_fi0 = new Float64Array(filterLength);
       var flar_fi1 = new Float64Array(filterLength);
-      
-      // load filter 
+
+      // load filter
       var xOffset, yOffset;
       for (var j = 0;j < filterWidth;j++) {
         for (var k = 0;k < filterWidth;k++) {
           // TODO : rotate filter
-          
+
           xOffset = k < edge ? (fft_size-edge) : (-edge);
           yOffset = j < edge ? (fft_size-edge) : (-edge);
           flar_fi0[k+xOffset+((j+yOffset)*fft_size)] = filter_input[i][(filterWidth-1-j)+((filterWidth-1-k)*filterWidth)];
-          
+
           /*xOffset = k < edge ? (fft_size-edge) : (-edge);
           yOffset = j < edge ? (fft_size-edge) : (-edge);
           flar_fi0[k+xOffset+((j+yOffset)*fft_size)] = filter_input[i][k+(j*filterWidth)];*/
-          
+
           //console.log(k + ","+ j+":" + (k+xOffset+((j+yOffset)*fft_size)))
         }
       }
@@ -7502,13 +7503,13 @@ var svmFilter = function() {
       fft_filters[i] = fft_filter;
 
     }
-    
+
     // set up biases
     biases = new Float64Array(numPatches);
     for (var i = 0;i < numPatches;i++) {
       biases[i] = bias_input[i];
     }
-    
+
     responses = Array(numPatches);
     temp_imag_part = Array(numPatches);
     for (var i = 0;i < numPatches;i++) {
@@ -7516,12 +7517,12 @@ var svmFilter = function() {
       temp_imag_part[i] = new Float64Array(searchWidth*searchWidth);
     }
     temp_real_part = new Float64Array(filterLength);
-    
+
     num_patches = numPatches;
     filter_width = filterWidth;
     search_width = searchWidth;
   }
-  
+
   this.getResponses = function(patches) {
     var response, temp, edge;
     var patch_width = filter_width-1+search_width;
@@ -7530,28 +7531,28 @@ var svmFilter = function() {
       for (var j = 0;j < fft_size*fft_size;j++) {
         temp_real_part[j] = 0.0;
       }
-      
+
       // normalize patches to 0-1
       patches[i] = normalizePatches(patches[i]);
-      
+
       // patch must be padded (with zeroes) to match fft size
       for (var j = 0;j < patch_width;j++) {
         for (var k = 0;k < patch_width;k++) {
           temp_real_part[j + (fft_size*k)] = patches[i][k + (patch_width*j)];
         }
       }
-      
+
       //drawData(document.getElementById('sketch').getContext('2d'), temp_real_part, 32, 32, false, 0, 0);
-      
+
       // fft it
       response = this.fft_inplace(temp_real_part);
-      
+
       // multiply pointwise with filter
       complex_mult_inplace(response, fft_filters[i]);
-      
+
       // inverse fft it
       response = this.ifft(response[0], response[1]);
-      
+
       // crop out edges
       edge = (filter_width-1)/2;
       for (var j = 0;j < search_width;j++) {
@@ -7564,24 +7565,24 @@ var svmFilter = function() {
       for (var j = 0;j < search_width*search_width;j++) {
         responses[i][j] += biases[i];
       }
-      
+
       // logistic transformation
       responses[i] = logisticResponse(responses[i]);
-      
+
       /*responses[i] = new Float64Array(32*32)
       for (var j = 0;j < 32;j++) {
         for (var k = 0;k < 32;k++) {
           responses[i][k + (j*(32))] = response[k + (j*(32))]
         }
       }*/
-      
+
       // normalization?
       inplaceNormalizeFilterMatrix(responses[i]);
     }
-    
+
     return responses;
   }
-  
+
   var normalizePatches = function(patch) {
     var patch_width = filter_width-1+search_width;
     var max = 0;
@@ -7606,7 +7607,7 @@ var svmFilter = function() {
     }
     return patch;
   }
-  
+
   var logisticResponse = function(response) {
     // create probability by doing logistic transformation
     for (var j = 0;j < search_width;j++) {
@@ -7616,7 +7617,7 @@ var svmFilter = function() {
     }
     return response
   }
-  
+
   var upperPowerOfTwo = function(x) {
     x--;
     x |= x >> 1;
@@ -7627,20 +7628,21 @@ var svmFilter = function() {
     x++;
     return x;
   }
-  
+
   var inplaceNormalizeFilterMatrix = function(response) {
     // normalize responses to lie within [0,1]
     var msize = response.length;
     var max = 0;
     var min = 1;
-    
+
     for (var i = 0;i < msize;i++) {
       max = response[i] > max ? response[i] : max;
       min = response[i] < min ? response[i] : min;
     }
     var dist = max-min;
-    
+
     if (dist == 0) {
+      alert("Please check your camera lighting, the facial recognition is not working optimally");
       console.log("a patchresponse was monotone, causing normalization to fail. Leaving it unchanged.")
     } else {
       for (var i = 0;i < msize;i++) {
@@ -7652,18 +7654,18 @@ var svmFilter = function() {
   /**
    * Fast Fourier Transform
    * 1D-FFT/IFFT, 2D-FFT/IFFT (radix-2)
-   * 
+   *
    * @author ryo / github.com/wellflat
    * Based on https://github.com/wellflat/javascript-labs with some tiny optimizations
    */
 
   function FFT() {
-    
+
     var _n = 0,          // order
         _bitrev = null,  // bit reversal table
         _cstb = null;    // sin/cos table
     var _tre, _tim;
-    
+
     this.init = function (n) {
       if(n !== 0 && (n & (n - 1)) === 0) {
         _n = n;
@@ -7674,12 +7676,12 @@ var svmFilter = function() {
         throw new Error("init: radix-2 required");
       }
     }
-      
+
     // 1D-FFT
     this.fft1d = function (re, im) {
       fft(re, im, 1);
     }
-      
+
     // 1D-IFFT
     this.ifft1d = function (re, im) {
       var n = 1/_n;
@@ -7689,7 +7691,7 @@ var svmFilter = function() {
         im[i] *= n;
       }
     }
-    
+
     // 2D-FFT
     this.fft2d = function (re, im) {
       var i = 0;
@@ -7706,7 +7708,7 @@ var svmFilter = function() {
           im[x2 + i] = _tim[x2];
         }
       }
-      
+
       // y-axis
       for(var x=0; x<_n; x++) {
         for(var y1=0; y1<_n; y1++) {
@@ -7722,7 +7724,7 @@ var svmFilter = function() {
         }
       }
     }
-    
+
     // 2D-IFFT
     this.ifft2d = function (re, im) {
       var i = 0;
@@ -7754,7 +7756,7 @@ var svmFilter = function() {
         }
       }
     }
-    
+
     // 2D-IFFT, real-valued
     // only outputs the real valued part
     this.real_ifft2d = function (re, im) {
@@ -7800,7 +7802,7 @@ var svmFilter = function() {
         }
       }
     }
-    
+
     // 2D-FFT, real-valued only
     // ignores the imaginary input
     //   see:
@@ -7856,7 +7858,7 @@ var svmFilter = function() {
         }
       }
     }
-    
+
     // core operation of FFT
     function fft(re, im, inv) {
       var d, h, ik, m, tmp, wr, wi, xr, xi,
@@ -7894,7 +7896,7 @@ var svmFilter = function() {
         }
       }
     }
-    
+
     function butfly(re, im, inv, n4) {
       var h,d,wr,wi,ik,xr,xi;
       for(var k=1; k<_n; k<<=1) {
@@ -7916,7 +7918,7 @@ var svmFilter = function() {
         }
       }
     }
-    
+
     // set variables
     function _setVariables() {
       if(typeof Uint8Array !== 'undefined') {
@@ -7934,7 +7936,7 @@ var svmFilter = function() {
         _tim = new Array(_n);
       }
     }
-    
+
     // make bit reversal table
     function _makeBitReversal() {
       var i = 0,
@@ -7951,7 +7953,7 @@ var svmFilter = function() {
         _bitrev[i] = j;
       }
     }
-    
+
     // make trigonometric function table
     function _makeCosSinTable() {
       var n2 = _n >> 1,
@@ -7989,14 +7991,14 @@ var svmFilter = function() {
 // requires mosse.js
 
 var mosseFilterResponses = function() {
-  
+
   var filters = [];
   var responses = [];
   var num_Patches = 0;
-  
+
   this.init = function(filter_input, numPatches, filterWidth, filterHeight) {
     // load filters, make fft ready
-    
+
     for (var i = 0;i < numPatches;i++) {
       var temp = {};
       temp.width = filterWidth;
@@ -8013,20 +8015,20 @@ var mosseFilterResponses = function() {
       filters[i] = new mosseFilter();
       filters[i].load(temp);
     }
-    
+
     num_Patches = numPatches;
   }
-  
+
   this.getResponses = function(patches) {
     for (var i = 0;i < num_Patches;i++) {
       responses[i] = filters[i].getResponse(patches[i]);
       //responses[i] = logisticResponse(responses[i]);
       responses[i] = normalizeFilterMatrix(responses[i]);
     }
-    
+
     return responses;
   }
-  
+
   var logisticResponse = function(response) {
     // create probability by doing logistic transformation
     var filter_size = response.length;
@@ -8035,20 +8037,21 @@ var mosseFilterResponses = function() {
     }
     return response;
   }
-  
+
   var normalizeFilterMatrix = function(response) {
     // normalize responses to lie within [0,1]
     var msize = response.length;
     var max = 0;
     var min = 1;
-    
+
     for (var i = 0;i < msize;i++) {
       max = response[i] > max ? response[i] : max;
       min = response[i] < min ? response[i] : min;
     }
     var dist = max-min;
-    
+
     if (dist == 0) {
+      alert("Please check your camera lighting, the facial recognition is not working optimally");
       console.log("a patchresponse was monotone, causing normalization to fail. Leaving it unchanged.")
       response = response.map(function() {return 1});
     } else {
@@ -8056,7 +8059,7 @@ var mosseFilterResponses = function() {
         response[i] = (response[i]-min)/dist;
       }
     }
-    
+
     return response
   }
 }
