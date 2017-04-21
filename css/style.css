@@ -2,7 +2,6 @@ button#Calibration_1{
     position: relative;
     left:320px;
 }
-
 .Calibration{
 
       width: 20px;
@@ -13,17 +12,14 @@ button#Calibration_1{
       border-color: black;
       border-style: solid;
       position:fixed;
-
 }
 #Pt1{
     top: 1vh;
     left:320px;
-
 }
 #Pt2{
     top: 1vh;
     left:50vw;
-
 }
 #Pt3{
     top: 1vh;
@@ -31,17 +27,14 @@ button#Calibration_1{
 }
 #Pt4{
     top:50vh;
-
 }
 #Pt5{
     top: 50vh;
     left: 50vw;
-
 }
 #Pt6{
     top: 50vh;
     right:1vw;
-
 }
 #Pt7{
     bottom:1vh;
@@ -54,5 +47,8 @@ button#Calibration_1{
 #Pt9{
     bottom:1vh;
     right:1vw;
-
+}
+#plotting_canvas{
+    width:100%;
+    height:100%;
 }
