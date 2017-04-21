@@ -55,7 +55,7 @@
     //Types that regression systems should handle
     //Describes the source of data so that regression systems may ignore or handle differently the various generating events
     var eventTypes = ['click', 'move'];
-    
+
     //movelistener timeout clock parameters
     var moveClock = performance.now();
     webgazer.params.moveTickSize = 50; //milliseconds
@@ -88,8 +88,44 @@
         'settings': {}
     };
 
-    
+    // used to print only every 2nd dot
+    var slowDown = false;
+
+
     //PRIVATE FUNCTIONS
+
+    /**
+    * adds a click event to the window
+    * draws a "black" dot where the click occurred
+    * @param {e} e - the event click
+    */
+    document.onclick = function(e){
+      var cursorX = e.pageX;
+      var cursorY = e.pageY;
+      drawCoordinates('black',cursorX,cursorY);
+    }
+
+    /**
+    * Alerts the user of the cursor position, used for debugging & testing
+    */
+    function checkCursor(){ //used to test
+      alert("Cursor at: " + cursorX + ", " + cursorY);
+    }
+
+    /**
+    * This draws the point (x,y) onto the canvas in the HTML
+    * @param {colour} colour - The colour of the circle to plot
+    * @param {x} x - The x co-ordinate of the desired point to plot
+    * @param {y} y - The y co-ordinate of the desired point to plot
+    */
+    function drawCoordinates(colour,x,y){
+        console.log("drawCoordinates");
+        var ctx = document.getElementById("plotting_canvas").getContext('2d');
+        ctx.fillStyle = colour; // Red color
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2, true);
+        ctx.fill();
+    }
 
     /**
      * Gets the pupil features by following the pipeline which threads an eyes object through each call:
@@ -164,6 +200,11 @@
      * Runs every available animation frame if webgazer is not paused
      */
     var smoothingVals = new webgazer.util.DataWindow(4);
+
+    //make empty array
+    var average_x = new Array(3);
+    var average_y = new Array(3);
+    var i = 0;
     function loop() {
         var gazeData = getPrediction();
         var elapsedTime = performance.now() - clockStart;
@@ -180,7 +221,35 @@
                 y += smoothingVals.get(d).y;
             }
             var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
-            gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
+
+            if (slowDown){ // prints only every second one
+              gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
+              drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
+              slowDown=false;
+            } else {
+              slowDown=true;
+            }
+            average_x[i] = pred.x; //add to averages
+            average_y[i] = pred.y;
+
+            if (i == 2) { // after 3 adds them all up and gets the average
+              x = 0;
+              y = 0;
+              for(count = 0; count < 3; count++){
+                x+=average_x[count];
+                y+=average_y[count];
+              }
+              x=x/3;
+              y=y/3;
+              drawCoordinates('yellow',x,y); // yellow is every third plot
+
+              i = 0; //clears all variables
+              average_x = new Array(3);
+              average_y = new Array(3);
+            } else {
+              i++;
+            }
+
         }
 
         if (!paused) {
@@ -324,7 +393,7 @@
         loop();
     }
 
-    
+
     //PUBLIC FUNCTIONS - CONTROL
 
     /**
@@ -420,7 +489,7 @@
         return webgazer;
     };
 
-    
+
     //PUBLIC FUNCTIONS - DEBUG
 
     /**
@@ -486,7 +555,7 @@
         return webgazer;
     };
 
-    
+
     //SETTERS
     /**
      * Sets the tracking module
@@ -548,7 +617,7 @@
             return new constructor();
         };
     };
-    
+
     /**
      * Adds a new regression module to the list of regression modules, seeding its data from the first regression module
      * @param {string} name - the string name of the regression module to add
@@ -581,7 +650,7 @@
         return webgazer;
     };
 
-    
+
     //GETTERS
     /**
      * Returns the tracker currently in use
@@ -614,5 +683,5 @@
     webgazer.params.getEventTypes = function() {
         return eventTypes.slice();
     }
-    
+
 }(window));

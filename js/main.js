@@ -14,7 +14,7 @@ window.onload = function() {
     var height = 240;
     var topDist = '0px';
     var leftDist = '0px';
-    
+
     var setup = function() {
         var video = document.getElementById('webgazerVideoFeed');
         video.style.display = 'block';
@@ -38,6 +38,10 @@ window.onload = function() {
         overlay.style.margin = '0px';
 
         document.body.appendChild(overlay);
+
+        var canvas = document.getElementById("plotting_canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
         var cl = webgazer.getTracker().clm;
 
@@ -65,5 +69,5 @@ window.onload = function() {
 
 window.onbeforeunload = function() {
     //webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
-    window.localStorage.clear(); //Comment out if you want to save data across different sessions 
+    window.localStorage.clear(); //Comment out if you want to save data across different sessions
 }
