@@ -1,6 +1,6 @@
 ../dependencies/js-objectdetect/js/objectdetect.js
-../dependencies/js-objectdetect/js/objectdetect.eye.js  
-../dependencies/js-objectdetect/js/objectdetect.frontalface_alt.js  
+../dependencies/js-objectdetect/js/objectdetect.eye.js
+../dependencies/js-objectdetect/js/objectdetect.frontalface_alt.js
 ../dependencies/tracking.js/build/tracking.js
 ../dependencies/tracking.js/build/data/face-min.js
 ../dependencies/tracking.js/build/data/eye-min.js
@@ -31,3 +31,4 @@
 ../src/ridgeRegThreaded.js
 ../src/util.js
 ../src/webgazer.js
+../js/video_lighting.js
