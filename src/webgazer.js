@@ -120,7 +120,7 @@
     */
     function drawCoordinates(colour,x,y){
         console.log("drawCoordinates");
-        var ctx = document.getElementById("canvas").getContext('2d');
+        var ctx = document.getElementById("plotting_canvas").getContext('2d');
         ctx.fillStyle = colour; // Red color
         ctx.beginPath();
         ctx.arc(x, y, 5, 0, Math.PI * 2, true);

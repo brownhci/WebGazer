@@ -39,6 +39,10 @@ window.onload = function() {
 
         document.body.appendChild(overlay);
 
+        var canvas = document.getElementById("plotting_canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
         var cl = webgazer.getTracker().clm;
 
         //This function draw the face of the user frame.

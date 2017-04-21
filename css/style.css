@@ -3,7 +3,6 @@ button#Calibration_1{
     left:320px;
 }
 .Calibration{
-
       width: 20px;
       height: 20px;
       -webkit-border-radius: 25px;
@@ -47,8 +46,3 @@ button#Calibration_1{
 #Pt9{
     bottom:1vh;
     right:1vw;
-}
-#plotting_canvas{
-    width:100%;
-    height:100%;
-}
