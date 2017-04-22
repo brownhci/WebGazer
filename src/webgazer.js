@@ -169,7 +169,7 @@
 
     /**
      * Paints the video to a canvas and runs the prediction pipeline to get a prediction
-     * @param {Number|undefined} regModelIndex - The prediction index where looking for
+     * @param {Number|undefined} regModelIndex - The prediction index we're looking for
      * @returns {*}
      */
     function getPrediction(regModelIndex) {
@@ -224,7 +224,7 @@
 
             if (slowDown){ // prints only every second one
               gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
-              drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
+              //drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
               slowDown=false;
             } else {
               slowDown=true;
@@ -241,7 +241,7 @@
               }
               x=x/3;
               y=y/3;
-              drawCoordinates('yellow',x,y); // yellow is every third plot
+              //drawCoordinates('yellow',x,y); // yellow is every third plot
 
               i = 0; //clears all variables
               average_x = new Array(3);
@@ -362,7 +362,7 @@
     }
 
     /**
-     * Initializes all needed dom elements and begins the loop
+     * Initializ es all needed dom elements and begins the loop
      * @param {URL} videoSrc - The video url to use
      */
     function init(videoSrc) {
@@ -392,7 +392,6 @@
 
         loop();
     }
-
 
     //PUBLIC FUNCTIONS - CONTROL
 

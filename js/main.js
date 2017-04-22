@@ -37,7 +37,15 @@ window.onload = function() {
         overlay.style.left = leftDist;
         overlay.style.margin = '0px';
 
+        var faceOverlay = document.createElement('face_overlay');
+        faceOverlay.id = 'faceOverlay';
+        faceOverlay.style.position = 'absolute';
+        faceOverlay.style.top = '59px';
+        faceOverlay.style.left = '107px';
+        faceOverlay.style.border = 'solid';
+
         document.body.appendChild(overlay);
+        document.body.appendChild(faceOverlay);
 
         var canvas = document.getElementById("plotting_canvas");
         canvas.width = window.innerWidth;
