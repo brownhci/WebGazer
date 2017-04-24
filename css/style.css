@@ -46,3 +46,9 @@ button#Calibration_1{
 #Pt9{
     bottom:1vh;
     right:1vw;
+}
+
+#faceOverlay {
+  width: 117px;
+  height: 117px;
+}
