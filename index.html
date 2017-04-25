@@ -13,16 +13,21 @@
         <script src="./node_modules/jquery/dist/jquery.min.js"></script>
         <script src="./js/calibration.js"></script>
         <script src="./node_modules/sweetalert/dist/sweetalert.min.js"></script>
+        <script>
+        function lastButton() {
+            console.log("button 9 was clicked");
+        }
+        </script>
         <div id="mydiv">
-            <input type="button" class="Calibration" id="Pt1"></input>
-            <input type="button" class="Calibration" id="Pt2"></input>
-            <input type="button" class="Calibration" id="Pt3"></input>
-            <input type="button" class="Calibration" id="Pt4"></input>
-            <input type="button" class="Calibration" id="Pt5"></input>
-            <input type="button" class="Calibration" id="Pt6"></input>
-            <input type="button" class="Calibration" id="Pt7"></input>
-            <input type="button" class="Calibration" id="Pt8"></input>
-            <input type="button" class="Calibration" id="Pt9"></input>
+            <div class="Calibration" id="Pt1"></div>
+            <div class="Calibration" id="Pt2"></div>
+            <div class="Calibration" id="Pt3"></div>
+            <div class="Calibration" id="Pt4"></div>
+            <div class="Calibration" id="Pt5"></div>
+            <div class="Calibration" id="Pt6"></div>
+            <div class="Calibration" id="Pt7"></div>
+            <div class="Calibration" id="Pt8"></div>
+            <div class="Calibration" id="Pt9" onclick='lastButton()'></div>
         </div>
         <script src="./js/resize_canvas.js"></script>
     </body>
