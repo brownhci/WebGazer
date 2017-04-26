@@ -10469,83 +10469,40 @@ var mosseFilterResponses = function() {
 
         var validationBox = document.getElementById('faceOverlay');
 
-        var leftEyeInPosition = false;
-        var rightEyeInPosition = false;
+        var xPositions = false;
+        var yPositions = false;
 
         if (validationBox != null && eyesObjs) {
-
             leftBound = 107;
      				topBound = 59;
      				rightBound = leftBound + 117;
      				bottomBound = topBound + 117;
 
-   					var leftPupilX = eyesObjs.left.imagex;
-  					var leftPupilY = eyesObjs.left.imagey;
-   					var rightPupilX = eyesObjs.right.imagex;
-   					var rightPupilY = eyesObjs.right.imagey;
+   					var eyeLX = eyesObjs.left.imagex;
+					  var eyeLY = eyesObjs.left.imagey;
+   					var eyeRX = eyesObjs.right.imagex;
+   					var eyeRY = eyesObjs.right.imagey;
 
-   					if (leftPupilX > leftBound && leftPupilX < rightBound) {
-   						if (rightPupilX > leftBound && rightPupilX < rightBound) {
-   							if (leftPupilY > topBound && leftPupilY < bottomBound) {
-   								if (rightPupilY > topBound && rightPupilY < bottomBound) {
-   										validationBox.style.border = 'solid green';
-                      console.log("eyes are in position");
-   								} else {
-                      validationBox.style.border = 'solid red';
-                  }
-   							} else {
-                    validationBox.style.border = 'solid red';
+            if (eyeLX > leftBound && eyeLX < rightBound) {
+               if (eyeRX > leftBound && eyeRX < rightBound) {
+                   xPositions = true;
+               }
+            }
+
+            if (eyeLY > topBound && eyeLY < bottomBound) {
+                if (eyeRY > topBound && eyeRY < bottomBound) {
+                    yPositions = true;
                 }
-   						} else {
-                  validationBox.style.border = 'solid red';
-              }
-   					} else {
+            }
+
+            if (xPositions && yPositions){
+                validationBox.style.border = 'solid green';
+            } else {
                 validationBox.style.border = 'solid red';
             }
         }
     }
-    /*        var eyesObjs = curTracker.getEyePatches(videoElementCanvas,webgazer.params.imgWidth,webgazer.params.imgHeight);
 
-            var validationBox = document.getElementById('faceOverlay');
-
-            var xPositions = false;
-            var yPositions = false;
-
-            if (validationBox != null && eyesObjs != null) {
-                //Boundaries for the validation box
-                leftBound = 107;
-         				topBound = 59;
-         				rightBound = leftBound + 117;
-         				bottomBound = topBound + 117;
-
-                if (eyesObjs.left.imagex != null && eyesObjs.left.imagey != null) {
-                    if (eyesObjs.right.imagex != null && eyesObjs.right.imagey != null) {
-                        var eyeLX = eyesObjs.left.imagex;
-                        var eyeLY = eyesObjs.left.imagey;
-               					var eyeRX = eyesObjs.right.imagex;
-               					var eyeRY = eyesObjs.right.imagey;
-
-                        if (eyeLX > leftBound && eyeLX < rightBound) {
-                           if (eyeRX > leftBound && eyeRX < rightBound) {
-                               xPositions = true;
-                           }
-                        }
-
-                        }
-            			      if (eyeLX > topBound && eyeLX < bottomBound) {
-                            if (eyeRY > topBound && eyeRY < bottomBound) {
-                                Ypositions = true;
-                            }
-                        }
-
-                        if (xPositions && yPositions){
-                            validationBox.style.border = 'solid green';
-                        } else {
-                            validationBox.style.border = 'solid red';
-                        }
-                    }
-                }
-                */
 
     /**
     * Alerts the user of the cursor position, used for debugging & testing
