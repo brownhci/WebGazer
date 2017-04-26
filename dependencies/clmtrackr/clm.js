@@ -1057,58 +1057,6 @@ var clm = {
 				nose_position[0] = Math.round(candidate.x+(candidate.width/2)-(noseFilterWidth/2))+nose_result[0];
 				nose_position[1] = Math.round(candidate.y+candidate.height*(5/8)-(noseFilterWidth/2))+nose_result[1];
 
-				//check if the pupils are in the position box on the video
-				var validationBox = document.getElementById('faceOverlay');
-
-				if (validationBox != null) {
-					leftBound = 107;
-					topBound = 59;
-					rightBound = leftBound + 117;
-					bottomBound = topBound + 117;
-
-					var leftPupilX = left_eye_position[0];
-					var leftPupilY = left_eye_position[1];
-					var rightPupilX = right_eye_position[0];
-					var rightPupilY = right_eye_position[1];
-
-					if (leftPupilX > leftBound && leftPupilX < rightBound) {
-						if (rightPupilX > leftBound && rightPupilX < rightBound) {
-							if (leftPupilY > topBound && leftPupilY < bottomBound) {
-								if (rightPupilY > topBound && rightPupilY < bottomBound) {
-										validationBox.style.border = 'red!important';
-								}
-							}
-						}
-					}
-				}
-
-				//
-				/*canvasContext.strokeRect(Math.round(candidate.x+(candidate.width*3/4)-(eyeFilterWidth/2)), Math.round(candidate.y+candidate.height*(2/5)-(eyeFilterWidth/2)), eyeFilterWidth, eyeFilterWidth);
-				canvasContext.strokeRect(Math.round(candidate.x+(candidate.width/4)-(eyeFilterWidth/2)), Math.round(candidate.y+candidate.height*(2/5)-(eyeFilterWidth/2)), eyeFilterWidth, eyeFilterWidth);
-				//canvasContext.strokeRect(Math.round(candidate.x+(candidate.width/2)-(noseFilterWidth/2)), Math.round(candidate.y+candidate.height*(3/4)-(noseFilterWidth/2)), noseFilterWidth, noseFilterWidth);
-				canvasContext.strokeRect(Math.round(candidate.x+(candidate.width/2)-(noseFilterWidth/2)), Math.round(candidate.y+candidate.height*(5/8)-(noseFilterWidth/2)), noseFilterWidth, noseFilterWidth);
-
-				canvasContext.fillStyle = "rgb(0,0,250)";
-				canvasContext.beginPath();
-				canvasContext.arc(left_eye_position[0], left_eye_position[1], 3, 0, Math.PI*2, true);
-				canvasContext.closePath();
-				canvasContext.fill();
-
-				canvasContext.beginPath();
-				canvasContext.arc(right_eye_position[0], right_eye_position[1], 3, 0, Math.PI*2, true);
-				canvasContext.closePath();
-				canvasContext.fill();
-
-				canvasContext.beginPath();
-				canvasContext.arc(nose_position[0], nose_position[1], 3, 0, Math.PI*2, true);
-				canvasContext.closePath();
-				canvasContext.fill();
-
-				debugger;
-				element.play()
-				canvasContext.clearRect(0,0,element.width,element.height);*/
-				//
-
 				// get eye and nose positions of model
 				var lep = model.hints.leftEye;
 				var rep = model.hints.rightEye;
@@ -1120,42 +1068,6 @@ var clm = {
 				translateY = procrustes_params[1];
 				scaling = procrustes_params[2];
 				rotation = procrustes_params[3];
-
-				//element.play();
-
-				//var maxscale = 1.10;
-				//if ((scaling*modelHeight)/candidate.height < maxscale*0.7) scaling = (maxscale*0.7*candidate.height)/modelHeight;
-				//if ((scaling*modelHeight)/candidate.height > maxscale*1.2) scaling = (maxscale*1.2*candidate.height)/modelHeight;
-
-				/*var smean = [0,0];
-				smean[0] += lep[0];
-				smean[1] += lep[1];
-				smean[0] += rep[0];
-				smean[1] += rep[1];
-				smean[0] += mep[0];
-				smean[1] += mep[1];
-				smean[0] /= 3;
-				smean[1] /= 3;
-
-				var nulep = [(lep[0]*scaling*Math.cos(-rotation)+lep[1]*scaling*Math.sin(-rotation))+translateX, (lep[0]*scaling*(-Math.sin(-rotation)) + lep[1]*scaling*Math.cos(-rotation))+translateY];
-				var nurep = [(rep[0]*scaling*Math.cos(-rotation)+rep[1]*scaling*Math.sin(-rotation))+translateX, (rep[0]*scaling*(-Math.sin(-rotation)) + rep[1]*scaling*Math.cos(-rotation))+translateY];
-				var numep = [(mep[0]*scaling*Math.cos(-rotation)+mep[1]*scaling*Math.sin(-rotation))+translateX, (mep[0]*scaling*(-Math.sin(-rotation)) + mep[1]*scaling*Math.cos(-rotation))+translateY];
-
-				canvasContext.fillStyle = "rgb(200,10,100)";
-				canvasContext.beginPath();
-				canvasContext.arc(nulep[0], nulep[1], 3, 0, Math.PI*2, true);
-				canvasContext.closePath();
-				canvasContext.fill();
-
-				canvasContext.beginPath();
-				canvasContext.arc(nurep[0], nurep[1], 3, 0, Math.PI*2, true);
-				canvasContext.closePath();
-				canvasContext.fill();
-
-				canvasContext.beginPath();
-				canvasContext.arc(numep[0], numep[1], 3, 0, Math.PI*2, true);
-				canvasContext.closePath();
-				canvasContext.fill();*/
 
 				currentParameters[0] = (scaling*Math.cos(rotation))-1;
 				currentParameters[1] = (scaling*Math.sin(rotation));

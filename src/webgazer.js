@@ -100,9 +100,53 @@
     * @param {e} e - the event click
     */
     document.onclick = function(e){
-      var cursorX = e.pageX;
-      var cursorY = e.pageY;
-      drawCoordinates('black',cursorX,cursorY);
+        var cursorX = e.pageX;
+        var cursorY = e.pageY;
+        drawCoordinates('black',cursorX,cursorY);
+    }
+
+    /**
+    * Checks if the pupils are in the position box on the video
+    */
+    function checkEyesInValidationBox() {
+        var eyeObjs = curTracker.getEyePatches(videoElementCanvas,webgazer.params.imgWidth,webgazer.params.imgHeight);
+
+        var validationBox = document.getElementById('faceOverlay');
+
+        var leftEyeInPosition = false;
+        var rightEyeInPosition = false;
+
+        if (validationBox != null) {
+
+            leftBound = 107;
+     				topBound = 59;
+     				rightBound = leftBound + 117;
+     				bottomBound = topBound + 117;
+
+   					var leftPupilX = eyeObjs.left.imagex;
+  					var leftPupilY = eyeObjs.left.imagey;
+   					var rightPupilX = eyeObjs.right.imagex;
+   					var rightPupilY = eyeObjs.right.imagey;
+
+   					if (leftPupilX > leftBound && leftPupilX < rightBound) {
+   						if (rightPupilX > leftBound && rightPupilX < rightBound) {
+   							if (leftPupilY > topBound && leftPupilY < bottomBound) {
+   								if (rightPupilY > topBound && rightPupilY < bottomBound) {
+   										validationBox.style.border = 'solid green';
+                      console.log("eyes are in position");
+   								} else {
+                      validationBox.style.border = 'solid red';
+                  }
+   							} else {
+                    validationBox.style.border = 'solid red';
+                }
+   						} else {
+                  validationBox.style.border = 'solid red';
+              }
+   					} else {
+                validationBox.style.border = 'solid red';
+            }
+        }
     }
 
     /**
@@ -212,6 +256,9 @@
         callback(gazeData, elapsedTime);
 
         if (gazeData && showGazeDot) {
+            //Check that the eyes are inside of the validation box
+            checkEyesInValidationBox();
+
             smoothingVals.push(gazeData);
             var x = 0;
             var y = 0;
