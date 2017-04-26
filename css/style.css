@@ -45,7 +45,14 @@
     bottom:1vh;
     right:1vw;
 }
+
 #Restart{
     position:fixed;
     top: 40vh;
+}
+
+
+#faceOverlay {
+  width: 117px;
+  height: 117px;
 }

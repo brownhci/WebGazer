@@ -13,6 +13,7 @@ $(document).ready(function() {
 });
 function ClearCalibration(){
   $(".Calibration").css('background-color','yellow');
+  $(".Calibration").prop('disabled',false);
   PointCalibrate = 0;
   var canvas = document.getElementById("plotting_canvas");
   canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
