@@ -11,8 +11,12 @@ $(document).ready(function() {
     });
     swal("Please start the calibration process by clicking on the points");
 });
-
-
+function ClearCalibration(){
+  $(".Calibration").css('background-color','yellow');
+  PointCalibrate = 0;
+  var canvas = document.getElementById("plotting_canvas");
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+}
 
 
 

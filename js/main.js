@@ -69,9 +69,9 @@ window.onload = function() {
 
 window.onbeforeunload = function() {
     //webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
-<<<<<<< HEAD
     window.localStorage.clear(); //Comment out if you want to save data across different sessions 
-=======
-    window.localStorage.clear(); //Comment out if you want to save data across different sessions
->>>>>>> 427b87cff449bde506e3bc8174fe13bd63599164
+}
+function Restart(){
+    window.localStorage.clear();
+    ClearCalibration();
 }
