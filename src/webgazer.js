@@ -100,9 +100,53 @@
     * @param {e} e - the event click
     */
     document.onclick = function(e){
-      var cursorX = e.pageX;
-      var cursorY = e.pageY;
-      drawCoordinates('black',cursorX,cursorY);
+        var cursorX = e.pageX;
+        var cursorY = e.pageY;
+        drawCoordinates('black',cursorX,cursorY);
+    }
+
+    /**
+    * Checks if the pupils are in the position box on the video
+    */
+    function checkEyesInValidationBox() {
+        var eyeObjs = curTracker.getEyePatches(videoElementCanvas,webgazer.params.imgWidth,webgazer.params.imgHeight);
+
+        var validationBox = document.getElementById('faceOverlay');
+
+        var leftEyeInPosition = false;
+        var rightEyeInPosition = false;
+
+        if (validationBox != null) {
+
+            leftBound = 107;
+     				topBound = 59;
+     				rightBound = leftBound + 117;
+     				bottomBound = topBound + 117;
+
+   					var leftPupilX = eyeObjs.left.imagex;
+  					var leftPupilY = eyeObjs.left.imagey;
+   					var rightPupilX = eyeObjs.right.imagex;
+   					var rightPupilY = eyeObjs.right.imagey;
+
+   					if (leftPupilX > leftBound && leftPupilX < rightBound) {
+   						if (rightPupilX > leftBound && rightPupilX < rightBound) {
+   							if (leftPupilY > topBound && leftPupilY < bottomBound) {
+   								if (rightPupilY > topBound && rightPupilY < bottomBound) {
+   										validationBox.style.border = 'solid green';
+                      console.log("eyes are in position");
+   								} else {
+                      validationBox.style.border = 'solid red';
+                  }
+   							} else {
+                    validationBox.style.border = 'solid red';
+                }
+   						} else {
+                  validationBox.style.border = 'solid red';
+              }
+   					} else {
+                validationBox.style.border = 'solid red';
+            }
+        }
     }
 
     /**
@@ -169,7 +213,7 @@
 
     /**
      * Paints the video to a canvas and runs the prediction pipeline to get a prediction
-     * @param {Number|undefined} regModelIndex - The prediction index where looking for
+     * @param {Number|undefined} regModelIndex - The prediction index we're looking for
      * @returns {*}
      */
     function getPrediction(regModelIndex) {
@@ -212,6 +256,9 @@
         callback(gazeData, elapsedTime);
 
         if (gazeData && showGazeDot) {
+            //Check that the eyes are inside of the validation box
+            checkEyesInValidationBox();
+
             smoothingVals.push(gazeData);
             var x = 0;
             var y = 0;
@@ -224,7 +271,7 @@
 
             if (slowDown){ // prints only every second one
               gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
-              drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
+              //drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
               slowDown=false;
             } else {
               slowDown=true;
@@ -241,7 +288,7 @@
               }
               x=x/3;
               y=y/3;
-              drawCoordinates('yellow',x,y); // yellow is every third plot
+              //drawCoordinates('yellow',x,y); // yellow is every third plot
 
               i = 0; //clears all variables
               average_x = new Array(3);
@@ -362,7 +409,7 @@
     }
 
     /**
-     * Initializes all needed dom elements and begins the loop
+     * Initializ es all needed dom elements and begins the loop
      * @param {URL} videoSrc - The video url to use
      */
     function init(videoSrc) {
@@ -392,7 +439,6 @@
 
         loop();
     }
-
 
     //PUBLIC FUNCTIONS - CONTROL
 
