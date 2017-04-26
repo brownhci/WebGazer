@@ -1,13 +1,11 @@
-button#Calibration_1{
-    position: relative;
-    left:320px;
-}
+
 .Calibration{
       width: 20px;
       height: 20px;
       -webkit-border-radius: 25px;
       -moz-border-radius: 25px;
       border-radius: 25px;
+      background-color: yellow;
       border-color: black;
       border-style: solid;
       position:fixed;
@@ -46,3 +44,8 @@ button#Calibration_1{
 #Pt9{
     bottom:1vh;
     right:1vw;
+}
+#Restart{
+    position:fixed;
+    top: 40vh;
+}
