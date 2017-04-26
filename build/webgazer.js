@@ -10465,24 +10465,24 @@ var mosseFilterResponses = function() {
     * Checks if the pupils are in the position box on the video
     */
     function checkEyesInValidationBox() {
-        var eyeObjs = curTracker.getEyePatches(videoElementCanvas,webgazer.params.imgWidth,webgazer.params.imgHeight);
+        var eyesObjs = curTracker.getEyePatches(videoElementCanvas,webgazer.params.imgWidth,webgazer.params.imgHeight);
 
         var validationBox = document.getElementById('faceOverlay');
 
         var leftEyeInPosition = false;
         var rightEyeInPosition = false;
 
-        if (validationBox != null) {
+        if (validationBox != null && eyesObjs) {
 
             leftBound = 107;
      				topBound = 59;
      				rightBound = leftBound + 117;
      				bottomBound = topBound + 117;
 
-   					var leftPupilX = eyeObjs.left.imagex;
-  					var leftPupilY = eyeObjs.left.imagey;
-   					var rightPupilX = eyeObjs.right.imagex;
-   					var rightPupilY = eyeObjs.right.imagey;
+   					var leftPupilX = eyesObjs.left.imagex;
+  					var leftPupilY = eyesObjs.left.imagey;
+   					var rightPupilX = eyesObjs.right.imagex;
+   					var rightPupilY = eyesObjs.right.imagey;
 
    					if (leftPupilX > leftBound && leftPupilX < rightBound) {
    						if (rightPupilX > leftBound && rightPupilX < rightBound) {
@@ -10504,6 +10504,48 @@ var mosseFilterResponses = function() {
             }
         }
     }
+    /*        var eyesObjs = curTracker.getEyePatches(videoElementCanvas,webgazer.params.imgWidth,webgazer.params.imgHeight);
+
+            var validationBox = document.getElementById('faceOverlay');
+
+            var xPositions = false;
+            var yPositions = false;
+
+            if (validationBox != null && eyesObjs != null) {
+                //Boundaries for the validation box
+                leftBound = 107;
+         				topBound = 59;
+         				rightBound = leftBound + 117;
+         				bottomBound = topBound + 117;
+
+                if (eyesObjs.left.imagex != null && eyesObjs.left.imagey != null) {
+                    if (eyesObjs.right.imagex != null && eyesObjs.right.imagey != null) {
+                        var eyeLX = eyesObjs.left.imagex;
+                        var eyeLY = eyesObjs.left.imagey;
+               					var eyeRX = eyesObjs.right.imagex;
+               					var eyeRY = eyesObjs.right.imagey;
+
+                        if (eyeLX > leftBound && eyeLX < rightBound) {
+                           if (eyeRX > leftBound && eyeRX < rightBound) {
+                               xPositions = true;
+                           }
+                        }
+
+                        }
+            			      if (eyeLX > topBound && eyeLX < bottomBound) {
+                            if (eyeRY > topBound && eyeRY < bottomBound) {
+                                Ypositions = true;
+                            }
+                        }
+
+                        if (xPositions && yPositions){
+                            validationBox.style.border = 'solid green';
+                        } else {
+                            validationBox.style.border = 'solid red';
+                        }
+                    }
+                }
+                */
 
     /**
     * Alerts the user of the cursor position, used for debugging & testing

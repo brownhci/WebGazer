@@ -109,24 +109,24 @@
     * Checks if the pupils are in the position box on the video
     */
     function checkEyesInValidationBox() {
-        var eyeObjs = curTracker.getEyePatches(videoElementCanvas,webgazer.params.imgWidth,webgazer.params.imgHeight);
+        var eyesObjs = curTracker.getEyePatches(videoElementCanvas,webgazer.params.imgWidth,webgazer.params.imgHeight);
 
         var validationBox = document.getElementById('faceOverlay');
 
         var leftEyeInPosition = false;
         var rightEyeInPosition = false;
 
-        if (validationBox != null) {
+        if (validationBox != null && eyesObjs) {
 
             leftBound = 107;
      				topBound = 59;
      				rightBound = leftBound + 117;
      				bottomBound = topBound + 117;
 
-   					var leftPupilX = eyeObjs.left.imagex;
-  					var leftPupilY = eyeObjs.left.imagey;
-   					var rightPupilX = eyeObjs.right.imagex;
-   					var rightPupilY = eyeObjs.right.imagey;
+   					var leftPupilX = eyesObjs.left.imagex;
+  					var leftPupilY = eyesObjs.left.imagey;
+   					var rightPupilX = eyesObjs.right.imagex;
+   					var rightPupilY = eyesObjs.right.imagey;
 
    					if (leftPupilX > leftBound && leftPupilX < rightBound) {
    						if (rightPupilX > leftBound && rightPupilX < rightBound) {
@@ -148,7 +148,7 @@
             }
         }
     }
-
+  
     /**
     * Alerts the user of the cursor position, used for debugging & testing
     */
