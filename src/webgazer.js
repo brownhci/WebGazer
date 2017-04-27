@@ -100,10 +100,53 @@
     * @param {e} e - the event click
     */
     document.onclick = function(e){
-      var cursorX = e.pageX;
-      var cursorY = e.pageY;
-      drawCoordinates('black',cursorX,cursorY);
+        var cursorX = e.pageX;
+        var cursorY = e.pageY;
+        drawCoordinates('black',cursorX,cursorY);
     }
+
+    /**
+    * Checks if the pupils are in the position box on the video
+    */
+    function checkEyesInValidationBox() {
+        var eyesObjs = curTracker.getEyePatches(videoElementCanvas,webgazer.params.imgWidth,webgazer.params.imgHeight);
+
+        var validationBox = document.getElementById('faceOverlay');
+
+        var xPositions = false;
+        var yPositions = false;
+
+        if (validationBox != null && eyesObjs) {
+            leftBound = 107;
+     				topBound = 59;
+     				rightBound = leftBound + 117;
+     				bottomBound = topBound + 117;
+
+   					var eyeLX = eyesObjs.left.imagex;
+					  var eyeLY = eyesObjs.left.imagey;
+   					var eyeRX = eyesObjs.right.imagex;
+   					var eyeRY = eyesObjs.right.imagey;
+
+            if (eyeLX > leftBound && eyeLX < rightBound) {
+               if (eyeRX > leftBound && eyeRX < rightBound) {
+                   xPositions = true;
+               }
+            }
+
+            if (eyeLY > topBound && eyeLY < bottomBound) {
+                if (eyeRY > topBound && eyeRY < bottomBound) {
+                    yPositions = true;
+                }
+            }
+
+            if (xPositions && yPositions){
+                validationBox.style.border = 'solid green';
+            } else {
+                validationBox.style.border = 'solid red';
+            }
+        }
+    }
+
 
     /**
     * Alerts the user of the cursor position, used for debugging & testing
@@ -217,6 +260,9 @@
         callback(gazeData, elapsedTime);
 
         if (gazeData && showGazeDot) {
+            //Check that the eyes are inside of the validation box
+            checkEyesInValidationBox();
+
             smoothingVals.push(gazeData);
             var x = 0;
             var y = 0;
@@ -227,8 +273,11 @@
             }
             var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
 
+            if (draw_points){
+              drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
+            }
+
             if (slowDown){ // prints only every second one
-              gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
               //drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
               slowDown=false;
             } else {
@@ -247,6 +296,7 @@
               x=x/3;
               y=y/3;
               //drawCoordinates('yellow',x,y); // yellow is every third plot
+              gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
 
               i = 0; //clears all variables
               average_x = new Array(3);
