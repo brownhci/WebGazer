@@ -10518,7 +10518,7 @@ var mosseFilterResponses = function() {
     * @param {y} y - The y co-ordinate of the desired point to plot
     */
     function drawCoordinates(colour,x,y){
-        //console.log("drawCoordinates");
+        console.log("drawCoordinates");
         var ctx = document.getElementById("plotting_canvas").getContext('2d');
         ctx.fillStyle = colour; // Red color
         ctx.beginPath();
