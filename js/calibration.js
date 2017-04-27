@@ -19,13 +19,13 @@ $(document).ready(function() {
         }, function(isConfirm){
           if (isConfirm){
             $(document).ready(function(){
-              draw_points_variable();
-              console.log('confirmed');
-
+              draw_points_variable(true);
+              sleep(5000).then(() => {
+                  draw_points_variable(false);
+              });
             });
           }
         });
-
       }
       $(this).prop('disabled', true);
     });
@@ -40,4 +40,7 @@ function ClearCalibration(){
   PointCalibrate = 0;
   var canvas = document.getElementById("plotting_canvas");
   canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+}
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
 }
