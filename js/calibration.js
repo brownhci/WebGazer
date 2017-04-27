@@ -1,33 +1,44 @@
 var PointCalibrate = 0;
-
+var CalibrationPoints={};
 $(document).ready(function() {
-   $("input[type='button']").click(function(){
-      $(this).css('background-color','red');
-      PointCalibrate++;
-      if (PointCalibrate == 9){
-        for(count = 1; count < 10; count++){ // loops through all buttons & hides them
-          if (count != 5){
-            var name = 'Pt' + count;
-            document.getElementById(name).style.visibility = 'hidden';
-          }
-        }
-        var canvas = document.getElementById("plotting_canvas"); // clears canvas of points clicked
-        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-        swal({
-          title: "Calculating measurement",
-          text: "Please stare at the middle dot for the next 5 seconds as we calculate the precision"
-        }, function(isConfirm){
-          if (isConfirm){
-            $(document).ready(function(){
-              draw_points_variable(true);
-              sleep(5000).then(() => {
-                  draw_points_variable(false);
-              });
-            });
-          }
-        });
+    $(".Calibration").click(function(){
+
+      var id = $(this).attr('id');
+      console.log(id);
+      if (!CalibrationPoints[id]){
+        CalibrationPoints[id]=0;
       }
-      $(this).prop('disabled', true);
+
+      CalibrationPoints[id]++;
+      console.log(CalibrationPoints[id]);
+      if (CalibrationPoints[id]>=5){
+        $(this).css('background-color','red');
+        PointCalibrate++;
+        if (PointCalibrate == 9){
+          for(count = 1; count < 10; count++){ // loops through all buttons & hides them
+            if (count != 5){
+              var name = 'Pt' + count;
+              document.getElementById(name).style.visibility = 'hidden';
+            }
+          }
+          var canvas = document.getElementById("plotting_canvas"); // clears canvas of points clicked
+          canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+          swal({
+            title: "Calculating measurement",
+            text: "Please stare at the middle dot for the next 5 seconds as we calculate the precision"
+          }, function(isConfirm){
+            if (isConfirm){
+              $(document).ready(function(){
+                draw_points_variable(true);
+                sleep(5000).then(() => {
+                    draw_points_variable(false);
+                });
+              });
+            }
+          });
+        }
+      }
+        $(this).prop('disabled', true);
     });
     swal({
       title: "Calibration",
@@ -37,6 +48,9 @@ $(document).ready(function() {
 function ClearCalibration(){
   $(".Calibration").css('background-color','yellow');
   $(".Calibration").prop('disabled',false);
+
+  CalibrationPoints = {};
+
   PointCalibrate = 0;
   var canvas = document.getElementById("plotting_canvas");
   canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
