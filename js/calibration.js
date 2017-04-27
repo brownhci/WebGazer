@@ -1,10 +1,10 @@
 var PointCalibrate = 0;
+
 $(document).ready(function() {
    $("input[type='button']").click(function(){
       $(this).css('background-color','red');
       PointCalibrate++;
       if (PointCalibrate == 9){
-        swal("Successfully calibrate all points");
         for(count = 1; count < 10; count++){ // loops through all buttons & hides them
           if (count != 5){
             var name = 'Pt' + count;
@@ -13,11 +13,23 @@ $(document).ready(function() {
         }
         var canvas = document.getElementById("plotting_canvas"); // clears canvas of points clicked
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-        swal("Pleas stare at the middle dot for the next 5 seconds as we calculate the precision");
+        swal({
+          title: "Calculating measurement",
+          text: "Please stare at the middle dot for the next 5 seconds as we calculate the precision"
+        }, function(isConfirm){
+          if (isConfirm){
+            draw_points_variable();
+            console.log('confirmed');
+          }
+        });
+
       }
       $(this).prop('disabled', true);
     });
-    swal("Please start the calibration process by clicking on the points");
+    swal({
+      title: "Calibration",
+      text: "Please click on the each of the 9 points on the screen. This will calibrate your eye movements."
+    });
 });
 function ClearCalibration(){
   $(".Calibration").css('background-color','yellow');

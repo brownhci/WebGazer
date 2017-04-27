@@ -30,5 +30,6 @@
 ../src/ridgeWeightedReg.js
 ../src/ridgeRegThreaded.js
 ../src/util.js
+../js/draw_plotted_points.js
 ../src/webgazer.js
 ../js/video_lighting.js
