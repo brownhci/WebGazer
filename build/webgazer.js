@@ -10354,6 +10354,23 @@ var mosseFilterResponses = function() {
 }());
 ;
 
+var draw_points = false;
+
+/**
+* This makes the variable draw_points true, so all the previous prediction points are plotted on the canvas
+*/
+function draw_points_variable(){
+  draw_points = true;
+}
+
+/**
+* This makes the variable draw_points false, so points aren't plotted on the canvas
+*/
+function stop_drawing_points_variable(){
+  draw_points = false;
+}
+;
+
 (function(window, undefined) {
     console.log('initializing webgazer');
     //strict mode for type safety
@@ -10518,7 +10535,7 @@ var mosseFilterResponses = function() {
     * @param {y} y - The y co-ordinate of the desired point to plot
     */
     function drawCoordinates(colour,x,y){
-        //console.log("drawCoordinates");
+        console.log("drawCoordinates");
         var ctx = document.getElementById("plotting_canvas").getContext('2d');
         ctx.fillStyle = colour; // Red color
         ctx.beginPath();
@@ -10624,8 +10641,11 @@ var mosseFilterResponses = function() {
             }
             var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
 
+            if (draw_points){
+              drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
+            }
+
             if (slowDown){ // prints only every second one
-              gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
               //drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
               slowDown=false;
             } else {
@@ -10644,6 +10664,7 @@ var mosseFilterResponses = function() {
               x=x/3;
               y=y/3;
               //drawCoordinates('yellow',x,y); // yellow is every third plot
+              gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
 
               i = 0; //clears all variables
               average_x = new Array(3);
