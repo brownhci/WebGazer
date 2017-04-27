@@ -201,6 +201,11 @@
      */
     var smoothingVals = new webgazer.util.DataWindow(4);
 
+    //make empty arrays to store the past 10 points of the tracker
+    //used to give precision feedback to user
+    var average_x10 = new Array(10);
+    var average_y10 = new Array(10);
+    var k = 0;
     //make empty array
     var average_x = new Array(3);
     var average_y = new Array(3);
@@ -250,6 +255,15 @@
               i++;
             }
 
+            //store the position of the current tracker predition
+            average_x10[k] = pred.x;
+            average_y10[k] = pred.y;
+            currentXPrediction = pred.x;
+            currentYPrediction = pred.y;
+            k++;
+            if (k == 10) {
+              k = 0;
+            }
         }
 
         if (!paused) {
