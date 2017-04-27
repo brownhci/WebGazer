@@ -18,8 +18,11 @@ $(document).ready(function() {
           text: "Please stare at the middle dot for the next 5 seconds as we calculate the precision"
         }, function(isConfirm){
           if (isConfirm){
-            draw_points_variable();
-            console.log('confirmed');
+            $(document).ready(function(){
+              draw_points_variable();
+              console.log('confirmed');
+
+            });
           }
         });
 
