@@ -10354,6 +10354,14 @@ var mosseFilterResponses = function() {
 }());
 ;
 
+var draw_points = false;
+
+function draw_points_variable(){
+  console.log('drawing points');
+  draw_points = true;
+}
+;
+
 (function(window, undefined) {
     console.log('initializing webgazer');
     //strict mode for type safety
@@ -11106,12 +11114,5 @@ function setAlert(){
 }
 
 window.setTimeout(setAlert, 20000); // occurs every 20secs
-;
-
-var draw_points = false;
-
-function draw_points_variable(boolean){
-  draw_points = boolean;
-}
 ;
 
