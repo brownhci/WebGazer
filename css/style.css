@@ -1,23 +1,25 @@
+body {
+    min-width:600px!important;
+}
 
 .calibrationDiv {
-  padding: 40px 40px;
-  top: 40px;
+    padding: 40px 40px;
+    top: 40px;
 }
 .CalibrationBtn{
-      width: 20px;
-      height: 20px;
-      -webkit-border-radius: 25px;
-      -moz-border-radius: 25px;
-      border-radius: 25px;
-      background-color: yellow;
-      border-color: black;
-      border-style: solid;
-      position:fixed;
+    width: 20px;
+    height: 20px;
+    -webkit-border-radius: 25px;
+    -moz-border-radius: 25px;
+    border-radius: 25px;
+    background-color: yellow;
+    border-color: black;
+    border-style: solid;
+    position:fixed;
 }
 
 #webgazerNavbar{
     left: 320px!important;
-
 }
 
 #Pt1{
