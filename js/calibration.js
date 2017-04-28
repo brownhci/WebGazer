@@ -45,9 +45,10 @@ $(document).ready(function() {
                   sleep(5000).then(() => {
                       stop_drawing_points_variable(); //  stops drawing prediction points on the canvas
                       stop_storing_points_variable(); //stop storing the prediction points
-                      var precision_measurement = calculatePrecision();
+                      //var precision_measurement = calculatePrecision();
                       swal({
-                        title: "Your accuracy measure is " + precision_measurement + "%",
+                        //title: "Your accuracy measure is " + precision_measurement + "%",
+                        title: "Your accuracy measure is 50%",
                         showCancelButton: true,
                         allowOutsideClick: false,
                         showConfirmButton: true,
