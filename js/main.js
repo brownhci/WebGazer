@@ -84,5 +84,6 @@ window.onbeforeunload = function() {
 function Restart(){
     window.localStorage.clear();
     $(".Calibration").show();
+    $("#Pt5").hide();
     ClearCalibration();
 }
