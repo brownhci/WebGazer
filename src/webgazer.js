@@ -244,10 +244,10 @@
      */
     var smoothingVals = new webgazer.util.DataWindow(4);
 
-    //make empty arrays to store the past 10 points of the tracker
+    //make empty arrays to store the past 50 points of the tracker
     //used to give precision feedback to user
-    var average_x10 = new Array(10);
-    var average_y10 = new Array(10);
+    var xPast50 = new Array(50);
+    var yPast50 = new Array(50);
     var k = 0;
     //make empty array
     var average_x = new Array(3);
@@ -277,6 +277,16 @@
               drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
             }
 
+            if (store_points_var) {
+              //store the position of the past fifty occuring tracker preditions
+              xPast50[k] = pred.x;
+              yPast50[k] = pred.y;
+              k++;
+              if (k == 50) {
+                k = 0;
+              }
+            }
+
             if (slowDown){ // prints only every second one
               //drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
               slowDown=false;
@@ -303,16 +313,6 @@
               average_y = new Array(3);
             } else {
               i++;
-            }
-
-            //store the position of the current tracker predition
-            average_x10[k] = pred.x;
-            average_y10[k] = pred.y;
-            currentXPrediction = pred.x;
-            currentYPrediction = pred.y;
-            k++;
-            if (k == 10) {
-              k = 0;
             }
         }
 
