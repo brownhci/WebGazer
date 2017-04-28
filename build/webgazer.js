@@ -7035,7 +7035,14 @@ var webglFilter = function() {
 
     if (dist == 0) {
       if (toAlert){
-        alert("Please check your camera lighting, the facial recognition is not working optimally");
+        swal({
+          title: "Lighting issue",
+          text: "Please check your camera lighting, the facial recognition is not working optimally",
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          closeOnConfirm: true
+        });
+        
         toAlert=false;
       }
       console.log("a patchresponse was monotone, causing normalization to fail. Leaving it unchanged.")
