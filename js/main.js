@@ -83,5 +83,6 @@ window.onbeforeunload = function() {
 }
 function Restart(){
     window.localStorage.clear();
+    $(".Calibration").show();
     ClearCalibration();
 }

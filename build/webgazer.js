@@ -7035,7 +7035,14 @@ var webglFilter = function() {
 
     if (dist == 0) {
       if (toAlert){
-        alert("Please check your camera lighting, the facial recognition is not working optimally");
+        swal({
+          title: "Lighting issue",
+          text: "Please check your camera lighting, the facial recognition is not working optimally",
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          closeOnConfirm: true
+        });
+        
         toAlert=false;
       }
       console.log("a patchresponse was monotone, causing normalization to fail. Leaving it unchanged.")
@@ -10354,6 +10361,23 @@ var mosseFilterResponses = function() {
 }());
 ;
 
+var draw_points = false;
+
+/**
+* This makes the variable draw_points true, so all the previous prediction points are plotted on the canvas
+*/
+function draw_points_variable(){
+  draw_points = true;
+}
+
+/**
+* This makes the variable draw_points false, so points aren't plotted on the canvas
+*/
+function stop_drawing_points_variable(){
+  draw_points = false;
+}
+;
+
 (function(window, undefined) {
     console.log('initializing webgazer');
     //strict mode for type safety
@@ -11106,12 +11130,5 @@ function setAlert(){
 }
 
 window.setTimeout(setAlert, 20000); // occurs every 20secs
-;
-
-var draw_points = false;
-
-function draw_points_variable(boolean){
-  draw_points = boolean;
-}
 ;
 
