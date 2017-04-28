@@ -19,8 +19,17 @@ body {
 }
 
 #webgazerNavbar{
-    left: 320px!important;
+    left: 320px;
 }
+#Accuracy {
+    background-color: #222;
+    color: #eee;
+
+    left: -15px;
+    padding-left: 20px;
+    padding-right: 50px;
+}
+
 
 #Pt1{
     top: 1vh;
@@ -59,6 +68,6 @@ body {
 }
 
 #faceOverlay {
-  width: 117px;
-  height: 117px;
+    width: 117px;
+    height: 117px;
 }
