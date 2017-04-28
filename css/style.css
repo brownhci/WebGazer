@@ -1,5 +1,9 @@
 
-.Calibration{
+.calibrationDiv {
+  padding: 40px 40px;
+  top: 40px;
+}
+.CalibrationBtn{
       width: 20px;
       height: 20px;
       -webkit-border-radius: 25px;
@@ -10,6 +14,12 @@
       border-style: solid;
       position:fixed;
 }
+
+#webgazerNavbar{
+    left: 320px!important;
+
+}
+
 #Pt1{
     top: 1vh;
     left:320px;
@@ -46,27 +56,7 @@
     right:1vw;
 }
 
-#Restart{
-    position:fixed;
-    top: 40vh;
-}
-
-
 #faceOverlay {
   width: 117px;
   height: 117px;
-}
-
-.navbar {
-
-
-}
-ul {
-  height: 40px;
-}
-#accuracy ul {
-
-}
-#help ul {
-
 }
