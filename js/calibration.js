@@ -22,12 +22,9 @@ $(document).ready(function() {
         PointCalibrate++;
 
           if (PointCalibrate == 9){ // last point is calibrated
-            for(count = 1; count < 10; count++){ // loops through all buttons & hides them
-              if (count != 5){
-                var name = 'Pt' + count;
-                document.getElementById(name).style.visibility = 'hidden';
-              }
-            }
+            //using jquery to grab every element in Calibration class and hide them except the middle point.
+            $(".Calibration").hide();
+            $("#Pt5").show();
             // clears the canvas
             var canvas = document.getElementById("plotting_canvas");
             canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
@@ -57,7 +54,8 @@ $(document).ready(function() {
                         if (isConfirm){
                           //idk what we do if they confirm this
                         } else {
-                          ClearCalibration();
+                          //use restart function to restart the calibration
+                          Restart();
                         }
                       });
                   });
