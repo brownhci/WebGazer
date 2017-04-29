@@ -2,22 +2,14 @@ body {
     min-width:600px!important;
 }
 
-.Calibration{
-    width: 20px;
-    height: 20px;
-    -webkit-border-radius: 25px;
-    -moz-border-radius: 25px;
-    border-radius: 25px;
-    background-color: yellow;
-    border-color: black;
-    border-style: solid;
-    position:fixed;
-}
 
+/* Video Feed Styling */
 #overlay {
     z-index: 1;
 }
 
+
+/* Navbar styling */
 #webgazerNavbar {
     left: 320px;
 
@@ -45,6 +37,35 @@ li {
 }
 .navbar-right li {
     padding-right: 20px;
+}
+
+.helpBtn {
+    padding: 15px;
+    border: none;
+    background: none;
+    color: #777;
+}
+.helpBtn a {
+    background: none;
+    color: #777;
+}
+.helpBtn a:hover {
+    color: none;
+    text-decoration: none;
+}
+
+
+/*Calibration button styling*/
+.Calibration{
+    width: 20px;
+    height: 20px;
+    -webkit-border-radius: 25px;
+    -moz-border-radius: 25px;
+    border-radius: 25px;
+    background-color: yellow;
+    border-color: black;
+    border-style: solid;
+    position:fixed;
 }
 
 #Pt1{
