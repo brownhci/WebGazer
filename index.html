@@ -5,6 +5,8 @@
         <TITLE>Simple Demonstration of how WebGazer.js works</TITLE>
         <link rel="stylesheet" type="text/css" href="./css/style.css">
         <link rel="stylesheet" type="text/css" href="./node_modules/sweetalert/dist/sweetalert.css">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     </head>
     <body LANG="en-US" LINK="#0000ff" DIR="LTR">
     <canvas id="plotting_canvas" width="500" height="500" style="cursor:crosshair;"></canvas>
@@ -15,7 +17,30 @@
         <script src="./js/precision_calculation.js"></script>
         <script src="./js/precision_store_points.js"></script>
         <script src="./node_modules/sweetalert/dist/sweetalert.min.js"></script>
-        <div id="mydiv">
+        <nav id="webgazerNavbar" class="navbar navbar-default navbar-fixed-top">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <!--The hamburger menu button-->
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+              <ul class="nav navbar-nav">
+                <!--Accuracy-->
+                <li id="Accuracy"><a >Accuracy | 100%</a></li>
+                <li><a href="#">Calibration</a></li>
+                <li onclick="Restart()"><a href="#">Restart Calibration</a></li>
+              </ul>
+              <ul class="nav navbar-nav navbar-right">
+                <li><a href="#"><span class="glyphicon glyphicon-cog"></span> Help</a></li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+        <div class="calibrationDiv">
             <input type="button" class="Calibration" id="Pt1"></input>
             <input type="button" class="Calibration" id="Pt2"></input>
             <input type="button" class="Calibration" id="Pt3"></input>
@@ -25,8 +50,10 @@
             <input type="button" class="Calibration" id="Pt7"></input>
             <input type="button" class="Calibration" id="Pt8"></input>
             <input type="button" class="Calibration" id="Pt9"></input>
-            <Button id="Restart" onclick="Restart()">Restart</Button>
         </div>
+
         <script src="./js/resize_canvas.js"></script>
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </body>
 </html>

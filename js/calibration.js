@@ -6,6 +6,8 @@ var CalibrationPoints={};
 * checks that all buttons have been clicked 5 times each, and then goes on to measuring the precision
 */
 $(document).ready(function() {
+  $("#Pt5").hide();
+  
     $(".Calibration").click(function(){
 
       var id = $(this).attr('id');
@@ -16,12 +18,23 @@ $(document).ready(function() {
 
       CalibrationPoints[id]++;
       console.log(CalibrationPoints[id]);
-      if (CalibrationPoints[id]>=5){ //only turnns red after 5 clicks
-        $(this).css('background-color','red');
+      if (CalibrationPoints[id]==5){ //only turnns red after 5 clicks
+        
+        $(this).css('background-color','yellow');
         $(this).prop('disabled', true); //disables the button
         PointCalibrate++;
 
-          if (PointCalibrate == 9){ // last point is calibrated
+          
+      }else if (CalibrationPoints[id]<5){
+        //Gradually increase the opacity of calibration points when click to give some indication to user.
+        var opacity = 0.2*CalibrationPoints[id]+0.2;
+        $(this).css('opacity',opacity);
+      }
+      //Show the middle calibration point after all other points have been clicked.
+      if (PointCalibrate == 8){
+        $("#Pt5").show();
+      }
+      if (PointCalibrate >= 9){ // last point is calibrated
             //using jquery to grab every element in Calibration class and hide them except the middle point.
             $(".Calibration").hide();
             $("#Pt5").show();
@@ -66,15 +79,17 @@ $(document).ready(function() {
               }
             });
           }
-      }
     });
     swal({
       title: "Calibration",
-      text: "Please click on the each of the 9 points on the screen. You must click each point 5 times till it goes red. This will calibrate your eye movements."
+      text: "Please click on the each of the 9 points on the screen. You must click each point 5 times till it goes yellow. This will calibrate your eye movements.",
+      allowOutsideClick: false,
+      showConfirmButton: true
     });
 });
 function ClearCalibration(){
-  $(".Calibration").css('background-color','yellow');
+  $(".Calibration").css('background-color','red');
+  $(".Calibration").css('opacity',0.2);
   $(".Calibration").prop('disabled',false);
 
   CalibrationPoints = {};
