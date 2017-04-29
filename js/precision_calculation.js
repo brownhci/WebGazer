@@ -3,16 +3,12 @@
  * currently to let the user know how accurate it is
  */
 function calculatePrecision(past50Array) {
-  //window.webgazer = window.webgazer || {};
-
   var windowHeight = $(window).height();
   var windowWidth = $(window).width();
 
   // the last 50 precision points
   var x50 = past50Array[0];
   var y50 = past50Array[1];
-  //var x50 = document.src.webgazer.xPast50;
-  //var y50 = document.src.webgazer.yPast50;
 
   // the position of the point user is staring at
   var staringPointX = windowWidth / 2;
@@ -37,7 +33,9 @@ function calculatePrecision(past50Array) {
   /*
    * calculate distance between average and staring point
    */
-  var distance = Math.sqrt((staringPointX - xAverage)^2 + (staringPointY - yAverage)^2);
+  var a = staringPointX - xAverage;
+  var b = staringPointY - yAverage;
+  var distance = Math.sqrt( a*a + b*b );
 
   /*
    * calculate percentage accuracy based on difference (using thresholds)
