@@ -18,19 +18,20 @@ window.onload = function() {
     var setup = function() {
         var video = document.getElementById('webgazerVideoFeed');
         video.style.display = 'block';
-        video.style.position = 'absolute';
+        video.style.position = 'fixed';
         video.style.top = topDist;
         video.style.left = leftDist;
         video.width = width;
         video.height = height;
         video.style.margin = '0px';
+        video.style.background = '#222222';
 
         webgazer.params.imgWidth = width;
         webgazer.params.imgHeight = height;
 
         var overlay = document.createElement('canvas');
         overlay.id = 'overlay';
-        overlay.style.position = 'absolute';
+        overlay.style.position = 'fixed';
         overlay.width = width;
         overlay.height = height;
         overlay.style.top = topDist;
@@ -39,7 +40,7 @@ window.onload = function() {
 
         var faceOverlay = document.createElement('face_overlay');
         faceOverlay.id = 'faceOverlay';
-        faceOverlay.style.position = 'absolute';
+        faceOverlay.style.position = 'fixed';
         faceOverlay.style.top = '59px';
         faceOverlay.style.left = '107px';
         faceOverlay.style.border = 'solid';
@@ -50,6 +51,7 @@ window.onload = function() {
         var canvas = document.getElementById("plotting_canvas");
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+        canvas.style.position = 'fixed';
 
         var cl = webgazer.getTracker().clm;
 

@@ -1,5 +1,9 @@
+body {
+    min-width:600px!important;
+}
 
 .Calibration{
+
       width: 20px;
       height: 20px;
       -webkit-border-radius: 25px;
@@ -10,21 +14,41 @@
       border-color: black;
       border-style: solid;
       position:fixed;
+
 }
+
+#webgazerNavbar{
+    left: 320px;
+}
+#Accuracy a{
+    background-color: #222;
+    color: #eee;
+
+    left: -15px;
+    padding-left: 31px;
+    padding-right: 40px;
+}
+#Accuracy {
+    background-color: #222;
+
+}
+
 #Pt1{
-    top: 1vh;
-    left:320px;
+    top: 70px;
+    left:340px;
 }
 #Pt2{
-    top: 1vh;
+    top: 70px;
     left:50vw;
+    margin-left: 340;
 }
 #Pt3{
-    top: 1vh;
-    right:1vw;
+    top: 70px;
+    right:2vw;
 }
 #Pt4{
     top:50vh;
+    left:2vw;
 }
 #Pt5{
     top: 50vh;
@@ -32,28 +56,22 @@
 }
 #Pt6{
     top: 50vh;
-    right:1vw;
+    right:2vw;
 }
 #Pt7{
-    bottom:1vh;
-
+    bottom:2vw;
+    left: 2vw;
 }
 #Pt8{
-    bottom:1vh;
+    bottom:2vw;
     left:50vw;
 }
 #Pt9{
-    bottom:1vh;
-    right:1vw;
+    bottom:2vw;
+    right:2vw;
 }
-
-#Restart{
-    position:fixed;
-    top: 40vh;
-}
-
 
 #faceOverlay {
-  width: 117px;
-  height: 117px;
+    width: 117px;
+    height: 117px;
 }
