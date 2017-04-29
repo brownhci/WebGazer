@@ -5,7 +5,8 @@
       -webkit-border-radius: 25px;
       -moz-border-radius: 25px;
       border-radius: 25px;
-      background-color: yellow;
+      background-color: red;
+      opacity: 0.2;
       border-color: black;
       border-style: solid;
       position:fixed;
