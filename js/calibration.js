@@ -89,6 +89,8 @@ $(document).ready(function() {
       showConfirmButton: true
     });
 });
+
+//clear the canvas and restart the calibration button
 function ClearCalibration(){
   $(".Calibration").css('background-color','red');
   $(".Calibration").css('opacity',0.2);
