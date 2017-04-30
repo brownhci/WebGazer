@@ -11,13 +11,13 @@ $(document).ready(function() {
     $(".Calibration").click(function(){
 
       var id = $(this).attr('id');
-      console.log(id);
+      
       if (!CalibrationPoints[id]){
         CalibrationPoints[id]=0;
       }
 
       CalibrationPoints[id]++;
-      console.log(CalibrationPoints[id]);
+     
       if (CalibrationPoints[id]==5){ //only turnns red after 5 clicks
         
         $(this).css('background-color','yellow');
@@ -60,6 +60,8 @@ $(document).ready(function() {
                       stop_storing_points_variable(); //stop storing the prediction points
                       var past50 = return_points() //retrieve the stored points
                       var precision_measurement = calculatePrecision(past50);
+                      var accuracyLabel = "<a>Accuracy | "+precision_measurement+"%</a>";
+                      document.getElementById("Accuracy").innerHTML = accuracyLabel;//Show the accuracy in the nav bar.
                       swal({
                         title: "Your accuracy measure is " + precision_measurement + "%",
                         showCancelButton: true,
