@@ -33,23 +33,24 @@ function calculatePrecision(past50Array) {
   /*
    * calculate distance between average and staring point
    */
-  var a = staringPointX - xAverage;
-  var b = staringPointY - yAverage;
-  var distance = Math.sqrt( a*a + b*b );
+  var xDiff = staringPointX - xAverage;
+  var yDiff = staringPointY - yAverage;
+  var distance = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
 
   /*
    * calculate percentage accuracy based on difference (using thresholds)
    */
-   //TODO recalculate using window height and width
+   var halfWindowHeight = windowHeight / 2;
    var precision = 0;
-   if (distance < 101 && distance > -1) {
-     precision = 100 - distance;
-   } else if (distance > 100) {
+   if (distance <= halfWindowHeight && distance > -1) {
+     precision = 100 - (distance / halfWindowHeight * 100);
+     precision = Math.round(precision);
+   } else if (distance > halfWindowHeight) {
      precision = 0;
    } else if (distance > -1) {
      precision = 100;
    }
 
    //return the precision measurement (percentage)
-   return Math.round(precision);
+   return precision;
 };
