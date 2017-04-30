@@ -8,7 +8,7 @@ This repository is modified from the original [WebGazer Repository](https://gith
 * [Documentation](https://webgazer.cs.brown.edu/documentation)
 * [API Docs](https://github.com/brownhci/WebGazer/wiki/Top-Level-API)
 
-This repository is modified by Laybluff
+## This repository is modified by Laybluff
 
 ## Original Features
 
