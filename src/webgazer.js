@@ -295,12 +295,6 @@
               }
             }
 
-            if (slowDown){ // prints only every second one
-              //drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
-              slowDown=false;
-            } else {
-              slowDown=true;
-            }
             average_x[i] = pred.x; //add to averages
             average_y[i] = pred.y;
 

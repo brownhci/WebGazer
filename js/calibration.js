@@ -6,17 +6,18 @@ var CalibrationPoints={};
 * checks that all buttons have been clicked 5 times each, and then goes on to measuring the precision
 */
 $(document).ready(function() {
-  $("#Pt5").hide();
 
-    $(".Calibration").click(function(){
+  $("#Pt5").hide(); // initially hides the middle button
+
+    $(".Calibration").click(function(){ // click event on the calibration buttons
 
       var id = $(this).attr('id');
 
-      if (!CalibrationPoints[id]){
+      if (!CalibrationPoints[id]){ // initialises if not done
         CalibrationPoints[id]=0;
       }
 
-      CalibrationPoints[id]++;
+      CalibrationPoints[id]++; // increments values
 
       if (CalibrationPoints[id]==5){ //only turnns red after 5 clicks
 
@@ -38,9 +39,11 @@ $(document).ready(function() {
             //using jquery to grab every element in Calibration class and hide them except the middle point.
             $(".Calibration").hide();
             $("#Pt5").show();
+
             // clears the canvas
             var canvas = document.getElementById("plotting_canvas");
             canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+
             // notification for the measurement process
             swal({
               title: "Calculating measurement",
@@ -50,12 +53,15 @@ $(document).ready(function() {
               closeOnConfirm: true,
               timer: 4000
             }, function(isConfirm){
+
               if (isConfirm){
                 // makes the variables true for 5 seconds & plots the points
                 $(document).ready(function(){
+
                   draw_points_variable(); //  starts drawing prediction points on the canvas
                   store_points_variable(); //start storing the prediction points
-                  sleep(5000).then(() => {
+
+                  sleep(5000).then(() => { //waits 5 seconds
                       stop_drawing_points_variable(); //  stops drawing prediction points on the canvas
                       stop_storing_points_variable(); //stop storing the prediction points
                       var past50 = return_points() //retrieve the stored points
@@ -91,6 +97,10 @@ $(document).ready(function() {
       showConfirmButton: true
     });
 });
+
+/**
+* This function clears the calibration buttons memory
+*/
 function ClearCalibration(){
   $(".Calibration").css('background-color','red');
   $(".Calibration").css('opacity',0.2);
