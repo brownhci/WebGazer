@@ -54,6 +54,14 @@ li {
     text-decoration: none;
 }
 
+img {
+    margin-top: -40px;
+    z-index: 10000000000000!important;
+}
+.modal-header {
+    border-bottom: none!important;
+}
+
 
 /*Calibration button styling*/
 .Calibration{
