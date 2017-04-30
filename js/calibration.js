@@ -7,24 +7,24 @@ var CalibrationPoints={};
 */
 $(document).ready(function() {
   $("#Pt5").hide();
-  
+
     $(".Calibration").click(function(){
 
       var id = $(this).attr('id');
-      
+
       if (!CalibrationPoints[id]){
         CalibrationPoints[id]=0;
       }
 
       CalibrationPoints[id]++;
-     
+
       if (CalibrationPoints[id]==5){ //only turnns red after 5 clicks
-        
+
         $(this).css('background-color','yellow');
         $(this).prop('disabled', true); //disables the button
         PointCalibrate++;
 
-          
+
       }else if (CalibrationPoints[id]<5){
         //Gradually increase the opacity of calibration points when click to give some indication to user.
         var opacity = 0.2*CalibrationPoints[id]+0.2;
@@ -71,6 +71,8 @@ $(document).ready(function() {
                       }, function(isConfirm){
                         if (isConfirm){
                           //idk what we do if they confirm this
+                          ClearCalibration();
+                          $("#Pt5").hide();
                         } else {
                           //use restart function to restart the calibration
                           Restart();
