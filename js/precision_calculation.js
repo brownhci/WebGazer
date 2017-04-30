@@ -38,7 +38,8 @@ function calculatePrecision(past50Array) {
   var distance = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
 
   /*
-   * calculate percentage accuracy based on difference (using thresholds)
+   * calculate percentage accuracy based on distance of the average prediction
+   * point from the centre point (uses the window height as lower threshold 0%)
    */
    var halfWindowHeight = windowHeight / 2;
    var precision = 0;
