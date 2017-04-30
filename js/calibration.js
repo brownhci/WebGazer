@@ -11,19 +11,24 @@ $(document).ready(function() {
     $(".Calibration").click(function(){
 
       var id = $(this).attr('id');
-      console.log(id);
+      
       if (!CalibrationPoints[id]){
         CalibrationPoints[id]=0;
       }
 
       CalibrationPoints[id]++;
-      console.log(CalibrationPoints[id]);
+     
       if (CalibrationPoints[id]==5){ //only turnns red after 5 clicks
-        $(this).css('background-color','red');
+        
+        $(this).css('background-color','yellow');
         $(this).prop('disabled', true); //disables the button
         PointCalibrate++;
 
           
+      }else if (CalibrationPoints[id]<5){
+        //Gradually increase the opacity of calibration points when click to give some indication to user.
+        var opacity = 0.2*CalibrationPoints[id]+0.2;
+        $(this).css('opacity',opacity);
       }
       //Show the middle calibration point after all other points have been clicked.
       if (PointCalibrate == 8){
@@ -49,11 +54,16 @@ $(document).ready(function() {
                 // makes the variables true for 5 seconds & plots the points
                 $(document).ready(function(){
                   draw_points_variable(); //  starts drawing prediction points on the canvas
+                  store_points_variable(); //start storing the prediction points
                   sleep(5000).then(() => {
                       stop_drawing_points_variable(); //  stops drawing prediction points on the canvas
-
+                      stop_storing_points_variable(); //stop storing the prediction points
+                      var past50 = return_points() //retrieve the stored points
+                      var precision_measurement = calculatePrecision(past50);
+                      var accuracyLabel = "<a>Accuracy | "+precision_measurement+"%</a>";
+                      document.getElementById("Accuracy").innerHTML = accuracyLabel;//Show the accuracy in the nav bar.
                       swal({
-                        title: "Your accuracy measure is 55%",
+                        title: "Your accuracy measure is " + precision_measurement + "%",
                         showCancelButton: true,
                         allowOutsideClick: false,
                         showConfirmButton: true,
@@ -74,11 +84,14 @@ $(document).ready(function() {
     });
     swal({
       title: "Calibration",
-      text: "Please click on the each of the 9 points on the screen. You must click each point 5 times till it goes red. This will calibrate your eye movements."
+      text: "Please click on the each of the 9 points on the screen. You must click each point 5 times till it goes yellow. This will calibrate your eye movements.",
+      allowOutsideClick: false,
+      showConfirmButton: true
     });
 });
 function ClearCalibration(){
-  $(".Calibration").css('background-color','yellow');
+  $(".Calibration").css('background-color','red');
+  $(".Calibration").css('opacity',0.2);
   $(".Calibration").prop('disabled',false);
 
   CalibrationPoints = {};
