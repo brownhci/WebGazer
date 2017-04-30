@@ -2,24 +2,21 @@ body {
     min-width:600px!important;
 }
 
-.Calibration{
-
-      width: 20px;
-      height: 20px;
-      -webkit-border-radius: 25px;
-      -moz-border-radius: 25px;
-      border-radius: 25px;
-      background-color: red;
-      opacity: 0.2;
-      border-color: black;
-      border-style: solid;
-      position:fixed;
-
+/* Video Feed Styling */
+#overlay {
+    z-index: 1;
 }
 
-#webgazerNavbar{
+/* Navbar styling */
+#webgazerNavbar {
     left: 320px;
+
+    z-index: 0;
+    box-shadow: 0px 3px 5px #ddd;
+    border:0px;
+    background-color: #fff;
 }
+
 #Accuracy a{
     background-color: #222;
     color: #eee;
@@ -30,7 +27,51 @@ body {
 }
 #Accuracy {
     background-color: #222;
+    padding-left: inherit;
+}
 
+li {
+    padding-left: 50px;
+}
+.navbar-right li {
+    padding-right: 20px;
+}
+
+.helpBtn {
+    padding: 15px;
+    border: none;
+    background: none;
+    color: #777;
+}
+.helpBtn a {
+    background: none;
+    color: #777;
+}
+.helpBtn a:hover {
+    color: none;
+    text-decoration: none;
+}
+
+img {
+    margin-top: -40px;
+}
+.modal-header {
+    border-bottom: none!important;
+}
+
+
+/*Calibration button styling*/
+.Calibration{
+    width: 20px;
+    height: 20px;
+    -webkit-border-radius: 25px;
+    -moz-border-radius: 25px;
+    border-radius: 25px;
+    background-color: red;
+    opacity: 0.2;
+    border-color: black;
+    border-style: solid;
+    position:fixed;
 }
 
 #Pt1{
