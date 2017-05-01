@@ -50,8 +50,7 @@ $(document).ready(function() {
               text: "Please don't move your mouse & stare at the middle dot for the next 5 seconds. This will allow us to calculate the accuracy of our predictions.",
               allowEscapeKey: false,
               allowOutsideClick: false,
-              closeOnConfirm: true,
-              timer: 4000
+              closeOnConfirm: true
             }, function(isConfirm){
 
               if (isConfirm){
