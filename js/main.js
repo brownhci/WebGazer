@@ -85,6 +85,7 @@ window.onbeforeunload = function() {
 }
 function Restart(){
     window.localStorage.clear();
+    document.getElementById("Accuracy").innerHTML = "<a>Not yet Calibrated</a>";
     $(".Calibration").show();
     $("#Pt5").hide();
     ClearCalibration();

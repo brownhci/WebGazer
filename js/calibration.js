@@ -2,11 +2,35 @@ var PointCalibrate = 0;
 var CalibrationPoints={};
 
 /**
+ * Clear the canvas and the calibration button.
+ */
+function ClearCanvas(){
+  $(".calibrationDiv").hide();
+  var canvas = document.getElementById("plotting_canvas");
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+}
+/**
+ * Show the instruction of using calibration at the start up screen.
+ */
+$(document).ready(function(){
+  ClearCanvas();
+  swal({
+      title: "Calibration",
+      text: "Please click on the each of the 9 points on the screen. You must click each point 5 times till it goes yellow. This will calibrate your eye movements.",
+      allowOutsideClick: false,
+      showConfirmButton: true
+    },function(isConfirm){
+      if (isConfirm){
+        StartCalibration();
+      }
+    });
+});
+/**
 * This function listens for button clicks on the html page
 * checks that all buttons have been clicked 5 times each, and then goes on to measuring the precision
 */
-$(document).ready(function() {
-
+function StartCalibration() {
+  $(".calibrationDiv").show();
   $("#Pt5").hide(); // initially hides the middle button
 
     $(".Calibration").click(function(){ // click event on the calibration buttons
@@ -89,13 +113,8 @@ $(document).ready(function() {
             });
           }
     });
-    swal({
-      title: "Calibration",
-      text: "Please click on the each of the 9 points on the screen. You must click each point 5 times till it goes yellow. This will calibrate your eye movements.",
-      allowOutsideClick: false,
-      showConfirmButton: true
-    });
-});
+    
+}
 
 /**
 * This function clears the calibration buttons memory
