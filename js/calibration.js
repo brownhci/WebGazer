@@ -75,7 +75,7 @@ $(document).ready(function() {
                         cancelButtonText: "recalibrate"
                       }, function(isConfirm){
                         if (isConfirm){
-                          //idk what we do if they confirm this
+                          //clear the calibration & hide the last middle button
                           ClearCalibration();
                           $("#Pt5").hide();
                         } else {
