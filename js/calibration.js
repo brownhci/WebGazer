@@ -47,11 +47,10 @@ $(document).ready(function() {
             // notification for the measurement process
             swal({
               title: "Calculating measurement",
-              text: "Please stare at the middle dot for the next 5 seconds as we calculate the precision",
+              text: "Please don't move your mouse & stare at the middle dot for the next 5 seconds. This will allow us to calculate the accuracy of our predictions.",
               allowEscapeKey: false,
               allowOutsideClick: false,
-              closeOnConfirm: true,
-              timer: 4000
+              closeOnConfirm: true
             }, function(isConfirm){
 
               if (isConfirm){
@@ -76,7 +75,7 @@ $(document).ready(function() {
                         cancelButtonText: "recalibrate"
                       }, function(isConfirm){
                         if (isConfirm){
-                          //idk what we do if they confirm this
+                          //clear the calibration & hide the last middle button
                           ClearCalibration();
                           $("#Pt5").hide();
                         } else {
