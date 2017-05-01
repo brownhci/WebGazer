@@ -1,6 +1,10 @@
-# [WebGazer.js](https://webgazer.cs.brown.edu)
+750 Group Project
 
-WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js can run only if the user consents in giving access to their webcam.
+Team Laybluff.
+
+Project G5) (JavaScript) Improving a webcam-based gaze tracker.
+
+# [WebGazer.js](https://webgazer.cs.brown.edu)
 
 This repository is modified from the original [WebGazer Repository](https://github.com/brownhci/WebGazer.git)
 
@@ -10,21 +14,52 @@ This repository is modified from the original [WebGazer Repository](https://gith
 
 ## This repository is modified by Laybluff
 
-## Original Features
+Our team is working on improving Webgazer, a webcam-based gaze tracker. This open-source project provides a library which integrates with the client’s computer webcam, allowing real time eye-tracking. The purpose of this library is to track the client’s eye movements whilst browsing the internet, using self-calibration model to provide predictions on the user’s gaze.
 
-* Real time gaze prediction on most major browsers
-* No special hardware - WebGazer.js uses common webcams
-* Self-calibration from clicks and cursor movements
-* Easy to integrate with a few lines of JavaScript
-* Swappable components for eye detection
-* Multiple gaze prediction models
+The model struggles to immediately correctly identify the client’s face. Whilst the Webgazer’s predictions are correct within a certain vicinity, the predictions move quickly with a lot of extra “noise”; the red dot representing where the user is looking on the screen is very jittery. Because of this, it can be difficult for the user to understand what is going on, and what these eye movement predictions represent.
+
+Therefore our project aims to perform calibration to refine the eye tracking and provide the user with better, more intuitive feedback.
 
 ## Additional Features
 
-* Accuracy measure of predictions
-* Ability to integrate demo into website
-* Video feedback: lighting & positioning
+* Ability to integrate demonstation HTML into website
+* An integrated, intuitive and sleek action bar
 * Structured calibration system
+* Accuracy measure of predictions
+* Video feedback: lighting & positioning
+* Improved eye predictions visible to the user
+
+Our demonstration (index.html) provides a action bar at the top with features including:
+
+1. accuracy measure
+2. recalibration
+3. reset
+4. help (instructions)
+
+This action bar provides the functionality with the simple click of a button. This is intuitive. This also has the ability to integrate into an existing website by using the example code provided in this example HTML. This is done with the intention to use as little amount of space as possible, and not obstruct the view of the proposed website template.
+
+The structured calibration system makes use of:
+
+1. the reputable 9-point calibration technique.
+2. the ability to provide a measure of the prediction schema
+
+This requires the user to click 5 times on each of the 9 points on the screen. Following this the user is prompted with the instructions to look at a place on the screen for 5 seconds. Our framework then gathers these drawn prediction points and calculates a percentage of accuracy from this.
+
+Example measures:
+
+- 100%: all the prediction points land on the calibration point
+- 0%: the prediction points are very scattered and in-accurately predict where the user is looking
+
+The user is also suggested to have their facial recognition within a "box" that is on top of the video feed. This turns green when the user is sitting in optimal position from the computer, and allows the facial recognition to do an optimal job. This also ensures that the user understands what the facial recognition drawn on their face means.
+
+On top of this, we have added popups that the user will be prompted with when their lighting is too dark in their video feedback. They will be suggested to move into better lighting conditions.
+
+Last of all, we have improved the user feedback by drawing less eye prediction points on the screen. Instead, we are taking the average from the previous 3 predictions and only showing the user this value. This allows for the user to be provided with:
+
+1. more accurate eye predictions
+2. reduces the amount of "jitter" of the eye predictions, as less are shown per second
+
+Please see instructions below on how to view these proposed changes.
 
 ## How to install
 
@@ -48,6 +83,19 @@ then run the index.html file as a server (e.g. using browsersync)
 This index.html file will run you through the modified user feedback module by Laybluff.
 
 The original examples of how WebGazer.js works can be found [here](https://webgazer.cs.brown.edu/#examples).
+
+# README information from original repository
+
+WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js can run only if the user consents in giving access to their webcam.
+
+## Features
+
+* Real time gaze prediction on most major browsers
+* No special hardware - WebGazer.js uses common webcams
+* Self-calibration from clicks and cursor movements
+* Easy to integrate with a few lines of JavaScript
+* Swappable components for eye detection
+* Multiple gaze prediction models
 
 ## Browser Support
 
