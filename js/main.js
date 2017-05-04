@@ -83,10 +83,13 @@ window.onbeforeunload = function() {
     window.localStorage.clear(); //Comment out if you want to save data across different sessions
 
 }
+/**
+ * Restart the calibration process by clear the local storage and reset the calibration point
+ */
 function Restart(){
-    window.localStorage.clear();
+    
     document.getElementById("Accuracy").innerHTML = "<a>Not yet Calibrated</a>";
-    $(".Calibration").show();
-    $("#Pt5").hide();
+    
     ClearCalibration();
+    PopUpInstruction();
 }

@@ -12,7 +12,7 @@ function ClearCanvas(){
 /**
  * Show the instruction of using calibration at the start up screen.
  */
-$(document).ready(function(){
+function PopUpInstruction(){
   ClearCanvas();
   swal({
       title: "Calibration",
@@ -21,19 +21,20 @@ $(document).ready(function(){
       showConfirmButton: true
     },function(isConfirm){
       if (isConfirm){
-        StartCalibration();
+        ShowCalibrationPoint();
       }
     });
-});
+}
+
 /**
+ * Load this function when the index page starts.
 * This function listens for button clicks on the html page
 * checks that all buttons have been clicked 5 times each, and then goes on to measuring the precision
 */
-function StartCalibration() {
-  $(".calibrationDiv").show();
-  $("#Pt5").hide(); // initially hides the middle button
-
-    $(".Calibration").click(function(){ // click event on the calibration buttons
+$(document).ready(function(){
+  ClearCanvas();
+  PopUpInstruction();
+     $(".Calibration").click(function(){ // click event on the calibration buttons
 
       var id = $(this).attr('id');
 
@@ -61,7 +62,7 @@ function StartCalibration() {
       }
       if (PointCalibrate >= 9){ // last point is calibrated
             //using jquery to grab every element in Calibration class and hide them except the middle point.
-            $(".Calibration").hide();
+            $(".calibrationDiv").hide();
             $("#Pt5").show();
 
             // clears the canvas
@@ -100,11 +101,12 @@ function StartCalibration() {
                       }, function(isConfirm){
                         if (isConfirm){
                           //clear the calibration & hide the last middle button
-                          ClearCalibration();
-                          $("#Pt5").hide();
+                          ClearCanvas();
                         } else {
                           //use restart function to restart the calibration
-                          Restart();
+                          ClearCalibration();
+                          ClearCanvas();
+                          ShowCalibrationPoint();
                         }
                       });
                   });
@@ -114,12 +116,21 @@ function StartCalibration() {
           }
     });
     
+});
+/**
+ * Show the Calibration Points
+ */
+function ShowCalibrationPoint() {
+  $(".calibrationDiv").show();
+  $("#Pt5").hide(); // initially hides the middle button
+   
 }
 
 /**
 * This function clears the calibration buttons memory
 */
 function ClearCalibration(){
+  window.localStorage.clear();
   $(".Calibration").css('background-color','red');
   $(".Calibration").css('opacity',0.2);
   $(".Calibration").prop('disabled',false);
@@ -127,8 +138,7 @@ function ClearCalibration(){
   CalibrationPoints = {};
 
   PointCalibrate = 0;
-  var canvas = document.getElementById("plotting_canvas");
-  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+ 
 }
 // sleep function because java doesn't have one, sourced from http://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
 function sleep (time) {
