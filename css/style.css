@@ -22,7 +22,7 @@ body {
     color: #eee;
 
     left: -15px;
-    padding-left: 31px;
+    padding-left: 80px;
     padding-right: 40px;
 }
 #Accuracy {
@@ -48,12 +48,8 @@ li {
     color: #777;
 }
 .helpBtn a:hover {
-    color: none;
+    color: black!important;
     text-decoration: none;
-}
-
-img {
-    margin-top: -40px;
 }
 .modal-header {
     border-bottom: none!important;
