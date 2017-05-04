@@ -25,6 +25,13 @@ function PopUpInstruction(){
       }
     });
 }
+/**
+  * Show the help instructions right at the start.
+  */
+function helpModalShow() {
+    $('#helpModal').modal('show');
+}
+
 
 /**
  * Load this function when the index page starts.
@@ -33,7 +40,7 @@ function PopUpInstruction(){
 */
 $(document).ready(function(){
   ClearCanvas();
-  PopUpInstruction();
+  helpModalShow();
      $(".Calibration").click(function(){ // click event on the calibration buttons
 
       var id = $(this).attr('id');
@@ -99,9 +106,10 @@ $(document).ready(function(){
                         showConfirmButton: true,
                         cancelButtonText: "recalibrate"
                       }, function(isConfirm){
-                        if (isConfirm){
+                          if (isConfirm){
                           //clear the calibration & hide the last middle button
                           ClearCanvas();
+
                         } else {
                           //use restart function to restart the calibration
                           ClearCalibration();
