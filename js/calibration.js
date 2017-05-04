@@ -5,26 +5,29 @@ var CalibrationPoints={};
 * This function listens for button clicks on the html page
 * checks that all buttons have been clicked 5 times each, and then goes on to measuring the precision
 */
+$(window).on('load',function(){
+
+});
 $(document).ready(function() {
   $("#Pt5").hide();
-  
+
     $(".Calibration").click(function(){
 
       var id = $(this).attr('id');
-      
+
       if (!CalibrationPoints[id]){
         CalibrationPoints[id]=0;
       }
 
       CalibrationPoints[id]++;
-     
+
       if (CalibrationPoints[id]==5){ //only turnns red after 5 clicks
-        
+
         $(this).css('background-color','yellow');
         $(this).prop('disabled', true); //disables the button
         PointCalibrate++;
 
-          
+
       }else if (CalibrationPoints[id]<5){
         //Gradually increase the opacity of calibration points when click to give some indication to user.
         var opacity = 0.2*CalibrationPoints[id]+0.2;
@@ -82,6 +85,7 @@ $(document).ready(function() {
             });
           }
     });
+    $('#helpModal').modal('show');
     swal({
       title: "Calibration",
       text: "Please click on the each of the 9 points on the screen. You must click each point 5 times till it goes yellow. This will calibrate your eye movements.",

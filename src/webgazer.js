@@ -260,8 +260,6 @@
         callback(gazeData, elapsedTime);
 
         if (gazeData && showGazeDot) {
-            //Check that the eyes are inside of the validation box
-            checkEyesInValidationBox();
 
             smoothingVals.push(gazeData);
             var x = 0;
@@ -315,6 +313,8 @@
             } else {
               i++;
             }
+            //Check that the eyes are inside of the validation box
+            checkEyesInValidationBox();
         }
 
         if (!paused) {
