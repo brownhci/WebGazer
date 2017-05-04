@@ -67,9 +67,9 @@ There are also other points/ dots drawn on the screen throughout the process:
 - black: where the user has clicked on the screen to calibrate the model. Provides them with real-time knowledge of this
 - blue: all the predictions plotted & remain on the screen
 
-Please see the "help" (instructions) module in the action bar to view these changes.
+Please see the "help" module in the action bar to view further instructions.
 
-Below are instructions on how to view these proposed changes.
+Below are instructions on how to view & run these proposed changes.
 
 ## How to install & run webgazer.js
 
