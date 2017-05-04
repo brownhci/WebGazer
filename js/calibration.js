@@ -115,17 +115,6 @@ $(document).ready(function(){
             });
           }
     });
-<<<<<<< HEAD
-    $('#helpModal').modal('show');
-    swal({
-      title: "Calibration",
-      text: "Please click on the each of the 9 points on the screen. You must click each point 5 times till it goes yellow. This will calibrate your eye movements.",
-      allowOutsideClick: false,
-      showConfirmButton: true
-    });
-=======
-
->>>>>>> 51bc9bbfb6d9f26061addf78105f82f48a17ce2f
 });
 /**
  * Show the Calibration Points
