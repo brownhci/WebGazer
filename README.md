@@ -24,6 +24,7 @@ Therefore our project aims to perform calibration to refine the eye tracking and
 
 * Ability to integrate demonstation HTML into website
 * An integrated, intuitive and sleek action bar
+* Informative "help" module accessible at all times
 * Structured calibration system
 * Accuracy measure of predictions
 * Video feedback: lighting & positioning
@@ -33,7 +34,6 @@ Our demonstration (index.html) provides a action bar at the top with features in
 
 1. accuracy measure
 2. recalibration
-3. reset
 4. help (instructions)
 
 This action bar provides the functionality with the simple click of a button. This is intuitive. This also has the ability to integrate into an existing website by using the example code provided in this example HTML. This is done with the intention to use as little amount of space as possible, and not obstruct the view of the proposed website template.
@@ -41,7 +41,7 @@ This action bar provides the functionality with the simple click of a button. Th
 The structured calibration system makes use of:
 
 1. the reputable 9-point calibration technique.
-2. the ability to provide a measure of the prediction schema
+2. the ability to provide a measure of the generated prediction model
 
 This requires the user to click 5 times on each of the 9 points on the screen. Following this the user is prompted with the instructions to look at a place on the screen for 5 seconds. Our framework then gathers these drawn prediction points and calculates a percentage of accuracy from this.
 
@@ -49,6 +49,8 @@ Example measures:
 
 - 100%: all the prediction points land on the calibration point
 - 0%: the prediction points are very scattered and in-accurately predict where the user is looking
+
+Out action bar also provides the ability to clear the prediction model with the use of the "recalibrate" button & create a new one.
 
 The user is also suggested to have their facial recognition within a "box" that is on top of the video feed. This turns green when the user is sitting in optimal position from the computer, and allows the facial recognition to do an optimal job. This also ensures that the user understands what the facial recognition drawn on their face means.
 
@@ -59,9 +61,17 @@ Last of all, we have improved the user feedback by drawing less eye prediction p
 1. more accurate eye predictions
 2. reduces the amount of "jitter" of the eye predictions, as less are shown per second
 
-Please see instructions below on how to view these proposed changes.
+There are also other points/ dots drawn on the screen throughout the process:
 
-## How to install
+- red: the user's eye movements predicted by the model
+- black: where the user has clicked on the screen to calibrate the model. Provides them with real-time knowledge of this
+- blue: all the predictions plotted & remain on the screen
+
+Please see the "help" (instructions) module in the action bar to view these changes.
+
+Below are instructions on how to view these proposed changes.
+
+## How to install & run webgazer.js
 
 Use the file build/webgazer.js from [this](https://github.com/abbyythompson/WebGazer) repository.
 
@@ -72,7 +82,7 @@ If you want to build the repository from source follow these instructions:
     ./build_library
 
 
-## How to run example calibration HTML
+## How to run our example calibration HTML
 
 download nodejs from https://nodejs.org/en/download/
 
@@ -83,6 +93,10 @@ then run the index.html file as a server (e.g. using browsersync)
 This index.html file will run you through the modified user feedback module by Laybluff.
 
 The original examples of how WebGazer.js works can be found [here](https://webgazer.cs.brown.edu/#examples).
+
+
+---------------------------------------------------------
+
 
 # README information from original repository
 
