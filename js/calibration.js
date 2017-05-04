@@ -5,7 +5,7 @@ var CalibrationPoints={};
  * Clear the canvas and the calibration button.
  */
 function ClearCanvas(){
-  $(".calibrationDiv").hide();
+  $(".Calibration").hide();
   var canvas = document.getElementById("plotting_canvas");
   canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 }
@@ -62,7 +62,7 @@ $(document).ready(function(){
       }
       if (PointCalibrate >= 9){ // last point is calibrated
             //using jquery to grab every element in Calibration class and hide them except the middle point.
-            $(".calibrationDiv").hide();
+            $(".Calibration").hide();
             $("#Pt5").show();
 
             // clears the canvas
@@ -121,7 +121,7 @@ $(document).ready(function(){
  * Show the Calibration Points
  */
 function ShowCalibrationPoint() {
-  $(".calibrationDiv").show();
+  $(".Calibration").show();
   $("#Pt5").hide(); // initially hides the middle button
    
 }
