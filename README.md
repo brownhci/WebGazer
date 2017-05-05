@@ -86,15 +86,11 @@ If you want to build the repository from source follow these instructions:
 
 download nodejs from https://nodejs.org/en/download/
 
-run `npm install` within the repository to download the packages from the package.json file
+run `npm install` within the repository to download the packages from the package.json file (jquery)
 
-run `npm install -g browser-sync`
+then run the index.html file as a server 
 
-run `npm install -g jquery`
-
-run `npm install -g sweetalert`
-
-then run the index.html file as a server (e.g. using browsersync `browser-sync start --server --files "*"`)
+Running the file as a server can be done by running the command `npm install -g browser-sync` and then running the server using the command `browser-sync start --server --files "*"`
 
 This index.html file will run you through the modified user feedback module by Laybluff.
 
