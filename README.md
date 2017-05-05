@@ -88,7 +88,13 @@ download nodejs from https://nodejs.org/en/download/
 
 run `npm install` within the repository to download the packages from the package.json file
 
-then run the index.html file as a server (e.g. using browsersync)
+run `npm install -g browser-sync`
+
+run `npm install -g jquery`
+
+run `npm install -g sweetalert`
+
+then run the index.html file as a server (e.g. using browsersync `browser-sync start --server --files "*"`)
 
 This index.html file will run you through the modified user feedback module by Laybluff.
 
