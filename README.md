@@ -73,7 +73,7 @@ Below are instructions on how to view & run these proposed changes.
 
 ## How to install & run webgazer.js
 
-The library webgazer has been modified and can be found in build/webgazer.js from [this](https://github.com/abbyythompson/WebGazer) repository.
+The library webgazer has been modified and can be found in build/webgazer.js from this repository.
 
 ## How to run our example calibration HTML
 
