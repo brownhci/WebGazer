@@ -73,16 +73,11 @@ Below are instructions on how to view & run these proposed changes.
 
 ## How to install & run webgazer.js
 
-Use the file build/webgazer.js from [this](https://github.com/abbyythompson/WebGazer) repository.
-
-If you want to build the repository from source follow these instructions:
-
-    git clone https://github.com/brownhci/WebGazer.git
-    cd build
-    ./build_library
-
+The library webgazer has been modified and can be found in build/webgazer.js from this repository.
 
 ## How to run our example calibration HTML
+
+clone this repository
 
 download nodejs from https://nodejs.org/en/download/
 
@@ -112,6 +107,13 @@ WebGazer.js is an eye tracking library that uses common webcams to infer the eye
 * Easy to integrate with a few lines of JavaScript
 * Swappable components for eye detection
 * Multiple gaze prediction models
+
+
+If you want to build the repository from source follow these instructions:
+
+    git clone https://github.com/brownhci/WebGazer.git
+    cd build
+    ./build_library
 
 ## Browser Support
 
