@@ -1,3 +1,4 @@
+'use strict';
 
 console.log('thread starting');
 importScripts('../src/util.js', '../src/mat.js');
