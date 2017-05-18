@@ -41,7 +41,7 @@
             try{
                 var n = (m_Coefficients.length != 0 ? m_Coefficients.length/m_Coefficients.length: 0);
                 if (m_Coefficients.length*n != m_Coefficients.length){
-                    console.log("Array length must be a multiple of m")
+                    console.log('Array length must be a multiple of m')
                 }
                 solution = (ss.length == ss[0].length ? (numeric.LUsolve(numeric.LU(ss,true),bb)) : (webgazer.mat.QRDecomposition(ss,bb)));
 

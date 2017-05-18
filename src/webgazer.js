@@ -1,7 +1,7 @@
 (function(window, undefined) {
     console.log('initializing webgazer');
     //strict mode for type safety
-    "use strict";
+    'use strict';
 
     //auto invoke function to bind our own copy of window and undefined
 
@@ -336,7 +336,7 @@
     webgazer.begin = function(onFail) {
         loadGlobalData();
 
-        onFail = onFail || function() {console.log("No stream")};
+        onFail = onFail || function() {console.log('No stream')};
 
         if (debugVideoLoc) {
             init(debugVideoLoc);

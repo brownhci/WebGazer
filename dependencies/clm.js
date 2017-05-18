@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 //requires: ccv.js, numeric.js
 
 var clm = {
@@ -105,7 +105,7 @@ var clm = {
 			patchType = model.patchModel.patchType;
 			numPatches = model.patchModel.numPatches;
 			patchSize = model.patchModel.patchSize[0];
-			if (patchType == "MOSSE") {
+			if (patchType == 'MOSSE') {
 				searchWindow = patchSize;
 			} else {
 				searchWindow = params.searchWindow;
@@ -132,7 +132,7 @@ var clm = {
 				mossef_nose = new mosseFilter();
 				mossef_nose.load(nose_filter);
 			} else {
-				console.log("MOSSE filters not found, using rough approximation for initialization.");
+				console.log('MOSSE filters not found, using rough approximation for initialization.');
 			}
 
 			// load eigenvectors
@@ -189,7 +189,7 @@ var clm = {
 				currentParameters[i] = 0;
 			}
 			
-			if (patchType == "SVM") {
+			if (patchType == 'SVM') {
 				var webGLContext;
 				var webGLTestCanvas = document.createElement('canvas');
 				if (window.WebGLRenderingContext) {
@@ -199,7 +199,7 @@ var clm = {
 					}
 				} 
 				
-				if (webGLContext && params.useWebGL && (typeof(webglFilter) !== "undefined")) {
+				if (webGLContext && params.useWebGL && (typeof(webglFilter) !== 'undefined')) {
 					webglFi = new webglFilter();
 					try {
 						webglFi.init(weights, biases, numPatches, searchWindow+patchSize-1, searchWindow+patchSize-1, patchSize, patchSize);
@@ -207,24 +207,24 @@ var clm = {
 						if ('sobel' in weights) sobelInit = true;
 					} 
 					catch(err) {
-						alert("There was a problem setting up webGL programs, falling back to slightly slower javascript version. :(");
+						alert('There was a problem setting up webGL programs, falling back to slightly slower javascript version. :(');
 						webglFi = undefined;
 						svmFi = new svmFilter();
 						svmFi.init(weights['raw'], biases['raw'], numPatches, patchSize, searchWindow);
 					}
-				} else if (typeof(svmFilter) !== "undefined") {
+				} else if (typeof(svmFilter) !== 'undefined') {
 					// use fft convolution if no webGL is available
 					svmFi = new svmFilter();
 					svmFi.init(weights['raw'], biases['raw'], numPatches, patchSize, searchWindow);
 				} else {
-					throw "Could not initiate filters, please make sure that svmfilter.js or svmfilter_conv_js.js is loaded."
+					throw 'Could not initiate filters, please make sure that svmfilter.js or svmfilter_conv_js.js is loaded.'
 				}
-			} else if (patchType == "MOSSE") {
+			} else if (patchType == 'MOSSE') {
 				mosseCalc = new mosseFilterResponses();
 				mosseCalc.init(weights, numPatches, patchSize, patchSize);
 			}
 			
-			if (patchType == "SVM") {
+			if (patchType == 'SVM') {
 				pw = pl = patchSize+searchWindow-1;
 			} else {
 				pw = pl = searchWindow;
@@ -270,12 +270,12 @@ var clm = {
 		 */
 		this.start = function(element, box) {
 			// check if model is initalized, else return false
-			if (typeof(model) === "undefined") {
-				console.log("tracker needs to be initalized before starting to track.");
+			if (typeof(model) === 'undefined') {
+				console.log('tracker needs to be initalized before starting to track.');
 				return false;
 			}
 			//check if a runnerelement already exists, if not, use passed parameters
-			if (typeof(runnerElement) === "undefined") {
+			if (typeof(runnerElement) === 'undefined') {
 				runnerElement = element;
 				runnerBox = box;
 			}
@@ -306,8 +306,8 @@ var clm = {
 				var gi = getInitialPosition(element, box);
 				if (!gi) {
 					// send an event on no face found
-					var evt = document.createEvent("Event");
-					evt.initEvent("clmtrackrNotFound", true, true);
+					var evt = document.createEvent('Event');
+					evt.initEvent('clmtrackrNotFound', true, true);
 					document.dispatchEvent(evt)
 					
 					return false;
@@ -369,8 +369,8 @@ var clm = {
 					}
 					
 					// send event to signal that tracking was lost
-					var evt = document.createEvent("Event");
-					evt.initEvent("clmtrackrLost", true, true);
+					var evt = document.createEvent('Event');
+					evt.initEvent('clmtrackrLost', true, true);
 					document.dispatchEvent(evt)
 					
 					return false;
@@ -408,15 +408,15 @@ var clm = {
 					drawData(sketchCC, patches[i], pw, pl, false, patchPositions[i][0]-(pw/2), patchPositions[i][1]-(pl/2));
 				}
 			}*/
-			if (patchType == "SVM") {
-				if (typeof(webglFi) !== "undefined") {
+			if (patchType == 'SVM') {
+				if (typeof(webglFi) !== 'undefined') {
 					responses = getWebGLResponses(patches);
-				} else if (typeof(svmFi) !== "undefined"){
+				} else if (typeof(svmFi) !== 'undefined'){
 					responses = svmFi.getResponses(patches);
 				} else {
-					throw "SVM-filters do not seem to be initiated properly."
+					throw 'SVM-filters do not seem to be initiated properly.'
 				}
-			} else if (patchType == "MOSSE") {
+			} else if (patchType == 'MOSSE') {
 				responses = mosseCalc.getResponses(patches);
 			}
 
@@ -567,7 +567,7 @@ var clm = {
 					pnsq_y = (currentPositions[k][1]-oldPositions[k][1]);
 					positionNorm += ((pnsq_x*pnsq_x) + (pnsq_y*pnsq_y));
 				}
-				//console.log("positionnorm:"+positionNorm);
+				//console.log('positionnorm:'+positionNorm);
 				
 				// if norm < limit, then break
 				if (positionNorm < convergenceLimit) {
@@ -587,8 +587,8 @@ var clm = {
 			previousPositions.push(currentPositions.slice(0));
 			
 			// send an event on each iteration
-			var evt = document.createEvent("Event");
-			evt.initEvent("clmtrackrIteration", true, true);
+			var evt = document.createEvent('Event');
+			evt.initEvent('clmtrackrIteration', true, true);
 			document.dispatchEvent(evt)
 			
 			if (this.getConvergence() < 0.5) {
@@ -598,8 +598,8 @@ var clm = {
 						this.stop();
 					}
 
-					var evt = document.createEvent("Event");
-					evt.initEvent("clmtrackrConverged", true, true);
+					var evt = document.createEvent('Event');
+					evt.initEvent('clmtrackrConverged', true, true);
 					document.dispatchEvent(evt)
 				}
 			}
@@ -636,8 +636,8 @@ var clm = {
 			}
 			
 			var cc = canvas.getContext('2d');
-			cc.fillStyle = "rgb(200,200,200)";
-			cc.strokeStyle = "rgb(130,255,50)";
+			cc.fillStyle = 'rgb(200,200,200)';
+			cc.strokeStyle = 'rgb(130,255,50)';
 			cc.lineWidth = 1;
 			
 			var paths;
@@ -731,18 +731,18 @@ var clm = {
 		
 		/*
 		 * Set response mode (only useful if webGL is available)
-		 * mode : either "single", "blend" or "cycle"
-		 * list : array of values "raw", "sobel", "lbp"
+		 * mode : either 'single', 'blend' or 'cycle'
+		 * list : array of values 'raw', 'sobel', 'lbp'
 		 */
 		this.setResponseMode = function(mode, list) {
 			// clmtrackr must be initialized with model first
-			if (typeof(model) === "undefined") {
-				console.log("Clmtrackr has not been initialized with a model yet. No changes made.");
+			if (typeof(model) === 'undefined') {
+				console.log('Clmtrackr has not been initialized with a model yet. No changes made.');
 				return;
 			}
 			// must check whether webGL or not
-			if (typeof(webglFi) === "undefined") {
-				console.log("Responsemodes are only allowed when using webGL. In pure JS, only 'raw' mode is available.");
+			if (typeof(webglFi) === 'undefined') {
+				console.log('Responsemodes are only allowed when using webGL. In pure JS, only 'raw' mode is available.');
 				return;
 			}
 			if (['single', 'blend', 'cycle'].indexOf(mode) < 0) {
@@ -750,7 +750,7 @@ var clm = {
 				return;
 			}
 			if (!(list instanceof Array)) {
-				console.log("List in setResponseMode must be an array of strings! No changes made.");
+				console.log('List in setResponseMode must be an array of strings! No changes made.');
 				return;
 			} else {
 				for (var i = 0;i < list.length;i++) {
@@ -759,10 +759,10 @@ var clm = {
 					}
 					// check whether filters are initialized 
 					if (list[i] == 'sobel' && sobelInit == false) {
-						console.log("The sobel filters have not been initialized! No changes made.");
+						console.log('The sobel filters have not been initialized! No changes made.');
 					}
 					if (list[i] == 'lbp' && lbpInit == false) {
-						console.log("The LBP filters have not been initialized! No changes made.");
+						console.log('The LBP filters have not been initialized! No changes made.');
 					}
 				}
 			}

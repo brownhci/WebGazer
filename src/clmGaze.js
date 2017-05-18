@@ -1,5 +1,5 @@
 (function(window) {
-    "use strict";
+    'use strict';
 
     window.webgazer = window.webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
@@ -98,7 +98,7 @@
         }
 
         if (leftHeight === 0 || rightHeight === 0){
-          console.log("an eye patch had zero height");
+          console.log('an eye patch had zero height');
           return null;
         }
 
