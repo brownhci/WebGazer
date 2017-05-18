@@ -169,7 +169,7 @@
             },
             
             polynomial: function(data, order) {
-                if(typeof order == 'undefined'){
+                if(typeof order === 'undefined'){
                     order = 2;
                 }
                  var lhs = [], rhs = [], results = [], a = 0, b = 0, i = 0, k = order + 1;
@@ -208,7 +208,7 @@
 
                     for(var i = equation.length-1; i >= 0; i--){
                       if(i > 1) string += Math.round(equation[i] * Math.pow(10, i)) / Math.pow(10, i)  + 'x^' + i + ' + ';
-                      else if (i == 1) string += Math.round(equation[i]*100) / 100 + 'x' + ' + ';
+                      else if (i === 1) string += Math.round(equation[i]*100) / 100 + 'x' + ' + ';
                       else string += Math.round(equation[i]*100) / 100;
                     }
 
@@ -234,7 +234,7 @@
 
     var regression = (function(method, data, order) {
 
-           if (typeof method == 'string') {
+           if (typeof method === 'string') {
                return methods[method](data, order);
            }
         });

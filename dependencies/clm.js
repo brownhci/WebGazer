@@ -105,7 +105,7 @@ var clm = {
 			patchType = model.patchModel.patchType;
 			numPatches = model.patchModel.numPatches;
 			patchSize = model.patchModel.patchSize[0];
-			if (patchType == 'MOSSE') {
+			if (patchType === 'MOSSE') {
 				searchWindow = patchSize;
 			} else {
 				searchWindow = params.searchWindow;
@@ -189,7 +189,7 @@ var clm = {
 				currentParameters[i] = 0;
 			}
 			
-			if (patchType == 'SVM') {
+			if (patchType === 'SVM') {
 				var webGLContext;
 				var webGLTestCanvas = document.createElement('canvas');
 				if (window.WebGLRenderingContext) {
@@ -219,12 +219,12 @@ var clm = {
 				} else {
 					throw 'Could not initiate filters, please make sure that svmfilter.js or svmfilter_conv_js.js is loaded.'
 				}
-			} else if (patchType == 'MOSSE') {
+			} else if (patchType === 'MOSSE') {
 				mosseCalc = new mosseFilterResponses();
 				mosseCalc.init(weights, numPatches, patchSize, patchSize);
 			}
 			
-			if (patchType == 'SVM') {
+			if (patchType === 'SVM') {
 				pw = pl = patchSize+searchWindow-1;
 			} else {
 				pw = pl = searchWindow;
@@ -358,7 +358,7 @@ var clm = {
 			var patchPositions = calculatePositions(currentParameters, false);
 			
 			// check whether tracking is ok
-			if (scoringWeights && (facecheck_count % 10 == 0)) {
+			if (scoringWeights && (facecheck_count % 10 === 0)) {
 				if (!checkTracking()) {
 					// reset all parameters
 					first = true;
@@ -408,7 +408,7 @@ var clm = {
 					drawData(sketchCC, patches[i], pw, pl, false, patchPositions[i][0]-(pw/2), patchPositions[i][1]-(pl/2));
 				}
 			}*/
-			if (patchType == 'SVM') {
+			if (patchType === 'SVM') {
 				if (typeof(webglFi) !== 'undefined') {
 					responses = getWebGLResponses(patches);
 				} else if (typeof(svmFi) !== 'undefined'){
@@ -416,7 +416,7 @@ var clm = {
 				} else {
 					throw 'SVM-filters do not seem to be initiated properly.'
 				}
-			} else if (patchType == 'MOSSE') {
+			} else if (patchType === 'MOSSE') {
 				responses = mosseCalc.getResponses(patches);
 			}
 
@@ -579,11 +579,11 @@ var clm = {
 			if (params.constantVelocity) {
 				// add current parameter to array of previous parameters
 				previousParameters.push(currentParameters.slice());
-				previousParameters.splice(0, previousParameters.length == 3 ? 1 : 0);
+				previousParameters.splice(0, previousParameters.length === 3 ? 1 : 0);
 			}
 			
 			// store positions, for checking convergence
-			previousPositions.splice(0, previousPositions.length == 10 ? 1 : 0);
+			previousPositions.splice(0, previousPositions.length === 10 ? 1 : 0);
 			previousPositions.push(currentPositions.slice(0));
 			
 			// send an event on each iteration
@@ -648,7 +648,7 @@ var clm = {
 			}
 
 			for (var i = 0;i < paths.length;i++) {
-				if (typeof(paths[i]) == 'number') {
+				if (typeof(paths[i]) === 'number') {
 					drawPoint(cc, paths[i], params);
 				} else {
 					drawPath(cc, paths[i], params);
@@ -758,10 +758,10 @@ var clm = {
 						console.log("Unknown element in responsemode list : '"+list[i]+"'. No changes made.");
 					}
 					// check whether filters are initialized 
-					if (list[i] == 'sobel' && sobelInit == false) {
+					if (list[i] === 'sobel' && sobelInit === false) {
 						console.log('The sobel filters have not been initialized! No changes made.');
 					}
-					if (list[i] == 'lbp' && lbpInit == false) {
+					if (list[i] === 'lbp' && lbpInit === false) {
 						console.log('The LBP filters have not been initialized! No changes made.');
 					}
 				}
@@ -783,19 +783,19 @@ var clm = {
 		}.bind(this);
 		
 		var getWebGLResponsesType = function(type, patches) {
-			if (type == 'lbp') {
+			if (type === 'lbp') {
 				return webglFi.getLBPResponses(patches);
-			} else if (type == 'raw') {
+			} else if (type === 'raw') {
 				return webglFi.getRawResponses(patches);
-			} else if (type == 'sobel') {
+			} else if (type === 'sobel') {
 				return webglFi.getSobelResponses(patches);
 			}
 		}
 		
 		var getWebGLResponses = function(patches) {
-			if (responseMode == 'single') {
+			if (responseMode === 'single') {
 				return getWebGLResponsesType(responseList[0], patches);
-			} else if (responseMode == 'cycle') {
+			} else if (responseMode === 'cycle') {
 				var response = getWebGLResponsesType(responseList[responseIndex], patches);
 				responseIndex++;
 				if (responseIndex >= responseList.length) responseIndex = 0;
@@ -1004,7 +1004,7 @@ var clm = {
 				score += scoringBias;
 				score = 1/(1+Math.exp(-score));
 
-				scoringHistory.splice(0, scoringHistory.length == 5 ? 1 : 0);
+				scoringHistory.splice(0, scoringHistory.length === 5 ? 1 : 0);
 				scoringHistory.push(score);
 
 				if (scoringHistory.length > 4) {
@@ -1172,7 +1172,7 @@ var clm = {
 				x += a;
 				y += b;
 				
-				if (i == 0) {
+				if (i === 0) {
 					canvasContext.moveTo(x,y);
 				} else {
 					canvasContext.lineTo(x,y);

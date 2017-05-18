@@ -39,11 +39,11 @@
                 m_Coefficients[i] = bb[i][0];
             }
             try{
-                var n = (m_Coefficients.length != 0 ? m_Coefficients.length/m_Coefficients.length: 0);
-                if (m_Coefficients.length*n != m_Coefficients.length){
+                var n = (m_Coefficients.length !== 0 ? m_Coefficients.length/m_Coefficients.length: 0);
+                if (m_Coefficients.length*n !== m_Coefficients.length){
                     console.log('Array length must be a multiple of m')
                 }
-                solution = (ss.length == ss[0].length ? (numeric.LUsolve(numeric.LU(ss,true),bb)) : (webgazer.mat.QRDecomposition(ss,bb)));
+                solution = (ss.length === ss[0].length ? (numeric.LUsolve(numeric.LU(ss,true),bb)) : (webgazer.mat.QRDecomposition(ss,bb)));
 
                 for (var i = 0; i < nc; i++){
                     m_Coefficients[i] = solution[i];
@@ -163,7 +163,7 @@
      * @returns {Object}
      */
     webgazer.reg.RidgeReg.prototype.predict = function(eyesObj) {
-        if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
+        if (!eyesObj || this.eyeFeaturesClicks.length === 0) {
             return null;
         }
         var acceptTime = performance.now() - this.trailTime;

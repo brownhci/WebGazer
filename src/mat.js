@@ -177,7 +177,7 @@
             console.log('Matrix row dimensions must agree.');
         }
         for (var j = 0; j < n; j++){
-            if (LU[j][j] == 0){
+            if (LU[j][j] === 0){
                 console.log('Matrix is singular.')
             }
         }
@@ -261,7 +261,7 @@
             console.log('Matrix row dimensions must agree.');
         }
         for (var j = 0; j < n; j++){
-            if (Rdiag[j] == 0)
+            if (Rdiag[j] === 0)
                 console.log('Matrix is rank deficient');
         }
         // Copy right hand side
