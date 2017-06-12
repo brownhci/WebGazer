@@ -3,7 +3,7 @@
     self.webgazer = self.webgazer || {};
     self.webgazer.util = self.webgazer.util || {};
     self.webgazer.mat = self.webgazer.mat || {};
-    
+
     /**
      * Eye class, represents an eye patch detected in the video stream
      * @param {ImageData} patch - the image data corresponding to an eye
@@ -19,8 +19,8 @@
         this.width = width;
         this.height = height;
     };
-    
-    
+
+
     //Data Window class
     //operates like an array but 'wraps' data around to keep the array at a fixed windowSize
     /**
@@ -94,10 +94,10 @@
     //Helper functions
     /**
      * Grayscales an image patch. Can be used for the whole canvas, detected face, detected eye, etc.
-     * @param  {ImageData} imageData - image data to be grayscaled
+     * @param  {Array} imageData - image data to be grayscaled
      * @param  {Number} imageWidth  - width of image data to be grayscaled
      * @param  {Number} imageHeight - height of image data to be grayscaled
-     * @return {ImageData} grayscaledImage
+     * @return {Array} grayscaledImage
      */
     self.webgazer.util.grayscale = function(imageData, imageWidth, imageHeight){
         //TODO implement ourselves to remove dependency
@@ -106,7 +106,7 @@
 
     /**
      * Increase contrast of an image
-     * @param {ImageData} grayscaleImageSrc - grayscale integer array
+     * @param {Array} grayscaleImageSrc - grayscale integer array
      * @param {Number} step - sampling rate, control performance
      * @param {Array} destinationImage - array to hold the resulting image
      */
@@ -140,7 +140,7 @@
 
         return tempCanvas.getContext('2d').getImageData(0, 0, resizeWidth, resizeHeight);
     };
-    
+
     /**
      * Checks if the prediction is within the boundaries of the viewport and constrains it
      * @param  {Array} prediction [x,y] - predicted gaze coordinates
@@ -275,7 +275,7 @@
         this.P = P_initial; //Initial covariance matrix
         this.X = X_initial; //Initial guess of measurement
     };
-    
+
     /**
      * Get Kalman next filtered value and update the internal state
      * @param {Array} z - the new measurement
