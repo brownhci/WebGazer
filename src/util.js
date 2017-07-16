@@ -4,7 +4,7 @@
     self.webgazer = self.webgazer || {};
     self.webgazer.util = self.webgazer.util || {};
     self.webgazer.mat = self.webgazer.mat || {};
-    
+
     /**
      * Eye class, represents an eye patch detected in the video stream
      * @param {ImageData} patch - the image data corresponding to an eye
@@ -20,8 +20,8 @@
         this.width = width;
         this.height = height;
     };
-    
-    
+
+
     //Data Window class
     //operates like an array but 'wraps' data around to keep the array at a fixed windowSize
     /**
@@ -95,10 +95,10 @@
     //Helper functions
     /**
      * Grayscales an image patch. Can be used for the whole canvas, detected face, detected eye, etc.
-     * @param  {ImageData} imageData - image data to be grayscaled
+     * @param  {Array} imageData - image data to be grayscaled
      * @param  {Number} imageWidth  - width of image data to be grayscaled
      * @param  {Number} imageHeight - height of image data to be grayscaled
-     * @return {ImageData} grayscaledImage
+     * @return {Array} grayscaledImage
      */
     self.webgazer.util.grayscale = function(imageData, imageWidth, imageHeight){
         //TODO implement ourselves to remove dependency
@@ -107,13 +107,31 @@
 
     /**
      * Increase contrast of an image
-     * @param {ImageData} grayscaleImageSrc - grayscale integer array
+     * @param {Array} grayscaleImageSrc - grayscale integer array
      * @param {Number} step - sampling rate, control performance
      * @param {Array} destinationImage - array to hold the resulting image
      */
     self.webgazer.util.equalizeHistogram = function(grayscaleImageSrc, step, destinationImage) {
         //TODO implement ourselves to remove dependency
         return objectdetect.equalizeHistogram(grayscaleImageSrc, step, destinationImage);
+    };
+
+    self.webgazer.util.threshold = function(data, threshold) {
+      for (let i = 0; i < data.length; i++) {
+        data[i] = (data[i] > threshold) ? 255 : 0;
+      }
+      return data;
+    };
+
+    self.webgazer.util.correlation = function(data1, data2) {
+      const length = Math.min(data1.length, data2.length);
+      let count = 0;
+      for (let i = 0; i < length; i++) {
+        if (data1[i] === data2[i]) {
+          count++;
+        }
+      }
+      return count / Math.max(data1.length, data2.length);
     };
 
     /**
@@ -141,7 +159,7 @@
 
         return tempCanvas.getContext('2d').getImageData(0, 0, resizeWidth, resizeHeight);
     };
-    
+
     /**
      * Checks if the prediction is within the boundaries of the viewport and constrains it
      * @param  {Array} prediction [x,y] - predicted gaze coordinates
@@ -276,7 +294,7 @@
         this.P = P_initial; //Initial covariance matrix
         this.X = X_initial; //Initial guess of measurement
     };
-    
+
     /**
      * Get Kalman next filtered value and update the internal state
      * @param {Array} z - the new measurement
@@ -310,6 +328,6 @@
       this.X = add(X_p, mult(K, y));
       this.P = mult(sub(identity(K.length), mult(K,this.H)), P_p);
       return transpose(mult(this.H, this.X))[0]; //Transforms the predicted state back into it's measurement form
-    }
+    };
 
 }());
