@@ -1,6 +1,6 @@
 (function(window) {
-    "use strict";
-
+    'use strict';
+    
     window.webgazer = window.webgazer || {};
 
     const defaultWindowSize = 8;
