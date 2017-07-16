@@ -115,6 +115,24 @@
         return objectdetect.equalizeHistogram(grayscaleImageSrc, step, destinationImage);
     };
 
+    self.webgazer.util.threshold = function(data, threshold) {
+      for (let i = 0; i < data.length; i++) {
+        data[i] = (data[i] > threshold) ? 255 : 0;
+      }
+      return data;
+    };
+
+    self.webgazer.util.correlation = function(data1, data2) {
+      const length = Math.min(data1.length, data2.length);
+      let count = 0;
+      for (let i = 0; i < length; i++) {
+        if (data1[i] === data2[i]) {
+          count++;
+        }
+      }
+      return count / Math.max(data1.length, data2.length);
+    };
+
     /**
      * Gets an Eye object and resizes it to the desired resolution
      * @param  {webgazer.util.Eye} eye - patch to be resized
@@ -309,6 +327,6 @@
       this.X = add(X_p, mult(K, y));
       this.P = mult(sub(identity(K.length), mult(K,this.H)), P_p);
       return transpose(mult(this.H, this.X))[0]; //Transforms the predicted state back into it's measurement form
-    }
+    };
 
 }());
