@@ -10212,7 +10212,12 @@ if (typeof exports !== 'undefined') {
             'settings': settings,
             'data': regs[0].getData() || data
         };
-        window.localStorage.setItem(localstorageLabel, JSON.stringify(storage));
+        try {
+        	window.localStorage.setItem(localstorageLabel, JSON.stringify(storage));
+        } catch(e) {
+        	console.error(e)
+        }
+        
         //TODO data should probably be stored in webgazer object instead of each regression model
         //     -> requires duplication of data, but is likely easier on regression model implementors
     }
