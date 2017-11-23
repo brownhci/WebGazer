@@ -50,6 +50,13 @@ The following browsers support WebGazer.js:
 
 Your browser needs to support the getUserMedia API as seen [here](http://caniuse.com/#feat=stream).
 
+## Windows Support
+
+If you try to build the WebGazer file in a Windows Operating System with bash commands and have the following error:
+> '\r': No such file or directory
+
+The solution is to run `git config --global core.autocrlf false` and then re-run the `git clone` commands. You can then restore your git configuration back using the command `git config --global core.autocrlf true` if necessary.
+
 ## Citation
 
 	@inproceedings{papoutsaki2016webgazer,
