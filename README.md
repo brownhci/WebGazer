@@ -16,14 +16,6 @@ WebGazer.js is an eye tracking library that uses common webcams to infer the eye
 * Multiple gaze prediction models
 * Useful video feedback to user
 
-## Additional Features in the Demo HTML
-
-* Ability to integrate demonstation HTML into website
-* An integrated, intuitive and sleek action bar
-* Informative "help" module accessible at all times
-* Structured calibration system
-* Accuracy measure of predictions
-
 ## Build the repository
 
 If you want to build the repository from source follow these instructions:
@@ -34,10 +26,14 @@ If you want to build the repository from source follow these instructions:
 
 ## How to run the Demo HTML
 
-1. clone this repository
-2. download nodejs from https://nodejs.org/en/download/
-3. run `npm install` within the repository to download the packages from the package.json file (jquery)
-4. run the index.html file as a server: The file can be run as a server using the command `npm install -g browser-sync` and then running the server using the command `browser-sync start --server --files "*"`
+The Demo HTML File provides the additional features of an integrated action bar that provides the functionality of a calibration system, accuracy measurements and an informative "help" module.
+
+This is a good example that shows how WebGazer can be used.
+
+1. Build the repository using the steps listed above
+2. Download NodeJS from https://nodejs.org/en/download/
+3. Run `npm install` within your local WebGazer repository to download the packages from the package.json file (JQuery)
+4. Run the index.html file as a server. An example to do this is to run `npm install -g browser-sync` and then running the server using the command `browser-sync start --server --files "*"`
 
 ## Browser Support
 
@@ -49,6 +45,13 @@ The following browsers support WebGazer.js:
 * Opera
 
 Your browser needs to support the getUserMedia API as seen [here](http://caniuse.com/#feat=stream).
+
+## Windows Support
+
+If you try to build the WebGazer file in a Windows Operating System with bash commands and have the following error:
+> '\r': No such file or directory
+
+The solution is to run `git config --global core.autocrlf false` and then re-run the `git clone` commands. You can then restore your git configuration back using the command `git config --global core.autocrlf true` if necessary.
 
 ## Citation
 
