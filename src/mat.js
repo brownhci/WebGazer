@@ -1,12 +1,12 @@
 (function() {
-    "use strict";
+    'use strict';
 
     self.webgazer = self.webgazer || {};
     self.webgazer.mat = self.webgazer.mat || {};
 
     /**
      * Transposes an mxn array
-     * @param {Array.<Array.<Number>>} matrix - of "M x N" dimensionality
+     * @param {Array.<Array.<Number>>} matrix - of 'M x N' dimensionality
      * @return {Array.<Array.<Number>>} transposed matrix
      */
     self.webgazer.mat.transpose = function(matrix){
@@ -79,7 +79,7 @@
     self.webgazer.mat.mult = function(matrix1, matrix2){
 
         if (matrix2.length != matrix1[0].length){
-            console.log("Matrix inner dimensions must agree.");
+            console.log('Matrix inner dimensions must agree.');
         }
 
         var X = new Array(matrix1.length),
@@ -174,11 +174,11 @@
             }
         }
         if (B.length != m){
-            console.log("Matrix row dimensions must agree.");
+            console.log('Matrix row dimensions must agree.');
         }
         for (var j = 0; j < n; j++){
-            if (LU[j][j] == 0){
-                console.log("Matrix is singular.")
+            if (LU[j][j] === 0){
+                console.log('Matrix is singular.')
             }
         }
         var nx = B[0].length;
@@ -258,11 +258,11 @@
             Rdiag[k] = -nrm;
         }
         if (B.length != m){
-            console.log("Matrix row dimensions must agree.");
+            console.log('Matrix row dimensions must agree.');
         }
         for (var j = 0; j < n; j++){
-            if (Rdiag[j] == 0)
-                console.log("Matrix is rank deficient");
+            if (Rdiag[j] === 0)
+                console.log('Matrix is rank deficient');
         }
         // Copy right hand side
         var nx = B[0].length;

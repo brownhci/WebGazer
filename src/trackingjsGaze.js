@@ -1,5 +1,5 @@
 (function(window) {
-    "use strict";
+    'use strict';
 
     window.webgazer = window.webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
@@ -21,7 +21,7 @@
      */
     TrackingjsGaze.prototype.getEyePatches = function(imageCanvas, width, height) {
 
-        if (imageCanvas.width == 0) {
+        if (imageCanvas.width === 0) {
             return null;
         }
 
@@ -36,11 +36,11 @@
         var offsetY = 0;
 
         //if face has been detected
-        if (face.length>0 && !isNaN(face[0]) && !isNaN(face[1]) && !isNaN(face[2]) && !isNaN(face[3])){
+        if (face.length > 0 && !isNaN(face[0]) && !isNaN(face[1]) && !isNaN(face[2]) && !isNaN(face[3])){
             //working image is restricted on upper half of detected face
             workingImage = imageCanvas.getContext('2d').getImageData(Math.floor(face[0]), Math.floor(face[1]), Math.floor(face[2]), Math.floor(face[3]/2));
             width = Math.floor(face[2]);
-            height = Math.floor(face[3]/2);
+            height = Math.floor(face[3] / 2);
             //offset from detected face
             offsetX = Math.floor(face[0]);
             offsetY = Math.floor(face[1]);  
@@ -48,7 +48,7 @@
 
         var eyes = this.detectEyes(workingImage, width, height);
         console.log(eyes);
-        if (eyes == null){
+        if (eyes === null){
             return null;
         }
 
@@ -56,8 +56,8 @@
         var leftImageData = imageCanvas.getContext('2d').getImageData(Math.floor(eyes[0][0])+offsetX, Math.floor(eyes[0][1])+offsetY, Math.floor(eyes[0][2]), Math.floor(eyes[0][3]));
         eyeObjs.left = {
             patch: leftImageData,
-            imagex: eyes[0][0]+offsetX,
-            imagey: eyes[0][1]+offsetY,
+            imagex: eyes[0][0] + offsetX,
+            imagey: eyes[0][1] + offsetY,
             width: eyes[0][2],
             height: eyes[0][3]
         };
@@ -71,7 +71,7 @@
             height: eyes[1][3]        
         };
       
-        if (leftImageData.width == 0 || rightImageData.width == 0) {
+        if (leftImageData.width === 0 || rightImageData.width === 0) {
             console.log('an eye patch had zero width');
             return null;
         }

@@ -1,3 +1,4 @@
+'use strict';
 // helper functions
 
 /**
@@ -33,12 +34,12 @@ function supports_video() {
 
 function supports_h264_baseline_video() {
   if (!supports_video()) { return false; }
-  var v = document.createElement("video");
+  var v = document.createElement('video');
   return v.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"');
 }
 
 function supports_ogg_theora_video() {
   if (!supports_video()) { return false; }
-  var v = document.createElement("video");
+  var v = document.createElement('video');
   return v.canPlayType('video/ogg; codecs="theora, vorbis"');
 }
