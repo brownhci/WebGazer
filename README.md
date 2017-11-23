@@ -14,6 +14,7 @@ WebGazer.js is an eye tracking library that uses common webcams to infer the eye
 * Easy to integrate with a few lines of JavaScript
 * Swappable components for eye detection
 * Multiple gaze prediction models
+* Useful video feedback to user
 
 ## Additional Features in the Demo HTML
 
