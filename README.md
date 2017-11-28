@@ -24,9 +24,9 @@ If you want to build the repository from source follow these instructions:
     cd build
     ./build_library
 
-## How to run the Demo HTML
+## How to run the Demo HTML File
 
-The Demo HTML File provides the additional features of an integrated action bar that provides the functionality of a calibration system, accuracy measurements and an informative "help" module.
+The index HTML file in the WebGazer repository provides the additional features of an integrated action bar with a calibration system, accuracy measurements and an informative "help" module.
 
 This is a good example that shows how WebGazer can be used.
 
