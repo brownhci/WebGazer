@@ -79,9 +79,9 @@ $(document).ready(function(){
             swal({
               title: "Calculating measurement",
               text: "Please don't move your mouse & stare at the middle dot for the next 5 seconds. This will allow us to calculate the accuracy of our predictions.",
-              allowEscapeKey: false,
+              closeOnEsc: false,
               allowOutsideClick: false,
-              closeOnConfirm: true
+              closeModal: true
             }).then( isConfirm => {
 
                 // makes the variables true for 5 seconds & plots the points

@@ -10523,7 +10523,6 @@ function stop_drawing_points_variable(){
     document.onclick = function(e){
         var cursorX = e.pageX;
         var cursorY = e.pageY;
-        drawCoordinates('black',cursorX,cursorY);
     }
 
     /**
@@ -10592,7 +10591,6 @@ function stop_drawing_points_variable(){
     * @param {y} y - The y co-ordinate of the desired point to plot
     */
     function drawCoordinates(colour,x,y){
-        console.log("drawCoordinates");
         var ctx = document.getElementById("plotting_canvas").getContext('2d');
         ctx.fillStyle = colour; // Red color
         ctx.beginPath();
@@ -10726,7 +10724,7 @@ function stop_drawing_points_variable(){
               }
               x=x/3;
               y=y/3;
-              //drawCoordinates('yellow',x,y); // yellow is every third plot
+
               gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
 
               i = 0; //clears all variables
