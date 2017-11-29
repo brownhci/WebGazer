@@ -36,8 +36,8 @@ This is a good example that shows how WebGazer can be used.
 
 1. Clone and build the repository using the steps listed above
 2. Download NodeJS from https://nodejs.org/en/download/
-3. Run `npm install` within your local WebGazer repository to download the packages from the package.json file (JQuery)
-4. Run the index.html file as a server. An example to do this is to run `npm install -g browser-sync` and then running the server using the command `browser-sync start --server --files "*"`
+3. Run `npm install` within your local WebGazer repository to download the packages (SweetAlert, JQuery and Browser-sync) in the package.json file
+4. Run the index.html file as a server by running the command `browser-sync start --server --files "*"` in the WebGazer directory
 
 ## Browser Support
 

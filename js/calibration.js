@@ -18,13 +18,13 @@ function PopUpInstruction(){
   swal({
       title: "Calibration",
       text: "Please click on the each of the 9 points on the screen. You must click each point 5 times till it goes yellow. This will calibrate your eye movements.",
-      allowOutsideClick: false,
-      showConfirmButton: true
-    },function(isConfirm){
-      if (isConfirm){
-        ShowCalibrationPoint();
+      buttons: {
+        cancel: false,
+        confirm: true,
       }
-    });
+  }).then(isConfirm => {
+      ShowCalibrationPoint();
+  });
 }
 
 /**
@@ -82,9 +82,8 @@ $(document).ready(function(){
               allowEscapeKey: false,
               allowOutsideClick: false,
               closeOnConfirm: true
-            }, function(isConfirm){
+            }).then( isConfirm => {
 
-              if (isConfirm){
                 // makes the variables true for 5 seconds & plots the points
                 $(document).ready(function(){
 
@@ -100,25 +99,24 @@ $(document).ready(function(){
                       document.getElementById("Accuracy").innerHTML = accuracyLabel;//Show the accuracy in the nav bar.
                       swal({
                         title: "Your accuracy measure is " + precision_measurement + "%",
-                        showCancelButton: true,
                         allowOutsideClick: false,
-                        showConfirmButton: true,
-                        cancelButtonText: "recalibrate"
-                      }, function(isConfirm){
-                          if (isConfirm){
-                          //clear the calibration & hide the last middle button
-                          ClearCanvas();
-
-                        } else {
-                          //use restart function to restart the calibration
-                          ClearCalibration();
-                          ClearCanvas();
-                          ShowCalibrationPoint();
+                        buttons: {
+                          cancel: "recalibrate",
+                          confirm: true,
                         }
+                      }).then(isConfirm => {
+                          if (isConfirm){
+                            //clear the calibration & hide the last middle button
+                            ClearCanvas();
+                          } else {
+                            //use restart function to restart the calibration
+                            ClearCalibration();
+                            ClearCanvas();
+                            ShowCalibrationPoint();
+                          }
                       });
                   });
                 });
-              }
             });
           }
     });
