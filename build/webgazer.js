@@ -10523,7 +10523,6 @@ function stop_drawing_points_variable(){
     document.onclick = function(e){
         var cursorX = e.pageX;
         var cursorY = e.pageY;
-        drawCoordinates('black',cursorX,cursorY);
     }
 
     /**
@@ -10592,7 +10591,6 @@ function stop_drawing_points_variable(){
     * @param {y} y - The y co-ordinate of the desired point to plot
     */
     function drawCoordinates(colour,x,y){
-        console.log("drawCoordinates");
         var ctx = document.getElementById("plotting_canvas").getContext('2d');
         ctx.fillStyle = colour; // Red color
         ctx.beginPath();
@@ -10673,16 +10671,8 @@ function stop_drawing_points_variable(){
      * Runs every available animation frame if webgazer is not paused
      */
     var smoothingVals = new webgazer.util.DataWindow(4);
-
-    //make empty arrays to store the past 50 points of the tracker
-    //used to give precision feedback to user
-    //var xPast50 = new Array(50);
-    //var yPast50 = new Array(50);
     var k = 0;
-    //make empty array
-    var average_x = new Array(3);
-    var average_y = new Array(3);
-    var i = 0;
+    
     function loop() {
         var gazeData = getPrediction();
         var elapsedTime = performance.now() - clockStart;
@@ -10713,28 +10703,8 @@ function stop_drawing_points_variable(){
                 k = 0;
               }
             }
+            gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
 
-            average_x[i] = pred.x; //add to averages
-            average_y[i] = pred.y;
-
-            if (i == 2) { // after 3 adds them all up and gets the average
-              x = 0;
-              y = 0;
-              for(count = 0; count < 3; count++){
-                x+=average_x[count];
-                y+=average_y[count];
-              }
-              x=x/3;
-              y=y/3;
-              //drawCoordinates('yellow',x,y); // yellow is every third plot
-              gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
-
-              i = 0; //clears all variables
-              average_x = new Array(3);
-              average_y = new Array(3);
-            } else {
-              i++;
-            }
             //Check that the eyes are inside of the validation box
             checkEyesInValidationBox();
         }
@@ -11171,21 +11141,5 @@ function stop_drawing_points_variable(){
     }
 
 }(window));
-;
-
-var toAlert = true;
-
-/**
-* This changes the boolean for whether the user if notified with a popup about lighting
-*/
-function setAlert(){
-  if (toAlert){
-    toAlert = false;
-  } else {
-    toAlert = true;
-  }
-}
-
-window.setTimeout(setAlert, 20000); // occurs every 20secs
 ;
 

@@ -24,16 +24,20 @@ If you want to build the repository from source follow these instructions:
     cd build
     ./build_library
 
-## How to run the Demo HTML File
+## Examples
 
-The index HTML file in the WebGazer repository provides the additional features of an integrated action bar with a calibration system, accuracy measurements and an informative "help" module.
+Examples of how WebGazer.js works can be found [here](https://webgazer.cs.brown.edu/#examples).
+
+### How to run the Index HTML
+
+The Index HTML File provides the additional features of an integrated action bar that provides the functionality of a calibration system, accuracy measurements and an informative "help" module.
 
 This is a good example that shows how WebGazer can be used.
 
-1. Build the repository using the steps listed above
+1. Clone and build the repository using the steps listed above
 2. Download NodeJS from https://nodejs.org/en/download/
-3. Run `npm install` within your local WebGazer repository to download the packages from the package.json file (JQuery)
-4. Run the index.html file as a server. An example to do this is to run `npm install -g browser-sync` and then running the server using the command `browser-sync start --server --files "*"`
+3. Run `npm install` within your local WebGazer repository to download the packages (SweetAlert, JQuery and Browser-sync) in the package.json file
+4. Run the index.html file as a server by running the command `browser-sync start --server --files "*"` in the WebGazer directory
 
 ## Browser Support
 
@@ -45,13 +49,6 @@ The following browsers support WebGazer.js:
 * Opera
 
 Your browser needs to support the getUserMedia API as seen [here](http://caniuse.com/#feat=stream).
-
-## Windows Support
-
-If you try to build the WebGazer file in a Windows Operating System with bash commands and have the following error:
-> '\r': No such file or directory
-
-The solution is to run `git config --global core.autocrlf false` and then re-run the `git clone` commands. You can then restore your git configuration back using the command `git config --global core.autocrlf true` if necessary.
 
 ## Citation
 
