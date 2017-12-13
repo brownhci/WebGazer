@@ -87,16 +87,16 @@ $(document).ready(function(){
                 // makes the variables true for 5 seconds & plots the points
                 $(document).ready(function(){
 
-                  draw_points_variable(); //  starts drawing prediction points on the canvas
-                  store_points_variable(); //start storing the prediction points
+                  draw_points_variable(); // starts drawing prediction points on the canvas
+                  store_points_variable(); // start storing the prediction points
 
-                  sleep(5000).then(() => { //waits 5 seconds
-                      stop_drawing_points_variable(); //  stops drawing prediction points on the canvas
-                      stop_storing_points_variable(); //stop storing the prediction points
-                      var past50 = get_points() //retrieve the stored points
+                  sleep(5000).then(() => {
+                      stop_drawing_points_variable(); // stops drawing prediction points on the canvas
+                      stop_storing_points_variable(); // stop storing the prediction points
+                      var past50 = get_points() // retrieve the stored points
                       var precision_measurement = calculatePrecision(past50);
                       var accuracyLabel = "<a>Accuracy | "+precision_measurement+"%</a>";
-                      document.getElementById("Accuracy").innerHTML = accuracyLabel;//Show the accuracy in the nav bar.
+                      document.getElementById("Accuracy").innerHTML = accuracyLabel; // Show the accuracy in the nav bar.
                       swal({
                         title: "Your accuracy measure is " + precision_measurement + "%",
                         allowOutsideClick: false,
