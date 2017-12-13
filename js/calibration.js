@@ -101,7 +101,7 @@ $(document).ready(function(){
                         title: "Your accuracy measure is " + precision_measurement + "%",
                         allowOutsideClick: false,
                         buttons: {
-                          cancel: "recalibrate",
+                          cancel: "Recalibrate",
                           confirm: true,
                         }
                       }).then(isConfirm => {
