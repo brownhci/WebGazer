@@ -93,7 +93,7 @@ $(document).ready(function(){
                   sleep(5000).then(() => { //waits 5 seconds
                       stop_drawing_points_variable(); //  stops drawing prediction points on the canvas
                       stop_storing_points_variable(); //stop storing the prediction points
-                      var past50 = return_points() //retrieve the stored points
+                      var past50 = get_points() //retrieve the stored points
                       var precision_measurement = calculatePrecision(past50);
                       var accuracyLabel = "<a>Accuracy | "+precision_measurement+"%</a>";
                       document.getElementById("Accuracy").innerHTML = accuracyLabel;//Show the accuracy in the nav bar.
