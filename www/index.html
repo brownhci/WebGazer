@@ -285,21 +285,30 @@ cd build
         <div id="examples" class="container pad">
             <h2 class="text-center pad">Examples</h2>
             <div class="row">              
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                     <img src="media/empty.png" alt="Empty Webpage Demo" width="300" height="250">
                     <h4 class="pad">WebGazer.js on an Empty Webpage</h4>
-                    <p>See how easy it is to integrate WebGazer.js on any webpage. Just with a few clicks you will get real-time predictions.  The only thing you need to do is click on a few locations within the screen while looking at the cursor. Both clicks and cursor movements make the predictions more accurate. The video and the visualized gaze prediction are only shown in debugging mode.
+                    <p>See how easy it is to integrate WebGazer.js on any webpage. Just with a few clicks you will get real-time predictions.  The only thing you need to do is click on a few locations within the screen while looking at the cursor. Both clicks and cursor movements make the predictions more accurate.
                         <form method="get" action="https://webgazer.cs.brown.edu/demo.html">
                         <button class="btn btn-primary" type="submit">Try Live!</button>
                     </form>
                     </p>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                     <img src="media/collision.png" alt="Collision demo" width="300" height="250">
                     <h4 class="pad">Ball Collision Game</h4>
                     <p>Move the orange ball with your eyes and create collisions with the blue balls. Train WebGazer.js by clicking in various locations within the screen, while looking at your cursor.                     
                         <form method="get" action="https://webgazer.cs.brown.edu/collision.html">
                         <button class="btn btn-primary" type="submit">Try Live!</button>
+                    </form>
+                    </p>
+                </div>  
+                <div class="col-lg-4">
+                    <img src="media/google_serp.png" alt="SearchGazer" width="300" height="250">
+                    <h4 class="pad">WebGazer on Search Engines</h4>
+                    <p>We have created SearchGazer.js, a library that incorporates WebGazer in Search Engines such as Bing and Google. 
+                        <form method="get" action="https://webgazer.cs.brown.edu/search">
+                        <button class="btn btn-primary" type="submit">Try SearchGazer.js!</button>
                     </form>
                     </p>
                 </div>  
@@ -309,7 +318,7 @@ cd build
 
         <hr class="featurette-divider">
         <div id="publication" class="container pad">
-            <h2 class="text-center">Publication</h2>
+            <h2 class="text-center">Publications</h2>
             <p>If you use WebGazer.js please cite the following paper:</p>
             <code>
                 @inproceedings{papoutsaki2016webgazer,<br>
@@ -319,6 +328,15 @@ cd build
                 pages      = {3839--3845},<br>
                 year       = {2016},<br>
                 organization={AAAI}<br>
+                }
+            </code>
+            <p>If you use SearchGazer.js please cite the following paper:</p>
+            <code></code>@inproceedings{papoutsaki2017searchgazer,
+                author = {Alexandra Papoutsaki and James Laskey and Jeff Huang},
+                title = {SearchGazer: Webcam Eye Tracking for Remote Studies of Web Search},
+                booktitle = {Proceedings of the ACM SIGIR Conference on Human Information Interaction \& Retrieval (CHIIR)},
+                year = {2017},
+                organization={ACM}
                 }
             </code>
         </div>
@@ -359,8 +377,8 @@ cd build
                 
                 <div class="col-lg-3">
                     <img class="img-circle center-block" src="media/alexpap.jpg" alt="Alexandra Papoutsaki" height="140">
-                    <h4 class="text-center"><a href="http://cs.brown.edu/~alexpap">Alexandra Papoutsaki</a></h4>
-                    <p>PhD Candidate in Computer Science at Brown University.</p>
+                    <h4 class="text-center"><a href="http://www.cs.pomona.edu/~apapoutsaki/">Alexandra Papoutsaki</a></h4>
+                    <p>Assistant Professor at Pomona College.</p>
                 </div>
                 <div class="col-lg-3">
                     <img class="img-circle center-block" src="media/jim.jpg" alt="James Laskey" height="140">
@@ -373,7 +391,12 @@ cd build
                     <p>Undergraduate student at Brown University.</p>
                 </div>                
                 <div class="col-lg-3">
-                    <img class="img-circle center-block" src="http://cs.brown.edu/media/filer_public_thumbnails/filer_public/2014/10/08/jeff-hs.jpg__90x120_q85_subsampling-2.jpg" alt="Jeff Huang" height="140">
+                    <img class="img-circle center-block" src="media/yuze.jpg" alt="Yuze He" height="140">
+                    <h4 class="text-center">Yuze He</h4>
+                    <p>Masters student at Brown University.</p>
+                </div>    
+                <div class="col-lg-3">
+                    <img class="img-circle center-block" src="media/jeff.jpg" alt="Jeff Huang" height="140">
                     <h4 class="text-center"><a href="http://jeffhuang.com">Jeff Huang</a></h4>
                     <p>Assistant Professor of Computer Science at Brown University.</p>
                 </div>
@@ -391,7 +414,7 @@ cd build
         <hr class="featurette-divider">
         <div id="license" class="container pad">
             <h2 class="text-center">License</h2>
-            <p class="text-center">Copyright (C) 2016 <a href="http://hci.cs.brown.edu">Brown HCI Group</a><br>
+            <p class="text-center">Copyright (C) 2018 <a href="http://hci.cs.brown.edu">Brown HCI Group</a><br>
             Licensed under <a href="http://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3</a>.
             </p>
 
