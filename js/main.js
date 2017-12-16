@@ -46,6 +46,7 @@ window.onload = function() {
         overlay.style.left = leftDist;
         overlay.style.margin = '0px';
 
+        //Draw the face overlay on the camera video feedback
         var faceOverlay = document.createElement('face_overlay');
         faceOverlay.id = 'faceOverlay';
         faceOverlay.style.position = 'fixed';

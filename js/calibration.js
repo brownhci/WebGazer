@@ -15,18 +15,8 @@ function ClearCanvas(){
  */
 function PopUpInstruction(){
   ClearCanvas();
-  swal({
-      title: "Calibration",
-      text: "Please click on the each of the 9 points on the screen. You must click each point 5 times till it goes yellow. This will calibrate your eye movements.",
-      buttons: {
-        cancel: false,
-        confirm: true,
-      }
-  }).then(isConfirm => {
-      ShowCalibrationPoint();
-  });
+  ShowCalibrationPoint();
 }
-
 /**
   * Show the help instructions right at the start.
   */
@@ -51,7 +41,7 @@ $(document).ready(function(){
       }
       CalibrationPoints[id]++; // increments values
 
-      if (CalibrationPoints[id]==5){ //only turnns red after 5 clicks
+      if (CalibrationPoints[id]==5){ //only turn to yellow after 5 clicks
         $(this).css('background-color','yellow');
         $(this).prop('disabled', true); //disables the button
         PointCalibrate++;
