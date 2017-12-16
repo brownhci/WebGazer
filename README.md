@@ -78,6 +78,11 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 * Yuze He
 * Jeff Huang
 
+### Acknowledgements
+
+The work of the calibration example file was developed in the context of a course project topic to improve the feedback of WebGazer. This project was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung
+
+
 ## License
 
 Copyright (C) 2018 [Brown HCI Group](http://hci.cs.brown.edu)
