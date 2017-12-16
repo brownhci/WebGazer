@@ -15,12 +15,18 @@ window.onload = function() {
     var topDist = '0px';
     var leftDist = '0px';
 
+    //Set up the webgazer video feedback.
     var setup = function() {
+        //Set up video variable to store the camera feedback
         var video = document.getElementById('webgazerVideoFeed');
+
+        //Position the camera feedback to the top left corner.
         video.style.display = 'block';
         video.style.position = 'fixed';
         video.style.top = topDist;
         video.style.left = leftDist;
+
+        //Set up the video feedback box size
         video.width = width;
         video.height = height;
         video.style.margin = '0px';
@@ -28,8 +34,11 @@ window.onload = function() {
         webgazer.params.imgWidth = width;
         webgazer.params.imgHeight = height;
 
+        //Set up the main canvas. The main canvas is used to calibrate the webgazer.
         var overlay = document.createElement('canvas');
         overlay.id = 'overlay';
+
+        //Setup the size of canvas
         overlay.style.position = 'fixed';
         overlay.width = width;
         overlay.height = height;
@@ -37,6 +46,7 @@ window.onload = function() {
         overlay.style.left = leftDist;
         overlay.style.margin = '0px';
 
+        //Draw the face overlay on the camera video feedback
         var faceOverlay = document.createElement('face_overlay');
         faceOverlay.id = 'faceOverlay';
         faceOverlay.style.position = 'fixed';

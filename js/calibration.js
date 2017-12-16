@@ -15,18 +15,8 @@ function ClearCanvas(){
  */
 function PopUpInstruction(){
   ClearCanvas();
-  swal({
-      title: "Calibration",
-      text: "Please click on the each of the 9 points on the screen. You must click each point 5 times till it goes yellow. This will calibrate your eye movements.",
-      buttons: {
-        cancel: false,
-        confirm: true,
-      }
-  }).then(isConfirm => {
-      ShowCalibrationPoint();
-  });
+  ShowCalibrationPoint();
 }
-
 /**
   * Show the help instructions right at the start.
   */
@@ -51,7 +41,7 @@ $(document).ready(function(){
       }
       CalibrationPoints[id]++; // increments values
 
-      if (CalibrationPoints[id]==5){ //only turnns red after 5 clicks
+      if (CalibrationPoints[id]==5){ //only turn to yellow after 5 clicks
         $(this).css('background-color','yellow');
         $(this).prop('disabled', true); //disables the button
         PointCalibrate++;
@@ -87,21 +77,21 @@ $(document).ready(function(){
                 // makes the variables true for 5 seconds & plots the points
                 $(document).ready(function(){
 
-                  draw_points_variable(); //  starts drawing prediction points on the canvas
-                  store_points_variable(); //start storing the prediction points
+                  draw_points_variable(); // starts drawing prediction points on the canvas
+                  store_points_variable(); // start storing the prediction points
 
-                  sleep(5000).then(() => { //waits 5 seconds
-                      stop_drawing_points_variable(); //  stops drawing prediction points on the canvas
-                      stop_storing_points_variable(); //stop storing the prediction points
-                      var past50 = return_points() //retrieve the stored points
+                  sleep(5000).then(() => {
+                      stop_drawing_points_variable(); // stops drawing prediction points on the canvas
+                      stop_storing_points_variable(); // stop storing the prediction points
+                      var past50 = get_points() // retrieve the stored points
                       var precision_measurement = calculatePrecision(past50);
                       var accuracyLabel = "<a>Accuracy | "+precision_measurement+"%</a>";
-                      document.getElementById("Accuracy").innerHTML = accuracyLabel;//Show the accuracy in the nav bar.
+                      document.getElementById("Accuracy").innerHTML = accuracyLabel; // Show the accuracy in the nav bar.
                       swal({
                         title: "Your accuracy measure is " + precision_measurement + "%",
                         allowOutsideClick: false,
                         buttons: {
-                          cancel: "recalibrate",
+                          cancel: "Recalibrate",
                           confirm: true,
                         }
                       }).then(isConfirm => {

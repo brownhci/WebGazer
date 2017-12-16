@@ -10526,56 +10526,55 @@ function stop_drawing_points_variable(){
     }
 
     /**
-    * Checks if the pupils are in the position box on the video
-    */
+      * Checks if the user's eyes are inside the position box on the video
+      */
     function checkEyesInValidationBox() {
-        var eyesObjs = curTracker.getEyePatches(videoElementCanvas,webgazer.params.imgWidth,webgazer.params.imgHeight);
+      var eyesObjs = curTracker.getEyePatches(videoElementCanvas, 
+        webgazer.params.imgWidth, webgazer.params.imgHeight);
+      var validationBox = document.getElementById('faceOverlay');
+      if (validationBox == null || !eyesObjs) {
+        return;
+      }
 
-        var validationBox = document.getElementById('faceOverlay');
+      // get the boundaries of the face overlay validation box
+      leftBound = 107;
+      topBound = 59;
+      rightBound = leftBound + 117;
+      bottomBound = topBound + 117;
 
-        var xPositions = false;
-        var yPositions = false;
+      // get the x and y positions of the left and right eyes
+      var eyeLX = eyesObjs.left.imagex;
+      var eyeLY = eyesObjs.left.imagey;
+      var eyeRX = eyesObjs.right.imagex;
+      var eyeRY = eyesObjs.right.imagey;
 
-        if (validationBox != null && eyesObjs) {
-            //get the boundaries of the face overlay validation box
-            leftBound = 107;
-     				topBound = 59;
-     				rightBound = leftBound + 117;
-     				bottomBound = topBound + 117;
+      var xPositions = false;
+      var yPositions = false;
+      // check if the x values for the left and right eye are within the
+      // validation box
+      if (eyeLX > leftBound && eyeLX < rightBound) {
+          if (eyeRX > leftBound && eyeRX < rightBound) {
+              xPositions = true;
+          }
+      }
 
-            //get the x and y positions of the left and right eyes
-   					var eyeLX = eyesObjs.left.imagex;
-					  var eyeLY = eyesObjs.left.imagey;
-   					var eyeRX = eyesObjs.right.imagex;
-   					var eyeRY = eyesObjs.right.imagey;
+      // check if the y values for the left and right eye are within the
+      // validation box
+      if (eyeLY > topBound && eyeLY < bottomBound) {
+          if (eyeRY > topBound && eyeRY < bottomBound) {
+              yPositions = true;
+          }
+      }
 
-            //check if the x values for the left and right eye are within the
-            //validation box
-            if (eyeLX > leftBound && eyeLX < rightBound) {
-               if (eyeRX > leftBound && eyeRX < rightBound) {
-                   xPositions = true;
-               }
-            }
-
-            //check if the y values for the left and right eye are within the
-            //validation box
-            if (eyeLY > topBound && eyeLY < bottomBound) {
-                if (eyeRY > topBound && eyeRY < bottomBound) {
-                    yPositions = true;
-                }
-            }
-
-            //if the x and y values for both the left and right eye are within
-            //the validation box then the box border turns green, otherwise if
-            //the eyes are outside of the box the colour is red
-            if (xPositions && yPositions){
-                validationBox.style.border = 'solid green';
-            } else {
-                validationBox.style.border = 'solid red';
-            }
-        }
+      // if the x and y values for both the left and right eye are within
+      // the validation box then the box border turns green, otherwise
+      // the box the colour is red
+      if (xPositions && yPositions){
+          validationBox.style.border = 'solid green';
+      } else {
+          validationBox.style.border = 'solid red';
+      }
     }
-
 
     /**
     * Alerts the user of the cursor position, used for debugging & testing
