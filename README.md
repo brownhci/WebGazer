@@ -61,9 +61,6 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 	organization={AAAI}
 	}
 
-<<<<<<< HEAD
-## Who the original modifiers were
-=======
 	@inproceedings{papoutsaki2017searchgazer,
 	author     = {Alexandra Papoutsaki and James Laskey and Jeff Huang},
     title      = {SearchGazer: Webcam Eye Tracking for Remote Studies of Web Search},
@@ -74,7 +71,6 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 
 
 ## Who We Are
->>>>>>> 407ef10a4a8941a48b02d5127891fac55ecffdc6
 
 * Alexandra Papoutsaki
 * James Laskey
@@ -82,9 +78,13 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 * Yuze He
 * Jeff Huang
 
+### Acknowledgements
+
+The work of the calibration example file was developed in the context of a course project topic to improve the feedback of WebGazer. This project was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung
+
+
 ## License
 
 Copyright (C) 2018 [Brown HCI Group](http://hci.cs.brown.edu)
 
 Licensed under GPLv3.
-
