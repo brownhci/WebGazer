@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "browser-sync": "^2.18.13",
-    "jquery": "^3.2.1"
+    "jquery": "^3.2.1",
+    "sweetalert": "^2.1.0"
   }
 }
