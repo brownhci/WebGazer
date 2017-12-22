@@ -78,9 +78,15 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 * Yuze He
 * Jeff Huang
 
+## Other Collaborators
+
+* Ida De Smet - Software engineer student at University of Auckland
+* Elizabeth Stevenson - Software engineer student at University of Auckland
+* Jack Wong - Software engineer student at University of Auckland
+
 ### Acknowledgements
 
-The work of the calibration example file was developed in the context of a course project topic to improve the feedback of WebGazer. This project was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung
+The work of the calibration example file was developed in the context of a course project topic to improve the feedback of WebGazer. Webgazer project is developed based on the research that is done in Brown University. This project was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung. 
 
 
 ## License
