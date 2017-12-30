@@ -26,3 +26,4 @@
 *.pdf
 *.mp4
 *.cpuprofile
+www/node_modules/
