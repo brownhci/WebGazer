@@ -44,7 +44,7 @@ The following browsers support WebGazer.js:
 
 Your browser needs to support the getUserMedia API as seen [here](http://caniuse.com/#feat=stream).
 
-## Citation
+## Publications
 
 	@inproceedings{papoutsaki2016webgazer,
 	author     = {Alexandra Papoutsaki and Patsorn Sangkloy and James Laskey and Nediyana Daskalova and Jeff Huang and James Hays},
@@ -55,6 +55,13 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 	organization={AAAI}
 	}
 
+	@inproceedings{papoutsaki2017searchgazer,
+	author     = {Alexandra Papoutsaki and James Laskey and Jeff Huang},
+    title      = {SearchGazer: Webcam Eye Tracking for Remote Studies of Web Search},
+    booktitle  = {Proceedings of the ACM SIGIR Conference on Human Information Interaction \& 	Retrieval (CHIIR)},
+    year       = {2017},
+    organization={ACM}
+    }
 
 
 ## Who We Are
@@ -62,11 +69,12 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 * Alexandra Papoutsaki
 * James Laskey
 * Aaron Gokaslan
+* Yuze He
 * Jeff Huang
 
 ## License
 
-Copyright (C) 2016 [Brown HCI Group](http://hci.cs.brown.edu)
+Copyright (C) 2018 [Brown HCI Group](http://hci.cs.brown.edu)
 
 Licensed under GPLv3.
 
