@@ -1,12 +1,10 @@
 # [WebGazer.js](https://webgazer.cs.brown.edu)
 
-WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js can run only if the user consents in giving access to their webcam. 
-
+WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js can run only if the user consents in giving access to their webcam.
 
 * [Official website](https://webgazer.cs.brown.edu)
 * [Documentation](https://webgazer.cs.brown.edu/documentation)
 * [API Docs](https://github.com/brownhci/WebGazer/wiki/Top-Level-API)
-
 
 ## Features
 
@@ -16,10 +14,9 @@ WebGazer.js is an eye tracking library that uses common webcams to infer the eye
 * Easy to integrate with a few lines of JavaScript
 * Swappable components for eye detection
 * Multiple gaze prediction models
+* Useful video feedback to user
 
-
-## How to install
-Download the webgazer.js file located [here](https://webgazer.cs.brown.edu/#download) or use the file build/webgazer.js from [this](https://github.com/brownhci/WebGazer.git) repository.
+## Build the repository
 
 If you want to build the repository from source follow these instructions:
 
@@ -27,11 +24,20 @@ If you want to build the repository from source follow these instructions:
     cd build
     ./build_library
 
-
 ## Examples
 
 Examples of how WebGazer.js works can be found [here](https://webgazer.cs.brown.edu/#examples).
 
+### How to run the Index HTML
+
+The Index HTML File provides the additional features of an integrated action bar that provides the functionality of a calibration system, accuracy measurements and an informative "help" module.
+
+This is a good example that shows how WebGazer can be used.
+
+1. Clone and build the repository using the steps listed above
+2. Download NodeJS from https://nodejs.org/en/download/
+3. Run `npm install` within your local WebGazer repository to download the packages (SweetAlert, JQuery and Browser-sync) in the package.json file
+4. Run the index.html file as a server by running the command `browser-sync start --server --files "*"` in the WebGazer directory
 
 ## Browser Support
 
@@ -72,9 +78,19 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 * Yuze He
 * Jeff Huang
 
+## Other Collaborators
+
+* Ida De Smet - Software engineering student at University of Auckland
+* Elizabeth Stevenson - Software engineering student at University of Auckland
+* Jack Wong - Software engineering student at University of Auckland
+
+### Acknowledgements
+
+Webgazer project is developed based on the research that is done in Brown University. The work of the calibration example file was developed in the context of a course project topic to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung. 
+
+
 ## License
 
 Copyright (C) 2018 [Brown HCI Group](http://hci.cs.brown.edu)
 
 Licensed under GPLv3.
-

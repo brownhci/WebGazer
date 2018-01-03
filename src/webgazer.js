@@ -55,7 +55,7 @@
     //Types that regression systems should handle
     //Describes the source of data so that regression systems may ignore or handle differently the various generating events
     var eventTypes = ['click', 'move'];
-    
+
     //movelistener timeout clock parameters
     var moveClock = performance.now();
     webgazer.params.moveTickSize = 50; //milliseconds
@@ -88,8 +88,94 @@
         'settings': {}
     };
 
-    
+    // used to print only every 2nd dot
+    var slowDown = false;
+
+
     //PRIVATE FUNCTIONS
+
+    /**
+    * adds a click event to the window
+    * draws a "black" dot where the click occurred
+    * @param {e} e - the event click
+    */
+    document.onclick = function(e){
+        var cursorX = e.pageX;
+        var cursorY = e.pageY;
+    }
+
+    /**
+    * Checks if the pupils are in the position box on the video
+    */
+    function checkEyesInValidationBox() {
+        var eyesObjs = curTracker.getEyePatches(videoElementCanvas,webgazer.params.imgWidth,webgazer.params.imgHeight);
+
+        var validationBox = document.getElementById('faceOverlay');
+
+        var xPositions = false;
+        var yPositions = false;
+
+        if (validationBox != null && eyesObjs) {
+            //get the boundaries of the face overlay validation box
+            leftBound = 107;
+     				topBound = 59;
+     				rightBound = leftBound + 117;
+     				bottomBound = topBound + 117;
+
+            //get the x and y positions of the left and right eyes
+   					var eyeLX = eyesObjs.left.imagex;
+					  var eyeLY = eyesObjs.left.imagey;
+   					var eyeRX = eyesObjs.right.imagex;
+   					var eyeRY = eyesObjs.right.imagey;
+
+            //check if the x values for the left and right eye are within the
+            //validation box
+            if (eyeLX > leftBound && eyeLX < rightBound) {
+               if (eyeRX > leftBound && eyeRX < rightBound) {
+                   xPositions = true;
+               }
+            }
+
+            //check if the y values for the left and right eye are within the
+            //validation box
+            if (eyeLY > topBound && eyeLY < bottomBound) {
+                if (eyeRY > topBound && eyeRY < bottomBound) {
+                    yPositions = true;
+                }
+            }
+
+            //if the x and y values for both the left and right eye are within
+            //the validation box then the box border turns green, otherwise if
+            //the eyes are outside of the box the colour is red
+            if (xPositions && yPositions){
+                validationBox.style.border = 'solid green';
+            } else {
+                validationBox.style.border = 'solid red';
+            }
+        }
+    }
+
+
+    /**
+    * Alerts the user of the cursor position, used for debugging & testing
+    */
+    function checkCursor(){ //used to test
+      alert("Cursor at: " + cursorX + ", " + cursorY);
+    }
+
+    /**
+    * This draws the point (x,y) onto the canvas in the HTML
+    * @param {colour} colour - The colour of the circle to plot
+    * @param {x} x - The x co-ordinate of the desired point to plot
+    * @param {y} y - The y co-ordinate of the desired point to plot
+    */
+    function drawCoordinates(colour,x,y){
+        var ctx = document.getElementById("plotting_canvas").getContext('2d');
+        ctx.fillStyle = colour; // Red color
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2, true);
+        ctx.fill();
+    }
 
     /**
      * Gets the pupil features by following the pipeline which threads an eyes object through each call:
@@ -133,7 +219,7 @@
 
     /**
      * Paints the video to a canvas and runs the prediction pipeline to get a prediction
-     * @param {Number|undefined} regModelIndex - The prediction index where looking for
+     * @param {Number|undefined} regModelIndex - The prediction index we're looking for
      * @returns {*}
      */
     function getPrediction(regModelIndex) {
@@ -164,6 +250,8 @@
      * Runs every available animation frame if webgazer is not paused
      */
     var smoothingVals = new webgazer.util.DataWindow(4);
+    var k = 0;
+    
     function loop() {
         var gazeData = getPrediction();
         var elapsedTime = performance.now() - clockStart;
@@ -171,6 +259,7 @@
         callback(gazeData, elapsedTime);
 
         if (gazeData && showGazeDot) {
+
             smoothingVals.push(gazeData);
             var x = 0;
             var y = 0;
@@ -180,7 +269,23 @@
                 y += smoothingVals.get(d).y;
             }
             var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
+
+            if (draw_points){
+              drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
+            }
+
+            if (store_points_var) {
+              //store the position of the past fifty occuring tracker preditions
+              store_points(pred.x, pred.y, k);
+              k++;
+              if (k == 50) {
+                k = 0;
+              }
+            }
             gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
+
+            //Check that the eyes are inside of the validation box
+            checkEyesInValidationBox();
         }
 
         if (!paused) {
@@ -293,7 +398,7 @@
     }
 
     /**
-     * Initializes all needed dom elements and begins the loop
+     * Initializ es all needed dom elements and begins the loop
      * @param {URL} videoSrc - The video url to use
      */
     function init(videoSrc) {
@@ -324,7 +429,6 @@
         loop();
     }
 
-    
     //PUBLIC FUNCTIONS - CONTROL
 
     /**
@@ -420,7 +524,7 @@
         return webgazer;
     };
 
-    
+
     //PUBLIC FUNCTIONS - DEBUG
 
     /**
@@ -486,7 +590,7 @@
         return webgazer;
     };
 
-    
+
     //SETTERS
     /**
      * Sets the tracking module
@@ -548,7 +652,7 @@
             return new constructor();
         };
     };
-    
+
     /**
      * Adds a new regression module to the list of regression modules, seeding its data from the first regression module
      * @param {string} name - the string name of the regression module to add
@@ -581,7 +685,7 @@
         return webgazer;
     };
 
-    
+
     //GETTERS
     /**
      * Returns the tracker currently in use
@@ -614,5 +718,5 @@
     webgazer.params.getEventTypes = function() {
         return eventTypes.slice();
     }
-    
+
 }(window));
