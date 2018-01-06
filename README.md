@@ -93,4 +93,4 @@ Webgazer project is developed based on the research that is done in Brown Univer
 
 Copyright (C) 2018 [Brown HCI Group](http://hci.cs.brown.edu)
 
-Licensed under GPLv3.
+Licensed under GPLv3. Companies have the option to license WebGazer.js under LGPLv3 while their valuation is under $10,000,000.
