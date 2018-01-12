@@ -7,6 +7,7 @@
 
     //set up namespaces for modules
     window.webgazer = window.webgazer || {};
+    webgazer = webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
     webgazer.reg = webgazer.reg || {};
     webgazer.params = webgazer.params || {};
@@ -24,7 +25,9 @@
 
     //Params to clmtrackr and getUserMedia constraints
     webgazer.params.clmParams = webgazer.params.clmParams || {useWebGL : true};
-    webgazer.params.camConstraints = webgazer.params.camConstraints || { video:true };
+    webgazer.params.camConstraints = webgazer.params.camConstraints || { video: true };
+
+    webgazer.params.smoothEyeBB = webgazer.params.smoothEyeBB || true;
 
     //DEBUG variables
     //debug control boolean
@@ -99,10 +102,11 @@
     * draws a "black" dot where the click occurred
     * @param {e} e - the event click
     */
-    document.onclick = function(e){
+    /*document.onclick = function(e){
         var cursorX = e.pageX;
         var cursorY = e.pageY;
-    }
+    }*/
+    // Seems to no longer be used
 
     /**
     * Checks if the pupils are in the position box on the video
@@ -251,7 +255,7 @@
      */
     var smoothingVals = new webgazer.util.DataWindow(4);
     var k = 0;
-    
+
     function loop() {
         var gazeData = getPrediction();
         var elapsedTime = performance.now() - clockStart;

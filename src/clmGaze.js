@@ -78,7 +78,9 @@
 
         //Apply Kalman Filtering
         var leftBox = [leftOriginX, leftOriginY, leftOriginX + leftWidth, leftOriginY + leftHeight];
-        leftBox = this.leftKalman.update(leftBox);
+        if (webgazer.params.smoothEyeBB){
+          leftBox = this.leftKalman.update(leftBox);
+        }
         leftOriginX = Math.round(leftBox[0]);
         leftOriginY = Math.round(leftBox[1]);
         leftWidth = Math.round(leftBox[2] - leftBox[0]);
@@ -86,7 +88,9 @@
 
         //Apply Kalman Filtering
         var rightBox = [rightOriginX, rightOriginY, rightOriginX + rightWidth, rightOriginY + rightHeight];
-        rightBox = this.rightKalman.update(rightBox);
+        if (webgazer.params.smoothEyeBB){
+          rightBox = this.rightKalman.update(rightBox);
+        }
         rightOriginX = Math.round(rightBox[0]);
         rightOriginY = Math.round(rightBox[1]);
         rightWidth = Math.round(rightBox[2] - rightBox[0]);
@@ -131,5 +135,5 @@
      * @type {string}
      */
     ClmGaze.prototype.name = 'clmtrackr';
-    
+
 }(window));

@@ -20,9 +20,13 @@ WebGazer.js is an eye tracking library that uses common webcams to infer the eye
 
 If you want to build the repository from source follow these instructions:
 
+    # Ensure node is installed
+    # Install grunt-cli if not installed
+    npm install -g grunt-cli
     git clone https://github.com/brownhci/WebGazer.git
-    cd build
-    ./build_library
+    npm install
+    # Run grunt to build
+    grunt
 
 ## Examples
 
@@ -86,7 +90,7 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 
 ### Acknowledgements
 
-Webgazer project is developed based on the research that is done in Brown University. The work of the calibration example file was developed in the context of a course project topic to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung. 
+Webgazer project is developed based on the research that is done in Brown University. The work of the calibration example file was developed in the context of a course project topic to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
 
 
 ## License
