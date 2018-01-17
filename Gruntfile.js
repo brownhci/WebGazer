@@ -51,7 +51,7 @@ module.exports = function(grunt) {
 					'src/ridgeRegThreaded.js',
 					'src/util.js',
 					'src/webgazer.js',
-					'/js/draw_plotted_points.js',
+					'js/draw_plotted_points.js',
 				],
 				dest: './build/webgazer.js',
 			}
