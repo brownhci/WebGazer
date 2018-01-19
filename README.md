@@ -20,7 +20,7 @@ WebGazer.js is an eye tracking library that uses common webcams to infer the eye
 
 If you want to build the repository from source follow these instructions:
 
-    # Ensure node is installed
+    # Ensure NodeJS is downloaded: https://nodejs.org/en/download/
     # Install grunt-cli if not installed
     npm install -g grunt-cli
     git clone https://github.com/brownhci/WebGazer.git
@@ -38,10 +38,8 @@ The Index HTML File provides the additional features of an integrated action bar
 
 This is a good example that shows how WebGazer can be used.
 
-1. Clone and build the repository using the steps listed above
-2. Download NodeJS from https://nodejs.org/en/download/
-3. Run `npm install` within your local WebGazer repository to download the packages (SweetAlert, JQuery and Browser-sync) in the package.json file
-4. Run the index.html file as a server by running the command `browser-sync start --server --files "*"` in the WebGazer directory
+1. Clone and build the repository using the steps listed above (including downloading NodeJS and running `npm install`)
+2. Run the index.html file as a server by running the command `browser-sync start --server --files "*"` in the WebGazer directory
 
 ## Browser Support
 
