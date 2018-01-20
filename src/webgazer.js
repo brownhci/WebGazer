@@ -274,11 +274,8 @@
             }
             var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
 
-            if (draw_points){
-              drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
-            }
-
             if (store_points_var) {
+              drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
               //store the position of the past fifty occuring tracker preditions
               store_points(pred.x, pred.y, k);
               k++;
