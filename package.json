@@ -13,6 +13,6 @@
     "browser-sync": "^2.18.13",
     "git": "^0.1.5",
     "jquery": "^3.2.1",
-    "sweetalert": "^2.1.0"
+    "sweetalert2": "^7.9.0"
   }
 }
