@@ -17,6 +17,7 @@
     //video elements
     webgazer.params.videoScale = 1;
     var videoElement = null;
+    var videoStream = null;
     var videoElementCanvas = null;
     webgazer.params.videoElementId = 'webgazerVideoFeed';
     webgazer.params.videoElementCanvasId = 'webgazerVideoCanvas';
@@ -459,11 +460,13 @@
             navigator.getUserMedia(options,
                     function(stream){
                         console.log('video stream created');
+                        videoStream = stream;
                         init(window.URL.createObjectURL(stream));
                     },
                     function(e){
                         onFail();
                         videoElement = null;
+                        videoStream = null;
                     });
         }
         if (!navigator.getUserMedia) {
@@ -518,12 +521,26 @@
         //loop may run an extra time and fail due to removed elements
         paused = true;
         //remove video element and canvas
+        //webgazer.stopVideo(); // uncomment if you want to stop the video from streaming
         document.body.removeChild(videoElement);
         document.body.removeChild(videoElementCanvas);
 
         setGlobalData();
         return webgazer;
     };
+
+    /**
+    * stops the video camera from streaming
+    * @return {webgazer} this
+    */
+    webgazer.stopVideo = function() {
+      //videoElement.src='';
+      //videoElement.pause();
+      videoStream.getTracks()[0].stop(); // videoStream.stop() is deprecated
+      console.log('Video ended');
+
+      return webgazer;
+    }
 
 
     //PUBLIC FUNCTIONS - DEBUG
