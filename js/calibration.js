@@ -18,12 +18,8 @@ function PopUpInstruction(){
   swal({
     title:"Calibration",
     text: "Please click on each of the 9 points on the screen. You must click on each point 5 times till it goes yellow. This will calibrate your eye movements.",
-    buttons:{
-      cancel: false,
-      confirm: true
-    }
-  }).then(isConfirm => {
-    ShowCalibrationPoint();
+  }).then(result => {
+    result.value && ShowCalibrationPoint();
   });
 
 }
@@ -79,10 +75,9 @@ $(document).ready(function(){
             swal({
               title: "Calculating measurement",
               text: "Please don't move your mouse & stare at the middle dot for the next 5 seconds. This will allow us to calculate the accuracy of our predictions.",
-              closeOnEsc: false,
-              allowOutsideClick: false,
-              closeModal: true
-            }).then( isConfirm => {
+              allowEscapeKey: false,
+              allowOutsideClick: false
+            }).then( () => {
 
                 // makes the variables true for 5 seconds & plots the points
                 $(document).ready(function(){
@@ -98,12 +93,10 @@ $(document).ready(function(){
                       swal({
                         title: "Your accuracy measure is " + precision_measurement + "%",
                         allowOutsideClick: false,
-                        buttons: {
-                          cancel: "Recalibrate",
-                          confirm: true,
-                        }
-                      }).then(isConfirm => {
-                          if (isConfirm){
+                        showCancelButton: true,
+                        cancelButtonText: "Recalibrate",
+                      }).then(result => {
+                          if (result.value){
                             //clear the calibration & hide the last middle button
                             ClearCanvas();
                           } else {
