@@ -1,12 +1,10 @@
 # [WebGazer.js](https://webgazer.cs.brown.edu)
 
-WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js can run only if the user consents in giving access to their webcam. 
-
+WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js can run only if the user consents in giving access to their webcam.
 
 * [Official website](https://webgazer.cs.brown.edu)
 * [Documentation](https://webgazer.cs.brown.edu/documentation)
 * [API Docs](https://github.com/brownhci/WebGazer/wiki/Top-Level-API)
-
 
 ## Features
 
@@ -16,22 +14,32 @@ WebGazer.js is an eye tracking library that uses common webcams to infer the eye
 * Easy to integrate with a few lines of JavaScript
 * Swappable components for eye detection
 * Multiple gaze prediction models
+* Useful video feedback to user
 
-
-## How to install
-Download the webgazer.js file located [here](https://webgazer.cs.brown.edu/#download) or use the file build/webgazer.js from [this](https://github.com/brownhci/WebGazer.git) repository.
+## Build the repository
 
 If you want to build the repository from source follow these instructions:
 
+    # Ensure NodeJS is downloaded: https://nodejs.org/en/download/
+    # Install grunt-cli if not installed (this may require you to use `sudo` or run the console as Administrator)
+    npm install -g grunt-cli
     git clone https://github.com/brownhci/WebGazer.git
-    cd build
-    ./build_library
-
+    npm install
+    # Run grunt to build the webgazer.js file in the build directory
+    grunt
 
 ## Examples
 
 Examples of how WebGazer.js works can be found [here](https://webgazer.cs.brown.edu/#examples).
 
+### How to run the Index HTML
+
+The Index HTML File provides the additional features of an integrated action bar that provides the functionality of a calibration system, accuracy measurements and an informative "help" module.
+
+This is a good example that shows how WebGazer can be used.
+
+1. Clone and build the repository using the steps listed above (including downloading NodeJS and running `npm install`)
+2. Run the index.html file as a server by running the command `browser-sync start --server --files "*"` in the WebGazer directory
 
 ## Browser Support
 
@@ -72,9 +80,20 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 * Yuze He
 * Jeff Huang
 
+## Other Collaborators
+
+* Ida De Smet - Software engineering student at the University of Auckland
+* Elizabeth Stevenson - Software engineering student at the University of Auckland
+* Jack Wong - Software engineering student at the University of Auckland
+
+### Acknowledgements
+
+Webgazer project is developed based on the research that is done in Brown University. The work of the calibration example file was developed in the context of a course project topic to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung. 
+
+This research is supported by NSF grants IIS-1464061, IIS-1552663, and the Brown University Salomon Award.
+
 ## License
 
 Copyright (C) 2018 [Brown HCI Group](http://hci.cs.brown.edu)
 
-Licensed under GPLv3.
-
+Licensed under GPLv3. Companies have the option to license WebGazer.js under LGPLv3 while their valuation is under $10,000,000.
