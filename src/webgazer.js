@@ -525,7 +525,7 @@
       var faceBox = document.getElementById('faceOverlay');
       document.body.removeChild(faceBox);
 
-      //removes the outline of the faceBox
+      //removes the outline of the face
       var overlay = document.getElementById('overlay');
       document.body.removeChild(overlay);
 
