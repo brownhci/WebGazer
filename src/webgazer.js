@@ -92,23 +92,6 @@
         'settings': {}
     };
 
-    // used to print only every 2nd dot
-    var slowDown = false;
-
-
-    //PRIVATE FUNCTIONS
-
-    /**
-    * adds a click event to the window
-    * draws a "black" dot where the click occurred
-    * @param {e} e - the event click
-    */
-    /*document.onclick = function(e){
-        var cursorX = e.pageX;
-        var cursorY = e.pageY;
-    }*/
-    // Seems to no longer be used
-
     /**
     * Checks if the pupils are in the position box on the video
     */
@@ -159,7 +142,6 @@
             }
         }
     }
-
 
     /**
     * Alerts the user of the cursor position, used for debugging & testing
@@ -520,8 +502,10 @@
     webgazer.end = function() {
         //loop may run an extra time and fail due to removed elements
         paused = true;
-        //remove video element and canvas
+
         //webgazer.stopVideo(); // uncomment if you want to stop the video from streaming
+
+        //remove video element and canvas
         document.body.removeChild(videoElement);
         document.body.removeChild(videoElementCanvas);
 
@@ -530,14 +514,20 @@
     };
 
     /**
-    * stops the video camera from streaming
+    * Stops the video camera from streaming and removes the video outlines
     * @return {webgazer} this
     */
     webgazer.stopVideo = function() {
-      //videoElement.src='';
-      //videoElement.pause();
-      videoStream.getTracks()[0].stop(); // videoStream.stop() is deprecated
-      console.log('Video ended');
+      // stops the video from streaming
+      videoStream.getTracks()[0].stop();
+
+      //removes the box around the face
+      var faceBox = document.getElementById('faceOverlay');
+      document.body.removeChild(faceBox);
+
+      //removes the outline of the faceBox
+      var overlay = document.getElementById('overlay');
+      document.body.removeChild(overlay);
 
       return webgazer;
     }
