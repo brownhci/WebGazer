@@ -28,11 +28,11 @@ If you want to build the repository from source follow these instructions:
     # Run grunt to build the webgazer.js and webgazer.min.js file in the build directory
     grunt
 
+To use the webgazer script in the head of an HTML file add the `async` tag to ensure the clmtrackr does not collapse to a slower version
+
 ## Examples
 
 Examples of how WebGazer.js works can be found [here](https://webgazer.cs.brown.edu/#examples).
-
-To use the webgazer script in the head of an HTML file add the `async` tag to ensure the clmtrackr does not collapse to a slower version
 
 ### How to run the Index HTML
 
