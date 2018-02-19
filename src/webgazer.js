@@ -92,6 +92,8 @@
         'settings': {}
     };
 
+    //PRIVATE FUNCTIONS
+
     /**
     * Checks if the pupils are in the position box on the video
     */
