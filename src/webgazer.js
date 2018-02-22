@@ -385,21 +385,21 @@
 
     /**
      * Initializ es all needed dom elements and begins the loop
-     * @param {URL} videoSrc - The video url to use
+     * @param {URL} videoStream - The video stream to use
      */
-    function init(videoSrc) {
+    function init(videoStream) {
         videoElement = document.createElement('video');
         videoElement.id = webgazer.params.videoElementId;
         videoElement.autoplay = true;
         console.log(videoElement);
         videoElement.style.display = 'none';
 
-        // set the source as the video
+        // set the source of the stream
         if ("srcObject" in videoElement) {
-          videoElement.srcObject = videoSrc;
+          videoElement.srcObject = videoStream;
         } else {
-          // Avoid using this in new browsers, as it is going away.
-          videoElement.src = window.URL.createObjectURL(videoSrc);
+          // used for older browsers
+          videoElement.src = window.URL.createObjectURL(videoStream);
         }
 
         document.body.appendChild(videoElement);
