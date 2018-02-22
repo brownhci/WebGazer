@@ -394,8 +394,14 @@
         console.log(videoElement);
         videoElement.style.display = 'none';
 
-        //turn the stream into a magic URL
-        videoElement.src = videoSrc;
+        // set the source as the video
+        if ("srcObject" in videoElement) {
+          videoElement.srcObject = videoSrc;
+        } else {
+          // Avoid using this in new browsers, as it is going away.
+          videoElement.src = window.URL.createObjectURL(videoSrc);
+        }
+
         document.body.appendChild(videoElement);
 
         videoElementCanvas = document.createElement('canvas');
@@ -415,6 +421,35 @@
         loop();
     }
 
+    /**
+     * Initializes navigator.mediaDevices.getUserMedia
+     * depending on the browser capabilities
+     */
+    function setGetUserMedia(){
+
+      if (navigator.mediaDevices === undefined) {
+        navigator.mediaDevices = {};
+      }
+
+      if (navigator.mediaDevices.getUserMedia === undefined) {
+        navigator.mediaDevices.getUserMedia = function(constraints) {
+
+          // gets the alternative old getUserMedia is possible
+          var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+          // set an error message if browser doesn't support getUserMedia
+          if (!getUserMedia) {
+            return Promise.reject(new Error("Unfortunately, your browser does not support access to the webcam through the getUserMedia API. Try to use Google Chrome, Mozilla Firefox, Opera, or Microsoft Edge instead."));
+          }
+
+          // uses navigator.getUserMedia for older browsers
+          return new Promise(function(resolve, reject) {
+            getUserMedia.call(navigator, options, resolve, reject);
+          });
+        }
+      }
+    }
+
     //PUBLIC FUNCTIONS - CONTROL
 
     /**
@@ -426,7 +461,7 @@
     webgazer.begin = function(onFail) {
         loadGlobalData();
 
-        onFail = onFail || function() {console.log('No stream')};
+        onFail = onFail || function(error) {console.log('No stream')};
 
         if (debugVideoLoc) {
             init(debugVideoLoc);
@@ -434,28 +469,24 @@
         }
 
         //SETUP VIDEO ELEMENTS
-        navigator.getUserMedia = navigator.getUserMedia ||
-            navigator.webkitGetUserMedia ||
-            navigator.mozGetUserMedia;
+        var options = webgazer.params.camConstraints;
 
-        if(navigator.getUserMedia != null){
-            var options = webgazer.params.camConstraints;
-            //request webcam access
-            navigator.getUserMedia(options,
-                    function(stream){
-                        console.log('video stream created');
-                        videoStream = stream;
-                        init(window.URL.createObjectURL(stream));
-                    },
-                    function(e){
-                        onFail();
-                        videoElement = null;
-                        videoStream = null;
-                    });
-        }
-        if (!navigator.getUserMedia) {
-            alert("Unfortunately, your browser does not support access to the webcam through the getUserMedia API. Try to use Google Chrome, Mozilla Firefox, Opera, or Microsoft Edge instead.");
-        }
+        // sets .mediaDevices.getUserMedia depending on browser
+        setGetUserMedia();
+
+        // request webcam access
+        navigator.mediaDevices.getUserMedia(options)
+        .then(function(stream){ // set the stream
+          console.log('Video stream created');
+          videoStream = stream;
+          init(stream);
+        })
+        .catch(function(err) { // error handling
+          onFail();
+          videoElement = null;
+          videoStream = null;
+        });
+
         if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.chrome){
             alert("WebGazer works only over https. If you are doing local development you need to run a local server.");
         }
@@ -542,11 +573,13 @@
      * @return {boolean} if browser is compatible
      */
     webgazer.detectCompatibility = function() {
-        navigator.getUserMedia = navigator.getUserMedia ||
-            navigator.webkitGetUserMedia ||
-            navigator.mediaDevices.getUserMedia;
 
-        return navigator.getUserMedia !== undefined;
+      var getUserMedia = navigator.mediaDevices.getUserMedia ||
+        navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia;
+
+      return getUserMedia !== undefined;
     };
 
     /**
