@@ -394,7 +394,7 @@
         console.log(videoElement);
         videoElement.style.display = 'none';
 
-        // set the source of the stream
+        // set the video source as the stream
         if ("srcObject" in videoElement) {
           videoElement.srcObject = videoStream;
         } else {
@@ -425,7 +425,7 @@
      * Initializes navigator.mediaDevices.getUserMedia
      * depending on the browser capabilities
      */
-    function setGetUserMedia(){
+    function setUserMediaVariable(){
 
       if (navigator.mediaDevices === undefined) {
         navigator.mediaDevices = {};
@@ -461,7 +461,7 @@
     webgazer.begin = function(onFail) {
         loadGlobalData();
 
-        onFail = onFail || function(error) {console.log('No stream')};
+        onFail = onFail || function() {console.log('No stream')};
 
         if (debugVideoLoc) {
             init(debugVideoLoc);
@@ -472,7 +472,7 @@
         var options = webgazer.params.camConstraints;
 
         // sets .mediaDevices.getUserMedia depending on browser
-        setGetUserMedia();
+        setUserMediaVariable();
 
         // request webcam access
         navigator.mediaDevices.getUserMedia(options)
