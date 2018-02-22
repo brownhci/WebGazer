@@ -385,17 +385,23 @@
 
     /**
      * Initializ es all needed dom elements and begins the loop
-     * @param {URL} videoSrc - The video url to use
+     * @param {URL} videoStream - The video stream to use
      */
-    function init(videoSrc) {
+    function init(videoStream) {
         videoElement = document.createElement('video');
         videoElement.id = webgazer.params.videoElementId;
         videoElement.autoplay = true;
         console.log(videoElement);
         videoElement.style.display = 'none';
 
-        //turn the stream into a magic URL
-        videoElement.src = videoSrc;
+        // set the video source as the stream
+        if ("srcObject" in videoElement) {
+          videoElement.srcObject = videoStream;
+        } else {
+          // used for older browsers
+          videoElement.src = window.URL.createObjectURL(videoStream);
+        }
+
         document.body.appendChild(videoElement);
 
         videoElementCanvas = document.createElement('canvas');
@@ -413,6 +419,35 @@
         clockStart = performance.now();
 
         loop();
+    }
+
+    /**
+     * Initializes navigator.mediaDevices.getUserMedia
+     * depending on the browser capabilities
+     */
+    function setUserMediaVariable(){
+
+      if (navigator.mediaDevices === undefined) {
+        navigator.mediaDevices = {};
+      }
+
+      if (navigator.mediaDevices.getUserMedia === undefined) {
+        navigator.mediaDevices.getUserMedia = function(constraints) {
+
+          // gets the alternative old getUserMedia is possible
+          var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+          // set an error message if browser doesn't support getUserMedia
+          if (!getUserMedia) {
+            return Promise.reject(new Error("Unfortunately, your browser does not support access to the webcam through the getUserMedia API. Try to use Google Chrome, Mozilla Firefox, Opera, or Microsoft Edge instead."));
+          }
+
+          // uses navigator.getUserMedia for older browsers
+          return new Promise(function(resolve, reject) {
+            getUserMedia.call(navigator, options, resolve, reject);
+          });
+        }
+      }
     }
 
     //PUBLIC FUNCTIONS - CONTROL
@@ -434,28 +469,24 @@
         }
 
         //SETUP VIDEO ELEMENTS
-        navigator.getUserMedia = navigator.getUserMedia ||
-            navigator.webkitGetUserMedia ||
-            navigator.mozGetUserMedia;
+        var options = webgazer.params.camConstraints;
 
-        if(navigator.getUserMedia != null){
-            var options = webgazer.params.camConstraints;
-            //request webcam access
-            navigator.getUserMedia(options,
-                    function(stream){
-                        console.log('video stream created');
-                        videoStream = stream;
-                        init(window.URL.createObjectURL(stream));
-                    },
-                    function(e){
-                        onFail();
-                        videoElement = null;
-                        videoStream = null;
-                    });
-        }
-        if (!navigator.getUserMedia) {
-            alert("Unfortunately, your browser does not support access to the webcam through the getUserMedia API. Try to use Google Chrome, Mozilla Firefox, Opera, or Microsoft Edge instead.");
-        }
+        // sets .mediaDevices.getUserMedia depending on browser
+        setUserMediaVariable();
+
+        // request webcam access
+        navigator.mediaDevices.getUserMedia(options)
+        .then(function(stream){ // set the stream
+          console.log('Video stream created');
+          videoStream = stream;
+          init(stream);
+        })
+        .catch(function(err) { // error handling
+          onFail();
+          videoElement = null;
+          videoStream = null;
+        });
+
         if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.chrome){
             alert("WebGazer works only over https. If you are doing local development you need to run a local server.");
         }
@@ -542,11 +573,13 @@
      * @return {boolean} if browser is compatible
      */
     webgazer.detectCompatibility = function() {
-        navigator.getUserMedia = navigator.getUserMedia ||
-            navigator.webkitGetUserMedia ||
-            navigator.mediaDevices.getUserMedia;
 
-        return navigator.getUserMedia !== undefined;
+      var getUserMedia = navigator.mediaDevices.getUserMedia ||
+        navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia;
+
+      return getUserMedia !== undefined;
     };
 
     /**
