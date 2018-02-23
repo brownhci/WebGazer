@@ -25,8 +25,10 @@ If you want to build the repository from source follow these instructions:
     npm install -g grunt-cli
     git clone https://github.com/brownhci/WebGazer.git
     npm install
-    # Run grunt to build the webgazer.js file in the build directory
+    # Run grunt to build the webgazer.js and webgazer.min.js file in the build directory
     grunt
+
+To use the webgazer script in the head of an HTML file add the `async` tag to ensure the clmtrackr does not collapse to a slower version
 
 ## Examples
 
@@ -88,7 +90,7 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 
 ### Acknowledgements
 
-Webgazer project is developed based on the research that is done in Brown University. The work of the calibration example file was developed in the context of a course project topic to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung. 
+Webgazer project is developed based on the research that is done by Brown University. The work of the calibration example file was developed in the context of a course project topic to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
 
 This research is supported by NSF grants IIS-1464061, IIS-1552663, and the Brown University Salomon Award.
 
