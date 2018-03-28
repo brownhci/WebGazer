@@ -239,7 +239,12 @@
      * Runs every available animation frame if webgazer is not paused
      */
     var smoothingVals = new webgazer.util.DataWindow(4);
+
+    /*
+     * Initialises variables used by calibration example file
+     */
     var k = 0;
+    var store_points_var = false;
 
     function loop() {
         var gazeData = getPrediction();
