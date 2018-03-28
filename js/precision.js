@@ -2,6 +2,7 @@
  * Initialises variables used to store accuracy eigenValues
  * This is used by the calibration example file
  */
+var store_points_var = false;
 var xPast50 = new Array(50);
 var yPast50 = new Array(50);
 
