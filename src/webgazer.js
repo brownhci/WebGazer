@@ -395,7 +395,7 @@
         videoElement.style.display = 'none';
 
         // set the video source as the stream
-        if ("srcObject" in video){
+        if ("srcObject" in videoElement){
           videoElement.srcObject = videoStream;
         } else {
           throw "Browser not supported by getUserMedia";
