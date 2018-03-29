@@ -10787,12 +10787,7 @@ function store_points(x, y, k) {
         videoElement.style.display = 'none';
 
         // set the video source as the stream
-        if ("srcObject" in videoElement) {
-          videoElement.srcObject = videoStream;
-        } else {
-          // used for older browsers
-          videoElement.src = window.URL.createObjectURL(videoStream);
-        }
+        videoElement.srcObject = videoStream;
 
         document.body.appendChild(videoElement);
 
