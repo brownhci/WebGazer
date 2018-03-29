@@ -10787,7 +10787,11 @@ function store_points(x, y, k) {
         videoElement.style.display = 'none';
 
         // set the video source as the stream
-        videoElement.srcObject = videoStream;
+        if ("srcObject" in videoElement){
+          videoElement.srcObject = videoStream;
+        } else {
+          throw "Browser not supported by getUserMedia";
+        }
 
         document.body.appendChild(videoElement);
 
@@ -10870,6 +10874,7 @@ function store_points(x, y, k) {
         })
         .catch(function(err) { // error handling
           onFail();
+
           videoElement = null;
           videoStream = null;
         });
