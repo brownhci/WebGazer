@@ -482,7 +482,6 @@
         })
         .catch(function(err) { // error handling
           onFail();
-
           videoElement = null;
           videoStream = null;
         });
