@@ -398,8 +398,7 @@
         if ("srcObject" in videoElement) {
           videoElement.srcObject = videoStream;
         } else {
-          // used for older browsers
-          videoElement.src = window.URL.createObjectURL(videoStream);
+          throw "Browser not supported by getUserMedia";
         }
 
         document.body.appendChild(videoElement);
