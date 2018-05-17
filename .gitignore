@@ -26,6 +26,5 @@
 *.pdf
 *.mp4
 *.cpuprofile
-www/node_modules/
 node_modules/
 build/

@@ -1,32 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>JSDoc: Source: ridgeWorker.js</title>
+'use strict';
 
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
-</head>
-
-<body>
-
-<div id="main">
-
-    <h1 class="page-title">Source: ridgeWorker.js</h1>
-
-    
-
-
-
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>
 console.log('thread starting');
 importScripts('../src/util.js', '../src/mat.js');
 var ridgeParameter = Math.pow(10,-5);
@@ -50,10 +23,10 @@ var dataTrail = new self.webgazer.util.DataWindow(dataWindow);
 
 /**
  * Performs ridge regression, according to the Weka code.
- * @param {array} y corresponds to screen coordinates (either x or y) for each of n click events
- * @param {number[][]} X corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
- * @param {array} ridge ridge parameter
- * @return{array} regression coefficients
+ * @param {Array} y - corresponds to screen coordinates (either x or y) for each of n click events
+ * @param {Array.<Array.<Number>>} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
+ * @param {Array} k - ridge parameter
+ * @return{Array} regression coefficients
  */
 function ridge(y, X, k){
     var nc = X[0].length;
@@ -64,23 +37,23 @@ function ridge(y, X, k){
     do{
         var ss = self.webgazer.mat.mult(xt,X);
         // Set ridge regression adjustment
-        for (var i = 0; i &lt; nc; i++) {
+        for (var i = 0; i < nc; i++) {
             ss[i][i] = ss[i][i] + k;
         }
 
         // Carry out the regression
         var bb = self.webgazer.mat.mult(xt,y);
-        for(var i = 0; i &lt; nc; i++) {
+        for(var i = 0; i < nc; i++) {
             m_Coefficients[i] = bb[i][0];
         }
         try{
-            var n = (m_Coefficients.length != 0 ? m_Coefficients.length/m_Coefficients.length: 0);
-            if (m_Coefficients.length*n != m_Coefficients.length){
-                console.log("Array length must be a multiple of m")
+            var n = (m_Coefficients.length !== 0 ? m_Coefficients.length/m_Coefficients.length: 0);
+            if (m_Coefficients.length*n !== m_Coefficients.length){
+                console.log('Array length must be a multiple of m')
             }
-            solution = (ss.length == ss[0].length ? (self.webgazer.mat.LUDecomposition(ss,bb)) : (self.webgazer.mat.QRDecomposition(ss,bb)));
+            solution = (ss.length === ss[0].length ? (self.webgazer.mat.LUDecomposition(ss,bb)) : (self.webgazer.mat.QRDecomposition(ss,bb)));
 
-            for (var i = 0; i &lt; nc; i++){
+            for (var i = 0; i < nc; i++){
                 m_Coefficients[i] = solution[i][0];
             }
             success = true;
@@ -94,6 +67,11 @@ function ridge(y, X, k){
     return m_Coefficients;
 }
 
+//TODO: still usefull ???
+/**
+ *
+ * @returns {Number}
+ */
 function getCurrentFixationIndex() {
     var index = 0;
     var recentX = this.screenXTrailArray.get(0);
@@ -109,7 +87,10 @@ function getCurrentFixationIndex() {
     return i;
 }
 
-
+/**
+ * Event handler, it store screen position to allow training
+ * @param {Event} event - the receive event
+ */
 self.onmessage = function(event) {
     var data = event.data;
     var screenPos = data['screenPos'];
@@ -128,10 +109,13 @@ self.onmessage = function(event) {
         self.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
     }
     self.needsTraining = true;
-}
+};
 
+/**
+ * Compute coefficient from training data
+ */
 function retrain() {
-    if (self.screenXClicksArray.length == 0) {
+    if (self.screenXClicksArray.length === 0) {
         return;
     }
     if (!self.needsTraining) {
@@ -150,26 +134,3 @@ function retrain() {
 
 setInterval(retrain, trainInterval);
 
-</code></pre>
-        </article>
-    </section>
-
-
-
-
-</div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-ClmGaze.html">ClmGaze</a></li><li><a href="module-Js_objectdetectGaze.html">Js_objectdetectGaze</a></li><li><a href="module-LinearReg.html">LinearReg</a></li><li><a href="module-matrix.html">matrix</a></li><li><a href="module-pupil.html">pupil</a></li><li><a href="module-RidgeReg.html">RidgeReg</a></li><li><a href="module-RidgeThreadedReg.html">RidgeThreadedReg</a></li><li><a href="module-RidgeWightedReg.html">RidgeWightedReg</a></li><li><a href="module-TrackingjsGaze.html">TrackingjsGaze</a></li><li><a href="module-webgazer.html">webgazer</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ridge">ridge</a></li></ul>
-</nav>
-
-<br class="clear">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon May 23 2016 15:30:59 GMT-0400 (EDT)
-</footer>
-
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
-</body>
-</html>

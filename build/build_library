@@ -1,0 +1,18 @@
+#!/bin/bash
+
+FILENAME='webgazer.js'
+
+echo "/** WebGazer.js: Scalable Webcam EyeTracking Using User Interactions
+ *
+ * Copyright (c) 2016, Brown HCI Group
+
+* Licensed under GPLv3. Companies with a valuation of less than $10M can use WebGazer.js under LGPLv3.
+*/
+" > $FILENAME
+for FILE in $(cat toCombine)
+do
+    echo $FILE
+    cat $FILE >> $FILENAME
+    echo -e ';\n' >> $FILENAME
+done
+
