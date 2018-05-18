@@ -34,14 +34,14 @@ To use the webgazer script in the head of an HTML file add the `async` tag to en
 
 Examples of how WebGazer.js works can be found [here](https://webgazer.cs.brown.edu/#examples).
 
-### How to run the Index HTML
+### How to run the Calibration Example HTML
 
-The Index HTML File provides the additional features of an integrated action bar that provides the functionality of a calibration system, accuracy measurements and an informative "help" module.
+The Calibration HTML File provides the additional features of an integrated action bar that provides the functionality of a calibration system, accuracy measurements and an informative "help" module.
 
 This is a good example that shows how WebGazer can be used.
 
 1. Clone and build the repository using the steps listed above (including downloading NodeJS and running `npm install`)
-2. Run the index.html file as a server by running the command `browser-sync start --server --files "*"` in the WebGazer directory
+2. Run the index.html file as a server by running the command `browser-sync start --server --files="**/*" --startPath="www/index.html"` in the WebGazer directory
 
 ## Browser Support
 

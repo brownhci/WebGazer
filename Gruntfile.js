@@ -50,7 +50,7 @@ module.exports = function(grunt) {
 					'src/ridgeWeightedReg.js',
 					'src/ridgeRegThreaded.js',
 					'src/util.js',
-					'js/precision.js',
+					'src/precision.js',
 					'src/webgazer.js'
 				],
 				dest: './build/webgazer.js',

@@ -96,7 +96,7 @@ p > code.hljs { display: inline; }
             <div id="description" class="container pad">
                 <p class="text-justify">
                     WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand
-                    their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js runs only if the user consents in giving access to their webcam. 
+                    their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js runs only if the user consents in giving access to their webcam.
                 </p>
             </div>
 
@@ -107,7 +107,7 @@ p > code.hljs { display: inline; }
                 <div class="row">
                     <div class="col-sm-7">
                         <div class="embed-responsive embed-responsive-16by9" align="center">
-                            <iframe width="560" height="315" src="https://www.youtube.com/embed/NRLlRh2apA8" frameborder="0" allowfullscreen></iframe> 
+                            <iframe width="560" height="315" src="https://www.youtube.com/embed/NRLlRh2apA8" frameborder="0" allowfullscreen></iframe>
                         </div>
                     </div>
                     <div class="col-sm-5">
@@ -131,9 +131,9 @@ p > code.hljs { display: inline; }
             <div class="row">
                 <div class="col-lg-12">
                     To use WebGazer.js you need to add the webgazer.js file as a script in your website:
-                    <pre><code class="html hljs"> /* WebGazer.js library */ 
-&lt;script src="webgazer.js" type="text/javascript" &gt;</code></pre>
-                    <p> 
+                    <pre><code class="html hljs"> /* WebGazer.js library */
+&lt;script src="../build/webgazer.js" type="text/javascript" &gt;</code></pre>
+                    <p>
                         <i>Be aware that when you do local development and you might need to run locally a simple http server that supports the https protocol. </i>
                     </p>
                     <p>
@@ -145,7 +145,7 @@ webgazer.setGazeListener(function(data, elapsedTime) {
     if (data == null) {
         return;
     }
-    var xprediction = data.x; //these x coordinates are relative to the viewport 
+    var xprediction = data.x; //these x coordinates are relative to the viewport
     var yprediction = data.y; //these y coordinates are relative to the viewport
     console.log(elapsedTime); //elapsed time is based on time since begin was called
 }).begin();
@@ -185,7 +185,7 @@ if (prediction) {
                             <li><a href="https://trackingjs.com/">tracking.js</a></li>
                         </ul>
                     </div>
-                </div> 
+                </div>
                 <div class="row">
                     <div class="col-lg-12">
                         <pre><code class="javascript hljs">webgazer.setRegression("ridge"); //set a regression module</code></pre>
@@ -249,7 +249,7 @@ prediction.y; //now always in the bounds of the viewport
                         <img src="media/firefox.png" alt="Mozilla Firefox" width="100" height="100">
                     </center>
                     <h4 class="text-center">Mozilla Firefox 44+</h4>
-                </div>                
+                </div>
                 <div class="col-lg-3">
                     <center>
                         <img src="media/opera.png" alt="Opera" width="100" height="100">
@@ -266,7 +266,7 @@ prediction.y; //now always in the bounds of the viewport
             <div class="row">
                 <div class="col-lg-6">
                     <h3 class="pad">Download</h3>
-                    <form method="get" action="webgazer.js">
+                    <form method="get" action="../build/webgazer.js">
                         <button class="btn btn-primary btn-lg" type="submit"><span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span> Download WebGazer.js</button>
                     </form>
                 </div>
@@ -289,12 +289,12 @@ grunt</code></pre>
         <hr class="featurette-divider">
         <div id="examples" class="container pad">
             <h2 class="text-center pad">Examples</h2>
-            <div class="row">              
+            <div class="row">
                 <div class="col-lg-4">
                     <img src="media/empty.png" alt="Empty Webpage Demo" width="300" height="250">
                     <h4 class="pad">WebGazer.js on an Empty Webpage with calibration</h4>
                     <p>See how easy it is to integrate WebGazer.js on any webpage. Just with a few clicks you will get real-time predictions.  The only thing you need to do is click on these calibration points within the screen while looking at the cursor. Both clicks and cursor movements make the predictions more accurate. The video and the visualized gaze prediction are only shown in debugging mode.
-                        <form method="get" action="https://webgazer.cs.brown.edu/demo.html">
+                        <form method="get" action="calibration.html">
                         <button class="btn btn-primary" type="submit">Try Live!</button>
                     </form>
                     </p>
@@ -302,21 +302,21 @@ grunt</code></pre>
                 <div class="col-lg-4">
                     <img src="media/collision.png" alt="Collision demo" width="300" height="250">
                     <h4 class="pad">Ball Collision Game</h4>
-                    <p>Move the orange ball with your eyes and create collisions with the blue balls. Train WebGazer.js by clicking in various locations within the screen, while looking at your cursor.                     
-                        <form method="get" action="https://webgazer.cs.brown.edu/collision.html">
+                    <p>Move the orange ball with your eyes and create collisions with the blue balls. Train WebGazer.js by clicking in various locations within the screen, while looking at your cursor.
+                        <form method="get" action="collision.html">
                         <button class="btn btn-primary" type="submit">Try Live!</button>
                     </form>
                     </p>
-                </div>  
+                </div>
                 <div class="col-lg-4">
                     <img src="media/google_serp.png" alt="SearchGazer" width="300" height="250">
                     <h4 class="pad">WebGazer on Search Engines</h4>
-                    <p>We have created SearchGazer.js, a library that incorporates WebGazer in Search Engines such as Bing and Google. 
+                    <p>We have created SearchGazer.js, a library that incorporates WebGazer in Search Engines such as Bing and Google.
                         <form method="get" action="https://webgazer.cs.brown.edu/search">
                         <button class="btn btn-primary" type="submit">Try SearchGazer.js!</button>
                     </form>
                     </p>
-                </div>  
+                </div>
             </div>
         </div>
 
@@ -383,7 +383,7 @@ grunt</code></pre>
             <h2 class="text-center pad">Who We Are</h2>
             <div class="row">
                 <!-- bootstrap has 12 columns, so each person gets part of that 12 cols -->
-                
+
                 <div class="col-lg-3">
                     <img class="img-circle center-block" src="media/alexpap.jpg" alt="Alexandra Papoutsaki" height="140">
                     <h4 class="text-center"><a href="http://www.cs.pomona.edu/~apapoutsaki/">Alexandra Papoutsaki</a></h4>
@@ -398,12 +398,12 @@ grunt</code></pre>
                     <img class="img-circle center-block" src="media/aaron.jpg" alt="Aaron Gokaslan" height="140">
                     <h4 class="text-center">Aaron Gokaslan</h4>
                     <p>Undergraduate student at Brown University.</p>
-                </div>                
+                </div>
                 <div class="col-lg-3">
                     <img class="img-circle center-block" src="media/yuze.jpg" alt="Yuze He" height="140">
                     <h4 class="text-center">Yuze He</h4>
                     <p>Masters student at Brown University.</p>
-                </div>    
+                </div>
                 <div class="col-lg-2">
                     <img class="img-circle center-block" src="media/jeff.jpg" alt="Jeff Huang" height="140">
                     <h4 class="text-center"><a href="http://jeffhuang.com">Jeff Huang</a></h4>
@@ -424,7 +424,7 @@ grunt</code></pre>
                 <h3>Acknowledgements</h3>
                 <p>Webgazer project is developed based on the research that is done in Brown University. The work of the calibration example file was developed in the context of a course project topic to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung. This research is supported by NSF grants IIS-1464061, IIS-1552663, and the Brown University Salomon Award.
                 </p>
-            </div>            
+            </div>
         </div>
         <hr class="featurette-divider">
         <div id="license" class="container pad">
@@ -437,4 +437,3 @@ grunt</code></pre>
         <script src="js/bootstrap.min.js"></script>
     </body>
 </html>
-

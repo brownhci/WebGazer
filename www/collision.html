@@ -11,7 +11,7 @@
 </head>
 <body>
   <script src="d3.v3.min.js"></script>
-  <script src="webgazer.js"></script>
+  <script src="../build/webgazer.js"></script>
 
   <script>
 
@@ -19,11 +19,11 @@
 
     var localstorageLabel = 'webgazerGlobalData';
     window.localStorage.setItem(localstorageLabel, null);
-    
+
     webgazer.setRegression('ridge') /* currently must set regression and tracker */
     .setTracker('clmtrackr')
     .setGazeListener(function(data, clock) {
-         //console.log(data); 
+         //console.log(data);
          if(!data)
           return;
         root.px = data.x;
@@ -40,7 +40,7 @@
                   .attr("y2",cl.getCurrentPosition()[27][1])
                   .attr("stroke-width",2)
                   .attr("stroke","red")
-                  .attr("id","eyeline1");        
+                  .attr("id","eyeline1");
 
         svg.select("#eyeline2").remove();
         var cl = webgazer.getTracker().clm;
@@ -91,7 +91,7 @@
     var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
-    .attr("id","balls");    
+    .attr("id","balls");
 
 
     var colors = [];
@@ -211,7 +211,7 @@
 
   window.onbeforeunload = function() {
     //webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
-    window.localStorage.clear(); //Comment out if you want to save data across different sessions 
+    window.localStorage.clear(); //Comment out if you want to save data across different sessions
   }
 
   </script>
