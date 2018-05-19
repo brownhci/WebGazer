@@ -111,7 +111,9 @@ p > code.hljs { display: inline; }
                 <div class="row">
                     <div class="col-sm-7">
                         <div class="embed-responsive embed-responsive-16by9" align="center">
-                            <iframe width="560" height="315" src="https://www.youtube.com/embed/NRLlRh2apA8" frameborder="0" allowfullscreen></iframe>
+                          <video class="embed-responsive-item" poster="./media/video/placeholder.png" controls>
+                            <source src="./media/video/demo.mp4" type="video/mp4">
+                          </video>
                         </div>
                     </div>
                     <div class="col-sm-5">
@@ -238,31 +240,31 @@ prediction.y; //now always in the bounds of the viewport
             <div class="row">
                 <div class="col-lg-2">
                     <center>
-                        <img src="media/chrome.png" alt="Google Chrome" width="100" height="100" >
+                        <img src="media/browser/chrome.png" alt="Google Chrome" width="100" height="100" >
                     </center>
                     <h4 class="text-center">Google Chrome <br /> 53+</h4>
                 </div>
                 <div class="col-lg-2 col-half-offset">
                     <center>
-                        <img src="media/edge.png" alt="Microsoft Edge" width="100" height="100">
+                        <img src="media/browser/edge.png" alt="Microsoft Edge" width="100" height="100">
                     </center>
                     <h4 class="text-center">Microsoft Edge <br /> 12+</h4>
                 </div>
                 <div class="col-lg-2 col-half-offset">
                     <center>
-                        <img src="media/firefox.png" alt="Mozilla Firefox" width="100" height="100">
+                        <img src="media/browser/firefox.png" alt="Mozilla Firefox" width="100" height="100">
                     </center>
                     <h4 class="text-center">Mozilla Firefox <br /> 42+</h4>
                 </div>
                 <div class="col-lg-2 col-half-offset">
                     <center>
-                        <img src="media/opera.png" alt="Opera" width="100" height="100">
+                        <img src="media/browser/opera.png" alt="Opera" width="100" height="100">
                     </center>
                     <h4 class="text-center">Opera <br /> 40+</h4>
                 </div>
                 <div class="col-lg-2 col-half-offset">
                     <center>
-                        <img src="media/safari.png" alt="Safari" width="100" height="100">
+                        <img src="media/browser/safari.png" alt="Safari" width="100" height="100">
                     </center>
                     <h4 class="text-center">Safari <br /> 11+</h4>
                 </div>
@@ -300,16 +302,16 @@ grunt</code></pre>
             <h2 class="text-center pad">Examples</h2>
             <div class="row">
                 <div class="col-lg-4">
-                    <img src="media/empty.png" alt="Empty Webpage Demo" width="300" height="250">
+                    <img src="media/example/empty.png" alt="Empty Webpage Demo" width="300" height="250">
                     <h4 class="pad">WebGazer.js on an Empty Webpage with calibration</h4>
-                    <p class="text-justify">See how easy it is to integrate WebGazer.js on any webpage. Just with a few clicks you will get real-time predictions.  The only thing you need to do is click on these calibration points within the screen while looking at the cursor. Both clicks and cursor movements make the predictions more accurate. The video and the visualized gaze prediction are only shown in debugging mode.
+                    <p class="text-justify">See how easy it is to integrate WebGazer.js on any webpage. With just a few clicks you will get real-time predictions. Follow the popup instructions, where you'll click through the 9 calibration points in the screen whilst looking at the cursor.
                         <form method="get" action="calibration.html">
                         <button class="btn btn-primary" type="submit">Try Live!</button>
                     </form>
                     </p>
                 </div>
                 <div class="col-lg-4">
-                    <img src="media/collision.png" alt="Collision demo" width="300" height="250">
+                    <img src="media/example/collision.png" alt="Collision demo" width="300" height="250">
                     <h4 class="pad">Ball Collision Game</h4>
                     <p class="text-justify">Move the orange ball with your eyes and create collisions with the blue balls. Train WebGazer.js by clicking in various locations within the screen, while looking at your cursor.
                         <form method="get" action="collision.html">
@@ -318,7 +320,7 @@ grunt</code></pre>
                     </p>
                 </div>
                 <div class="col-lg-4">
-                    <img src="media/google_serp.png" alt="SearchGazer" width="300" height="250">
+                    <img src="media/example/google_serp.png" alt="SearchGazer" width="300" height="250">
                     <h4 class="pad">WebGazer on Search Engines</h4>
                     <p class="text-justify">We have created SearchGazer.js, a library that incorporates WebGazer in Search Engines such as Bing and Google.
                         <form method="get" action="https://webgazer.cs.brown.edu/search">
@@ -394,27 +396,27 @@ grunt</code></pre>
                 <!-- bootstrap has 12 columns, so each person gets part of that 12 cols -->
 
                 <div class="col-lg-3">
-                    <img class="img-circle center-block" src="media/alexpap.jpg" alt="Alexandra Papoutsaki" height="140">
+                    <img class="img-circle center-block" src="media/people/alexpap.jpg" alt="Alexandra Papoutsaki" height="140">
                     <h4 class="text-center"><a href="http://www.cs.pomona.edu/~apapoutsaki/">Alexandra Papoutsaki</a></h4>
                     <p>Assistant Professor of Computer Science at Pomona College.</p>
                 </div>
                 <div class="col-lg-2">
-                    <img class="img-circle center-block" src="media/jim.jpg" alt="James Laskey" height="140">
+                    <img class="img-circle center-block" src="media/people/jim.jpg" alt="James Laskey" height="140">
                     <h4 class="text-center">James Laskey</h4>
                     <p>Software Enginner at Google. Brown '16.</p>
                 </div>
                 <div class="col-lg-2">
-                    <img class="img-circle center-block" src="media/aaron.jpg" alt="Aaron Gokaslan" height="140">
+                    <img class="img-circle center-block" src="media/people/aaron.jpg" alt="Aaron Gokaslan" height="140">
                     <h4 class="text-center">Aaron Gokaslan</h4>
                     <p>Undergraduate student at Brown University.</p>
                 </div>
                 <div class="col-lg-3">
-                    <img class="img-circle center-block" src="media/yuze.jpg" alt="Yuze He" height="140">
+                    <img class="img-circle center-block" src="media/people/yuze.jpg" alt="Yuze He" height="140">
                     <h4 class="text-center">Yuze He</h4>
                     <p>Masters student at Brown University.</p>
                 </div>
                 <div class="col-lg-2">
-                    <img class="img-circle center-block" src="media/jeff.jpg" alt="Jeff Huang" height="140">
+                    <img class="img-circle center-block" src="media/people/jeff.jpg" alt="Jeff Huang" height="140">
                     <h4 class="text-center"><a href="http://jeffhuang.com">Jeff Huang</a></h4>
                     <p>Assistant Professor of Computer Science at Brown University.</p>
                 </div>
