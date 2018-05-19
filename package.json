@@ -6,14 +6,10 @@
     "url": "https://github.com/brownhci/WebGazer.git"
   },
   "devDependencies": {
-    "browser-sync": "^2.18.13",
     "git": "^0.1.5",
     "grunt": "*",
     "grunt-contrib-concat": "*",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-uglify-es": "git://github.com/gruntjs/grunt-contrib-uglify.git#harmony",
-    "jquery": "^3.2.1",
-    "jsdoc": "^3.5.5",
-    "sweetalert": "^2.1.0"
+    "grunt-contrib-uglify-es": "git://github.com/gruntjs/grunt-contrib-uglify.git#harmony"
   }
 }
