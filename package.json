@@ -10,6 +10,7 @@
     "grunt": "*",
     "grunt-contrib-concat": "*",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-uglify-es": "git://github.com/gruntjs/grunt-contrib-uglify.git#harmony"
+    "grunt-contrib-uglify-es": "git://github.com/gruntjs/grunt-contrib-uglify.git#harmony",
+    "jsdoc": "^3.5.5"
   }
 }
