@@ -38,25 +38,25 @@ Examples of how WebGazer.js works can be found [here](https://webgazer.cs.brown.
 
 Within the `/www` directory there are two example HTML files:
 
-* `calibration.html`: this example includes additional user feedback, such as a 9-point calibration sequence, accuracy measurements and an informative "help" module.
-* `collision.html`: this example contains a game where the user can move an orange ball with their eyes, which in turn collides with multiple blue balls.
+  * `calibration.html`: This example includes additional user feedback, such as a 9-point calibration sequence, accuracy measurements and an informative help module.
+  * `collision.html`: This example contains a game where the user can move an orange ball with their eyes, which in turn collides with blue balls.
 
 To run the example files as a server:
 
-1. Clone the repository and download NodeJS using the steps listed above
-2. `cd www` # move into the www directory
-3. `npm install` # download the additional dependencies needed for calibration.html
-4. `browser-sync start --server --files "*"` # run the webpage index.html as a server
+  1. Clone the repository and download NodeJS using the steps listed above
+  2. `cd www` # move into the www directory
+  3. `npm install` # download the additional dependencies needed for calibration.html
+  4. `browser-sync start --server --files "*"` # run the webpage index.html as a server
 
 ## Browser Support
 
 The following browsers support WebGazer.js:
 
-* Google Chrome
-* Microsoft Edge
-* Mozilla Firefox
-* Opera
-* Safari
+  * Google Chrome
+  * Microsoft Edge
+  * Mozilla Firefox
+  * Opera
+  * Safari
 
 Your browser needs to support the getUserMedia API as seen [here](http://caniuse.com/#feat=stream).
 
@@ -82,17 +82,17 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 
 ## Who We Are
 
-* Alexandra Papoutsaki
-* James Laskey
-* Aaron Gokaslan
-* Yuze He
-* Jeff Huang
+  * Alexandra Papoutsaki
+  * James Laskey
+  * Aaron Gokaslan
+  * Yuze He
+  * Jeff Huang
 
 ## Other Collaborators
 
-* Ida De Smet - Software engineering student at the University of Auckland
-* Elizabeth Stevenson - Software engineering student at the University of Auckland
-* Jack Wong - Software engineering student at the University of Auckland
+  * Ida De Smet - Software engineering student at the University of Auckland
+  * Elizabeth Stevenson - Software engineering student at the University of Auckland
+  * Jack Wong - Software engineering student at the University of Auckland
 
 ### Acknowledgements
 
