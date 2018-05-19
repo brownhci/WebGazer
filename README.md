@@ -36,17 +36,19 @@ Examples of how WebGazer.js works can be found [here](https://webgazer.cs.brown.
 
 ### How to run the Example HTML files
 
-Within the `/www` directory there are two example HTML files:
+Within the /www directory there are two example HTML files:
 
   * `calibration.html`: This example includes additional user feedback, such as a 9-point calibration sequence, accuracy measurements and an informative help module.
   * `collision.html`: This example contains a game where the user can move an orange ball with their eyes, which in turn collides with blue balls.
 
 To run the example files as a server:
 
-  1. Clone the repository and download NodeJS using the steps listed above
-  2. `cd www` # move into the www directory
-  3. `npm install` # download the additional dependencies needed for calibration.html
-  4. `browser-sync start --server --files "*"` # run the webpage index.html as a server
+	# Clone the repository and download NodeJS using the steps listed above
+	# move into the www directory and download the additional dependencies
+	cd www
+	npm install
+	# run the webpage index.html as a server
+	browser-sync start --server --files "*"
 
 ## Browser Support
 
