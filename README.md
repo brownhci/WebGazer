@@ -44,10 +44,10 @@ Within the /www directory there are two example HTML files:
 To run the example files as a server:
 
 	# Clone the repository and download NodeJS using the steps listed above
-	# move into the www directory and download the additional dependencies
+	# Move into the www directory and download the additional dependencies
 	cd www
 	npm install
-	# run the webpage index.html as a server
+	# Run the webpage index.html as a server
 	browser-sync start --server --files "*"
 
 ## Browser Support
