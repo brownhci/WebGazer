@@ -25,6 +25,7 @@
 *.zip
 *.pdf
 *.mp4
+!*.demo.mp4
 *.cpuprofile
 node_modules/
 www/node_modules/
