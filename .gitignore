@@ -29,3 +29,5 @@
 www/node_modules/
 node_modules/
 build/
+.idea/
+.idea/*
