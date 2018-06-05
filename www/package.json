@@ -6,8 +6,10 @@
     "url": "https://github.com/brownhci/WebGazer.git"
   },
   "dependencies": {
+    "bootstrap": "^3.3.6",
     "browser-sync": "^2.24.4",
-    "jquery": "^3.2.1",
+    "d3": "3.5.9",
+    "jquery": "1.12.4",
     "sweetalert": "^2.1.0"
   }
 }
