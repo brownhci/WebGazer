@@ -1,0 +1,15 @@
+{
+  "name": "webgazer",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brownhci/WebGazer.git"
+  },
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "browser-sync": "^2.24.4",
+    "d3": "3.5.9",
+    "jquery": "1.12.4",
+    "sweetalert": "^2.1.0"
+  }
+}

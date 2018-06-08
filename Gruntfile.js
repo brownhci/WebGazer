@@ -1,5 +1,6 @@
 module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-uglify-es');
 
 	var banner_string =
@@ -50,10 +51,17 @@ module.exports = function(grunt) {
 					'src/ridgeWeightedReg.js',
 					'src/ridgeRegThreaded.js',
 					'src/util.js',
-					'js/precision.js',
+					'src/precision.js',
 					'src/webgazer.js'
 				],
-				dest: './build/webgazer.js',
+				dest: './build/webgazer.js'
+			}
+		},
+		copy: {
+			dist: {
+					files: {
+							'./www/webgazer.js': './build/webgazer.js'
+					}
 			}
 		},
 		uglify: {
@@ -85,6 +93,7 @@ module.exports = function(grunt) {
 	// Default task.
 	grunt.registerTask('default', [
 		'concat',
+		'copy',
 		'uglify'
 	]);
 
