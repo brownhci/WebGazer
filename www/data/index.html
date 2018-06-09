@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <!--<link rel="icon" href="../../favicon.ico">-->
+
+  <title>The Eye Of The Typer Dataset (EOTT)</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/highlight/styles/default.css">
+  <script src="css/highlight/highlight.pack.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad();
+  </script>
+
+  <style type="text/css">
+    body {
+      position: relative;
+      min-height: 2000px;
+      padding-top: 50px;
+    }
+
+    .padright {
+      padding-top: 0px;
+      margin-bottom: 22px;
+    }
+
+    .pad {
+      padding-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    .jumbotron p {
+      font-size: 16px;
+    }
+
+    p>code.hljs {
+      display: inline;
+    }
+  </style>
+
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+            <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+</head>
+
+
+<body data-spy="scroll" data-target="#navbar">
+
+  <!-- Fixed navbar -->
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+        <a class="navbar-brand" href="#">EOTT</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav nav-tabs" role="tablist">
+          <li class="active"><a href="#home">Home</a></li>
+          <li><a href="#dataset">Dataset</a></li>
+          <li><a href="#datasetextractor">Data Extractor</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="http://webgazer.cs.brown.edu/">WebGazer</a></li>
+        </ul>
+      </div>
+      <!--/.nav-collapse
+                -->
+    </div>
+  </nav>
+
+  <div id="home" class="container pad" style="padding-top: 0px">
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <h1 class="text-center" style="margin-bottom:20px">The Eye Of The Typer Dataset (EOTT)</h1>
+      <h2 class="text-center" style="margin-bottom:0px">ETRA 2018</h2>
+    </div>
+    <hr class="featurette-divider">
+    <div id="description" class="container pad">
+    <p class="text-justify">
+            The EOTT dataset contains data from 51 participants that participated in an eye tracking study. The data include user input data (such as mouse and cursor logs), screen recordings, webcam videos of the participants' faces, eye-gaze locations as predicted by a Tobii Pro X3-120 eye tracker, demographic information, and information about the lighting conditions. Participants completed pointing tasks including a Fitts Law study, as well as reading, Web search, and typing tasks. A 9-point calibration task can be used to evaluate the accuracy of webcam eye trackers, including that of WebGazer's. The study was conducted on a desktop PC and Macbook Pro laptop based on the participant's preference.
+    </p>
+    </div>
+    <div style="width:200px">
+      <a class="btn btn-primary btn-lg btn-block" href="WebGazerETRA2018Dataset_Release20180420.zip" role="button">Download Dataset</a>
+    </div>
+  </div>
+  <hr class="featurette-divider">
+
+
+
+  <div id="dataset" class="container pad">
+    <h2>Dataset</h2>
+    <p>
+      We describe the structure of the dataset and provide optional instructions on how to run WebGazer off-line to assess its accuracy against a Tobii Pro X3-120 eye tracker.
+    </p>
+
+    <div class="row">
+      <div class="col-lg-12">
+        <h3 class="text">Participant Folders</h3>
+        <p>The dataset contains 51 folders with curated data of 51 participants. The format of the name of each folder is: P_X, where X is an ID for the users. Notice that the folders run from P_1 to P_64, as the original study was conducted with 64 participants. Out of these, only 51 have valid data which we include in the dataset. A detailed explanation of the experiment protocol can be found in Chapter 5 of <a href="http://cs.brown.edu/people/alexpap/Dissertation.pdf">Papoutsaki's dissertation</a> and in the ETRA 2018 paper.
+          <p>
+            <h4 class="text">Contents of ParticipantFolders</h4> Every P_X folder has a number of different data in it, ranging from videos, log files, and specification files:
+            <ul>
+              <li><b>Webcam Videos</b>: Resolution 640x480. Their name follows the format ParticipantLogID_VideoID_-study-nameOfTask.mp4 and ParticipantLogID_VideoID_-study-nameOfTask.webm. For each task page that the user visited, there is at least one corresponding
+                webcam video capture. If a user visited the same page multiple times, then a different webcam video would correpond to each individual. The possible task pages in increasing order of visit are:
+
+                <ul>
+                  <li><b>dot_test_instructions</b>: instruction page for the Dot Test task.</li>
+                  <li><b>dot_test</b>: Dot Test task.</li>
+                  <li><b>fitts_law_instructions</b>: instruction page for the Fitts Law task.</li>
+                  <li><b>fitts_law</b>: Fitts Law task.</li>
+                  <li><b>serp_instructions</b>: instruction page for the search related tasks.</li>
+                  <li><b>benefits_of_running_instructions</b>: instruction page for the query benefits of running.</li>
+                  <li><b>benefits_of_running</b>: benefits of running SERP.</li>
+                  <li><b>benefits_of_running_writing</b>: Writing portion of benefits of running search task.</li>
+                  <li><b>educational_advantages_of_social_networking_sites_instructions</b>: instruction page for the query educational advantages of social networking sites.</li>
+                  <li><b>educational_advantages_of_social_networking_sites</b>: educational advantages of social networking sites SERP.</li>
+                  <li><b>beducational_advantages_of_social_networking_sites_writing</b>: Writing portion of educational advantages of social networking sites search task.</li>
+                  <li><b>where_to_find_morel_mushrooms_instructions</b>: instruction page for the query where to find morel mushrooms.</li>
+                  <li><b>where_to_find_morel_mushrooms</b>: where to find morel mushrooms SERP.</li>
+                  <li><b>where_to_find_morel_mushrooms_writing</b>: Writing portion of where to find morel mushrooms search task.</li>
+                  <li><b>tooth_abscess_instructions</b>: instruction page for the query tooth abscess.</li>
+                  <li><b>tooth_abscess</b>: tooth abscess SERP.</li>
+                  <li><b>tooth_abscess_writing</b>: Writing portion of tooth abscess sesrch task.</li>
+                  <li><b>dot_test_final_instructions</b>: instruction page for the Final Dot Test task.</li>
+                  <li><b>dot_test_final</b>: Final Dot Test task.</li>
+                  <li><b>thank_you</b>: Questionnaire.</li>
+                </ul>
+              </li>
+              <li><b>Screen videos</b>: Their name follows the format P_X.mp4. They contain the video of the screen of the participant throughout the experiment.</li>
+              <li><b>User Interaction Logs</b>: Their name follows the format ParticipantLogID.txt. They contain the user interactions for the whole experiment. Every task starts and ends with a line in the following format:
+                <pre><code>{"sessionId": "1491423217564_2_/study/dot_test_instructions", "webpage": "/study/dot_test_instructions.htm", "sessionString": "1491423217564_2_/study/dot_test_instructions", "epoch": 1491423557726, "time": 420.26000000000005, "type": "recording start", "event": "video started"}</code></pre>
+                <ul>
+                  <li><b>sessionId</b>: logID_TaskID_task</li>
+                  <li><b>webpage</b>: task</li>
+                  <li><b>sessionId</b>: same with sessionId</li>
+                  <li><b>epoch</b>: Unix Timestap</li>
+                  <li><b>time</b>: (ms) since loading of page</li>
+                  <li><b>type</b>: indicating that recording has started/stopped</li>
+                  <li><b>event</b>: indicated that video is ready to be recorded/saved</li>
+                </ul>
+                The user interactions are captured in lines with the following format:
+                <pre><code>{"clientX": 724, "clientY": 440, "windowY": 23, "windowX": 0, "windowInnerWidth": 1440, "time": 1273.9850000000001, "sessionId": "1491423217564_2_/study/dot_test_instructions", "webpage": "/study/dot_test_instructions.htm", "epoch": 1491423558580, "windowOuterWidth": 1440, "windowInnerHeight": 679, "pageX": 724, "pageY": 440, "windowOuterHeight": 797, "screenY": 537, "screenX": 724, "type": "mousemove"}</code></pre>
+                <ul>
+                  <li><b>screenX</b>: horizontal distance, in CSS pixels, of the left border of the user's browser from the left side of the screen</li>
+                  <li><b>screenY</b>: vertical distance, in CSS pixels, of the left border of the user's browser from the left side of the screen</li>
+                  <li><b>clientX</b>: horizontal coordinate of the mouse pointer in global (screen) coordinates</li>
+                  <li><b>clientY</b>: vertical coordinate of the mouse pointer in global (screen) coordinates</li>
+                  <li><b>pageX</b>: horizontal coordinate of the event relative to the whole document</li>
+                  <li><b>pageY</b>: vertical coordinate of the event relative to the whole document</li>
+                  <li><b>windowX</b>: same with screenX</li>
+                  <li><b>windowY</b>: same with screenY</li>
+                  <li><b>windowInnerWidth</b>: width (in pixels) of the browser window viewport</li>
+                  <li><b>windowInnerHeight</b>: height (in pixels) of the browser window viewport</li>
+                  <li><b>windowOuterWidth</b>: width of the outside of the browser window</li>
+                  <li><b>windowOuterHeight</b>: height of the outside of the browser window</li>
+                  <li><b>epoch</b>: Unix Timestap</li>
+                  <li><b>time</b>: (ms) since loading of page</li>
+                  <li><b>type</b>: mousemove, mouseclick, or textInput</li>
+                  <li><b>pos</b>: for typing events only, top snd left defines the y and x coordinate of the carret during a key stroke</li>
+                </ul>
+              </li>
+              <li><b>Tobii Pro X3-120 Gaze Predictions</b>: Their name follows the format P_X.txt. They contain the gaze predictions given by Tobii Pro X3-120 at 120 Hz at the following format:
+                <pre><code>{"right_pupil_validity": 1, "right_gaze_point_on_display_area": [0.23851549625396729, 0.30423176288604736], "left_gaze_origin_validity": 0, "system_time_stamp": 1491423557714414, "right_gaze_origin_in_user_coordinate_system": [-9.197460174560547, -119.45834350585938, 649.9231567382812], "left_gaze_point_in_user_coordinate_system": [-1.0, -1.0, -1.0], "left_gaze_origin_in_user_coordinate_system": [-1.0, -1.0, -1.0], "left_pupil_validity": 0, "right_pupil_diameter": -1.0, "true_time": 1491423557.724913, "left_gaze_origin_in_trackbox_coordinate_system": [-1.0, -1.0, -1.0], "right_gaze_point_in_user_coordinate_system": [-135.97193908691406, 237.99029541015625, 8.616291999816895], "left_pupil_diameter": -1.0, "right_gaze_origin_validity": 1, "left_gaze_point_validity": 0, "right_gaze_point_validity": 1, "left_gaze_point_on_display_area": [-1.0, -1.0], "right_gaze_origin_in_trackbox_coordinate_system": [0.5202165842056274, 0.7625768184661865, 0.49974384903907776], "device_time_stamp": 193918205466}
+                                </code></pre> An explanation of the three coordinate systems is provided by the <a href="http://developer.tobiipro.com/commonconcepts/coordinatesystems.html">Tobii Pro SDK</a>.
+              </li>
+              <li><b>specs.txt</b>: Data provided by Tobii Pro X3-120 during its calibration phase. It can be used to measure the original accuracy and precision of the eye tracking predictions.</li>
+              <li><b>saved_calibration.bin</b>: The calibration binary file for Tobii Pro X3-120.</li>
+
+            </ul>
+            <h3 class="text">Participant Characteristics</h3>
+            <p> At the same level with the 51 user folders, you will find a spreadsheet named Participant_Characteristics. Each row corresponds to a unique participant and columns capture the following columns:
+              <ul>
+                <li><b>Participant ID</b>: participant IDs in ascending order, from P_1 to P_64.</li>
+                <li><b>Participant Log ID</b>: log ID that corresponds to the Unix timestamp of the start of the experiment. E.g., 1491423217564.
+                  <br> Notice that the Participant Log ID matches the name of the log file with the user interactions for a specific user.</li>
+                <li><b>Date</b>: The date that the experiment took place. E.g., 04/18/2017.</li>
+                <li><b>Setting</b>: One of Laptop or PC depending on which setting was chosen by the participant.
+                  <ul>
+                    <li>Laptop: MacBook Pro (Retina, 15-inch, Late 2013), ran macOS Sierra 10.12.5, had an Intel Core i7 processor at 2.6 GHz, and a resolution of 1440 × 900 pixels.</li>
+                    <li>PC: ran Windows 10, had an Intel Core i5-6600 processor at 3.30 GHz, and a Samsung SyncMaster 2443 monitor with a 24-inch diagonal measurement and a resolution of 1920×1200 pixels. In addition, a Logitech Full HD Webcam C920 USB was
+                      attached on the top of the monitor.</li>
+                  </ul>
+                </li>
+                <li><b>Display Width (pixels)</b>: 1440 for Laptop, 1920 for PC.</li>
+                <li><b>Display Height (pixels)</b>: 900 for Laptop, 1200 for PC.</li>
+                <li><b>Screen Width (cm)</b>: 33.17 for Laptop, 20.73 for PC.</li>
+                <li><b>Screen Height (cm)</b>: 51.7 for Laptop, 32.31 for PC.</li>
+                <li><b>Distance From Screen (cm)</b>: Distance of participant's eyes to webcam, measured by tape at the beginning of the experiment.</li>
+                <li><b>Gender</b>: Male or Female.</li>
+                <li><b>Age</b>: e.g., 26.</li>
+                <li><b>Self-Reported Race</b>: One of Asian, Black, White, or Other that match the options American Indian or Alaska Native, Asian, Black or African American, White, or Other.</li>
+                <li><b>Self-Reported Skin Color</b>: 1-6, as reported in this <a href="https://www.ncbi.nlm.nih.gov/pubmed/26183973">publication</a>.</li>
+                <li><b>Self-Reported Eye Color</b>: E.g., Dark Brown to Brown. Available options selected from this <a href="https://hubpages.com/education/The-Human-Eye-Color-Chart">chart</a>.</li>
+                <li><b>Facial Hair</b>: None, Little, Beard, as defined by the experimenter.</li>
+                <li><b>Self-Reported Vision</b>: Normal, Contacts, or Glasses.</li>
+                <li><b>Touch Typer</b>: Yes/No based on user's ability to touch type.</li>
+                <li><b>Self-Reported Handedness</b>: Right or Left. Note that a comment on that cell might indicate that despite certain hand dominance, the user might have used the opposite hand for the experiment.</li>
+                <li><b>Weather</b>: Sunny, Cloudy, or Indoors if blinds of room that the experiment was conducted were shut.</li>
+                <li><b>Pointing Device</b>: Mouse or Trackpad (only for Laptop).</li>
+                <li><b>Notes</b>: Irregularities as noted down by the experimenter.</li>
+                <li><b>Time of day</b>: that the experiment was conducted. E.g., 16:00 for 4pm.</li>
+                <li><b>Duration</b>: Estimated duration of the experiment in minutes.</li>
+
+              </ul>
+            </p>
+      </div>
+    </div>
+
+
+    <!--<div id="webgazer" class="container pad">
+            <h2 class="text-center">Running WebGazer on the dataset</h2>
+            We can use the dataset described above to evaluate the accuracy of WebGazer. For every participant and task, we have a video recording of their face and their corresponding interactions.
+            We will "feed" those to WebGazer in order to replicate the study and see its gaze predictions as they would happen in real time.
+
+            <h3 class="text">Create json log files</h3>
+            Your first step is to create three json log files that will contain the necessary information for WebGazer to run. To do so, you will need to execute the jupyter notebook create_json_logs.
+            This will result in:
+            <ul>
+                    <li><b>video_logs</b>: By default, it will create a json file with all videos of all participants for the tasks dot_test and final_dot_test. If you would like to expand to more tasks, you need to make sure you follow the instructions in the file.</li>
+                    <li><b>event_logs</b>: By default, it will create a json file with all user interactions of all participants for the tasks dot_test and final_dot_test. If you would like to expand to more tasks, you need to make sure you follow the instructions in the file.</li>
+                    <li><b>counter_logs</b>: This file keeps track of the starting and ending line of user interactions that correspond to a single participant.</li>
+            </ul>
+            <h3 class ="text">Replicate the study while applying WebGazer</h3>
+            You can now replicate the study. Since WebGazer only runs over https or localhost, you will have to start a secure webserver. An easy way you can do this is by running the following command:
+  n<pre><code>python -m SimpleHTTPServer 1> out.txt 2> err.txt</pre></code>
+            You are now ready to open in Chrome the webgazerTester.html that will put together the videos and logs and will show you in real-time the WebGazer predictions.
+
+            <p><b>Warning!</b> For efficiency, we use the localStorage to save the json files. Every time you want to make changes or start the experiment from the beginning, you will need to run on the console of the Dev tools:
+            <pre><code>localStorage.clear()</pre></code>
+            At the end of the replication of the study for a single participant, you will be prompted to choose if you would like to continue with the next.
+            Make sure you read the comments in the html file to see how to save the gaze predictions in your server logs and what to change if you want to expand the replication to more than 2 tasks.</p>
+        </div>-->
+
+    <hr class="featurette-divider">
+    <h1 class="text" id="datasetextractor">Using the Dataset Extractor</h1>
+
+    <p>If you are interested in using this dataset in conjunction with WebGazer, this software takes the dataset and creates CSV files for each video, containing per-frame WebGazer and Tobii values in normalized screen coordinates. After extraction, this makes it simple and efficent to analyse the performance of WebGazer in your favourite <em>data science</em> application.</p>
+
+    <h3 class="text" id="requirements">Requirements:</h1>
+
+    <ul>
+      <li>Python 3.x
+        <ul>
+          <li>tornado</li>
+          <li>pytz</li>
+          <li>numpy</li>
+          <li>opencV</li>
+        </ul>
+      </li>
+      <li>ffmpeg on PATH</li>
+      <li>Chrome (tested on)</li>
+      <li>A lot of disk space - 50GB+ for running on every video on every participant</li>
+    </ul>
+    <h2 class="text" id="instructions">Instructions:</h1>
+    <ol>
+      <li>Execute the Python webserver</li>
+    </ol>
+    <blockquote>
+      <p>python webgazerExtractServer.py</p>
+    </blockquote>
+    <ol>
+      <li>Launch browser</li>
+    </ol>
+    <blockquote>
+      <p>http://localhost:8000/webgazerExtractClient.html</p>
+    </blockquote>
+    <ol>
+      <li>
+        <p>Watch for outputs in ../FramesDataset/</p>
+        <p>Contains:</p>
+        <ul>
+          <li>Per participant</li>
+          <li>Per video</li>
+          <li>Every video frame in the dataset as a .png</li>
+          <li>CSV file containing a lot of useful metadata about each video frame
+            <ul>
+              <li>Frame file path</li>
+              <li>Frame number in video</li>
+              <li>Frame time (Unix milliseconds); only approximate at the millisecond level</li>
+              <li>Any mouse input since the previous frame; only approximate at the millisecond level</li>
+              <li>Any keyboard input since the previous frame; only approximate at the millisecond level</li>
+              <li>Tobii prediction closest in time; normalized to screen coordinates</li>
+              <li>WebGazer prediction; normalized to screen coordinates</li>
+              <li>CLMTracker positions for all 71 2D points</li>
+              <li>Eye features as extracted by WebGazer, 140 features</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <p>Watch a replay.</p>
+        <p>As it processes, the system can show the interaction events against the screen recording. Note that only laptop participants have screen recording synchronization data, and only then are they roughly aligned. Use the text box to 'try some numbers'
+          and find the sync offset. This varies per participant.</p>
+      </li>
+      <li>
+        <p>Write out screen recording videos with interactions overlaid.</p>
+        <p>This uses OpenCV, and is a little flakey, but should work. It will slow down extraction a lot. There's a switch in the code to turn it on; let us know if it breaks (I haven't tested it in a while).</p>
+      </li>
+    </ol>
+
+    <h2 class="text" id="options">Options:</h1>
+
+    <p>The software is currently set up to run on <em>only</em> the two dot tests and the four typing videos. This can be changed by editing webgazerExtractServer.py - look out for 'filter' as a keyword in comments. Likewise, the software currently processes
+      <em>all</em> participants; again look for 'filter'.</p>
+
+    <h2 class="text" id="gotchas">Gotchas:</h1>
+
+    <ul>
+      <li>At times, it might look like nothing is happening to the client. It is, just on the server. E.G., extracting video frames, loading interaction log/Tobii data.</li>
+      <li>Never edit and save a CSV in Excel. It will format the numbers on reading it in, then save them out in the formatted form. E.G., the Unix timestamps are converted to standard form. : (</li>
+      <li>It's pretty easy to spit out error in screen millimetres, but be careful to check which participant was on desktop and which on laptop for real-world measurement conversion from normalized screen coordinates.</li>
+      <li>The CSV has one line per video frame. Sometimes, multiple interaction events happen within a video frame. As such, the interaction columns in the CSVs contain ordered lists, chronologically ordered in increasing time.</li>
+      <li>New versions of webgazer.js with algorithm improvements will require recomputing from scratch. These scripts ship with a version of webgazer.js from a few months ago.</li>
+    </ul>
+
+    <h2 class="text">Questions?</h2>
+    <p> Contact us at Webgazer. webgazer( at )lists.cs.brown.edu </p>
+
+
+    <hr class="featurette-divider">
+    <div id="contact" class="container pad">
+      <h2 class="text-center pad">Who We Are</h2>
+      <div class="row">
+        <!-- bootstrap has 12 columns, so each person gets part of that 12 cols -->
+        <div class="col-lg-1">
+        </div>
+        <div class="col-lg-2">
+          <img class="img-circle center-block" src="media/alexpap.jpg" alt="Alexandra Papoutsaki" height="140">
+          <h4 class="text-center"><a href="http://www.cs.pomona.edu/~apapoutsaki">Alexandra Papoutsaki</a></h4>
+          <p class="text-center">Assistant Professor of Computer Science at Pomona College</p>
+        </div>
+        <div class="col-lg-2">
+          <img class="img-circle center-block" src="media/aaron.jpg" alt="Aaron Gokaslan" height="140">
+          <h4 class="text-center">Aaron Gokaslan</h4>
+          <p class="text-center">Undergraduate student at Brown University</p>
+        </div>
+        <div class="col-lg-2">
+          <img class="img-circle center-block" src="media/james.png" alt="James Tompkin" height="140">
+          <h4 class="text-center"><a href="http://jamestompkin.com">James Tompkin</a></h4>
+          <p class="text-center">Assistant Professor of Computer Science at Brown University</p>
+        </div>
+        <div class="col-lg-2">
+          <img class="img-circle center-block" src="media/yuze.jpg" alt="Yuze He" height="140">
+          <h4 class="text-center">Yuze He</h4>
+          <p class="text-center">Masters student at Brown University</p>
+        </div>
+        <div class="col-lg-2">
+          <img class="img-circle center-block" src="media/jeff.jpg" alt="Jeff Huang" height="140">
+          <h4 class="text-center"><a href="http://jeffhuang.com">Jeff Huang</a></h4>
+          <p class="text-center">Assistant Professor of Computer Science at Brown University</p>
+        </div>
+        <div class="col-lg-1">
+        </div>
+      </div>
+    </div>
+    <hr class="featurette-divider">
+    <div id="license" class="container pad">
+      <h2 class="text-center">License</h2>
+      <p class="text-center">Copyright (C) 2018 <a href="http://hci.cs.brown.edu">Brown HCI Group</a><br> Licensed under <a href="http://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3</a>.
+      </p>
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+      <script src="js/bootstrap.min.js"></script>
+</body>
+
+</html>

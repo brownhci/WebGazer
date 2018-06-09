@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: mat.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: mat.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>define('matrix', function() {
+    "use strict"
+    
+    /**
+     * A utility module that contains some common matrix operations as well as decompositions
+     * @alias module:matrix
+     * @exports matrix
+     */
+    var mat = {};
+
+    /**
+     * Transposes an mxnnumber[][]
+     * @param {number[][]} matrix - of mxn dimensionality
+     * @return {number[][]} transposed matrix
+     */
+    mat.transpose = function(matrix){
+        var m = matrix.length;
+        var n = matrix[0].length;
+        var transposedMatrix = new Array(n);
+        for (var i = 0; i &lt; n; i++){
+            transposedMatrix[i] = new Array(m);
+        }  
+        for (var i = 0; i &lt; m; i++){
+            for (var j = 0; j &lt; n; j++){
+                transposedMatrix[j][i] = matrix[i][j];
+            }
+        }
+        return transposedMatrix;
+    }
+
+    /** 
+     * Get a submatrix of matrix
+     * @param [number[][]] matrix - original matrix
+     * @param [array] r - Array of row indices.
+     * @param [number] j0 - Initial column index
+     * @param [number] j1 - Final column index
+     * @return [number[][]] X is the submatrix matrix(r(:),j0:j1)
+     */
+    mat.getMatrix = function(matrix, r, j0, j1){
+        var X = new Array(r.length);
+        for(var i=0; i&lt;r.length; i++){
+            X[i] = new Array(j1-j0+1);
+        }
+        for (var i = 0; i &lt; r.length; i++){
+            for (var j = j0; j &lt;= j1; j++){
+                X[i][j-j0] = matrix[r[i]][j];
+            }
+        }
+        return X;
+    }
+
+    /** 
+     * Get a submatrix of matrix
+     * @param [number[][]] matrix - original matrix
+     * @param [number] i0 - Initial row index
+     * @param [number] i1 - Final row index
+     * @param [number] j0 - Initial column index
+     * @param [number] j1 - Final column index
+     * @return matrix(i0:i1,j0:j1)
+     */
+    mat.getSubMatrix = function(matrix, i0, i1, j0, j1){
+        var X = new Array(i1-i0+1);
+        for(var i=0; i&lt;i1-i0+1; i++){
+            X[i] = new Array(j1-j0+1);
+        }
+        for (var i = i0; i &lt;= i1; i++){
+            for (var j = j0; j &lt;= j1; j++){
+                X[i-i0][j-j0] = matrix[i][j];
+            }
+        }
+        return X;
+    }
+
+    /** 
+     * Linear algebraic matrix multiplication, matrix1 * matrix2
+     * @param {number[][]} matrix1
+     * @param {number[][]} matrix2
+     * @return {number[][]} Matrix product, matrix1 * matrix2
+     */
+    mat.mult = function(matrix1, matrix2){	
+        if (matrix2.length != matrix1[0].length){
+            console.log("Matrix inner dimensions must agree.");
+        }
+        var X = new Array(matrix1.length);
+        for (var i = 0; i &lt; matrix1.length; i++){
+            X[i] = new Array(matrix2[0].length);
+        }  
+        var Bcolj = new Array(matrix1[0].length);
+        for (var j = 0; j &lt; matrix2[0].length; j++){
+            for (var k = 0; k &lt; matrix1[0].length; k++){
+                Bcolj[k] = matrix2[k][j];
+            }
+            for (var i = 0; i &lt; matrix1.length; i++){
+                var Arowi = matrix1[i];
+                var s = 0;
+                for (var k = 0; k &lt; matrix1[0].length; k++){
+                    s += Arowi[k]*Bcolj[k];
+                }
+                X[i][j] = s;
+            }
+        }
+        return X;
+    }
+
+
+    /**
+     * LUDecomposition to solve A*X = B, based on WEKA code
+     * @param{number[][]} A - left matrix of equation to be solved
+     * @param{number[][]} B - right matrix of equation to be solved
+     * @return {number[][]} X so that L*U*X = B(piv,:)
+     */
+    mat.LUDecomposition = function(A,B){
+        var LU = new Array(A.length);
+        for(var i=0; i&lt;A.length; i++){
+            LU[i] = new Array(A[0].length);
+        }
+        for (var i = 0; i &lt; A.length; i++){
+            for (var j = 0; j &lt; A[0].length; j++){
+                LU[i][j] = A[i][j];
+            }
+        }
+        var m = A.length;
+        var n = A[0].length;
+        var piv = new Array(m);
+        for (var i = 0; i &lt; m; i++){
+            piv[i] = i;
+        }
+        var pivsign = 1;
+        var LUrowi = new Array();
+        var LUcolj = new Array(m);
+        // Outer loop.
+        for (var j = 0; j &lt; n; j++){
+            // Make a copy of the j-th column to localize references.
+            for (var i = 0; i &lt; m; i++){
+                LUcolj[i] = LU[i][j];
+            }
+            // Apply previous transformations.
+            for (var i = 0; i &lt; m; i++){
+                LUrowi = LU[i];
+                // Most of the time is spent in the following dot product.
+                var kmax = Math.min(i,j);
+                var s = 0;
+                for (var k = 0; k &lt; kmax; k++){
+                    s += LUrowi[k]*LUcolj[k];
+                }
+                LUrowi[j] = LUcolj[i] -= s;
+            }
+            // Find pivot and exchange if necessary.
+            var p = j;
+            for (var i = j+1; i &lt; m; i++){
+                if (Math.abs(LUcolj[i]) > Math.abs(LUcolj[p])){
+                    p = i;
+                }
+            }
+            if (p != j){
+                for (var k = 0; k &lt; n; k++){
+                    var t = LU[p][k]; 
+                    LU[p][k] = LU[j][k]; 
+                    LU[j][k] = t;
+                }
+                var k = piv[p]; 
+                piv[p] = piv[j]; 
+                piv[j] = k;
+                pivsign = -pivsign;
+            }
+            // Compute multipliers.
+            if (j &lt; m &amp; LU[j][j] != 0){
+                for (var i = j+1; i &lt; m; i++){
+                    LU[i][j] /= LU[j][j];
+                }
+            }
+        }
+        if (B.length != m){
+            console.log("Matrix row dimensions must agree.");
+        }
+        for (var j = 0; j &lt; n; j++){
+            if (LU[j][j] == 0){
+                console.log("Matrix is singular.")
+            }
+        }
+        var nx = B[0].length;
+        var X = mat.getMatrix(B,piv,0,nx-1);
+        // Solve L*Y = B(piv,:)
+        for (var k = 0; k &lt; n; k++){
+            for (var i = k+1; i &lt; n; i++){
+                for (var j = 0; j &lt; nx; j++){
+                    X[i][j] -= X[k][j]*LU[i][k];
+                }
+            }
+        }
+        // Solve U*X = Y;
+        for (var k = n-1; k >= 0; k--){
+            for (var j = 0; j &lt; nx; j++){
+                X[k][j] /= LU[k][k];
+            }
+            for (var i = 0; i &lt; k; i++){
+                for (var j = 0; j &lt; nx; j++){
+                    X[i][j] -= X[k][j]*LU[i][k];
+                }
+            }
+        }
+        return X;
+    }
+
+    /**
+     * Least squares solution of A*X = B, based on WEKA code
+     * @param [number[][]] A - left side matrix to be solved
+     * @param [number[][]] B - a matrix with as many rows as A and any number of columns.
+     * @return [number[][]] X - that minimizes the two norms of QR*X-B.
+     */
+    mat.QRDecomposition = function(A, B){
+        // Initialize.
+        QR = new Array(A.length);
+        for(var i=0; i&lt;A.length; i++){
+            QR[i] = new Array(A[0].length);
+        }
+        for (var i = 0; i &lt; A.length; i++){
+            for (var j = 0; j &lt; A[0].length; j++){
+                QR[i][j] = A[i][j];
+            }
+        }
+        var m = A.length;
+        var n = A[0].length;
+        var Rdiag = new Array(n);
+        var nrm;
+
+        // Main loop.
+        for (var k = 0; k &lt; n; k++){
+            // Compute 2-norm of k-th column without under/overflow.
+            nrm = 0;
+            for (var i = k; i &lt; m; i++){
+                nrm = Math.hypot(nrm,QR[i][k]);
+            }
+            if (nrm != 0){
+                // Form k-th Householder vector.
+                if (QR[k][k] &lt; 0){
+                    nrm = -nrm;
+                }
+                for (var i = k; i &lt; m; i++){
+                    QR[i][k] /= nrm;
+                }
+                QR[k][k] += 1;
+
+                // Apply transformation to remaining columns.
+                for (var j = k+1; j &lt; n; j++){
+                    var s = 0; 
+                    for (var i = k; i &lt; m; i++){
+                        s += QR[i][k]*QR[i][j];
+                    }
+                    s = -s/QR[k][k];
+                    for (var i = k; i &lt; m; i++){
+                        QR[i][j] += s*QR[i][k];
+                    }
+                }
+            }
+            Rdiag[k] = -nrm;
+        }
+        if (B.length != m){
+            console.log("Matrix row dimensions must agree.");
+        }
+        for (var j = 0; j &lt; n; j++){
+            if (Rdiag[j] == 0)
+                console.log("Matrix is rank deficient");
+        }
+        // Copy right hand side
+        var nx = B[0].length;
+        X = new Array(B.length);
+        for(var i=0; i&lt;B.length; i++){
+            X[i] = new Array(B[0].length);
+        }
+        for (var i = 0; i &lt; B.length; i++){
+            for (var j = 0; j &lt; B[0].length; j++){
+                X[i][j] = B[i][j];
+            }
+        }
+        // Compute Y = transpose(Q)*B
+        for (var k = 0; k &lt; n; k++){
+            for (var j = 0; j &lt; nx; j++){
+                var s = 0.0; 
+                for (var i = k; i &lt; m; i++){
+                    s += QR[i][k]*X[i][j];
+                }
+                s = -s/QR[k][k];
+                for (var i = k; i &lt; m; i++){
+                    X[i][j] += s*QR[i][k];
+                }
+            }
+        }
+        // Solve R*X = Y;
+        for (var k = n-1; k >= 0; k--){
+            for (var j = 0; j &lt; nx; j++){
+                X[k][j] /= Rdiag[k];
+            }
+            for (var i = 0; i &lt; k; i++){
+                for (var j = 0; j &lt; nx; j++){
+                    X[i][j] -= X[k][j]*QR[i][k];
+                }
+            }
+        }
+        return mat.getSubMatrix(X,0,n-1,0,nx-1);
+    }
+
+    return mat;
+});
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-ClmGaze.html">ClmGaze</a></li><li><a href="module-Js_objectdetectGaze.html">Js_objectdetectGaze</a></li><li><a href="module-LinearReg.html">LinearReg</a></li><li><a href="module-matrix.html">matrix</a></li><li><a href="module-pupil.html">pupil</a></li><li><a href="module-RidgeReg.html">RidgeReg</a></li><li><a href="module-RidgeThreadedReg.html">RidgeThreadedReg</a></li><li><a href="module-RidgeWightedReg.html">RidgeWightedReg</a></li><li><a href="module-TrackingjsGaze.html">TrackingjsGaze</a></li><li><a href="module-webgazer.html">webgazer</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ridge">ridge</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon May 23 2016 15:30:59 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

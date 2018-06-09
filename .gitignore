@@ -25,7 +25,9 @@
 *.zip
 *.pdf
 *.mp4
+!/www/media/video/demo.mp4
 *.cpuprofile
 node_modules/
+www/node_modules/
 build/webgazer.js
 build/webgazer.min.js
