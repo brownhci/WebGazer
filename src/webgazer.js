@@ -51,6 +51,8 @@
     // loop parameters
     var clockStart = performance.now();
     webgazer.params.dataTimestep = 50;
+    var latestEyeFeatures = null;
+    var latestGazeData = null;
     var paused = false;
     //registered callback for loop
     var nopCallback = function(data, time) {};
@@ -98,25 +100,23 @@
     * Checks if the pupils are in the position box on the video
     */
     function checkEyesInValidationBox() {
-        var eyesObjs = curTracker.getEyePatches(videoElementCanvas,webgazer.params.imgWidth,webgazer.params.imgHeight);
-
         var validationBox = document.getElementById('faceOverlay');
 
         var xPositions = false;
         var yPositions = false;
 
-        if (validationBox != null && eyesObjs) {
+        if (validationBox != null && latestEyeFeatures) {
             //get the boundaries of the face overlay validation box
             leftBound = 107;
-     				topBound = 59;
-     				rightBound = leftBound + 117;
-     				bottomBound = topBound + 117;
+     		topBound = 59;
+     		rightBound = leftBound + 117;
+     		bottomBound = topBound + 117;
 
             //get the x and y positions of the left and right eyes
-   					var eyeLX = eyesObjs.left.imagex;
-					  var eyeLY = eyesObjs.left.imagey;
-   					var eyeRX = eyesObjs.right.imagex;
-   					var eyeRY = eyesObjs.right.imagey;
+   			var eyeLX = latestEyeFeatures.left.imagex;
+			var eyeLY = latestEyeFeatures.left.imagey;
+   			var eyeRX = latestEyeFeatures.right.imagex;
+   			var eyeRY = latestEyeFeatures.right.imagey;
 
             //check if the x values for the left and right eye are within the
             //validation box
@@ -177,10 +177,6 @@
         if (!canvas) {
             return;
         }
-        // [20180106 James Tompkin] What does this line do? Seems like its in the wrong place to me, from an API design perspective.
-        // It also shouldn't be in getPrediction() either. If we need to paint to the canvas, it should happen in loop(), but really,
-        // isn't the browser doing this somewhere?
-        //paintCurrentFrame(canvas, width, height);
         try {
             return blinkDetector.detectBlink(curTracker.getEyePatches(canvas, width, height));
         } catch(err) {
@@ -216,18 +212,19 @@
      */
     function getPrediction(regModelIndex) {
         var predictions = [];
-        var features = getPupilFeatures(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
+        latestEyeFeatures = getPupilFeatures(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
+
         if (regs.length === 0) {
             console.log('regression not set, call setRegression()');
             return null;
         }
         for (var reg in regs) {
-            predictions.push(regs[reg].predict(features));
+            predictions.push(regs[reg].predict(latestEyeFeatures));
         }
         if (regModelIndex !== undefined) {
             return predictions[regModelIndex] === null ? null : {
                 'x' : predictions[regModelIndex].x,
-                'y' : predictions[regModelIndex].y
+                'y' : predictions[regModelIndex].y,
             };
         } else {
             return predictions.length === 0 || predictions[0] === null ? null : {
@@ -245,16 +242,21 @@
     var k = 0;
 
     function loop() {
-        // [20180602 James Tompkin] Moved from within getPupilFeatures, which was a performance side-effecty behaviour
-        paintCurrentFrame(videoElementCanvas, width, height);
-        var gazeData = getPrediction();
+        // Paint the latest video frame into the canvas which will be analyzed by WebGazer
+        paintCurrentFrame(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
+        
+        // Get prediction
+        latestGazeData = getPrediction();
+
+        // Count time
         var elapsedTime = performance.now() - clockStart;
 
-        callback(gazeData, elapsedTime);
+        // [20180611 James Tompkin]: What does this line do?
+        callback(latestGazeData, elapsedTime);
 
         if (gazeData && showGazeDot) {
 
-            smoothingVals.push(gazeData);
+            smoothingVals.push(latestGazeData);
             var x = 0;
             var y = 0;
             var len = smoothingVals.length;
@@ -297,13 +299,12 @@
         if (paused) {
             return;
         }
-        var features = getPupilFeatures(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
         if (regs.length === 0) {
             console.log('regression not set, call setRegression()');
             return null;
         }
         for (var reg in regs) {
-            regs[reg].addData(features, [x, y], eventType);
+            regs[reg].addData(latestEyeFeatures, [x, y], eventType);
         }
     };
 
@@ -506,7 +507,6 @@
         if (videoElementCanvas === null) {
             return false;
         }
-        paintCurrentFrame(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
         return videoElementCanvas.width > 0;
     };
 
