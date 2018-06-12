@@ -13,7 +13,8 @@
     var weights = {'X':[0],'Y':[0]};
     var trailDataWindow = 10;
 
-    /**
+    /** [20160601 James Tompkin] Why is this function in the ridge regression class? It is also in *three* ridge regression classes, even though it is identical.
+     * 
      * Compute eyes size as gray histogram
      * @param {Object} eyes - The eyes where looking for gray histogram
      * @returns {Array.<T>} The eyes gray level histogram
@@ -108,7 +109,9 @@
 
         return {
             x: predictedX,
-            y: predictedY
+            y: predictedY,
+            // [20180602 James Tompkin] It's weird that we don't pass in the features to the prediction function. I want them, so let's also return the features used for this prediction.
+            features: eyeFeats
         };
     };
 
