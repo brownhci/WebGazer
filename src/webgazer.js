@@ -254,7 +254,7 @@
         // [20180611 James Tompkin]: What does this line do?
         callback(latestGazeData, elapsedTime);
 
-        if (gazeData && showGazeDot) {
+        if (latestGazeData && showGazeDot) {
 
             smoothingVals.push(latestGazeData);
             var x = 0;
