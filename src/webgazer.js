@@ -177,10 +177,7 @@
         if (!canvas) {
             return;
         }
-        // [20180106 James Tompkin] What does this line do? Seems like its in the wrong place to me, from an API design perspective.
-        // It also shouldn't be in getPrediction() either. If we need to paint to the canvas, it should happen in loop(), but really,
-        // isn't the browser doing this somewhere?
-        //paintCurrentFrame(canvas, width, height);
+        paintCurrentFrame(canvas, width, height);
         try {
             return blinkDetector.detectBlink(curTracker.getEyePatches(canvas, width, height));
         } catch(err) {
@@ -245,8 +242,6 @@
     var k = 0;
 
     function loop() {
-        // [20180602 James Tompkin] Moved from within getPupilFeatures, which was a performance side-effecty behaviour
-        paintCurrentFrame(videoElementCanvas, width, height);
         var gazeData = getPrediction();
         var elapsedTime = performance.now() - clockStart;
 
@@ -764,22 +759,6 @@
      */
     webgazer.params.getEventTypes = function() {
         return eventTypes.slice();
-    }
-
-    /**
-     * Get the video element canvas that WebGazer uses internally on which to run its face tracker.
-     * @return The current video element canvas
-     */
-    webgazer.getVideoElementCanvas = function() {
-        return videoElementCanvas;
-    }
-  
-    /**
-     * Set the video element canvas; useful if you want to run WebGazer on your own canvas (e.g., on any random image).
-     * @return The current video element canvas
-     */
-    webgazer.setVideoElementCanvas = function(canvas) {
-        videoElementCanvas = canvas;
     }
 
 }(window));
