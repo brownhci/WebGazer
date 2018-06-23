@@ -185,7 +185,7 @@ if (prediction) {
                             <li><a href="https://trackingjs.com/">tracking.js</a></li>
                         </ul>
                     </div>
-                </div> 
+                </div>
                 <div class="row">
                     <div class="col-lg-12">
                         <pre><code class="javascript hljs">webgazer.setRegression("ridge"); //set a regression module</code></pre>
@@ -249,7 +249,7 @@ prediction.y; //now always in the bounds of the viewport
                         <img src="media/firefox.png" alt="Mozilla Firefox" width="100" height="100">
                     </center>
                     <h4 class="text-center">Mozilla Firefox 44+</h4>
-                </div>                
+                </div>
                 <div class="col-lg-3">
                     <center>
                         <img src="media/opera.png" alt="Opera" width="100" height="100">
@@ -290,33 +290,40 @@ grunt</code></pre>
         <div id="examples" class="container pad">
             <h2 class="text-center pad">Examples</h2>
             <div class="row">              
-                <div class="col-lg-4">
+                <div class="col-lg-6">
                     <img src="media/empty.png" alt="Empty Webpage Demo" width="300" height="250">
                     <h4 class="pad">WebGazer.js on an Empty Webpage with calibration</h4>
-                    <p>See how easy it is to integrate WebGazer.js on any webpage. Just with a few clicks you will get real-time predictions.  The only thing you need to do is click on these calibration points within the screen while looking at the cursor. Both clicks and cursor movements make the predictions more accurate. The video and the visualized gaze prediction are only shown in debugging mode.
+                    <p>See how easy it is to integrate WebGazer.js on any webpage. Just with a few clicks you will get real-time predictions.  The only thing you need to do is click on these calibration points within the screen while looking at the cursor. Both clicks and cursor movements make the predictions more accurate. The video and the visualized gaze prediction are only shown in debugging mode.</p>
                         <form method="get" action="https://webgazer.cs.brown.edu/demo.html">
                         <button class="btn btn-primary" type="submit">Try Live!</button>
                     </form>
-                    </p>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-6">
                     <img src="media/collision.png" alt="Collision demo" width="300" height="250">
                     <h4 class="pad">Ball Collision Game</h4>
-                    <p>Move the orange ball with your eyes and create collisions with the blue balls. Train WebGazer.js by clicking in various locations within the screen, while looking at your cursor.                     
+                    <p>Move the orange ball with your eyes and create collisions with the blue balls. Train WebGazer.js by clicking in various locations within the screen, while looking at your cursor.</p>
                         <form method="get" action="https://webgazer.cs.brown.edu/collision.html">
                         <button class="btn btn-primary" type="submit">Try Live!</button>
                     </form>
-                    </p>
-                </div>  
-                <div class="col-lg-4">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
                     <img src="media/google_serp.png" alt="SearchGazer" width="300" height="250">
                     <h4 class="pad">WebGazer on Search Engines</h4>
-                    <p>We have created SearchGazer.js, a library that incorporates WebGazer in Search Engines such as Bing and Google. 
+                    <p>We have created SearchGazer.js, a library that incorporates WebGazer in Search Engines such as Bing and Google. </p>
                         <form method="get" action="https://webgazer.cs.brown.edu/search">
                         <button class="btn btn-primary" type="submit">Try SearchGazer.js!</button>
                     </form>
-                    </p>
-                </div>  
+                </div>
+                <div class="col-lg-6">
+                    <img src="media/heatmap-example-image.png" alt="" width="300" height="250">
+                    <h4 class="pad">Heatmap Visualization + Tutorial</h4>
+                    <p>Demo and learn how to visualize eye gaze data collected from WebGazer using Heatmap.js, a javascript library created by <a href="https://www.patrick-wied.at">Patrick Wied</a>.</p>
+                    <form method="get" action="https://webgazer.cs.brown.edu/heatmap.html">
+                        <button class="btn btn-primary" type="submit">Demo Now!</button>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -369,14 +376,16 @@ grunt</code></pre>
                     </ul>
                 </div>
                 <div class="col-lg-6">
-                <p>Online discussions in:</p>
-                <ul>
-                    <li><a href="https://news.ycombinator.com/item?id=11770273">Hacker News</a></li>
-                    <li><a href="https://www.reddit.com/r/programming/comments/4kyeww/webgazerjs_eye_tracking_library_using_the_webcam/">Reddit Programming</a></li>
-                    <li><a href="https://twitter.com/search?f=tweets&vertical=default&q=webgazer">Twitter</a></li>
+                    <p>Online discussions in:</p>
+                    <ul>
+                        <li><a href="https://news.ycombinator.com/item?id=11770273">Hacker News</a></li>
+                        <li><a href="https://www.reddit.com/r/programming/comments/4kyeww/webgazerjs_eye_tracking_library_using_the_webcam/">Reddit Programming</a></li>
+                        <li><a href="https://twitter.com/search?f=tweets&vertical=default&q=webgazer">Twitter</a></li>
+                    </ul>
                 </div>
-
+            </div>
         </div>
+
 
         <hr class="featurette-divider">
         <div id="contact" class="container pad">
@@ -392,18 +401,18 @@ grunt</code></pre>
                 <div class="col-lg-2">
                     <img class="img-circle center-block" src="media/jim.jpg" alt="James Laskey" height="140">
                     <h4 class="text-center">James Laskey</h4>
-                    <p>Software Enginner at Google. Brown '16.</p>
+                    <p>Software Engineer at Google. Brown '16.</p>
                 </div>
                 <div class="col-lg-2">
                     <img class="img-circle center-block" src="media/aaron.jpg" alt="Aaron Gokaslan" height="140">
                     <h4 class="text-center">Aaron Gokaslan</h4>
                     <p>Undergraduate student at Brown University.</p>
-                </div>                
+                </div>
                 <div class="col-lg-3">
                     <img class="img-circle center-block" src="media/yuze.jpg" alt="Yuze He" height="140">
                     <h4 class="text-center">Yuze He</h4>
                     <p>Masters student at Brown University.</p>
-                </div>    
+                </div>
                 <div class="col-lg-2">
                     <img class="img-circle center-block" src="media/jeff.jpg" alt="Jeff Huang" height="140">
                     <h4 class="text-center"><a href="http://jeffhuang.com">Jeff Huang</a></h4>
@@ -424,14 +433,17 @@ grunt</code></pre>
                 <h3>Acknowledgements</h3>
                 <p>Webgazer project is developed based on the research that is done in Brown University. The work of the calibration example file was developed in the context of a course project topic to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung. This research is supported by NSF grants IIS-1464061, IIS-1552663, and the Brown University Salomon Award.
                 </p>
-            </div>            
+            </div>
         </div>
+
+
         <hr class="featurette-divider">
         <div id="license" class="container pad">
             <h2 class="text-center">License</h2>
             <p class="text-center">Copyright (C) 2018 <a href="http://hci.cs.brown.edu">Brown HCI Group</a><br>
             Licensed under <a href="http://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3</a>.
             </p>
+        </div>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
