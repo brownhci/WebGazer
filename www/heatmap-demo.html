@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        html, body, {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-gap: 10px;
+            background-color: #ffffff;
+            padding: 0px;
+        }
+
+        .grid-container > div {
+            background-color: rgba(255, 255, 255, 1);
+            text-align: center;
+            padding: 2px 0;
+            font-size: 30px;
+        }
+    </style>
+
+</head>
+<body>
+    
+    <div id="heatmapContainer" style="margin: auto; width: 100%; height: auto; max-width: 700px">
+            <img id="webgazer-pic" src="./media/example/heatmap-demo.png" style="width: 100%; height: auto; max-width: 700px">
+    </div>
+
+    <script src="./js/heatmap.js"></script>
+    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="./js/heatmap-data.js"></script>
+    <script src="./js/heatmap-webgazer.js"></script>
+</body>
+</html>

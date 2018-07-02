@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <!--<link rel="icon" href="../../favicon.ico">-->
+        <title>WebGazer: Data Visualization</title>
+
+        <!-- Bootstrap core CSS -->
+        <link href="./node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <link rel="stylesheet" href="css/highlight/styles/default.css">
+        <script src="css/highlight/highlight.pack.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+
+<style type="text/css">
+body {
+    position: relative;
+    min-height: 2000px;
+    padding-top: 50px;
+}
+
+.jumbotron {
+    background-color:transparent !important;
+}
+
+.padright {
+    padding-top: 0px;
+    margin-bottom: 22px;
+}
+.pad {
+    padding-top: 10px;
+    margin-bottom: 20px;
+}
+
+.jumbotron p {
+    font-size: 16px;
+}
+
+p > code.hljs { display: inline; }
+
+</style>
+
+</head>
+    <body data-spy="scroll" data-target="#navbar">
+
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="https://webgazer.cs.brown.edu/">WebGazer.js</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav nav-tabs" role="tablist">
+                        <li><a href="https://webgazer.cs.brown.edu/#home">Home</a></li>
+                        <li><a href="https://webgazer.cs.brown.edu/#video">About</a></li>
+                        <li><a href="https://webgazer.cs.brown.edu/#usage">Usage</a></li>
+                        <li><a href="https://webgazer.cs.brown.edu/#support">Support</a></li>
+                        <li><a href="https://webgazer.cs.brown.edu/#download">Download</a></li>
+                        <li><a href="https://webgazer.cs.brown.edu/documentation">Documentation</a></li>
+                        <li class="active"><a href="https://webgazer.cs.brown.edu/#examples">Examples</a></li>
+                        <li><a href="https://webgazer.cs.brown.edu/#publication">Publication</a></li>
+                        <li><a href="https://webgazer.cs.brown.edu/#press">Press</a></li>
+                        <li><a href="https://webgazer.cs.brown.edu/#contact">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div id="heatmap-home" class="container pad" style="padding-top: 0px">
+            <div class="jumbotron">
+                <h1 class="text-center" style="margin-bottom:0px">Data Visualization</h1><br>
+                <h2 class="text-center"><a href="https://www.patrick-wied.at/static/heatmapjs/">Heatmap.js</a>, created by <a href="https://www.patrick-wied.at">Patrick Wied,</a> is a "lightweight, easy to use JavaScript library to help you visualize your three dimensional data!"</h2>
+            </div>
+
+            <hr class="featurette-divider">
+            <h2 class="text-center" style="margin-bottom:0px">Example Demo</h2><br>
+            <p class="text-center padright" style="font-size:20px">This demo does not work with an ad-blocker.</p>
+
+            <div class="row text-center">
+                <div class="col-lg-4">
+                    <form method="get" action="https://www.patrick-wied.at/static/heatmapjs/docs.html">
+                        <button class="btn btn-primary btn-lg text-center" type="submit">Heatmap Documentation</button>
+                    </form>
+                </div>
+               <div class="col-lg-4">
+                        <a href="./media/example/heatmap-tutorial.zip" download="heatmap-tutorial.zip"><button id="heatmap_download" class="btn btn-primary btn-lg text-center" ><span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span> Download Heatmap Tutorial Files</button></a>
+                </div>
+                <div class="col-lg-4">
+                    <form method="get" action="./heatmap-demo.html">
+                        <button class="btn btn-primary btn-lg text-center" type="submit">Demo</button>
+                    </form>
+                </div>
+            </div>
+            <br>
+
+            <div id="heatmapContainer" style="margin: auto; width: 100%; height: auto; max-width: 700px">
+                    <img id="webgazer-pic" src="./media/example/heatmap-demo.png" style="width: 100%; height: auto; max-width: 700px">
+            </div>
+        </div>
+
+
+        <div id="heatmap-usage" class="container pad">
+            <hr class="featurette-divider">
+            <h2 class="text-center">Usage</h2>
+            <br>Begin by creating a div element that will house all of the heatmap's visual rendering on your page.
+            
+<pre><code class="html">&lt;!-- Heatmap Container --&gt;
+&lt;div id="heatmapContainer">&lt;div&gt;</code></pre>
+
+            <p><br>Create HTML script elements that import the javascript files needed for the visualization. The script element needs to be given the location that the <code class="javascript">heatmap.js</code> file is stored. <b>Note:</b> The period in <code class="javascript">"./js/heatmap.js"</code> represents the current directory.</p>
+
+<pre><code class="html">&lt;!-- Script Element --&gt;
+&lt;script src="./js/heatmap.js"&gt;&lt;script&gt; 
+</code></pre>
+
+<p><br>Initialize a heatmap instance with a few lines of javascript.</p>
+<pre><code class="javascript hljs">var heatmap = h337.create({
+    container: document.getElementById('heatmapContainer') // refers to the container that you created above
+});
+</code></pre>
+
+            <p><code class="javascript">Heatmap.js</code> supports many kinds of visual configurations that change the heatmaps appearance. View these settings in the initialization <a href="https://www.patrick-wied.at/static/heatmapjs/docs.html">documentation.</a><p>
+            <p><br>Calling the <code class="javascript">setData()</code> function on the <code class="javascript">heatmap</code> variable: <code class="javascript">heatmap.setData(data)</code> allows the user to provide the heatmap instance with data to display. The data has to be in JSON format. If your data is stored as a CSV File, convert it into a JSON Object, an online search (CSV to JSON) will help with this. Once you have a <code class="javascript">.json</code> file, check that the embedded JSON array has a key value of <code class="javascript">data</code> like in the JSON Object structure above. The script given later operates under the assumption that the array is referred to as <code class="javascript">data</code></p>
+
+
+
+<pre><code class="javascript hljs">var heatmap_data = {
+    max: 5, // A maximum value is optional
+    min: 0, // A minimum value is optional
+    data: [{ x: 10, y: 15, value: 5}, ...] // Note that the data paramater is an array of json objects with x, y, and value variables
+}</code></pre>
+
+            <p><br>Adding <code class="javascript">var heatmap_data =</code> in front of your JSON Object and then replacing the <code class="javascript">.json</code> extension with <code class="javascript">.js</code> creates a javascript file that you can import. Thus <code class="javascript">heatmap-data.json</code> becomes <code class="javascript">heatmap-data.js</code>in explorer. Import the <code class="javascript">heatmap-data.js</code> file into your HTML page, similarly to the second step of this guide.</p>
+
+<pre><code class="html">&lt;!-- Script Element --&gt;
+&lt;script src="./js/heatmap.js"&gt;&lt;script&gt; 
+&lt;script src="./js/heatmap-data.js"&gt;&lt;script&gt; // the file we just created is now imported
+</code></pre>
+
+            <p>Importing the <code class="javascript">heatmap-data.js</code> gives the heatmap instance access to the information to be displayed. <br><br>The script below displays the data sequentially at a constant rate that can be modified to different timings. <b>Note:</b> All times are represented in milliseconds.<br>
+                <code class="javascript">initial_delay</code> is the amount of time after the webpage finishes loading before starting the visualization.<br>
+                <code class="javascript">heatmap_display_delay</code> is the amount of time between each additional point being displayed. </p>
+
+<pre><code class="javascript hljs">var initial_delay = 1500; // visualization delay after the window has loaded (milliseconds)
+var heatmap_display_delay = 25; // sets a 25 millisecond delay before each new point is displayed
+var heatmap_data_counter = 0;
+var heatmap_data_length = heatmap_data.data.length;
+var heatmap_timer;
+var heatmap_displayed_data = {data:[]}; // starts off empty but clones the data to display point by point
+
+var repeat = true; // Whether to repeat the simulation in a continous loop
+
+// function that initializes the visulaization by repeatedly calling heatmap_display_function()
+function heatmap_trigger_display() { 
+
+    heatmap_timer = setInterval(heatmap_display_function, heatmap_display_delay); // sets the interval between each point displaying
+    heatmap_data_counter++;
+}
+
+function heatmap_display_function() {
+
+    if(heatmap_data_counter == heatmap_data_length) {
+
+        if(repeat){
+
+            var empty_data = {
+                data : {}
+            };
+            heatmap.setData(empty_data);
+            heatmap_displayed_data = {data:[]};
+            heatmap_data_counter = 0;
+        } else {
+            clearInterval(heatmap_timer);
+        }
+
+    }
+
+    heatmap_displayed_data.data.push(heatmap_data.data[heatmap_data_counter]);
+    heatmap.setData(heatmap_displayed_data); // renders the data on the screen
+    heatmap_data_counter++;
+}
+
+setTimeout(function () {heatmap_trigger_display();}, initial_delay); // starts displaying the points after the inital delay time has run out</code></pre>
+
+            <p><br>Save the script as <code class="javascript">heatmap-webgazer.js</code> or download it below, into the same location as the rest of your <code class="javascript">.js</code> files. Import this script into the HTML.</p>
+
+<pre><code class="html">&lt;!-- Script Element --&gt;
+&lt;script src="./js/heatmap.js"&gt;&lt;script&gt; 
+&lt;script src="./js/heatmap-data.js"&gt;&lt;script&gt;
+&lt;script src="./js/heatmap-webgazer.js"&gt;&lt;script&gt; // import the file we just created</code></pre>
+
+        </div>
+
+        <hr class="featurette-divider">
+        <div id="contact" class="container pad">
+            <h2 class="text-center pad">Acknowledgements</h2>
+            <div class="col-lg">
+                <img class="img-circle center-block" src="media/people/elvis.jpg" alt="Elvis Kahoro" height="140">
+                <h4 class="text-center"><a href="http://www.elvis.ai">Elvis Kahoro</a></h4>
+                <p align="center">Undergraduate Student '20 at <a href="https://www.pomona.edu/">Pomona College</a></p>
+            </div>
+        </div>
+
+        <div id="license" class="container pad">
+            <hr class="featurette-divider">
+            <h2 class="text-center">License</h2>
+            <p class="text-center">Copyright (C) 2018 <a href="http://hci.cs.brown.edu">Brown HCI Group</a><br>
+                Licensed under <a href="http://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3</a>.
+            </p>
+        </div>
+
+        <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+        <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="./js/heatmap.js"></script>
+        <script src="./js/heatmap-data.js"></script>
+        <script src="./js/heatmap-webgazer.js"></script>
+    </body>
+</html>

@@ -201,7 +201,7 @@ if (prediction) {
                         <p>Here are all the regression modules that come by default with WebGazer.js. Let us know if you would like introduce different modules - just keep in mind that they should be able to produce predictions very fast.</p>
                         <ul>
                             <li>ridge - a simple ridge regression model mapping pixels from the detected eyes to locations on the screen.</li>
-                            <li>weightedRidge - a weight ridge regression model with newest user interactions contribution more to the model.</li>
+                            <li>weightedRidge - a weight ridge regression model with the most recent user interactions contributing to the model.</li>
                             <li>threadedRidge - a faster implementation of ridge regression that uses threads.</li>
                             <li>linear - a basic simple linear regression that maps </li>
                         </ul>
@@ -221,7 +221,7 @@ webgazer.resume(); //data collection resumes, gaze callback will be called again
             <div class="row">
                 <div class="col-lg-12">
                     <h4>Util and Params</h4>
-                    <p>We provide some useful functions and objects in <code class="javascript">webgazer.util</code>. The webgazer.params object also contains some useful parameters to tweak to control video fidelity (trades off speed and accuracy) and sample rate for mouse movements.</p>
+                    <p>We provide some useful functions and objects in <code class="javascript">webgazer.util</code>. The webgazer.params object contains parameters that can be tweaked to control video fidelity (trades off speed and accuracy) and the sample rate for mouse movements.</p>
                     <pre><code class="javascript hljs">
 webgazer.util.bound(prediction);
 prediction.x; //now always in the bounds of the viewport
@@ -304,7 +304,7 @@ grunt
         <div id="examples" class="container pad">
             <h2 class="text-center pad">Examples</h2>
             <div class="row">
-                <div class="col-lg-4">
+                <div class="col-lg-6">
                     <img src="media/example/empty.png" alt="Empty Webpage Demo" width="300" height="250">
                     <h4 class="pad">WebGazer.js on an Empty Webpage with calibration</h4>
                     <p class="text-justify">See how easy it is to integrate WebGazer.js on any webpage. With just a few clicks you will get real-time predictions. Follow the popup instructions, where you'll click through the 9 calibration points on the screen whilst looking at the cursor.
@@ -313,7 +313,7 @@ grunt
                     </form>
                     </p>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-6">
                     <img src="media/example/collision.png" alt="Collision demo" width="300" height="250">
                     <h4 class="pad">Ball Collision Game</h4>
                     <p class="text-justify">Move the orange ball with your eyes and create collisions with the blue balls. Train WebGazer.js by clicking in various locations within the screen, while looking at your cursor.
@@ -322,7 +322,9 @@ grunt
                     </form>
                     </p>
                 </div>
-                <div class="col-lg-4">
+            </div>
+            <div class="row">              
+                <div class="col-lg-6">
                     <img src="media/example/google_serp.png" alt="SearchGazer" width="300" height="250">
                     <h4 class="pad">WebGazer on Search Engines</h4>
                     <p class="text-justify">We have created SearchGazer.js, a library that incorporates WebGazer in Search Engines such as Bing and Google.
@@ -330,6 +332,14 @@ grunt
                         <button class="btn btn-primary" type="submit">Try SearchGazer.js!</button>
                     </form>
                     </p>
+                </div>
+                <div class="col-lg-6">
+                    <img src="media/example/heatmap_thumbnail.png" alt="" width="300" height="250">
+                    <h4 class="pad">Heatmap Visualization + Tutorial</h4>
+                    <p>Demo and learn how to visualize eye gaze data collected from WebGazer using <a href="https://www.patrick-wied.at/static/heatmapjs/">Heatmap.js</a>.</p>
+                    <form method="get" action="heatmap.html">
+                        <button class="btn btn-primary" type="submit">Demo Now!</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -416,7 +426,7 @@ grunt
                 <div class="col-lg-3">
                     <img class="img-circle center-block" src="media/people/yuze.jpg" alt="Yuze He" height="140">
                     <h4 class="text-center">Yuze He</h4>
-                    <p>Masters tudent at Brown University.</p>
+                    <p>Masters student at Brown University.</p>
                 </div>
                 <div class="col-lg-2">
                     <img class="img-circle center-block" src="media/people/jeff.jpg" alt="Jeff Huang" height="140">
@@ -436,7 +446,7 @@ grunt
                     <li>Jack Wong - Software engineering student at the University of Auckland</li>
                 </ul>
                 <h3>Acknowledgements</h3>
-                <p>Webgazer is developed based on the research that is done by Brown University. The work of the calibration example file was developed in the context of a course project with the aim to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
+                <p>Webgazer is developed on research done by Brown University. The work of the calibration example file was developed in the context of a course project with the aim to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
                   <br /><br />
                   This research is supported by NSF grants IIS-1464061, IIS-1552663, and the Brown University Salomon Award.
                 </p>
