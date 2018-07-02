@@ -26,6 +26,7 @@
 *.pdf
 *.mp4
 !/www/media/video/demo.mp4
+!/www/media/example/heatmap-tutorial.zip
 *.cpuprofile
 node_modules/
 www/node_modules/
