@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ridgeReg.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ridgeReg.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>define('RidgeReg', ['util', 'regression', 'matrix'], function(util, reg, mat) {
+    var ridgeParameter = Math.pow(10,-5);
+    var resizeWidth = 10;
+    var resizeHeight = 6;
+    var dataWindow = 700;
+    var trailDataWindow = 10;
+
+    /**
+     * Performs ridge regression, according to the Weka code.
+     * @param {array} y corresponds to screen coordinates (either x or y) for each of n click events
+     * @param {number[][]} X corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
+     * @param {array} ridge ridge parameter
+     * @return{array} regression coefficients
+     */
+    var ridge = function(y, X, k){
+        var nc = X[0].length;
+        var m_Coefficients = new Array(nc);
+        var xt = mat.transpose(X);
+        var solution = new Array();
+        var success = true;
+        do{
+            var ss = mat.mult(xt,X);
+            // Set ridge regression adjustment
+            for (var i = 0; i &lt; nc; i++) {
+                ss[i][i] = ss[i][i] + k;
+            }
+
+            // Carry out the regression
+            var bb = mat.mult(xt,y);
+            for(var i = 0; i &lt; nc; i++) {
+                m_Coefficients[i] = bb[i][0];
+            }
+            try{
+                var n = (m_Coefficients.length != 0 ? m_Coefficients.length/m_Coefficients.length: 0);
+                if (m_Coefficients.length*n != m_Coefficients.length){
+                    console.log("Array length must be a multiple of m")
+                }
+                solution = (ss.length == ss[0].length ? (mat.LUDecomposition(ss,bb)) : (mat.QRDecomposition(ss,bb)));
+
+                for (var i = 0; i &lt; nc; i++){
+                    m_Coefficients[i] = solution[i][0];
+                }
+                success = true;
+            } 
+            catch (ex){
+                k *= 10;
+                console.log(ex);
+                success = false;
+            }
+        } while (!success);
+        return m_Coefficients;
+    }
+
+
+    function getEyeFeats(eyes) {
+        var resizedLeft = util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+        var resizedright = util.resizeEye(eyes.right, resizeWidth, resizeHeight);
+
+        var leftGray = util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+        var rightGray = util.grayscale(resizedright.data, resizedright.width, resizedright.height);
+
+        var histLeft = [];
+        util.equalizeHistogram(leftGray, 5, histLeft);
+        var histRight = [];
+        util.equalizeHistogram(rightGray, 5, histRight);
+
+        var leftGrayArray = Array.prototype.slice.call(histLeft);
+        var rightGrayArray = Array.prototype.slice.call(histRight);
+
+        return leftGrayArray.concat(rightGrayArray);
+    }
+
+    function getCurrentFixationIndex() {
+        var index = 0;
+        var recentX = this.screenXTrailArray.get(0);
+        var recentY = this.screenYTrailArray.get(0);
+        for (var i = this.screenXTrailArray.length - 1; i >= 0; i--) {
+            var currX = this.screenXTrailArray.get(i);
+            var currY = this.screenYTrailArray.get(i);
+            var euclideanDistance = Math.sqrt(Math.pow((currX-recentX),2)+Math.pow((currY-recentY),2));
+            if (euclideanDistance > 72){
+                return i+1;
+            }
+        }
+        return i;
+    }
+
+    /**
+     * Constructor for the RidgeReg Object which uses unweighted ridge regression to correlate click and mouse movement to eye patch features
+     * @alias module:RidgeReg
+     * @exports RidgeReg
+     */
+    var RidgeReg = function(params) {
+        dataWindow = params.dataWindow || dataWindow;
+        this.screenXClicksArray = new util.DataWindow(dataWindow);
+        this.screenYClicksArray = new util.DataWindow(dataWindow);
+        this.eyeFeaturesClicks = new util.DataWindow(dataWindow);
+
+        //sets to one second worth of cursor trail
+        this.trailTime = 1000;
+        this.trailDataWindow = this.trailTime / params.moveTickSize;
+        this.screenXTrailArray = new util.DataWindow(trailDataWindow);
+        this.screenYTrailArray = new util.DataWindow(trailDataWindow);
+        this.eyeFeaturesTrail = new util.DataWindow(trailDataWindow);
+        this.trailTimes = new util.DataWindow(trailDataWindow);
+
+        this.dataClicks = new util.DataWindow(dataWindow);
+        this.dataTrail = new util.DataWindow(dataWindow);
+    }
+
+    /**
+     * adds data to the regression model
+     * @param {object} eyes - util.eyes Object containing left and right data
+     * @param {array} screenPos - the screen [x,y] position when a training event happens
+     * @param {string} type - the type of event
+     */
+    RidgeReg.prototype.addData = function(eyes, screenPos, type) {
+        if (!eyes) {
+            return;
+        }
+        if (eyes.left.blink || eyes.right.blink) {
+            return;
+        }
+        if (type === 'click') {
+            this.screenXClicksArray.push([screenPos[0]]);
+            this.screenYClicksArray.push([screenPos[1]]);
+
+            this.eyeFeaturesClicks.push(getEyeFeats(eyes));
+            this.dataClicks.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
+        } else if (type === 'move') {
+            this.screenXTrailArray.push([screenPos[0]]);
+            this.screenYTrailArray.push([screenPos[1]]);
+
+            this.eyeFeaturesTrail.push(getEyeFeats(eyes));
+            this.trailTimes.push(performance.now());
+            this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
+        }
+       
+        eyes.left.patch = Array.from(eyes.left.patch.data);
+        eyes.right.patch = Array.from(eyes.right.patch.data);
+    }
+
+    /**
+     * gets a prediction based on the current set of training data
+     * @param {object} eyesObj - util.eyes Object
+     * @return {Object} prediction - Object containing the prediction data
+     *  @return {integer} prediction.x - the x screen coordinate predicted
+     *  @return {integer} prediction.y - the y screen coordinate predicted
+     */
+    RidgeReg.prototype.predict = function(eyesObj) {
+        if (!eyesObj || this.eyeFeaturesClicks.length == 0) {
+            return null;
+        }
+        var acceptTime = performance.now() - this.trailTime;
+        var trailX = [];
+        var trailY = [];
+        var trailFeat = [];
+        for (var i = 0; i &lt; this.trailDataWindow; i++) {
+            if (this.trailTimes.get(i) > acceptTime) {
+                trailX.push(this.screenXTrailArray.get(i));
+                trailY.push(this.screenYTrailArray.get(i));
+                trailFeat.push(this.eyeFeaturesTrail.get(i));
+            }
+        }
+
+        var screenXArray = this.screenXClicksArray.data.concat(trailX);
+        var screenYArray = this.screenYClicksArray.data.concat(trailY);
+        var eyeFeatures = this.eyeFeaturesClicks.data.concat(trailFeat);
+
+        var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
+        var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter); 	
+
+        var eyeFeats = getEyeFeats(eyesObj);
+        var predictedX = 0;
+        for(var i=0; i&lt; eyeFeats.length; i++){
+            predictedX += eyeFeats[i] * coefficientsX[i];
+        }
+        var predictedY = 0;
+        for(var i=0; i&lt; eyeFeats.length; i++){
+            predictedY += eyeFeats[i] * coefficientsY[i];
+        }
+
+        predictedX = Math.floor(predictedX);
+        predictedY = Math.floor(predictedY);
+
+        return {
+            x: predictedX,
+            y: predictedY
+        };
+    }
+
+    /**
+     * seeds the model with initial training data in case data is stored in a separate location
+     * @params {Object[]} data - array of util.eyes objects
+     */
+    RidgeReg.prototype.setData = function(data) {
+        for (var i = 0; i &lt; data.length; i++) {
+            //TODO this is a kludge, needs to be fixed
+            data[i].eyes.left.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.left.patch), data[i].eyes.left.width, data[i].eyes.left.height);
+            data[i].eyes.right.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.right.patch), data[i].eyes.right.width, data[i].eyes.right.height);
+            this.addData(data[i].eyes, data[i].screenPos, data[i].type);
+        }
+    }
+
+    /**
+     * gets the training data stored in this regression model, *this is not the model itself, but merely its training data*
+     * @return {Object[]} the set of training data stored in this regression class
+     */
+    RidgeReg.prototype.getData = function() {
+        return this.dataClicks.data.concat(this.dataTrail.data);
+    }
+
+
+    RidgeReg.prototype.name = 'ridge';
+
+    return RidgeReg;
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-ClmGaze.html">ClmGaze</a></li><li><a href="module-Js_objectdetectGaze.html">Js_objectdetectGaze</a></li><li><a href="module-LinearReg.html">LinearReg</a></li><li><a href="module-matrix.html">matrix</a></li><li><a href="module-pupil.html">pupil</a></li><li><a href="module-RidgeReg.html">RidgeReg</a></li><li><a href="module-RidgeThreadedReg.html">RidgeThreadedReg</a></li><li><a href="module-RidgeWightedReg.html">RidgeWightedReg</a></li><li><a href="module-TrackingjsGaze.html">TrackingjsGaze</a></li><li><a href="module-webgazer.html">webgazer</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ridge">ridge</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon May 23 2016 15:30:59 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

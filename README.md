@@ -34,24 +34,31 @@ To use the webgazer script in the head of an HTML file add the `async` tag to en
 
 Examples of how WebGazer.js works can be found [here](https://webgazer.cs.brown.edu/#examples).
 
-### How to run the Index HTML
+### How to run the Example HTML files
 
-The Index HTML File provides the additional features of an integrated action bar that provides the functionality of a calibration system, accuracy measurements and an informative "help" module.
+Within the /www directory there are two example HTML files:
 
-This is a good example that shows how WebGazer can be used.
+  * `calibration.html`: This example includes additional user feedback, such as a 9-point calibration sequence, accuracy measurements and an informative help module.
+  * `collision.html`: This example contains a game where the user can move an orange ball with their eyes, which in turn collides with blue balls.
 
-1. Clone and build the repository using the steps listed above (including downloading NodeJS and running `npm install`)
-2. Run the index.html file as a server by running the command `browser-sync start --server --files "*"` in the WebGazer directory
+To run the example files as a server:
+
+	# Clone the repository and download NodeJS using the steps listed above
+	# Move into the www directory and download the additional dependencies
+	cd www
+	npm install
+	# Run the webpage index.html as a server
+	browser-sync start --server --files "*"
 
 ## Browser Support
 
 The following browsers support WebGazer.js:
 
-* Google Chrome
-* Microsoft Edge
-* Mozilla Firefox
-* Opera
-* Safari
+  * Google Chrome
+  * Microsoft Edge
+  * Mozilla Firefox
+  * Opera
+  * Safari
 
 Your browser needs to support the getUserMedia API as seen [here](http://caniuse.com/#feat=stream).
 
@@ -77,21 +84,21 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 
 ## Who We Are
 
-* Alexandra Papoutsaki
-* James Laskey
-* Aaron Gokaslan
-* Yuze He
-* Jeff Huang
+  * Alexandra Papoutsaki
+  * James Laskey
+  * Aaron Gokaslan
+  * Yuze He
+  * Jeff Huang
 
 ## Other Collaborators
 
-* Ida De Smet - Software engineering student at the University of Auckland
-* Elizabeth Stevenson - Software engineering student at the University of Auckland
-* Jack Wong - Software engineering student at the University of Auckland
+  * Ida De Smet - Software engineering student at the University of Auckland
+  * Elizabeth Stevenson - Software engineering student at the University of Auckland
+  * Jack Wong - Software engineering student at the University of Auckland
 
 ### Acknowledgements
 
-Webgazer project is developed based on the research that is done by Brown University. The work of the calibration example file was developed in the context of a course project topic to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
+Webgazer is developed based on the research that is done by Brown University. The work of the calibration example file was developed in the context of a course project with the aim to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
 
 This research is supported by NSF grants IIS-1464061, IIS-1552663, and the Brown University Salomon Award.
 

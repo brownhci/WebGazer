@@ -47,8 +47,7 @@
         return integralImage;
     };
 
-    /** [20180601 James Tompkin] This function needs debugging. I reimplemented it in MATLAB to debug a CSCI 1430 Fall 2017 final project problem, and it doesn't do what you think it does.
-     * 
+    /**
      * Detects a pupil in a set of pixels
      * @param  {Array} pixels - patch of pixels to look for pupil into
      * @param  {Number} width  - of pixel patch
