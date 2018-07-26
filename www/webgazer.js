@@ -10443,6 +10443,8 @@ function store_points(x, y, k) {
     // loop parameters
     var clockStart = performance.now();
     webgazer.params.dataTimestep = 50;
+    var latestEyeFeatures = null;
+    var latestGazeData = null;
     var paused = false;
     //registered callback for loop
     var nopCallback = function(data, time) {};
@@ -10490,25 +10492,23 @@ function store_points(x, y, k) {
     * Checks if the pupils are in the position box on the video
     */
     function checkEyesInValidationBox() {
-        var eyesObjs = curTracker.getEyePatches(videoElementCanvas,webgazer.params.imgWidth,webgazer.params.imgHeight);
-
         var validationBox = document.getElementById('faceOverlay');
 
         var xPositions = false;
         var yPositions = false;
 
-        if (validationBox != null && eyesObjs) {
+        if (validationBox != null && latestEyeFeatures) {
             //get the boundaries of the face overlay validation box
             leftBound = 107;
-     				topBound = 59;
-     				rightBound = leftBound + 117;
-     				bottomBound = topBound + 117;
+     		topBound = 59;
+     		rightBound = leftBound + 117;
+     		bottomBound = topBound + 117;
 
             //get the x and y positions of the left and right eyes
-   					var eyeLX = eyesObjs.left.imagex;
-					  var eyeLY = eyesObjs.left.imagey;
-   					var eyeRX = eyesObjs.right.imagex;
-   					var eyeRY = eyesObjs.right.imagey;
+   			var eyeLX = latestEyeFeatures.left.imagex;
+			var eyeLY = latestEyeFeatures.left.imagey;
+   			var eyeRX = latestEyeFeatures.right.imagex;
+   			var eyeRY = latestEyeFeatures.right.imagey;
 
             //check if the x values for the left and right eye are within the
             //validation box
@@ -10569,7 +10569,6 @@ function store_points(x, y, k) {
         if (!canvas) {
             return;
         }
-        paintCurrentFrame(canvas, width, height);
         try {
             return blinkDetector.detectBlink(curTracker.getEyePatches(canvas, width, height));
         } catch(err) {
@@ -10605,18 +10604,19 @@ function store_points(x, y, k) {
      */
     function getPrediction(regModelIndex) {
         var predictions = [];
-        var features = getPupilFeatures(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
+        latestEyeFeatures = getPupilFeatures(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
+
         if (regs.length === 0) {
             console.log('regression not set, call setRegression()');
             return null;
         }
         for (var reg in regs) {
-            predictions.push(regs[reg].predict(features));
+            predictions.push(regs[reg].predict(latestEyeFeatures));
         }
         if (regModelIndex !== undefined) {
             return predictions[regModelIndex] === null ? null : {
                 'x' : predictions[regModelIndex].x,
-                'y' : predictions[regModelIndex].y
+                'y' : predictions[regModelIndex].y,
             };
         } else {
             return predictions.length === 0 || predictions[0] === null ? null : {
@@ -10634,14 +10634,21 @@ function store_points(x, y, k) {
     var k = 0;
 
     function loop() {
-        var gazeData = getPrediction();
+        // Paint the latest video frame into the canvas which will be analyzed by WebGazer
+        paintCurrentFrame(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
+        
+        // Get prediction
+        latestGazeData = getPrediction();
+
+        // Count time
         var elapsedTime = performance.now() - clockStart;
 
-        callback(gazeData, elapsedTime);
+        // [20180611 James Tompkin]: What does this line do?
+        callback(latestGazeData, elapsedTime);
 
-        if (gazeData && showGazeDot) {
+        if (latestGazeData && showGazeDot) {
 
-            smoothingVals.push(gazeData);
+            smoothingVals.push(latestGazeData);
             var x = 0;
             var y = 0;
             var len = smoothingVals.length;
@@ -10684,13 +10691,12 @@ function store_points(x, y, k) {
         if (paused) {
             return;
         }
-        var features = getPupilFeatures(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
         if (regs.length === 0) {
             console.log('regression not set, call setRegression()');
             return null;
         }
         for (var reg in regs) {
-            regs[reg].addData(features, [x, y], eventType);
+            regs[reg].addData(latestEyeFeatures, [x, y], eventType);
         }
     };
 
@@ -10893,7 +10899,6 @@ function store_points(x, y, k) {
         if (videoElementCanvas === null) {
             return false;
         }
-        paintCurrentFrame(videoElementCanvas, webgazer.params.imgWidth, webgazer.params.imgHeight);
         return videoElementCanvas.width > 0;
     };
 
@@ -11151,6 +11156,22 @@ function store_points(x, y, k) {
      */
     webgazer.params.getEventTypes = function() {
         return eventTypes.slice();
+    }
+
+    /**
+     * Get the video element canvas that WebGazer uses internally on which to run its face tracker.
+     * @return The current video element canvas
+     */
+    webgazer.getVideoElementCanvas = function() {
+        return videoElementCanvas;
+    }
+  
+    /**
+     * Set the video element canvas; useful if you want to run WebGazer on your own canvas (e.g., on any random image).
+     * @return The current video element canvas
+     */
+    webgazer.setVideoElementCanvas = function(canvas) {
+        videoElementCanvas = canvas;
     }
 
 }(window));
