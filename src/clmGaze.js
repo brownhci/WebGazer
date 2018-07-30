@@ -131,6 +131,13 @@
     };
 
     /**
+     * Reset the tracker to default values
+     */
+    ClmGaze.prototype.reset = function(){
+        this.clm.reset();
+    }
+
+    /**
      * The Js_objectdetectGaze object name
      * @type {string}
      */

@@ -221,6 +221,13 @@
     };
     
     /**
+     * Reset the tracker to default values
+     */
+    Js_objectdetectGaze.prototype.reset = function(){
+        console.log( "Unimplemented; js_objectdetect.js has no obvious reset function" );
+    }
+
+    /**
      * The Js_objectdetectGaze object name
      * @type {string}
      */

@@ -162,6 +162,13 @@
     };
 
     /**
+     * Reset the tracker to default values
+     */
+    TrackingjsGaze.prototype.reset = function(){
+        console.log( "Unimplemented; Tracking.js has no obvious reset function" );
+    }
+
+    /**
      * The TrackingjsGaze object name
      * @type {string}
      */
