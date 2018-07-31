@@ -8043,7 +8043,7 @@ var mosseFilterResponses = function() {
      * @returns {*}
      */
     webgazer.BlinkDetector.prototype.detectBlink = function(eyesObj) {
-        if (!eyesObj) {
+        if (!eyesObj || !webgazer.params.blinkDetectionOn) {
             return eyesObj;
         }
 
@@ -8189,6 +8189,8 @@ var mosseFilterResponses = function() {
         }
 
         var eyeObjs = {};
+        eyeObjs.positions = positions;
+
         var leftImageData = imageCanvas.getContext('2d').getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);
         eyeObjs.left = {
             patch: leftImageData,
@@ -8206,8 +8208,6 @@ var mosseFilterResponses = function() {
             width: rightWidth,
             height: rightHeight
         };
-
-        eyeObjs.positions = positions;
 
         return eyeObjs;
     };
@@ -9576,8 +9576,12 @@ var mosseFilterResponses = function() {
             this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         }
 
-        eyes.left.patch = Array.from(eyes.left.patch.data);
-        eyes.right.patch = Array.from(eyes.right.patch.data);
+        // [20180730 JT] Why do we do this? It doesn't return anything...
+        // But as JS is pass by reference, it still affects it.
+        //
+        // Causes problems for when we want to call 'addData' twice in a row on the same object, but perhaps with different screenPos or types (think multiple interactions within one video frame)
+        //eyes.left.patch = Array.from(eyes.left.patch.data);
+        //eyes.right.patch = Array.from(eyes.right.patch.data);
     }
 
     /**
@@ -9811,8 +9815,12 @@ var mosseFilterResponses = function() {
             this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         }
 
-        eyes.left.patch = Array.from(eyes.left.patch.data);
-        eyes.right.patch = Array.from(eyes.right.patch.data);
+        // [20180730 JT] Why do we do this? It doesn't return anything...
+        // But as JS is pass by reference, it still affects it.
+        //
+        // Causes problems for when we want to call 'addData' twice in a row on the same object, but perhaps with different screenPos or types (think multiple interactions within one video frame)
+        //eyes.left.patch = Array.from(eyes.left.patch.data);
+        //eyes.right.patch = Array.from(eyes.right.patch.data);
     };
 
     /**
@@ -10456,6 +10464,7 @@ function store_points(x, y, k) {
     webgazer.params.camConstraints = webgazer.params.camConstraints || { video: { width: { min: 320, ideal: 640, max: 1920 }, height: { min: 240, ideal: 480, max: 1080 }, facingMode: "user" } };
 
     webgazer.params.smoothEyeBB = webgazer.params.smoothEyeBB || false;
+    webgazer.params.blinkDetectionOn = webgazer.params.blinkDetectionOn || false;
 
     // Why is this not in webgazer.params ?
     var debugVideoLoc = '';
@@ -11287,6 +11296,18 @@ function store_points(x, y, k) {
         return webgazer;
     };
 
+    /**
+     *  Records current screen position for current pupil features.
+     *  @param {String} x - position on screen in the x axis
+     *  @param {String} y - position on screen in the y axis
+     *  @param {String} eventType - "click" or "move", as per eventTypes
+     *  @return {webgazer} this
+     */
+    webgazer.recordScreenPosition = function(x, y, eventType) {
+        // give this the same weight that a click gets.
+        recordScreenPosition(x, y, eventType);
+        return webgazer;
+    };
 
     //SETTERS
     /**
