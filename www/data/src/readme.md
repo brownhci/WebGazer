@@ -1,6 +1,6 @@
 WebGazer ETRA2018 Dataset Extractor
 ===================================
-20180316
+2018-07-30
 James Tompkin
 james_tompkin@brown.edu - Any issues, email me.
 
@@ -8,6 +8,7 @@ james_tompkin@brown.edu - Any issues, email me.
 This software takes the ETRA2018 dataset and creates CSV files for each video, containing per-frame WebGazer and Tobii values in normalized screen coordinates.
 After extraction, this makes it simple and efficent to analyse the performance of WebGazer in your favourite _data science_ application.
 
+Works with webgazer.js commit 01a9c68cf0a4b1f3a6d6910bf86d1ff403831ec7 (and onwards) from 30th July 2018 11:49 PM.
 
 Requirements:
 =============
@@ -84,8 +85,6 @@ Possible improvements to the dataset:
 
 Possible improvements to this software:
 =======================================
-- webgazerExtractClient.html: This software outputs eye features per frame, but WebGazer doesn't expose the function which computes the eye features. So, I reproduced it. This is bad; the function should be exposed via WebGazer.
-- webgazerExtractClient.html: Uses one $.ajax call; might not be worth loading jquery for just that.
 - webgazerExtractServer.py: Uses ffmpeg to find frame times within each video; it could write these out to metadata files _once_ for the whole dataset and distribute them. This would remove the ffmpeg dependency.
 - webgazerExtractServer.py: Make the screen recording replay video writer separate; this would simplify the code and remove the OpenCV dependency.
 - Tobii gaze estimation is the closest instantaneous sample in time, but Tobii samples over that window could be averaged or even modeled as a distribution. This would reduce the overall error of WebGazer by approximately Tobii's stated error.
@@ -105,11 +104,8 @@ Possible improvements to WebGazer dataset collector software:
 
 Potential improvements to WebGazer:
 ===================================
-- webgazerExtractClient.html: This software outputs eye features per frame, but WebGazer doesn't expose the function which computes the eye features. So, I reproduced it.
-- webgazerExtractClient.html: This software needs to tell WebGazer to use a specific \<canvas\> element, for which I wrote a setVideoElementCanvas() function in webgazer.js. This needs to be added to the main branch.
-- Initial black frames after video recording start cause problems with CLMTracker; we should check whether each frame is above a noise floor and not process otherwise.
-- CLMTracker does not appear to run to convergence on every video frame (when in 'video mode'), which means that the WebGazer output is not optimal and jitters unnecessarily. Ideal performance would have WebGazer run to convergence.
+- Initial black frames after video recording start cause problems with CLMTracker; WebGazer.js could check whether each frame is above a noise floor and not process otherwise.
+- CLMTracker does not run to convergence on every video frame (when in 'video mode'), which means that the WebGazer output is not optimal and jitters unnecessarily. WebGazer could use any space CPU cycles above framerate to have the CLM tracker run more iterations.
 - "a patchresponse was monotone, causing normalization to fail. Leaving it unchanged." error message should be fixable.
-- Does WebGazer call 'track()' multiple times per frame? It's an expensive operation.
 - In code, rename everything that was 'screen' to be 'client', e.g., 'mouseClient', as the values in these variables don't refer to screen coordinates but client coordinates.
-- WebGazer does multiple identical image processing operations on the same pixels, which is wasteful and expensive.
+- WebGazer does multiple identical image processing operations on the same pixels, which is wasteful.
