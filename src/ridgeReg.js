@@ -152,8 +152,12 @@
             this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         }
 
-        eyes.left.patch = Array.from(eyes.left.patch.data);
-        eyes.right.patch = Array.from(eyes.right.patch.data);
+        // [20180730 JT] Why do we do this? It doesn't return anything...
+        // But as JS is pass by reference, it still affects it.
+        //
+        // Causes problems for when we want to call 'addData' twice in a row on the same object, but perhaps with different screenPos or types (think multiple interactions within one video frame)
+        //eyes.left.patch = Array.from(eyes.left.patch.data);
+        //eyes.right.patch = Array.from(eyes.right.patch.data);
     }
 
     /**

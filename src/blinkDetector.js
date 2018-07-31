@@ -56,7 +56,7 @@
      * @returns {*}
      */
     webgazer.BlinkDetector.prototype.detectBlink = function(eyesObj) {
-        if (!eyesObj) {
+        if (!eyesObj || !webgazer.params.blinkDetectionOn) {
             return eyesObj;
         }
 

@@ -107,6 +107,8 @@
         }
 
         var eyeObjs = {};
+        eyeObjs.positions = positions;
+
         var leftImageData = imageCanvas.getContext('2d').getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);
         eyeObjs.left = {
             patch: leftImageData,
@@ -124,8 +126,6 @@
             width: rightWidth,
             height: rightHeight
         };
-
-        eyeObjs.positions = positions;
 
         return eyeObjs;
     };

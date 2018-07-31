@@ -1,0 +1,52 @@
+Participant ID,Participant Log ID,Date,Setting,Display Width (pixels),Display Height (pixels),Screen Width (cm),Screen Height (cm),Distance From Screen (cm),Screen Recording Start Time (Unix milliseconds),Screen Recording Start Time (Wall Clock UTC),Gender,Age,Self-Reported Race,Self-Reported Skin Color,Self-Reported Eye Color,Facial Hair,Self-Reported Vision,Touch Typer,Self-Reported Handedness,Weather,Pointing Device,Notes,Time of day,Duration
+P_01,1491423217564,4/5/2017,Laptop,1440,900,33.17,20.73,60,1491423552200,4/5/2017 20:36,Male,25,Asian,1,Dark Brown to Brown,None,Normal,Yes,Right,Cloudy,Trackpad,Did not see the button at the bottom of the Google page. Had to briefly intervene to show.,16:00,16:40:00
+P_02,1491487691210,4/6/2017,Laptop,1440,900,33.17,20.73,55,1491488318800,4/6/2017 14:41,Male,22,Asian,1,Dark Brown to Brown,None,Normal,No,Right,Indoors,Trackpad,,10:00,22:43:00
+P_07,1491577862552,4/7/2017,Laptop,1440,900,33.17,20.73,,1491579755600,4/7/2017 16:03,Female,27,Asian,4,Dark Brown to Brown,None,Glasses,No,Right,Sunny,Trackpad,No video for the thankyou page,11:00,20:38:00
+P_14,1491927757191,4/11/2017,Laptop,1440,900,33.17,20.73,65,1491928301500,4/11/2017 16:50,Male,29,Asian,2,Dark Brown to Brown,Beard,Normal,Yes,Right,Sunny,Mouse,,12:00,18:22:00
+P_15,1491933738937,4/11/2017,Laptop,1440,900,33.17,20.73,,1491934004100,4/11/2017 18:21,Female,26,Asian,2,Dark Brown to Brown,None,Normal,No,Right,Sunny,Trackpad,No video for the thankyou page,14:00,14:56:00
+P_24,1492106295971,4/13/2017,Laptop,1440,900,33.17,20.73,63,1492106597000,4/13/2017 18:23,Male,28,Asian,1,Dark Brown to Brown,None,Contacts,No,Left,Sunny,Mouse,,14:00,18:54:00
+P_28,1492182876610,4/14/2017,Laptop,1440,900,33.17,20.73,52,1492183205100,4/14/2017 15:40,Female,23,Black,5,Dark Brown to Brown,None,Contacts,No,Right,Indoors,Trackpad,No video for the thankyou page. Went to Google.com while in the search task,11:00,19:26:00
+P_29,1492189262993,4/14/2017,Laptop,1440,900,33.17,20.73,54,1492189553700,4/14/2017 17:22,Male,27,Asian,3,Dark Brown to Brown,Beard,Glasses,No,Right,Indoors,Trackpad,No video for the thankyou page,13:00,16:05:00
+P_33,1492456607850,4/17/2017,Laptop,1440,900,33.17,20.73,69,1492456885900,4/17/2017 19:39,Male,34,White,1,Dark Brown to Brown,None,Normal,Yes,Right,Cloudy,Trackpad,No video for the thankyou page. No Tobii gaze data from serp instructions and on,15:00,17:00:00
+P_34,1492521777728,4/18/2017,Laptop,1440,900,33.17,20.73,51,,,Female,26,Asian,2,Dark Brown to Brown,None,Normal,No,Right,Sunny,Trackpad,No screen recording,9:00,24:29:00
+P_37,1492546151879,4/18/2017,Laptop,1440,900,33.17,20.73,53,1492546680200,4/18/2017 20:32,Female,26,Asian,2,Dark Brown to Brown,None,Normal,Yes,Right,Indoors,Trackpad,No video for the dot_test_final page,16:00,13:34:00
+P_38,1492618354027,4/19/2017,Laptop,1440,900,33.17,20.73,50,1492621379700,4/19/2017 17:23,Female,25,White,1,Gray to Blue or Pink,None,Normal,Yes,Right,Cloudy,Trackpad,No video for the dot_test_final page,12:00,19:08:00
+P_39,1492629177607,4/19/2017,Laptop,1440,900,33.17,20.73,52,1492629477800,4/19/2017 19:51,Female,23,Other,2,Dark Brown to Brown,None,Normal,Yes,Right,Indoors,Trackpad,No video for the dot_test_final page. No screen recording,15:00,33:03:00
+P_47,1492789383745,4/21/2017,Laptop,1440,900,33.17,20.73,50,1492790137900,4/21/2017 16:06,Female,26,Asian,2,Dark Brown to Brown,None,Glasses,Yes,Right,Cloudy,Trackpad,,11:00,10:41:00
+P_48,1493039349728,4/24/2017,Laptop,1440,900,33.17,20.73,59,1493039562800,4/24/2017 13:28,Female,28,White,2,Dark Brown to Brown,None,Normal,Yes,Right,Sunny,Trackpad,,9:00,14:14:00
+P_50,1493046335268,4/24/2017,Laptop,1440,900,33.17,20.73,62,1493046613700,4/24/2017 15:23,Male,26,Other,2,Dark Brown to Brown,Beard,Normal,Yes,Right,Indoors,Trackpad,No video for the thankyou page,11:00,12:18:00
+P_51,1493057462712,4/24/2017,Laptop,1440,900,33.17,20.73,68,1493055607500,4/24/2017 18:13,Male,-,Other,1,Dark Brown to Brown,None,Normal,Yes,Right,Cloudy,Trackpad,,14:00,32:08:00
+P_52,1493064746365,4/24/2017,Laptop,1440,900,33.17,20.73,54,,,Female,23,White,2,Dark Brown to Brown,None,Normal,Yes,Right,Cloudy,Trackpad,No screen recording,16:00,26:46:00
+P_53,1493126370426,4/25/2017,Laptop,1440,900,33.17,20.73,44,1493126721600,4/25/2017 13:44,Female,23,Asian,1,Dark Brown to Brown,None,Contacts,No,Right,Cloudy,Trackpad,One eye wouldn't be recognized. Trapped in one of the running pages. No Tobii data between epoch 1493130299.573144  and 1493130607.397259,9:00,18:02:00
+P_54,1493129853898,4/25/2017,Laptop,1440,900,33.17,20.73,57,1493130086400,4/25/2017 14:31,Female,23,White,1,Green-Hazel to Blue-Hazel,None,Glasses,Yes,Right,Indoors,Trackpad,No video for the thankyou page. No valid Tobii predictions after serp instructions,10:00,9:13:00
+P_57,1493143714690,4/25/2017,Laptop,1440,900,33.17,20.73,46,1493144068200,4/25/2017 18:54,Female,25,Asian,1,Dark Brown to Brown,None,Contacts,No,Right,Cloudy,Mouse,,14:00,39:29:00
+P_58,1493212090222,4/26/2017,Laptop,1440,900,33.17,20.73,52,1493212312700,4/26/2017 13:27,Male,24,Asian,3,Dark Brown to Brown,None,Glasses,No,Right,Cloudy,Mouse,,9:00,15:09:00
+P_60,1493219365171,4/26/2017,Laptop,1440,900,33.17,20.73,58,1493218419700,4/26/2017 15:13,Male,27,Asian,2,Dark Brown to Brown,Little,Glasses,No,Right,Indoors,Mouse,,11:00,19:05:00
+P_61,1493222549175,4/26/2017,Laptop,1440,900,33.17,20.73,54,1493222765800,4/26/2017 16:22,Female,29,Other,3,Dark Brown to Brown,None,Glasses,Yes,Right,Cloudy,Trackpad,Trapped in one of the running pages,12:00,15:20:00
+P_62,1493230037782,4/26/2017,Laptop,1440,900,33.17,20.73,56,1493230386100,4/26/2017 18:37,Male,24,Black,5,Dark Brown to Brown,Beard,Normal,Yes,Right,Cloudy,Trackpad,,14:00,22:51:00
+P_63,1493233434542,4/26/2017,Laptop,1440,900,33.17,20.73,54,1493233838100,4/26/2017 19:41,Female,26,Asian,2,Dark Brown to Brown,None,Glasses,No,Right,Cloudy,Trackpad,,15:00,30:38:00
+P_64,1493237348836,4/26/2017,Laptop,1440,900,33.17,20.73,54,1493237592800,4/26/2017 20:29,Female,27,Asian,1,Dark Brown to Brown,None,Contacts,Yes,Right,Indoors,Trackpad,No video for the thankyou page,16:00,15:06:00
+P_06,1491573819193,4/7/2017,PC,1920,1200,51.7,32.31,77,,,Female,25,White,1,Gray to Blue or Pink,None,Normal,Yes,Right,Sunny,Mouse,Trapped in one of the running pages,10:00,17:05:00
+P_08,1491591937547,4/7/2017,PC,1920,1200,51.7,32.31,83,,,Male,23,White,1,Dark Brown to Brown,Beard,Glasses,Yes,Right,Cloudy,Mouse,,15:00,24:09:00
+P_10,1491597580453,4/7/2017,PC,1920,1200,51.7,32.31,72,,,Male,21,Black,5,Dark Brown to Brown,None,Normal,Yes,Right,Indoors,Mouse,,16:00,22:53:00
+P_12,1491919220364,4/11/2017,PC,1920,1200,51.7,32.31,80,,,Male,32,White,1,Dark Brown to Brown,Beard,Normal,No,Right,Sunny,Mouse,,10:00,19:21:00
+P_13,1491923431229,4/11/2017,PC,1920,1200,51.7,32.31,73,,,Female,25,White,1,Gray to Blue or Pink,None,Normal,Yes,Right,Indoors,Mouse,,11:00,19:09:00
+P_16,1491937688450,4/11/2017,PC,1920,1200,51.7,32.31,86,,,Female,21,Black,3,Dark Brown to Brown,None,Glasses,Yes,Right,Indoors,Mouse,Trapped in one of the running pages,15:00,25:23:00
+P_17,1491942071066,4/11/2017,PC,1920,1200,51.7,32.31,73,,,Male,26,Asian,2,Dark Brown to Brown,None,Contacts,No,Right,Sunny,Mouse,,16:00,32:00:00
+P_18,1492006065578,4/12/2017,PC,1920,1200,51.7,32.31,71,,,Female,23,White,1,Green-Hazel to Green,None,Normal,No,Right,Sunny,Mouse,,10:00,26:24:00
+P_19,1492010580145,4/12/2017,PC,1920,1200,51.7,32.31,75,,,Female,23,White,2,Dark Brown to Brown,None,Normal,Yes,Right,Indoors,Mouse,,11:00,21:53:00
+P_20,1492020948838,4/12/2017,PC,1920,1200,51.7,32.31,78,,,Female,24,Asian,2,Dark Brown to Brown,None,Glasses,No,Right,Cloudy,Mouse,,14:00,31:00:00
+P_23,1492097686620,4/13/2017,PC,1920,1200,51.7,32.31,74,,,Male,23,White,1,Gray to Blue or Pink,None,Glasses,Yes,Right,Sunny,Mouse,,11:00,18:16:00
+P_25,1492110782158,4/13/2017,PC,1920,1200,51.7,32.31,78,,,Male,34,White,1,Dark Brown to Brown,Little,Glasses,Yes,Right,Sunny,Mouse,,15:00,19:03:00
+P_27,1492178671950,4/14/2017,PC,1920,1200,51.7,32.31,73,,,Male,35,Asian,3,Dark Brown to Brown,Beard,Glasses,No,Right,Sunny,Mouse,"Thick glasses, had trouble callibrating Tobii",10:00,13:36:00
+P_31,1492193186132,4/14/2017,PC,1920,1200,51.7,32.31,75,,,Male,25,White,1,Dark Brown to Brown,Beard,Normal,No,Right,Sunny,Mouse,,14:00,25:43:00
+P_35,1492538568613,4/18/2017,PC,1920,1200,51.7,32.31,75,,,Male,32,Other,1,Dark Brown to Brown,Beard,Normal,No,Right,Sunny,Mouse,,14:00,13:58:00
+P_40,1492693878775,4/20/2017,PC,1920,1200,51.7,32.31,68,,,Female,58,White,1,Gray to Blue or Pink,None,Glasses,Yes,Right,Cloudy,Mouse,,9:00,22:34:00
+P_41,1492697240587,4/20/2017,PC,1920,1200,51.7,32.31,74,,,Female,28,White,1,Gray to Blue or Pink,None,Normal,Yes,Right,Cloudy,Mouse,,10:00,17:38:00
+P_42,1492704386359,4/20/2017,PC,1920,1200,51.7,32.31,64,,,Female,29,White,1,Amber,None,Glasses,Yes,Right,Indoors,Mouse,,12:00,13:13:00
+P_44,1492711310856,4/20/2017,PC,1920,1200,51.7,32.31,62,,,Male,24,Asian,1,Dark Brown to Brown,None,Glasses,Yes,Right,Cloudy,Mouse,,14:00,30:39:00
+P_45,1492719205697,4/20/2017,PC,1920,1200,51.7,32.31,66,,,Male,27,Asian,2,Dark Brown to Brown,Beard,Normal,No,Right,Cloudy,Mouse,,16:00,33:13:00
+P_46,1492780566148,4/21/2017,PC,1920,1200,51.7,32.31,74,,,Female,31,Other,2,Dark Brown to Brown,None,Normal,Yes,Right,Cloudy,Mouse,,9:00,31:16:00
+P_55,1493136287932,4/25/2017,PC,1920,1200,51.7,32.31,71,,,Male,33,White,1,Dark Brown to Brown,Beard,Glasses,Yes,Right,Cloudy,Mouse,,12:00,5:31:00
+P_56,1493140407667,4/25/2017,PC,1920,1200,51.7,32.31,66,,,Male,31,Asian,3,Dark Brown to Brown,Little,Glasses,No,Right,Cloudy,Mouse,,13:00,16:01:00
+P_59,1493215711300,4/26/2017,PC,1920,1200,51.7,32.31,69,,,Male,27,White,1,Gray to Blue or Pink,Beard,Normal,No,Right,Indoors,Mouse,,10:00,24:47:00

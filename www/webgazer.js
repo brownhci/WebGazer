@@ -10664,7 +10664,7 @@ function store_points(x, y, k) {
      */
     function getPrediction(regModelIndex) {
         var predictions = [];
-        latestEyeFeatures = getPupilFeatures(videoElementCanvas, videoElement.videoWidth, videoElement.videoHeight);
+        latestEyeFeatures = getPupilFeatures(videoElementCanvas, videoElementCanvas.width, videoElementCanvas.height);
 
         if (regs.length === 0) {
             console.log('regression not set, call setRegression()');
@@ -10677,11 +10677,13 @@ function store_points(x, y, k) {
             return predictions[regModelIndex] === null ? null : {
                 'x' : predictions[regModelIndex].x,
                 'y' : predictions[regModelIndex].y,
+                'eyeFeatures': latestEyeFeatures
             };
         } else {
             return predictions.length === 0 || predictions[0] === null ? null : {
                 'x' : predictions[0].x,
                 'y' : predictions[0].y,
+                'eyeFeatures': latestEyeFeatures,
                 'all' : predictions
             };
         }
@@ -10700,7 +10702,7 @@ function store_points(x, y, k) {
             // Paint the latest video frame into the canvas which will be analyzed by WebGazer
             // [20180729 JT] Why do we need to do this? clmTracker does this itself _already_, which is just duplicating the work.
             // Is it because other trackers need a canvas instead of an img/video element?
-            paintCurrentFrame(videoElementCanvas, videoElement.videoWidth, videoElement.videoHeight);
+            paintCurrentFrame(videoElementCanvas, videoElementCanvas.width, videoElementCanvas.height);
             
             // Get gaze prediction (ask clm to track; pass the data to the regressor; get back a prediction)
             latestGazeData = getPrediction();
