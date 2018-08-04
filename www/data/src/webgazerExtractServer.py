@@ -771,7 +771,15 @@ def main():
 
     ###########################################################################################################
     # Enumerate all P_ subdirectories if not yet done
-    participantDirList = sorted(glob.glob( 'P_*' ))
+    regex = re.compile('P_[0-9][0-9]')
+
+    participantDirList = []
+    for root, dirs, files in os.walk('.'):
+        for d in dirs:
+            if regex.match(d):
+               participantDirList.append(d)
+
+    participantDirList = sorted( participantDirList )
 
     # NOTE: This would be the point to filter any participants from the processing
 
