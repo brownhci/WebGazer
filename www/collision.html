@@ -1,19 +1,17 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <head>
-  <style>
-    #balls {
-      position:absolute;
-      top: 0px;
-      left:0px;
-    }
-  </style>
+  <title>Webgazer.js + D3.js collision demo</title>
 </head>
 <body>
   <script src="https://d3js.org/d3.v3.min.js"></script>
   <script src="./webgazer.js"></script>
 
   <script>
+
+  const collisionSVG = "collisionSVG";
+  var force = [];
+  var root = [];
 
   window.onload = function() {
 
@@ -22,83 +20,61 @@
 
     webgazer.setRegression('ridge') /* currently must set regression and tracker */
     .setTracker('clmtrackr')
-    .setGazeListener(function(data, clock) {
-         //console.log(data);
-         if(!data)
-          return;
-        root.px = data.x;
-        root.py = data.y;
-        force.resume();
-
-        svg.select("#eyeline1").remove();
-        var cl = webgazer.getTracker().clm;
-        var whr = webgazer.getVideoPreviewToCameraResolutionRatio();
-
-        var line = svg.append("line")
-                  .attr("x1",data.x)
-                  .attr("y1",data.y)
-                  .attr("x2",cl.getCurrentPosition()[27][0] * whr[0])
-                  .attr("y2",cl.getCurrentPosition()[27][1] * whr[1])
-                  .attr("stroke-width",2)
-                  .attr("stroke","red")
-                  .attr("id","eyeline1");
-
-        svg.select("#eyeline2").remove();
-        var cl = webgazer.getTracker().clm;
-
-        var line = svg.append("line")
-                  .attr("x1",data.x)
-                  .attr("y1",data.y)
-                  .attr("x2",cl.getCurrentPosition()[32][0] * whr[0])
-                  .attr("y2",cl.getCurrentPosition()[32][1] * whr[1])
-                  .attr("stroke-width",2)
-                  .attr("stroke","red")
-                  .attr("id","eyeline2");
-
-        svg.select("#predictionSquare").remove();
-        var dot = svg.append("rect")
-                    .attr("x",data.x)
-                    .attr("y",data.y)
-                    .attr("width",5)
-                    .attr("height",5)
-                    .attr("fill","red")
-                    .attr("id","predictionSquare");
-
-
-      })
     .begin()
     .showPredictionPoints(false); /* shows a square every 100 milliseconds where current prediction is */
 
-    var width = window.innerWidth,
-    height = window.innerHeight;
+    function checkIfReady() {
+      var feedbackBox = document.getElementById( webgazer.params.faceFeedbackBoxId );
+      
+      if (!webgazer.isReady()) {
+        setTimeout(checkIfReady, 100);
+      }
+      else if( typeof(feedbackBox) == 'undefined' || feedbackBox == null ) {
+        setTimeout(checkIfReady, 100);
+      }
+      else
+      {
+        // Add the SVG component on the top of everything.
+        setupCollisionSystem();
+        webgazer.setGazeListener( collisionEyeListener );
+      }
+    }
+
+    setTimeout(checkIfReady,100);
+  };
+
+  window.onbeforeunload = function() {
+    //webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
+    window.localStorage.clear(); //Comment out if you want to save data across different sessions
+  }
+
+  function setupCollisionSystem() {
+    var width = window.innerWidth;
+    var height = window.innerHeight;
 
     var numberOfNodes = 200;
 
     var nodes = d3.range(numberOfNodes).map(function() { return {radius: Math.random() * 12 + 4}; }),
-    root = nodes[0],
-    color = d3.scale.category10();
-
+    root = nodes[0];
     root.radius = 0;
     root.fixed = true;
 
-    var force = d3.layout.force()
+    force = d3.layout.force()
     .gravity(0.05)
     .charge(function(d, i) { return i ? 0 : -2000; })
     .nodes(nodes)
-    .size([width, height]);
-
-    force.start();
+    .size([width, height])
+    .start();
 
     var svg = d3.select("body").append("svg")
+    .attr("id", collisionSVG)
     .attr("width", width)
     .attr("height", height)
     .attr("top", "0px")
     .attr("left","0px")
-    .attr("position", "absolute")
-    .attr("id","balls")
-    .attr("z-index", 5);
+    .attr("position","absolute");
 
-
+    var color = d3.scale.category10();
     var colors = [];
     for(var i=0; i<numberOfNodes-2; i++){
       //colors[i] = color(i%3);
@@ -124,6 +100,23 @@
       .attr("cx", function(d) { return d.x; })
       .attr("cy", function(d) { return d.y; });
     });
+
+
+    svg.append("line")
+    .attr("id", "eyeline1" )
+    .attr("stroke-width",2)
+    .attr("stroke","red");
+
+    svg.append("line")
+    .attr("id", "eyeline2" )
+    .attr("stroke-width",2)
+    .attr("stroke","red");
+
+    svg.append("rect")
+    .attr("id","predictionSquare")
+    .attr("width",5)
+    .attr("height",5)
+    .attr("fill","red");
 
     svg.on("mousemove", function() {
       var p1 = d3.mouse(this);
@@ -155,19 +148,34 @@
         return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
       };
     }
+  }
 
-    function checkIfReady() {
-      if (!webgazer.isReady()) {
-        setTimeout(checkIfReady, 100);
-      }
-    }
+  var collisionEyeListener = function(data, clock) {
+    if(!data)
+      return;
+    
+    root.px = data.x;
+    root.py = data.y;
+    force.resume();
 
-    setTimeout(checkIfReady,100);
-  };
+    var cl = webgazer.getTracker().clm;
+    var whr = webgazer.getVideoPreviewToCameraResolutionRatio();
 
-  window.onbeforeunload = function() {
-    //webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
-    window.localStorage.clear(); //Comment out if you want to save data across different sessions
+    var line = d3.select('#eyeline1')
+              .attr("x1",root.px)
+              .attr("y1",root.py)
+              .attr("x2",cl.getCurrentPosition()[27][0] * whr[0])
+              .attr("y2",cl.getCurrentPosition()[27][1] * whr[1]);
+
+    var line = d3.select("#eyeline2")
+              .attr("x1",root.px)
+              .attr("y1",root.py)
+              .attr("x2",cl.getCurrentPosition()[32][0] * whr[0])
+              .attr("y2",cl.getCurrentPosition()[32][1] * whr[1]);
+
+    var dot = d3.select("#predictionSquare")
+              .attr("x",data.x)
+              .attr("y",data.y);
   }
 
   </script>
