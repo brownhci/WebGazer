@@ -11,7 +11,7 @@
 
   const collisionSVG = "collisionSVG";
   var force = [];
-  var root = [];
+  var nodes = [];
 
   window.onload = function() {
 
@@ -54,10 +54,9 @@
 
     var numberOfNodes = 200;
 
-    var nodes = d3.range(numberOfNodes).map(function() { return {radius: Math.random() * 12 + 4}; }),
-    root = nodes[0];
-    root.radius = 0;
-    root.fixed = true;
+    nodes = d3.range(numberOfNodes).map(function() { return {radius: Math.random() * 12 + 4}; }),
+    nodes[0].radius = 0;
+    nodes[0].fixed = true;
 
     force = d3.layout.force()
     .gravity(0.05)
@@ -72,6 +71,7 @@
     .attr("height", height)
     .attr("top", "0px")
     .attr("left","0px")
+    .attr("margin","0px")
     .attr("position","absolute");
 
     var color = d3.scale.category10();
@@ -90,6 +90,7 @@
 
 
     force.on("tick", function(e) {
+      console.log( nodes[0].px )
       var q = d3.geom.quadtree(nodes),
       i = 0,
       n = nodes.length;
@@ -118,10 +119,11 @@
     .attr("height",5)
     .attr("fill","red");
 
+
     svg.on("mousemove", function() {
       var p1 = d3.mouse(this);
-      root.px = p1[0];
-      root.py = p1[1];
+      nodes[0].px = p1[0];
+      nodes[0].py = p1[1];
       force.resume();
     });
 
@@ -154,22 +156,22 @@
     if(!data)
       return;
     
-    root.px = data.x;
-    root.py = data.y;
+    nodes[0].px = data.x;
+    nodes[0].py = data.y;
     force.resume();
 
     var cl = webgazer.getTracker().clm;
     var whr = webgazer.getVideoPreviewToCameraResolutionRatio();
 
     var line = d3.select('#eyeline1')
-              .attr("x1",root.px)
-              .attr("y1",root.py)
+              .attr("x1",data.x)
+              .attr("y1",data.y)
               .attr("x2",cl.getCurrentPosition()[27][0] * whr[0])
               .attr("y2",cl.getCurrentPosition()[27][1] * whr[1]);
 
     var line = d3.select("#eyeline2")
-              .attr("x1",root.px)
-              .attr("y1",root.py)
+              .attr("x1",data.x)
+              .attr("y1",data.y)
               .attr("x2",cl.getCurrentPosition()[32][0] * whr[0])
               .attr("y2",cl.getCurrentPosition()[32][1] * whr[1]);
 
