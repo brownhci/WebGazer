@@ -29,6 +29,8 @@
       if (!webgazer.isReady()) {
         setTimeout(checkIfReady, 100);
       }
+      // This isn't strictly necessary, but it makes the DOM easier to read
+      // to have the draw order reflect the DOM order.
       else if( typeof(feedbackBox) == 'undefined' || feedbackBox == null ) {
         setTimeout(checkIfReady, 100);
       }
@@ -69,10 +71,11 @@
     .attr("id", collisionSVG)
     .attr("width", width)
     .attr("height", height)
-    .attr("top", "0px")
-    .attr("left","0px")
-    .attr("margin","0px")
-    .attr("position","absolute");
+    .style("top", "0px")
+    .style("left","0px")
+    .style("margin","0px")
+    .style("position","absolute")
+    .style("z-index", 100000);
 
     var color = d3.scale.category10();
     var colors = [];
@@ -90,7 +93,6 @@
 
 
     force.on("tick", function(e) {
-      console.log( nodes[0].px )
       var q = d3.geom.quadtree(nodes),
       i = 0,
       n = nodes.length;
@@ -101,7 +103,6 @@
       .attr("cx", function(d) { return d.x; })
       .attr("cy", function(d) { return d.y; });
     });
-
 
     svg.append("line")
     .attr("id", "eyeline1" )
