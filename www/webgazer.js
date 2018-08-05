@@ -11453,4 +11453,8 @@ function store_points(x, y, k) {
         videoElementCanvas = canvas;
     }
 
+    webgazer.getVideoPreviewToCameraResolutionRatio = function() {
+        return [webgazer.params.videoViewerWidth / videoElement.videoWidth, webgazer.params.videoViewerHeight / videoElement.videoHeight];
+    }
+
 }(window));

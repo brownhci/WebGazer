@@ -32,12 +32,13 @@
 
         svg.select("#eyeline1").remove();
         var cl = webgazer.getTracker().clm;
+        var whr = webgazer.getVideoPreviewToCameraResolutionRatio();
 
         var line = svg.append("line")
                   .attr("x1",data.x)
                   .attr("y1",data.y)
-                  .attr("x2",cl.getCurrentPosition()[27][0])
-                  .attr("y2",cl.getCurrentPosition()[27][1])
+                  .attr("x2",cl.getCurrentPosition()[27][0] * whr[0])
+                  .attr("y2",cl.getCurrentPosition()[27][1] * whr[1])
                   .attr("stroke-width",2)
                   .attr("stroke","red")
                   .attr("id","eyeline1");
@@ -48,8 +49,8 @@
         var line = svg.append("line")
                   .attr("x1",data.x)
                   .attr("y1",data.y)
-                  .attr("x2",cl.getCurrentPosition()[32][0])
-                  .attr("y2",cl.getCurrentPosition()[32][1])
+                  .attr("x2",cl.getCurrentPosition()[32][0] * whr[0])
+                  .attr("y2",cl.getCurrentPosition()[32][1] * whr[1])
                   .attr("stroke-width",2)
                   .attr("stroke","red")
                   .attr("id","eyeline2");
@@ -91,7 +92,11 @@
     var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
-    .attr("id","balls");
+    .attr("top", "0px")
+    .attr("left","0px")
+    .attr("position", "absolute")
+    .attr("id","balls")
+    .attr("z-index", 5);
 
 
     var colors = [];
