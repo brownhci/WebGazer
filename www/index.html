@@ -283,6 +283,8 @@ prediction.y; //now always in the bounds of the viewport
                     <form method="get" action="./webgazer.js">
                         <button class="btn btn-primary btn-lg" type="submit"><span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span> Download WebGazer.js</button>
                     </form>
+                    <h3 class="pad">Dataset</h3>
+                    A webcam video dataset for training and evaluating eye tracking models. Please see the <a href="./data">documentation download link</a>.
                 </div>
                 <div class="col-lg-6">
                     <h3 class="pad">Create from Source</h3>
@@ -326,7 +328,7 @@ grunt
                     <img src="media/example/google_serp.png" alt="SearchGazer" width="300" height="250">
                     <h4 class="pad">WebGazer on Search Engines</h4>
                     <p class="text-justify">We have created SearchGazer.js, a library that incorporates WebGazer in Search Engines such as Bing and Google.
-                        <form method="get" action="https://webgazer.cs.brown.edu/search">
+                        <form method="get" action="./search">
                         <button class="btn btn-primary" type="submit">Try SearchGazer.js!</button>
                     </form>
                     </p>
@@ -338,6 +340,11 @@ grunt
         <hr class="featurette-divider">
         <div id="publication" class="container pad">
             <h2 class="text-center">Publications</h2>
+            <div class="row">
+            <div class="col-lg-1">
+                <a href="https://jeffhuang.com/Final_WebGazer_IJCAI16.pdf"><img src="pdf.png"></a>
+            </div>
+            <div class="col-lg-11">
             <p>If you use WebGazer.js please cite the following paper:</p>
             <p>
             <code>
@@ -351,7 +358,14 @@ grunt
                 }
             </code>
             </p>
-            <p>If you use SearchGazer.js please cite the following paper:</p>
+            </div>
+            </div>
+            <div class="row">
+            <div class="col-lg-1">
+                <a href="https://jeffhuang.com/Final_SearchGazer_CHIIR17.pdf"><img src="pdf.png"></a>
+            </div>
+            <div class="col-lg-11">
+            <p>If you use <a href="./search">SearchGazer.js</a> please cite the following paper:</p>
             <p>
             <code>@inproceedings{papoutsaki2017searchgazer,<br>
                 author = {Alexandra Papoutsaki and James Laskey and Jeff Huang},<br>
@@ -362,6 +376,27 @@ grunt
                 }
             </code>
             </p>
+            </div>
+            </div>
+            <div class="row">
+            <div class="col-lg-1">
+                <a href="https://jeffhuang.com/Final_EyeTyper_ETRA18.pdf"><img src="pdf.png"></a>
+            </div>
+            <div class="col-lg-11">
+            <p>For the <a href="./data">WebGazer webcam dataset</a>:</p>
+            <p>
+            <code>@inproceedings{papoutsaki2018eye,<br>
+                title={The eye of the typer: a benchmark and analysis of gaze behavior during typing},<br>
+                author={Papoutsaki, Alexandra and Gokaslan, Aaron and Tompkin, James and He, Yuze and Huang, Jeff},<br>
+                booktitle={Proceedings of the 2018 ACM Symposium on Eye Tracking Research \& Applications},<br>
+                pages={16},<br>
+                year={2018},<br>
+                organization={ACM}<br>
+                }
+            </code>
+            </p>
+            </div>
+            </div>
         </div>
 
         <hr class="featurette-divider">
@@ -398,47 +433,52 @@ grunt
             <div class="row">
                 <!-- bootstrap has 12 columns, so each person gets part of that 12 cols -->
 
-                <div class="col-lg-3">
+                <div class="col-lg-2">
                     <img class="img-circle center-block" src="media/people/alexpap.jpg" alt="Alexandra Papoutsaki" height="140">
                     <h4 class="text-center"><a href="http://www.cs.pomona.edu/~apapoutsaki/">Alexandra Papoutsaki</a></h4>
                     <p>Assistant Professor of Computer Science at Pomona College.</p>
-                </div>
-                <div class="col-lg-2">
-                    <img class="img-circle center-block" src="media/people/jim.jpg" alt="James Laskey" height="140">
-                    <h4 class="text-center">James Laskey</h4>
-                    <p>Software Engineer at Google. Brown '16.</p>
                 </div>
                 <div class="col-lg-2">
                     <img class="img-circle center-block" src="media/people/aaron.jpg" alt="Aaron Gokaslan" height="140">
                     <h4 class="text-center">Aaron Gokaslan</h4>
                     <p>Undergraduate student at Brown University.</p>
                 </div>
-                <div class="col-lg-3">
-                    <img class="img-circle center-block" src="media/people/yuze.jpg" alt="Yuze He" height="140">
-                    <h4 class="text-center">Yuze He</h4>
-                    <p>Masters student at Brown University.</p>
+                <div class="col-lg-2">
+                    <img class="img-circle center-block" src="media/people/ida.jpg" alt="Ida De Smet" height="140">
+                    <h4 class="text-center">Ida De Smet</h4>
+                    <p>Undergraduate student at the University of Auckland.</p>
+                </div>
+                <div class="col-lg-2">
+                    <img class="img-circle center-block" src="media/people/jack.jpg" alt="Jack Wong" height="140">
+                    <h4 class="text-center">Jack Wong</h4>
+                    <p>Undergraduate student at the University of Auckland.</p>
+                </div>
+                <div class="col-lg-2">
+                    <img class="img-circle center-block" src="media/people/tompkin.jpg" alt="James Tompkin" height="140">
+                    <h4 class="text-center"><a href="http://jamestompkin.com/">James Tompkin</a></h4>
+                    <p>Assistant Professor of Computer Science at Brown University.</p>
                 </div>
                 <div class="col-lg-2">
                     <img class="img-circle center-block" src="media/people/jeff.jpg" alt="Jeff Huang" height="140">
-                    <h4 class="text-center"><a href="http://jeffhuang.com">Jeff Huang</a></h4>
+                    <h4 class="text-center"><a href="https://jeffhuang.com">Jeff Huang</a></h4>
                     <p>Assistant Professor of Computer Science at Brown University.</p>
                 </div>
             </div>
             <div class="pad">
                 <h3>Other Collaborators</h3>
                 <ul style="margin-top: 20px">
-                    <li><a href="https://cs.brown.edu/~ptunnell/">Preston Tunnell Wilson</a> - PhD student at Brown University</li>
-                    <li><a href="http://www.cc.gatech.edu/~psangklo/">Patsorn Sangkloy</a> - PhD student at Georgia Institute of Technology</li>
                     <li><a href="http://cs.brown.edu/~nediyana">Nediyana Daskalova</a> - PhD student at Brown University</li>
                     <li><a href="http://www.cc.gatech.edu/~hays/">James Hays</a> - Associate Professor at Georgia Institute of Technology</li>
-                    <li><a href="https://www.linkedin.com/in/idakdesmet/">Ida De Smet</a> - Software engineering student at the University of Auckland</li>
+                    <li>Yuze He - Masters student (Brown '17)</li>
+                    <li>James Laskey - Undergraduate student (Brown '16)</li>
+                    <li><a href="http://www.cc.gatech.edu/~psangklo/">Patsorn Sangkloy</a> - PhD student at Georgia Institute of Technology</li>
                     <li><a href="https://www.linkedin.com/in/elizabeth-stevenson-9b47a7125/">Elizabeth Stevenson</a> - Software engineering student at the University of Auckland</li>
-                    <li>Jack Wong - Software engineering student at the University of Auckland</li>
+                    <li><a href="https://cs.brown.edu/~ptunnell/">Preston Tunnell Wilson</a> - PhD student at Brown University</li>
                 </ul>
                 <h3>Acknowledgements</h3>
-                <p>Webgazer is developed based on the research that is done by Brown University. The work of the calibration example file was developed in the context of a course project with the aim to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
+                <p>Webgazer is developed based on the research that is done by Brown University. The work of the calibration example file was developed in the context of a course project with the aim to improve the feedback of WebGazer, proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
                   <br /><br />
-                  This research is supported by NSF grants IIS-1464061, IIS-1552663, and the Brown University Salomon Award.
+                  This research is supported by NSF grants IIS-1464061, IIS-1552663, a Seed Award from the Center for Vision Research at Brown University, and the Brown University Salomon Award.
                 </p>
             </div>
         </div>

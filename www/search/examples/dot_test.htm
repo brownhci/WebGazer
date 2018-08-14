@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<title>Calibration</title>
+
+    	<!-- Bootstrap core CSS -->
+        <link href="../css/bootstrap.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight/styles/default.css">
+        <script src="../css/highlight/highlight.pack.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+    	<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+
+    	<style type="text/css">
+			body {
+			    position: relative;
+			    min-height: 2000px;
+			}
+		</style>
+    </head>
+    <body>
+		<script type="text/javascript" src="../searchgazer.js"></script>
+    	<canvas id="myCanvas"></canvas>
+        <script>
+		window.onload = function() {
+			
+		    webgazer.setRegression('ridge') /* currently must set regression and tracker */
+		    .setTracker('clmtrackr')
+		    .setGazeListener(function(data, clock) {
+		     //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
+		     //   console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
+		    })
+		    .begin()
+		    .showPredictionPoints(false); /* shows a square every 100 milliseconds where current prediction is */
+		    
+		    var width = 320;
+		    var height = 240;
+		    var topDist = '0px';
+		    var leftDist = '0px';
+		    
+		    var setup = function() {
+		        var video = document.getElementById('webgazerVideoFeed');
+		        video.style.display = 'hidden';
+		        video.style.position = 'absolute';
+		        video.style.top = topDist;
+		        video.style.left = leftDist;
+		        video.width = width;
+		        video.height = height;
+		        video.style.margin = '0px';
+
+		        webgazer.params.imgWidth = width;
+		        webgazer.params.imgHeight = height;
+		    };
+
+		    function checkIfReady() {
+		        if (webgazer.isReady()) {
+		            setup();
+		        } else {
+		            setTimeout(checkIfReady, 100);
+		        }
+		    }
+		    setTimeout(checkIfReady,100);
+
+	        window.onbeforeunload = function() {
+		        webgazer.end();
+		    };
+
+
+			var canvas = document.getElementById('myCanvas');
+			var context = canvas.getContext('2d');
+			var circles = [];
+			context.canvas.width=window.innerWidth;
+			context.canvas.height=window.innerHeight;
+			var w = window.innerWidth;
+			var h = window.innerHeight;
+
+			var draw = function (context, x, y, fillcolor, radius, linewidth, strokestyle) {
+			    context.beginPath();
+			    context.arc(x, y, radius, 0, 2 * Math.PI, false);
+			    context.fillStyle = fillcolor;
+			    context.fill();
+			    context.lineWidth = linewidth;
+			    context.strokeStyle = strokestyle;
+			    context.stroke();
+			};
+
+			var stroking = function (strokestyle){
+			    context.strokeStyle = strokestyle;
+
+			};
+
+			var Circle = function(x, y, radius) {
+			    this.left = x - radius;
+			    this.top = y - radius;
+			    this.right = x + radius;
+			    this.bottom = y + radius;
+			};
+
+			var drawCircle = function (context, x, y, fillcolor, radius, linewidth, strokestyle, circles) {
+			    draw(context, x, y, fillcolor, radius, linewidth, strokestyle);
+			    var circle = new Circle(x, y, radius);
+			    circles.push(circle);
+			};
+
+			var calibrationPoints = [[40,40],[w/2,40],[w - 40,40],[40, h/2],[w/2, h/2],[w - 40, h/2],[40,h - 40],[w/2,h - 40],[w - 40, h - 40]
+			];
+
+			var x = calibrationPoints[0][0];
+			var y = calibrationPoints[0][1];
+
+			drawCircle(context, x, y, "black", 17, 2, "black", circles);
+			drawCircle(context, x, y, "black", 10, 2, "black", circles);
+			drawCircle(context, x, y, "yellow", 3, 2, "black", circles);
+
+			var j = 1;
+			var k = 0;
+			$('#myCanvas').click(function (e) {
+			    var clickedX = e.pageX - this.offsetLeft;
+			    var clickedY = e.pageY - this.offsetTop;
+
+		        if (clickedX < circles[2].right && clickedX > circles[2].left && clickedY > circles[2].top && clickedY < circles[2].bottom) {
+		            if (j < calibrationPoints.length){
+		            	var x = calibrationPoints[j][0];
+						var y = calibrationPoints[j][1];
+						context.clearRect(0,0,canvas.width,canvas.height);
+						circles.pop();
+						circles.pop();
+						circles.pop();
+						drawCircle(context, x, y, "black", 17, 2, "black", circles);
+						drawCircle(context, x, y, "black", 10, 2, "black", circles);
+						drawCircle(context, x, y, "yellow", 3, 2, "black", circles);
+						j++;
+						k++;
+		            }
+		        	else{
+		        		context.clearRect(0,0,canvas.width,canvas.height);
+						context.canvas.width = 0;
+						context.canvas.height =0;
+						var body = document.getElementsByTagName("body")[0];
+						var para = document.createElement("p");
+		        		para.className = "text-left";
+						var text = document.createTextNode("Calibration Complete. Pick a search engine to see how SearchGazer works.");
+		        		para.appendChild(text);
+		        		body.appendChild(para);
+		        		var bing = document.createElement("button");
+		        		bing.innerHTML = "Bing Demo";
+		        		bing.className = "btn btn-primary btn-lg";
+		        		bing.type = "button";
+						body.appendChild(bing);
+		        		bing.addEventListener ("click", function() {
+							window.location.href='bing.htm';									
+						});
+		        		var google = document.createElement("button");		        		
+						google.innerHTML = "Google Demo";
+						google.className = "btn btn-success btn-lg";
+		        		google.type = "button";
+						body.appendChild(google);
+		        		google.addEventListener ("click", function() {
+							window.location.href='google.htm';									
+						});
+					}
+		        }
+			});
+
+			function goToPage(page) {
+        		location.href = page+".htm";
+			}
+
+			$('#myCanvas').mousemove(function (e) {
+			    var clickedX = e.pageX - this.offsetLeft;
+			    var clickedY = e.pageY - this.offsetTop;
+			   	var style1 = "black";
+			   	var style2 = "black";
+			   	var style3 = "black";
+
+			   	if (k < calibrationPoints.length){
+
+		        	if (clickedX < circles[0].right && clickedX > circles[0].left && clickedY > circles[0].top && clickedY < circles[0].bottom) {
+		            	style1 = "red";
+		            }
+		            else{
+		            	style1 = "black"
+		            }
+		            if (clickedX < circles[1].right && clickedX > circles[1].left && clickedY > circles[1].top && clickedY < circles[1].bottom) {
+		            	style2 = "orange"
+		            }
+		            else{
+		        		style2 = "black"
+		        	}
+		        	if (clickedX < circles[2].right && clickedX > circles[2].left && clickedY > circles[2].top && clickedY < circles[2].bottom) {
+		            	style3 = "green"
+		            }
+		            else{
+		        		style3 = "black"
+			        }
+			        var x = calibrationPoints[k][0];
+					var y = calibrationPoints[k][1];
+					context.clearRect(0,0,canvas.width,canvas.height);
+					circles.pop();
+					circles.pop();
+					circles.pop();
+					drawCircle(context, x, y, "black", 17, 2, style1, circles);
+					drawCircle(context, x, y, "black", 10, 2, style2, circles);
+					drawCircle(context, x, y, "yellow", 3, 2, style3, circles);
+		        }
+
+			});
+		};
+        </script>
+	</body>
+</html>
