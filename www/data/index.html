@@ -13,10 +13,10 @@
   <title>The Eye Of The Typer Dataset (EOTT)</title>
 
   <!-- Bootstrap core CSS -->
-  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/highlight/styles/default.css">
-  <script src="css/highlight/highlight.pack.js"></script>
+  <link rel="stylesheet" href="../css/highlight/styles/default.css">
+  <script src="../css/highlight/highlight.pack.js"></script>
   <script>
     hljs.initHighlightingOnLoad();
   </script>
@@ -25,7 +25,6 @@
     body {
       position: relative;
       min-height: 2000px;
-      padding-top: 50px;
     }
 
     .padright {
@@ -40,6 +39,10 @@
 
     .jumbotron p {
       font-size: 16px;
+    }
+
+    .jumbotron {
+      background-color:transparent !important;
     }
 
     p>code.hljs {
@@ -58,28 +61,23 @@
 <body data-spy="scroll" data-target="#navbar">
 
   <!-- Fixed navbar -->
-  <nav class="navbar navbar-default navbar-fixed-top">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-fixed-top">
     <div class="container">
       <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="navbar-toggler-icon"></span>
         <a class="navbar-brand" href="#">EOTT</a>
+        </button>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
-        <ul class="nav navbar-nav nav-tabs" role="tablist">
-          <li class="active"><a href="#home">Home</a></li>
-          <li><a href="#dataset">Dataset</a></li>
-          <li><a href="#datasetextractor">Data Extractor</a></li>
-          <li><a href="#contact">Contact</a></li>
-          <li><a href="http://webgazer.cs.brown.edu/">WebGazer</a></li>
+        <ul class="nav navbar-nav">
+          <li class="active nav-item"><a class="nav-link" href="#home">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#dataset">Dataset</a></li>
+          <li class="nav-item"><a class="nav-link" href="#datasetextractor">Data Extractor</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="http://webgazer.cs.brown.edu/">WebGazer</a></li>
         </ul>
       </div>
-      <!--/.nav-collapse
-                -->
     </div>
   </nav>
 
@@ -341,27 +339,27 @@
         <div class="col-lg-1">
         </div>
         <div class="col-lg-2">
-          <img class="img-circle center-block" src="media/alexpap.jpg" alt="Alexandra Papoutsaki" height="140">
+          <img class="rounded-circle mx-auto d-block" src="../media/people/alexpap.jpg" alt="Alexandra Papoutsaki" height="140">
           <h4 class="text-center"><a href="http://www.cs.pomona.edu/~apapoutsaki">Alexandra Papoutsaki</a></h4>
           <p class="text-center">Assistant Professor of Computer Science at Pomona College</p>
         </div>
         <div class="col-lg-2">
-          <img class="img-circle center-block" src="media/aaron.jpg" alt="Aaron Gokaslan" height="140">
+          <img class="rounded-circle mx-auto d-block" src="../media/people/aaron.jpg" alt="Aaron Gokaslan" height="140">
           <h4 class="text-center">Aaron Gokaslan</h4>
           <p class="text-center">Undergraduate student at Brown University</p>
         </div>
         <div class="col-lg-2">
-          <img class="img-circle center-block" src="media/james.png" alt="James Tompkin" height="140">
+          <img class="rounded-circle mx-auto d-block" src="../media/people/james.jpg" alt="James Tompkin" height="140">
           <h4 class="text-center"><a href="http://jamestompkin.com">James Tompkin</a></h4>
           <p class="text-center">Assistant Professor of Computer Science at Brown University</p>
         </div>
         <div class="col-lg-2">
-          <img class="img-circle center-block" src="media/yuze.jpg" alt="Yuze He" height="140">
+          <img class="rounded-circle mx-auto d-block" src="../media/people/yuze.jpg" alt="Yuze He" height="140">
           <h4 class="text-center">Yuze He</h4>
           <p class="text-center">Masters student at Brown University</p>
         </div>
         <div class="col-lg-2">
-          <img class="img-circle center-block" src="media/jeff.jpg" alt="Jeff Huang" height="140">
+          <img class="rounded-circle mx-auto d-block" src="../media/people/jeff.jpg" alt="Jeff Huang" height="140">
           <h4 class="text-center"><a href="http://jeffhuang.com">Jeff Huang</a></h4>
           <p class="text-center">Assistant Professor of Computer Science at Brown University</p>
         </div>
@@ -375,8 +373,8 @@
       <p class="text-center">Copyright (C) 2018 <a href="http://hci.cs.brown.edu">Brown HCI Group</a><br> Licensed under <a href="http://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3</a>.
       </p>
 
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-      <script src="js/bootstrap.min.js"></script>
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html>

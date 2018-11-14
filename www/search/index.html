@@ -12,17 +12,16 @@
         <title>SearchGazer: Webcam Eye Tracking for Remote Studies of Web Search</title>
 
         <!-- Bootstrap core CSS -->
-        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <link rel="stylesheet" href="css/highlight/styles/default.css">
-        <script src="css/highlight/highlight.pack.js"></script>
+        <link rel="stylesheet" href="../css/highlight/styles/default.css">
+        <script src="../css/highlight/highlight.pack.js"></script>
         <script>hljs.initHighlightingOnLoad();</script>
 
 <style type="text/css">
 body {
     position: relative;
     min-height: 2000px;
-    padding-top: 50px;
 }
 
 .padright {
@@ -32,6 +31,10 @@ body {
 .pad {
     padding-top: 10px;
     margin-bottom: 20px;
+}
+
+.jumbotron {
+    background-color:transparent !important;
 }
 
 .jumbotron p {
@@ -53,30 +56,26 @@ p > code.hljs { display: inline; }
     <body data-spy="scroll" data-target="#navbar">
 
         <!-- Fixed navbar -->
-        <nav class="navbar navbar-default navbar-fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
+                    <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="navbar-toggler-icon"></span>
                     </button>
                     <a class="navbar-brand" href="#">SearchGazer</a>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav nav-tabs" role="tablist">
-                        <li class="active"><a href="#home">Home</a></li>
-                        <li><a href="#usage">Usage</a></li>
-                        <li><a href="#support">Browser Support</a></li>
-                        <li><a href="#engine">Search Engine Support</a></li>
-                        <li><a href="#download">Download</a></li>
-                        <li><a href="#examples">Examples</a></li>
-                        <li><a href="#publication">Publication</a></li>
-                        <li><a href="#contact">Contact</a></li>
+                    <ul class="nav navbar-nav">
+                        <li class="active nav-item"><a class="nav-link" href="#home">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#usage">Usage</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#support">Browser Support</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#engine">Search Engine Support</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#download">Download</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#examples">Examples</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#publication">Publication</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
                     </ul>
-                </div><!--/.nav-collapse
-                -->
+                </div>
             </div>
         </nav>
 
@@ -91,7 +90,7 @@ p > code.hljs { display: inline; }
             <hr class="featurette-divider">
             <div id="description" class="container pad">
                 <p class="text-justify">
-                    SearchGazer is an eye tracking library that uses common webcams to infer the eye-gaze locations of visitors on a search engine in real time. In addition, SearchGazer predicts in real-time which area of interest within a search engine result page is being examined by a visitor at any moment. SearchGazer extends <a href="webgazer.cs.brown.edu">WebGazer</a> and its eye tracking model that self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. SearchGazer is written entirely in JavaScript and with only a few lines of code can be integrated in any search engine that wishes to conduct remote eye tracking studies. SearchGazer runs entirely in the client browser, therefore no video data needs to be sent to a server. SearchGazer runs only if the user consents in giving access to their webcam. 
+                    SearchGazer is an eye tracking library that uses common webcams to infer the eye-gaze locations of visitors on a search engine in real time. In addition, SearchGazer predicts in real-time which area of interest within a search engine result page is being examined by a visitor at any moment. SearchGazer extends <a href="webgazer.cs.brown.edu">WebGazer</a> and its eye tracking model that self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. SearchGazer is written entirely in JavaScript and with only a few lines of code can be integrated in any search engine that wishes to conduct remote eye tracking studies. SearchGazer runs entirely in the client browser, therefore no video data needs to be sent to a server. SearchGazer runs only if the user consents in giving access to their webcam.
                 </p>
             </div>
 
@@ -102,9 +101,9 @@ p > code.hljs { display: inline; }
             <div class="row">
                 <div class="col-lg-12">
                     For SearchGazer to perform eye tracking you need to add the searchgazer.js file as a script in your search engine:
-                    <pre><code class="html hljs"> /* WebGazer.js library */ 
+                    <pre><code class="html hljs"> /* WebGazer.js library */
 &lt;script src="searchgazer.js" type="text/javascript" &gt;</code></pre>
-                    <p> 
+                    <p>
                         <i>Be aware that when you do local development and you might need to run locally a simple http server that supports the https protocol. </i>
                     </p>
                     <p>
@@ -116,7 +115,7 @@ webgazer.setGazeListener(function(data, elapsedTime) {
     if (data == null) {
         return;
     }
-    var xprediction = data.x; //these x coordinates are relative to the viewport 
+    var xprediction = data.x; //these x coordinates are relative to the viewport
     var yprediction = data.y; //these y coordinates are relative to the viewport
     console.log(elapsedTime); //elapsed time is based on time since begin was called
 }).begin();
@@ -156,7 +155,7 @@ if (prediction) {
                             <li><a href="https://trackingjs.com/">tracking.js</a></li>
                         </ul>
                     </div>
-                </div> 
+                </div>
                 <div class="row">
                     <div class="col-lg-12">
                         <pre><code class="javascript hljs">webgazer.setRegression("ridge"); //set a regression module</code></pre>
@@ -195,7 +194,7 @@ prediction.y; //now always in the bounds of the viewport
             <div class="row">
                 <div class="col-lg-12">
                     <h4>Detecting Areas Of Interesting in Search Engine</h4>
-                    When a searcher issues a query, SearchGazer can detect which areas of interest (organic results, related searches, ads, etc.) the searcher is examining in real time. SearchGazer currently supports detection of DOM elements for Bing and Google. Simply call the functions <code class="javascript">findDomElementBing(x,y)</code> and <code class="javascript">findDomElementGoogle(x,y)</code> respectively, which given a pair of coordinates within the search engine page will return the corresponding DOM element. 
+                    When a searcher issues a query, SearchGazer can detect which areas of interest (organic results, related searches, ads, etc.) the searcher is examining in real time. SearchGazer currently supports detection of DOM elements for Bing and Google. Simply call the functions <code class="javascript">findDomElementBing(x,y)</code> and <code class="javascript">findDomElementGoogle(x,y)</code> respectively, which given a pair of coordinates within the search engine page will return the corresponding DOM element.
                 </div>
             </div>
 
@@ -212,25 +211,25 @@ prediction.y; //now always in the bounds of the viewport
             <div class="row">
                 <div class="col-lg-3">
                     <center>
-                        <img src="media/chrome.png" alt="Google Chrome" width="100" height="100" >
+                        <img src="../media/browser/chrome.png" alt="Google Chrome" width="100" height="100" >
                     </center>
                     <h4 class="text-center">Google Chrome 47+</h4>
                 </div>
                 <div class="col-lg-3">
                     <center>
-                        <img src="media/edge.png" alt="Microsoft Edge" width="100" height="100">
+                        <img src="../media/browser/edge.png" alt="Microsoft Edge" width="100" height="100">
                     </center>
                     <h4 class="text-center">Microsoft Edge 13+</h4>
                 </div>
                 <div class="col-lg-3">
                     <center>
-                        <img src="media/firefox.png" alt="Mozilla Firefox" width="100" height="100">
+                        <img src="../media/browser/firefox.png" alt="Mozilla Firefox" width="100" height="100">
                     </center>
                     <h4 class="text-center">Mozilla Firefox 44+</h4>
-                </div>                
+                </div>
                 <div class="col-lg-3">
                     <center>
-                        <img src="media/opera.png" alt="Opera" width="100" height="100">
+                        <img src="../media/browser/opera.png" alt="Opera" width="100" height="100">
                     </center>
                     <h4 class="text-center">Opera 36+</h4>
                 </div>
@@ -279,7 +278,7 @@ prediction.y; //now always in the bounds of the viewport
         <hr class="featurette-divider">
         <div id="examples" class="container pad">
             <h2 class="text-center pad">Examples</h2>
-            <div class="row">              
+            <div class="row">
 
                 <div class="col-lg-6">
                     <center>
@@ -293,7 +292,7 @@ prediction.y; //now always in the bounds of the viewport
                     </center>
                     <h4 class="text-center">Google</h4>
                 </div>
-                <div class="col-lg-12">                
+                <div class="col-lg-12">
 
                     <h4 class="pad">SearchGazer on Bing or Google</h4>
                     <p>See how SearchGazer works on Bing and Google. The only thing you need to do is make sure your face is captured correctly and on the next page click the center of a black circle that will appear in different locations within your screen. Once you have successfully clicked the target for 9 times you can choose to see SearchGazer's predictions in action on a Bing or Google demo. The areas of interest that correspond to the location of the predicted gaze will be logged in the console.
@@ -326,19 +325,19 @@ prediction.y; //now always in the bounds of the viewport
             <h2 class="text-center pad">Who We Are</h2>
             <div class="row">
                 <!-- bootstrap has 12 columns, so each person gets part of that 12 cols -->
-                
+
                 <div class="col-lg-4">
-                    <img class="img-circle center-block" src="media/alexpap.jpg" alt="Alexandra Papoutsaki" height="140">
+                    <img class="rounded-circle mx-auto d-block" src="../media/people/alexpap.jpg" alt="Alexandra Papoutsaki" height="140">
                     <h4 class="text-center"><a href="http://www.cs.pomona.edu/~apapoutsaki/">Alexandra Papoutsaki</a></h4>
                     <p>Assistant Professor of Computer Science at Pomona College.</p>
                 </div>
                 <div class="col-lg-4">
-                    <img class="img-circle center-block" src="media/jim.jpg" alt="James Laskey" height="140">
+                    <img class="rounded-circle mx-auto d-block" src="../media/people/jim.jpg" alt="James Laskey" height="140">
                     <h4 class="text-center">James Laskey</h4>
                     <p>Software Engineer at Google. Graduated from Brown in 2016.</p>
                 </div>
                 <div class="col-lg-4">
-                    <img class="img-circle center-block" src="media/jeff.jpg" alt="Jeff Huang" height="140">
+                    <img class="rounded-circle mx-auto d-block" src="../media/people/jeff.jpg" alt="Jeff Huang" height="140">
                     <h4 class="text-center"><a href="http://jeffhuang.com">Jeff Huang</a></h4>
                     <p>Assistant Professor of Computer Science at Brown University.</p>
                 </div>
@@ -351,7 +350,7 @@ prediction.y; //now always in the bounds of the viewport
             Licensed under <a href="http://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3</a>.
             </p>
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+        <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     </body>
 </html>
-
