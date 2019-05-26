@@ -12,5 +12,8 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-uglify-es": "git://github.com/gruntjs/grunt-contrib-uglify.git#harmony",
     "jsdoc": "^3.6.2"
+  },
+  "dependencies": {
+    "mime": "^2.4.3"
   }
 }
