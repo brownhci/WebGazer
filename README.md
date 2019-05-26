@@ -82,14 +82,13 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
     }
 
     @inproceedings{papoutsaki2018eye,
-  author={Papoutsaki, Alexandra and Gokaslan, Aaron and Tompkin, James and He, Yuze and Huang, Jeff},
-  title={The eye of the typer: a benchmark and analysis of gaze behavior during typing.},
-  booktitle={Proceedings of the 2018 ACM Symposium on Eye Tracking Research \& Applications (ETRA)},
-  pages={16--1},
-  year={2018},
-  organization={ACM}
-
-}
+    author={Papoutsaki, Alexandra and Gokaslan, Aaron and Tompkin, James and He, Yuze and Huang, Jeff},
+    title={The eye of the typer: a benchmark and analysis of gaze behavior during typing.},
+    booktitle={Proceedings of the 2018 ACM Symposium on Eye Tracking Research \& Applications (ETRA)},
+    pages={16--1},
+    year={2018},
+    organization={ACM}
+    }
 
 
 
