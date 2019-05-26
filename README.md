@@ -81,20 +81,36 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
     organization={ACM}
     }
 
+    @inproceedings{papoutsaki2018eye,
+  author={Papoutsaki, Alexandra and Gokaslan, Aaron and Tompkin, James and He, Yuze and Huang, Jeff},
+  title={The eye of the typer: a benchmark and analysis of gaze behavior during typing.},
+  booktitle={Proceedings of the 2018 ACM Symposium on Eye Tracking Research \& Applications (ETRA)},
+  pages={16--1},
+  year={2018},
+  organization={ACM}
+
+}
+
+
 
 ## Who We Are
 
   * Alexandra Papoutsaki
-  * James Laskey
   * Aaron Gokaslan
-  * Yuze He
+  * Ida De Smet
+  * Jack Wong
+  * James Tompkin
   * Jeff Huang
 
 ## Other Collaborators
 
-  * Ida De Smet - Software engineering student at the University of Auckland
-  * Elizabeth Stevenson - Software engineering student at the University of Auckland
-  * Jack Wong - Software engineering student at the University of Auckland
+  * Nediyana Daskalova
+  * James Hays
+  * Yuze He
+  * James Laskey
+  * Patsorn Sangkloy
+  * Elizabeth Stevenson
+  * Preston Tunnell Wilson
 
 ### Acknowledgements
 
@@ -104,6 +120,6 @@ This research is supported by NSF grants IIS-1464061, IIS-1552663, and the Brown
 
 ## License
 
-Copyright (C) 2018 [Brown HCI Group](http://hci.cs.brown.edu)
+Copyright (C) 2019 [Brown HCI Group](http://hci.cs.brown.edu)
 
 Licensed under GPLv3. Companies have the option to license WebGazer.js under LGPLv3 while their valuation is under $10,000,000.
