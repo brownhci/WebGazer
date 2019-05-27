@@ -38,7 +38,7 @@ SearchGazer supports the following search engines for identification of areas of
 	@inproceedings{papoutsaki2017searchgazer,
 	author = {Alexandra Papoutsaki and James Laskey and Jeff Huang},
 	title = {SearchGazer: Webcam Eye Tracking for Remote Studies of Web Search},
-	booktitle = {Proceedings of the ACM SIGIR Conference on Human Information Interaction \& 	Retrieval (CHIIR)},
+	booktitle = {Proceedings of the ACM SIGIR Conference on Human Information Interaction \& Retrieval (CHIIR)},
 	year = {2016},
 	organization={ACM}
 	}

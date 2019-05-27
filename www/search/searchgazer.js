@@ -844,11 +844,7 @@ var objectdetect = (function() {
       video: true,
       audio: opt_options.audio
     }, function(stream) {
-        try {
-          element.src = window.URL.createObjectURL(stream);
-        } catch (err) {
-          element.src = stream;
-        }
+        element.srcObject = stream;
       }, function() {
         throw Error('Cannot capture user camera.');
       }
@@ -10489,7 +10485,7 @@ if (typeof exports !== 'undefined') {
         videoElement.style.display = 'none';
 
         //turn the stream into a magic URL 
-        videoElement.src = videoSrc;  
+        videoElement.srcObject = videoSrc;  
         document.body.appendChild(videoElement);
 
         videoElementCanvas = document.createElement('canvas'); 
@@ -10535,7 +10531,7 @@ if (typeof exports !== 'undefined') {
             navigator.getUserMedia(options, 
                     function(stream){
                         console.log('video stream created');
-                        init(window.URL.createObjectURL(stream));                    
+                        init(stream);                    
                     }, 
                     function(e){ 
                         console.log("No stream"); 
