@@ -59,6 +59,7 @@ The following browsers support WebGazer.js:
   * Mozilla Firefox
   * Opera
   * Safari
+  * Internet Explorer
 
 Your browser needs to support the getUserMedia API as seen [here](http://caniuse.com/#feat=stream).
 
