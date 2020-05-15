@@ -18,10 +18,14 @@
 ../dependencies/clmtrackr/svmfilter_webgl.js
 ../dependencies/clmtrackr/svmfilter_fft.js
 ../dependencies/clmtrackr/mossefilter.js
+../dependencies/tensorflow/tfjs-core.js
+../dependencies/tensorflow/tfjs-converter.js
+../dependencies/tensorflow/facemesh.js
 ../src/blinkDetector.js
 ../src/clmGaze.js
 ../src/trackingjsGaze.js
 ../src/js_objectdetectGaze.js
+../src/facemesh.js
 ../src/linearReg.js
 ../src/mat.js
 ../src/pupil.js
