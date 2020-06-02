@@ -221,7 +221,7 @@
             return;
         }
         try {
-            return blinkDetector.detectBlink(curTracker.getEyePatches(canvas, width, height));
+            return curTracker.getEyePatches(canvas, width, height);
         } catch(err) {
             console.log(err);
             return null;
@@ -312,7 +312,7 @@
                 } else {
                     faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
                     if (latestGazeData){
-                        webgazer.getTracker().drawFaceOverlay(faceOverlay.getContext('2d'), latestGazeData.eyeFeatures.positions);
+                        webgazer.getTracker().drawFaceOverlay(faceOverlay.getContext('2d'), webgazer.getTracker().getPositions());
                     }
                 }
             }

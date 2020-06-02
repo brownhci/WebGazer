@@ -17,6 +17,8 @@
  
     webgazer.tracker.TFFaceMesh = TFFaceMesh;
 
+    TFFaceMesh.prototype.positionsArray = null;
+
     /**
      * Isolates the two patches that correspond to the user's eyes
      * @param  {Canvas} imageCanvas - canvas corresponding to the webcam stream
@@ -35,27 +37,14 @@
 
         // Pass in a video stream (or an image, canvas, or 3D tensor) to obtain an
         // array of detected faces from the MediaPipe graph.
-        const predictions = await model.estimateFaces(imageCanvas);
-        
-        // if (predictions.length > 0) {
-          
-        //   for (let i = 0; i < predictions.length; i++) {
-        //     const keypoints = predictions[i].scaledMesh;
 
-        //     // Log facial keypoints.
-        //     for (let i = 0; i < keypoints.length; i++) {
-        //       const [x, y, z] = keypoints[i];
-        //       console.log(`Keypoint ${i}: [${x}, ${y}, ${z}]`);
-        //     }
-        //   }
-        // }
+        this.positionsArray = await model.estimateFaces(imageCanvas);
+        const predictions = positionsArray;
         
         if (predictions.length == 0){
             return false;
         }
         const positions = predictions[0].scaledMesh;
-
-    
 
         //Fit the detected eye in a rectangle
         //https://raw.githubusercontent.com/tensorflow/tfjs-models/master/facemesh/mesh_map.jpg
@@ -68,8 +57,6 @@
         var rightWidth = Math.round(positions[263][0] - rightOriginX);
         var rightHeight = Math.round(positions[274][1] - rightOriginY);
 
-        
-
         if (leftWidth === 0 || rightWidth === 0){
           console.log('an eye patch had zero width');
           return null;
@@ -81,7 +68,7 @@
         }
 
         var eyeObjs = {};
-        eyeObjs.positions = positions;
+        // eyeObjs.positions = positions;
 
         var leftImageData = imageCanvas.getContext('2d').getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);
         eyeObjs.left = {
@@ -103,6 +90,10 @@
 
         return eyeObjs;
     };
+
+    TFFaceMesh.prototype.getPositions = async function () {
+        return this.positionsArray;
+    }
     
 
     /**
