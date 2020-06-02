@@ -13,15 +13,15 @@
   var force = [];
   var nodes = [];
 
-  window.onload = function() {
+  window.onload = async function() {
 
     var localstorageLabel = 'webgazerGlobalData';
     window.localStorage.setItem(localstorageLabel, null);
 
-    webgazer.setRegression('ridge') /* currently must set regression and tracker */
+    const webgazerInstance = await webgazer.setRegression('ridge') /* currently must set regression and tracker */
     .setTracker('clmtrackr')
-    .begin()
-    .showPredictionPoints(false); /* shows a square every 100 milliseconds where current prediction is */
+    .begin();
+    webgazerInstance.showPredictionPoints(false); /* shows a square every 100 milliseconds where current prediction is */
 
     function checkIfReady() {
       var feedbackBox = document.getElementById( webgazer.params.faceFeedbackBoxId );

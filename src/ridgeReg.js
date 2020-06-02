@@ -121,7 +121,7 @@
         this.trailTimes = new webgazer.util.DataWindow(trailDataWindow);
 
         this.dataClicks = new webgazer.util.DataWindow(dataWindow);
-        this.dataTrail = new webgazer.util.DataWindow(dataWindow);
+        this.dataTrail = new webgazer.util.DataWindow(trailDataWindow);
     };
 
     /**
@@ -227,7 +227,7 @@
      * @returns {Array.<Object>|*}
      */
     webgazer.reg.RidgeReg.prototype.getData = function() {
-        return this.dataClicks.data.concat(this.dataTrail.data);
+        return this.dataClicks.data;
     }
     
     /**
