@@ -39,7 +39,7 @@
         // array of detected faces from the MediaPipe graph.
 
         this.positionsArray = await model.estimateFaces(imageCanvas);
-        const predictions = positionsArray;
+        const predictions = this.positionsArray;
         
         if (predictions.length == 0){
             return false;

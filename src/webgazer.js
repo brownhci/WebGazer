@@ -379,6 +379,8 @@
      * @param {Event} event - The listened event
      */
     var clickListener = function(event) {
+        setGlobalData();
+        console.log(JSON.stringify(regs[0]).length / 1000000);
         recordScreenPosition(event.clientX, event.clientY, eventTypes[0]); // eventType[0] === 'click'
     };
 
@@ -423,8 +425,8 @@
     /**
      * Loads the global data and passes it to the regression model
      */
-    function loadGlobalData() {
-        var storage = JSON.parse(window.localStorage.getItem(localstorageLabel)) || defaults;
+    async function loadGlobalData() {
+        var storage = JSON.parse(await localforage.getItem(localstorageLabel)) || defaults;
         settings = storage.settings;
         data = storage.data;
         for (var reg in regs) {
@@ -435,12 +437,12 @@
    /**
     * Constructs the global storage object and adds it to local storage
     */
-    function setGlobalData() {
+    async function setGlobalData() {
         var storage = {
             'settings': settings,
             'data': regs[0].getData() || data
         };
-        window.localStorage.setItem(localstorageLabel, JSON.stringify(storage));
+        localforage.setItem(localstorageLabel, JSON.stringify(storage));
         //TODO data should probably be stored in webgazer object instead of each regression model
         //     -> requires duplication of data, but is likely easier on regression model implementors
     }
@@ -449,7 +451,7 @@
      * Clears data from model and global storage
      */
     function clearData() {
-        window.localStorage.set(localstorageLabel, undefined);
+        localforage.remove(localstorageLabel);
         for (var reg in regs) {
             regs[reg].setData([]);
         }
@@ -670,7 +672,7 @@
         document.body.removeChild(videoElement);
         document.body.removeChild(videoElementCanvas);
 
-        setGlobalData();
+        // setGlobalData();
         return webgazer;
     };
 
