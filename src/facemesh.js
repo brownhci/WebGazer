@@ -38,13 +38,15 @@
         // Pass in a video stream (or an image, canvas, or 3D tensor) to obtain an
         // array of detected faces from the MediaPipe graph.
 
-        this.positionsArray = await model.estimateFaces(imageCanvas);
-        const predictions = this.positionsArray;
+        
+        const predictions = await model.estimateFaces(imageCanvas);
         
         if (predictions.length == 0){
             return false;
         }
-        const positions = predictions[0].scaledMesh;
+
+        this.positionsArray = predictions[0].scaledMesh;
+        const positions = this.positionsArray;
 
         //Fit the detected eye in a rectangle
         //https://raw.githubusercontent.com/tensorflow/tfjs-models/master/facemesh/mesh_map.jpg
@@ -68,7 +70,7 @@
         }
 
         var eyeObjs = {};
-        // eyeObjs.positions = positions;
+        eyeObjs.positions = positions;
 
         var leftImageData = imageCanvas.getContext('2d').getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);
         eyeObjs.left = {
@@ -92,6 +94,7 @@
     };
 
     TFFaceMesh.prototype.getPositions = async function () {
+        // console.log(this.positionsArray);
         return this.positionsArray;
     }
     

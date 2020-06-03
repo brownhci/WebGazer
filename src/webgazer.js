@@ -312,7 +312,8 @@
                 } else {
                     faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
                     if (latestGazeData){
-                        webgazer.getTracker().drawFaceOverlay(faceOverlay.getContext('2d'), webgazer.getTracker().getPositions());
+                        var tracker = webgazer.getTracker();
+                        tracker.drawFaceOverlay(faceOverlay.getContext('2d'), await tracker.getPositions());
                     }
                 }
             }
@@ -381,6 +382,7 @@
     var clickListener = function(event) {
         setGlobalData();
         console.log(JSON.stringify(regs[0]).length / 1000000);
+        // console.log(webgazer.getTracker().getPositions());
         recordScreenPosition(event.clientX, event.clientY, eventTypes[0]); // eventType[0] === 'click'
     };
 
@@ -451,7 +453,7 @@
      * Clears data from model and global storage
      */
     function clearData() {
-        localforage.remove(localstorageLabel);
+        localforage.removeItem(localstorageLabel);
         for (var reg in regs) {
             regs[reg].setData([]);
         }
@@ -589,7 +591,10 @@
             alert("WebGazer works only over https. If you are doing local development you need to run a local server.");
         }
 
-        loadGlobalData();
+        if (window.saveDataAcrossSessions) {
+            console.log("hellooooo");
+            loadGlobalData();
+        }
 
         onFail = onFail || function() {console.log('No stream')};
 

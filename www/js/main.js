@@ -31,9 +31,15 @@ window.onload = function() {
     setTimeout(checkIfReady,100);
 };
 
+// Set to true if you want to save the data even if you reload the page.
+window.saveDataAcrossSessions = true;
+
 window.onbeforeunload = function() {
-    webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
-    // window.localStorage.clear(); //Comment out if you want to save data across different sessions 
+    if (window.saveDataAcrossSessions) {
+        webgazer.end(); // save data across different sessions 
+    } else {
+        localforage.clear(); // clear data between sessions
+    }
 }
 
 /**
