@@ -5,6 +5,7 @@
 </head>
 <body>
   <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script src="./node_modules/localforage/dist/localforage.js"></script>
   <script src="./webgazer.js"></script>
 
   <script>
@@ -19,7 +20,7 @@
     window.localStorage.setItem(localstorageLabel, null);
 
     const webgazerInstance = await webgazer.setRegression('ridge') /* currently must set regression and tracker */
-    .setTracker('clmtrackr')
+    .setTracker('TFFacemesh')
     .begin();
     webgazerInstance.showPredictionPoints(false); /* shows a square every 100 milliseconds where current prediction is */
 
@@ -153,7 +154,9 @@
     }
   }
 
-  var collisionEyeListener = function(data, clock) {
+  var webgazerCanvas = null;
+
+  var collisionEyeListener = async function(data, clock) {
     if(!data)
       return;
     
@@ -161,20 +164,30 @@
     nodes[0].py = data.y;
     force.resume();
 
-    var cl = webgazer.getTracker().clm;
+    // var cl = webgazer.getTracker().clm;
+
+    if (!webgazerCanvas) {
+      webgazerCanvas = webgazer.getVideoElementCanvas();
+    }
+
+    await webgazer.getTracker().getEyePatches(webgazerCanvas, webgazerCanvas.width, webgazerCanvas.height);
+    var fmPositions = webgazer.getTracker().getPositions();
+
+    // TODO: fmPositions[n] --> null
+
     var whr = webgazer.getVideoPreviewToCameraResolutionRatio();
 
     var line = d3.select('#eyeline1')
               .attr("x1",data.x)
               .attr("y1",data.y)
-              .attr("x2",cl.getCurrentPosition()[27][0] * whr[0])
-              .attr("y2",cl.getCurrentPosition()[27][1] * whr[1]);
+              .attr("x2",fmPositions[145][0] * whr[0])
+              .attr("y2",fmPositions[145][1] * whr[1]);
 
     var line = d3.select("#eyeline2")
               .attr("x1",data.x)
               .attr("y1",data.y)
-              .attr("x2",cl.getCurrentPosition()[32][0] * whr[0])
-              .attr("y2",cl.getCurrentPosition()[32][1] * whr[1]);
+              .attr("x2",fmPositions[374][0] * whr[0])
+              .attr("y2",fmPositions[386][1] * whr[1]);
 
     var dot = d3.select("#predictionSquare")
               .attr("x",data.x)

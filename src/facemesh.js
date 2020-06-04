@@ -70,7 +70,7 @@
         }
 
         var eyeObjs = {};
-        eyeObjs.positions = positions;
+        // eyeObjs.positions = positions;
 
         var leftImageData = imageCanvas.getContext('2d').getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);
         eyeObjs.left = {
