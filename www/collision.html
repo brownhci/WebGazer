@@ -171,23 +171,21 @@
     }
 
     await webgazer.getTracker().getEyePatches(webgazerCanvas, webgazerCanvas.width, webgazerCanvas.height);
-    var fmPositions = webgazer.getTracker().getPositions();
-
-    // TODO: fmPositions[n] --> null
+    var fmPositions = await webgazer.getTracker().getPositions();
 
     var whr = webgazer.getVideoPreviewToCameraResolutionRatio();
 
-    var line = d3.select('#eyeline1')
+      var line = d3.select('#eyeline1')
               .attr("x1",data.x)
               .attr("y1",data.y)
               .attr("x2",fmPositions[145][0] * whr[0])
               .attr("y2",fmPositions[145][1] * whr[1]);
 
-    var line = d3.select("#eyeline2")
+      var line = d3.select("#eyeline2")
               .attr("x1",data.x)
               .attr("y1",data.y)
               .attr("x2",fmPositions[374][0] * whr[0])
-              .attr("y2",fmPositions[386][1] * whr[1]);
+              .attr("y2",fmPositions[374][1] * whr[1]);
 
     var dot = d3.select("#predictionSquare")
               .attr("x",data.x)

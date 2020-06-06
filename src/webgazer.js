@@ -86,7 +86,8 @@
     };
 
     //localstorage name
-    var localstorageLabel = 'webgazerGlobalData';
+    var localstorageDataLabel = 'webgazerGlobalData';
+    var localstorageSettingsLabel = 'webgazerGlobalSettings';
     //settings object for future storage of settings
     var settings = {};
     var data = [];
@@ -379,10 +380,9 @@
      * Records click data and passes it to the regression model
      * @param {Event} event - The listened event
      */
-    var clickListener = function(event) {
-        setGlobalData();
-        console.log(JSON.stringify(regs[0]).length / 1000000);
-        // console.log(webgazer.getTracker().getPositions());
+    var clickListener = async function(event) {
+        await setGlobalData();
+        console.log(JSON.stringify(await localforage.getItem(localstorageDataLabel)).length / 1000000 + 'MB');
         recordScreenPosition(event.clientX, event.clientY, eventTypes[0]); // eventType[0] === 'click'
     };
 
@@ -424,15 +424,24 @@
         document.removeEventListener('mousemove', moveListener, true);
     };
 
+    // class DataStore {
+    //     constructor(settings, data) {
+    //         this.settings = settings;
+    //         this.data = data;
+    //     }
+    // }
+
     /**
      * Loads the global data and passes it to the regression model
      */
     async function loadGlobalData() {
-        var storage = JSON.parse(await localforage.getItem(localstorageLabel)) || defaults;
-        settings = storage.settings;
-        data = storage.data;
+        settings = await localforage.getItem(localstorageSettingsLabel);
+        settings = settings || defaults;
+        var loadData = await localforage.getItem(localstorageDataLabel);
+        loadData = loadData || defaults;
+        data = loadData;
         for (var reg in regs) {
-            regs[reg].setData(storage.data);
+            regs[reg].setData(loadData);
         }
     }
 
@@ -440,11 +449,13 @@
     * Constructs the global storage object and adds it to local storage
     */
     async function setGlobalData() {
-        var storage = {
-            'settings': settings,
-            'data': regs[0].getData() || data
-        };
-        localforage.setItem(localstorageLabel, JSON.stringify(storage));
+        // var storage = {
+        //     'settings': settings,                    // [20200605 XK] is 'settings' ever being used?
+        //     'data': regs[0].getData() || data
+        // };
+        var storeData = regs[0].getData() || data; // Array
+        localforage.setItem(localstorageSettingsLabel, settings)
+        localforage.setItem(localstorageDataLabel, storeData);
         //TODO data should probably be stored in webgazer object instead of each regression model
         //     -> requires duplication of data, but is likely easier on regression model implementors
     }
@@ -453,7 +464,7 @@
      * Clears data from model and global storage
      */
     function clearData() {
-        localforage.removeItem(localstorageLabel);
+        localforage.clear();
         for (var reg in regs) {
             regs[reg].setData([]);
         }
@@ -592,7 +603,6 @@
         }
 
         if (window.saveDataAcrossSessions) {
-            console.log("hellooooo");
             loadGlobalData();
         }
 

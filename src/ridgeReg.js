@@ -215,10 +215,27 @@
      */
     webgazer.reg.RidgeReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
-            //TODO this is a kludge, needs to be fixed
-            data[i].eyes.left.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.left.patch), data[i].eyes.left.width, data[i].eyes.left.height);
-            data[i].eyes.right.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.right.patch), data[i].eyes.right.width, data[i].eyes.right.height);
+            var leftData = new Uint8ClampedArray(data[i].eyes.left.patch.data);
+            var rightData = new Uint8ClampedArray(data[i].eyes.right.patch.data);
+            
+            // try {
+            data[i].eyes.left.patch = new ImageData(leftData, data[i].eyes.left.width, data[i].eyes.left.height);
+            data[i].eyes.right.patch = new ImageData(rightData, data[i].eyes.right.width, data[i].eyes.right.height)
+            // } catch (err) {
+            //     console.log(err);
+            //     // console.log('leftData.length: ' + leftData.length);
+            //     // console.log('data[i].eyes.left.width: ' + data[i].eyes.left.width);
+            //     // console.log('data[i].eyes.left.height: ' + data[i].eyes.left.height);
+            //     // console.log('data[i].eyes.left.patch.width: ' + data[i].eyes.left.patch.width);
+            //     // console.log('data[i].eyes.left.patch.height: ' + data[i].eyes.left.patch.height);
+            //     // console.log('rightData.length: ' + rightData.length);
+            //     // console.log('data[i].eyes.right.width: ' + data[i].eyes.right.width);
+            //     // console.log('data[i].eyes.right.height: ' + data[i].eyes.right.height);
+            //     // console.log('data[i].eyes.right.patch.width: ' + data[i].eyes.right.patch.width);
+            //     // console.log('data[i].eyes.right.patch.height: ' + data[i].eyes.right.patch.height);
+            // }
             this.addData(data[i].eyes, data[i].screenPos, data[i].type);
+            
         }
     };
 

@@ -4,6 +4,51 @@
     self.webgazer = self.webgazer || {};
     self.webgazer.util = self.webgazer.util || {};
     self.webgazer.mat = self.webgazer.mat || {};
+    
+    // /**
+    //  * Resizable image data class, a mutable wrapper for an ImageData object
+    //  * @param {ImageData OR Uint8ClampedArray} data - the image data
+    //  * @param {Number} width  - width of the image data
+    //  * @param {Number} height - height of the image data
+    //  */
+    // self.webgazer.util.ResizableImageData = function(imgData, width, height) {
+    //     // Passing in an array and dimensions
+    //     if (width && height) {
+    //         this.data = imgData;
+    //         this.width = width;
+    //         this.height = height;
+    //     }
+    //     // Passing in an ImageData
+    //     else {
+    //         this.data = imgData.data;
+    //         this.width = imgData.width;
+    //         this.height = imgData.height;
+    //     }
+    // }
+    
+    // /**
+    //  * Resizes this WriteableImageData
+    //  * @param {Number} newWidth  - new width for resized image data
+    //  * @param {Number} newHeight - new height for resized image data
+    //  */
+    // self.webgazer.util.ResizableImageData.prototype.resize = function (newWidth, newHeight) {
+    //     var canvas = document.createElement('canvas');
+    //     canvas.width = this.width;
+    //     canvas.height = this.height;
+
+    //     canvas.getContext('2d').putImageData(eye.patch,0,0);
+
+    //     var tempCanvas = document.createElement('canvas');
+
+    //     tempCanvas.width = resizeWidth;
+    //     tempCanvas.height = resizeHeight;
+
+    //     // save the canvas into temp canvas
+    //     tempCanvas.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, resizeWidth, resizeHeight);
+
+    //     return tempCanvas.getContext('2d').getImageData(0, 0, resizeWidth, resizeHeight);
+    // }
+
 
     /**
      * Eye class, represents an eye patch detected in the video stream

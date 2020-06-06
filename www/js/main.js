@@ -32,7 +32,7 @@ window.onload = function() {
 };
 
 // Set to true if you want to save the data even if you reload the page.
-window.saveDataAcrossSessions = false;
+window.saveDataAcrossSessions = true;
 
 window.onbeforeunload = function() {
     if (window.saveDataAcrossSessions) {
