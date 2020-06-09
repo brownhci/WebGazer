@@ -24,6 +24,7 @@ If you want to build the repository from source follow these instructions:
     # Install grunt-cli if not installed (this may require you to use `sudo` or run the console as Administrator)
     npm install -g grunt-cli
     git clone https://github.com/brownhci/WebGazer.git
+    cd WebGazer
     npm install
     # Run grunt to build the webgazer.js and webgazer.min.js file in the build directory
     grunt
