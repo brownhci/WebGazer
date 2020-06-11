@@ -31,15 +31,11 @@ window.onload = function() {
     setTimeout(checkIfReady,100);
 };
 
-// Set to true if you want to save the data even if you reload the page.
-window.saveDataAcrossSessions = true;
+// Kalman Filter defaults to on. Can be toggled by user.
+window.applyKalmanFilter = true;
 
 window.onbeforeunload = function() {
-    if (window.saveDataAcrossSessions) {
-        webgazer.end(); // save data across different sessions 
-    } else {
-        localforage.clear(); // clear data between sessions
-    }
+    webgazer.end(); 
 }
 
 /**

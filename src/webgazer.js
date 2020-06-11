@@ -73,16 +73,12 @@
 
     //lookup tables
     var curTrackerMap = {
-        'clmtrackr': function() { return new webgazer.tracker.ClmGaze(); },
-        'trackingjs': function() { return new webgazer.tracker.TrackingjsGaze(); },
-        'js_objectdetect': function() { return new webgazer.tracker.Js_objectdetectGaze(); },
-        'TFFacemesh': function() { return new webgazer.tracker.TFFaceMesh();},
+        'TFFacemesh': function() { return new webgazer.tracker.TFFaceMesh(); },
     };
     var regressionMap = {
         'ridge': function() { return new webgazer.reg.RidgeReg(); },
         'weightedRidge': function() { return new webgazer.reg.RidgeWeightedReg(); },
         'threadedRidge': function() { return new webgazer.reg.RidgeRegThreaded(); },
-        'linear': function() { return new webgazer.reg.LinearReg(); }
     };
 
     //localstorage name
@@ -326,7 +322,7 @@
 
 
             if( latestGazeData ) {
-
+                // [20200608 XK] Smoothing across the most recent 4 predictions, do we need this with Kalman filter?
                 smoothingVals.push(latestGazeData);
                 var x = 0;
                 var y = 0;
@@ -335,6 +331,7 @@
                     x += smoothingVals.get(d).x;
                     y += smoothingVals.get(d).y;
                 }
+
                 var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
 
                 if (store_points_var) {
@@ -381,9 +378,13 @@
      * @param {Event} event - The listened event
      */
     var clickListener = async function(event) {
-        await setGlobalData();
-        console.log(JSON.stringify(await localforage.getItem(localstorageDataLabel)).length / 1000000 + 'MB');
         recordScreenPosition(event.clientX, event.clientY, eventTypes[0]); // eventType[0] === 'click'
+        
+        // Each click stores the next data point into localforage.
+        await setGlobalData();
+
+        // // Debug line
+        // console.log('Model size: ' + JSON.stringify(await localforage.getItem(localstorageDataLabel)).length / 1000000 + 'MB');
     };
 
     /**
@@ -424,22 +425,23 @@
         document.removeEventListener('mousemove', moveListener, true);
     };
 
-    // class DataStore {
-    //     constructor(settings, data) {
-    //         this.settings = settings;
-    //         this.data = data;
-    //     }
-    // }
-
     /**
      * Loads the global data and passes it to the regression model
      */
     async function loadGlobalData() {
+        // Get settings object from localforage
+        // [20200611 xk] still unsure what this does, maybe would be good for Kalman filter settings etc?
         settings = await localforage.getItem(localstorageSettingsLabel);
         settings = settings || defaults;
+
+        // Get click data from localforage
         var loadData = await localforage.getItem(localstorageDataLabel);
         loadData = loadData || defaults;
+        
+        // Set global var data to newly loaded data
         data = loadData;
+
+        // Load data into regression model(s)
         for (var reg in regs) {
             regs[reg].setData(loadData);
         }
@@ -449,21 +451,21 @@
     * Constructs the global storage object and adds it to local storage
     */
     async function setGlobalData() {
-        // var storage = {
-        //     'settings': settings,                    // [20200605 XK] is 'settings' ever being used?
-        //     'data': regs[0].getData() || data
-        // };
+        // Grab data from regression model
         var storeData = regs[0].getData() || data; // Array
-        localforage.setItem(localstorageSettingsLabel, settings)
+
+        // Store data into localforage
+        localforage.setItem(localstorageSettingsLabel, settings) // [20200605 XK] is 'settings' ever being used?
         localforage.setItem(localstorageDataLabel, storeData);
         //TODO data should probably be stored in webgazer object instead of each regression model
         //     -> requires duplication of data, but is likely easier on regression model implementors
     }
 
     /**
-     * Clears data from model and global storage
+     * Clears data from model and global storage [20200611 xk] is this unused?
      */
     function clearData() {
+        // Removes data from localforage
         localforage.clear();
         for (var reg in regs) {
             regs[reg].setData([]);
@@ -531,7 +533,6 @@
         gazeDot.style.width = '10px';
         gazeDot.style.height = '10px';
 
-
         // Add other preview/feedback elements to the screen once the video has shown and its parameters are initialized
         document.body.appendChild(videoElement);
         function setupPreviewVideo(e) {
@@ -550,7 +551,6 @@
         };
         videoElement.addEventListener('timeupdate', setupPreviewVideo);
 
-        
         addMouseEventListeners();
 
         //BEGIN CALLBACK LOOP
@@ -591,7 +591,7 @@
 
     //PUBLIC FUNCTIONS - CONTROL
 
-       /**
+    /**
      * Starts all state related to webgazer -> dataLoop, video collection, click listener
      * If starting fails, call `onFail` param function.
      * @param {Function} onFail - Callback to call in case it is impossible to find user camera
@@ -602,9 +602,8 @@
             alert("WebGazer works only over https. If you are doing local development you need to run a local server.");
         }
 
-        if (window.saveDataAcrossSessions) {
-            loadGlobalData();
-        }
+        // Load model data stored in localforage.
+        loadGlobalData();
 
         onFail = onFail || function() {console.log('No stream')};
 
@@ -633,8 +632,7 @@
               return null;
             }
         })();
-        
-        
+
         return webgazer;
     };
 
@@ -687,7 +685,6 @@
         document.body.removeChild(videoElement);
         document.body.removeChild(videoElementCanvas);
 
-        // setGlobalData();
         return webgazer;
     };
 

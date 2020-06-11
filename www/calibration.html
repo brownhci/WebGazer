@@ -37,6 +37,7 @@ Instructions on use can be found in the README repository.
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
               </button>
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
@@ -44,6 +45,8 @@ Instructions on use can be found in the README repository.
                 <!-- Accuracy -->
                 <li id="Accuracy"><a>Not yet Calibrated</a></li>
                 <li onclick="Restart()"><a href="#">Recalibrate</a></li>
+              <li onclick="var reset = async () => {await localforage.clear(); location.reload()}; reset()"><a href="#">Reset Model</a></li>
+              <li onclick="window.applyKalmanFilter = !window.applyKalmanFilter"><a href="#">Toggle Kalman Filter</a></li>
               </ul>
               <ul class="nav navbar-nav navbar-right">
                 <li><button class="helpBtn" data-toggle="modal" data-target="#helpModal"><a data-toggle="modal"><span class="glyphicon glyphicon-cog"></span> Help</a></li>
