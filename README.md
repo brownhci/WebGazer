@@ -60,7 +60,7 @@ The following browsers support WebGazer.js:
   * Opera
   * Safari
 
-Your browser needs to support the getUserMedia API as seen [here](http://caniuse.com/#feat=stream) and [here](https://caniuse.com/#search=indexedDB).
+Your browser needs to support the getUserMedia API as seen [here](http://caniuse.com/#feat=stream) and IndexedDB as seen [here](https://caniuse.com/#search=indexedDB).
 
 ## Publications
 
