@@ -6,9 +6,16 @@
 <body>
   <script src="https://d3js.org/d3.v3.min.js"></script>
   <script src="./node_modules/localforage/dist/localforage.js"></script>
+  
   <script src="./webgazer.js"></script>
 
   <script>
+
+  // Kalman Filter defaults to on.
+  window.applyKalmanFilter = true;
+
+  // Set to true if you want to save the data even if you reload the page.
+  window.saveDataAcrossSessions = false;
 
   const collisionSVG = "collisionSVG";
   var force = [];
@@ -16,8 +23,12 @@
 
   window.onload = async function() {
 
-    var localstorageLabel = 'webgazerGlobalData';
-    window.localStorage.setItem(localstorageLabel, null);
+    if (!window.saveDataAcrossSessions) {
+        var localstorageDataLabel = 'webgazerGlobalData';
+        localforage.setItem(localstorageDataLabel, null);
+        var localstorageSettingsLabel = 'webgazerGlobalSettings';
+        localforage.setItem(localstorageSettingsLabel, null);
+    }
 
     const webgazerInstance = await webgazer.setRegression('ridge') /* currently must set regression and tracker */
     .setTracker('TFFacemesh')
@@ -47,8 +58,11 @@
   };
 
   window.onbeforeunload = function() {
-    //webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
-    window.localStorage.clear(); //Comment out if you want to save data across different sessions
+    if (window.saveDataAcrossSessions) {
+        webgazer.end();
+    } else {
+        localforage.clear();
+    }
   }
 
   function setupCollisionSystem() {
@@ -163,8 +177,6 @@
     nodes[0].px = data.x;
     nodes[0].py = data.y;
     force.resume();
-
-    // var cl = webgazer.getTracker().clm;
 
     if (!webgazerCanvas) {
       webgazerCanvas = webgazer.getVideoElementCanvas();

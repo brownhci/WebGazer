@@ -379,12 +379,14 @@
      */
     var clickListener = async function(event) {
         recordScreenPosition(event.clientX, event.clientY, eventTypes[0]); // eventType[0] === 'click'
-        
-        // Each click stores the next data point into localforage.
-        await setGlobalData();
 
-        // // Debug line
-        // console.log('Model size: ' + JSON.stringify(await localforage.getItem(localstorageDataLabel)).length / 1000000 + 'MB');
+        if (window.saveDataAcrossSessions) {
+            // Each click stores the next data point into localforage.
+            await setGlobalData();
+
+            // // Debug line
+            // console.log('Model size: ' + JSON.stringify(await localforage.getItem(localstorageDataLabel)).length / 1000000 + 'MB');
+        }
     };
 
     /**
@@ -603,7 +605,9 @@
         }
 
         // Load model data stored in localforage.
-        loadGlobalData();
+        if (window.saveDataAcrossSessions) {
+            loadGlobalData();
+        }
 
         onFail = onFail || function() {console.log('No stream')};
 
@@ -1005,6 +1009,14 @@
         return webgazer;
     };
 
+    /**
+     * Set the video element canvas; useful if you want to run WebGazer on your own canvas (e.g., on any random image).
+     * @return The current video element canvas
+     */
+    webgazer.setVideoElementCanvas = function(canvas) {
+        videoElementCanvas = canvas;
+    }
+
 
     //GETTERS
     /**
@@ -1045,14 +1057,6 @@
      */
     webgazer.getVideoElementCanvas = function() {
         return videoElementCanvas;
-    }
-  
-    /**
-     * Set the video element canvas; useful if you want to run WebGazer on your own canvas (e.g., on any random image).
-     * @return The current video element canvas
-     */
-    webgazer.setVideoElementCanvas = function(canvas) {
-        videoElementCanvas = canvas;
     }
 
     webgazer.getVideoPreviewToCameraResolutionRatio = function() {

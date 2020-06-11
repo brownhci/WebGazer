@@ -28,7 +28,7 @@ If you want to build the repository from source follow these instructions:
     # Run grunt to build the webgazer.js and webgazer.min.js file in the build directory
     grunt
 
-To use the webgazer script in the head of an HTML file add the `async` tag to ensure the clmtrackr does not collapse to a slower version
+<!-- To use the webgazer script in the head of an HTML file add the `async` tag to ensure the clmtrackr does not collapse to a slower version -->
 
 ## Examples
 
@@ -60,7 +60,7 @@ The following browsers support WebGazer.js:
   * Opera
   * Safari
 
-Your browser needs to support the getUserMedia API as seen [here](http://caniuse.com/#feat=stream).
+Your browser needs to support the getUserMedia API as seen [here](http://caniuse.com/#feat=stream) and [here](https://caniuse.com/#search=indexedDB).
 
 ## Publications
 
@@ -110,6 +110,7 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
   * Patsorn Sangkloy
   * Elizabeth Stevenson
   * Preston Tunnell Wilson
+  * Xander Koo
 
 ### Acknowledgements
 

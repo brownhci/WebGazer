@@ -169,25 +169,25 @@ if (prediction) {
             <div class="row">
                 <div class="col-lg-12">
                     <h4>Saving Data Between Sessions</h4>
-                    <p>WebGazer.js can save and restore the training data between browser sessions by storing data to localstorage. This occurs automatically when <code class="javascript">end()</code> is called. If you want each user session to be independent make sure that you do not call the <code class="javascript">end()</code> function. </p>
-                    <pre><code class="javascript hljs">webgazer.end()</code></pre>
+                    <p>WebGazer.js can save and restore the training data between browser sessions by storing data to the browser using <a href="https://localforage.github.io/localForage/">localforage</a>, which uses IndexedDB. This occurs automatically with every click in the window. If you want each user session to be independent make sure that you set <code class="javascript">window.saveDataAcrossSessions</code> in <code class="javascript">main.js</code> to <code class="javascript">false</code>. </p>
+                    <!-- <pre><code class="javascript hljs">webgazer.end()</code></pre> -->
                 </div>
             </div>
             <div>
                 <h4>Changing in Use Regression and Tracker Modules</h4>
                 <p>At the heart of WebGazer.js are the tracker and regression modules. The tracker module controls how eyes are detected and the regression module determines how the regression model is learned and how predictions are made based on the eye patches extracted from the tracker module. These modules can be swapped in and out at any time. We hope that this will make it easy to extend and adapt WebGazer.js and welcome any developers that want to contribute.</p>
 
-                <p>WebGazer.js requires the bounding box that includes the pixels from the webcam video feed that correspond to the detected eyes of the user. Currently we include three external libraries that implement different Computer Vision algorithms to detect the face and eyes.</p>
+                <p>WebGazer.js requires the bounding box that includes the pixels from the webcam video feed that correspond to the detected eyes of the user. Currently we include one external library to detect the face and eyes.</p>
                 <div class="row">
                     <div class="col-lg-12">
-                        <pre><code class="javascript hljs">webgazer.setTracker("clmtrackr"); //set a tracker module</code></pre>
+                        <pre><code class="javascript hljs">webgazer.setTracker("TFFacemesh"); //set a tracker module</code></pre>
                         <pre><code class="javascript hljs">webgazer.addTrackerModule("newTracker", NewTrackerConstructor); //add a new tracker module</code></pre>
-                        <p>Here are all the external tracker modules that come by default with WebGazer.js. Let us know if you want to introduce your own facial feature detection library. </p>
+                        <p>Currently, MediaPipe Facemesh comes default with WebGazer.js. Let us know if you want to introduce your own facial feature detection library. </p>
                         <ul>
-                            <li><a href="https://github.com/auduno/clmtrackr">clmtrackr</a></li>
+                            <!-- <li><a href="https://github.com/auduno/clmtrackr">clmtrackr</a></li>
                             <li><a href="https://github.com/mtschirs/js-objectdetect">js_objectdetect</a></li>
-                            <li><a href="https://trackingjs.com/">tracking.js</a></li>
-                            <li><a href="https://github.com/tensorflow/tfjs-models/tree/master/facemesh">TFFacemesh</a></li>
+                            <li><a href="https://trackingjs.com/">tracking.js</a></li> -->
+                            <li><a href="https://github.com/tensorflow/tfjs-models/tree/master/facemesh">Facemesh</a></li>
                         </ul>
                     </div>
                 </div>
@@ -198,9 +198,9 @@ if (prediction) {
                         <p>Here are all the regression modules that come by default with WebGazer.js. Let us know if you would like introduce different modules - just keep in mind that they should be able to produce predictions very fast.</p>
                         <ul>
                             <li>ridge - a simple ridge regression model mapping pixels from the detected eyes to locations on the screen.</li>
-                            <li>weightedRidge - a weight ridge regression model with newest user interactions contribution more to the model.</li>
+                            <li>weightedRidge - a weight ridge regression model with newest user interactions contributing more to the model.</li>
                             <li>threadedRidge - a faster implementation of ridge regression that uses threads.</li>
-                            <li>linear - a basic simple linear regression that maps </li>
+                            <!-- <li>linear - a basic simple linear regression that maps </li> -->
                         </ul>
                     </div>
                 </div>
@@ -232,8 +232,13 @@ prediction.y; //now always in the bounds of the viewport
         <hr class="featurette-divider">
         <div id="support" class="container pad">
             <h2 class="text-center">Support</h2>
-            <p class="text-center" pad>
-                WebGazer.js uses the <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia">getUserMedia/Stream API</a> to get access to the webcam. These browsers are currently supported, as seen <a href="http://caniuse.com/#feat=stream">here</a>.
+            <p class="text-left" pad>
+                WebGazer.js uses:
+                <ul>
+                    <li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia">getUserMedia/Stream API</a> to get access to the webcam, which supports <a href="http://caniuse.com/#feat=stream">these browsers</a>. </li>
+                    <li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API">IndexedDB</a> (used by <a href="https://localforage.github.io/localForage/">localforage</a>) for storing data to the browser, which supports <a href=https://caniuse.com/#feat=indexeddb">these browsers</a>.</li>
+                </ul>
+                
             </p>
 
             <div class="row">
@@ -247,7 +252,7 @@ prediction.y; //now always in the bounds of the viewport
                     <center>
                         <img src="media/browser/edge.png" alt="Microsoft Edge" width="100" height="100">
                     </center>
-                    <h4 class="text-center">Microsoft Edge <br /> 12+</h4>
+                    <h4 class="text-center">Microsoft Edge <br /> 79+</h4>
                 </div>
                 <div class="col-lg-2 col-half-offset">
                     <center>
@@ -434,44 +439,39 @@ grunt
                 <div class="col-lg-2">
                     <img class="rounded-circle mx-auto d-block" src="media/people/alexpap.jpg" alt="Alexandra Papoutsaki" height="140">
                     <h4 class="text-center"><a href="http://www.cs.pomona.edu/~apapoutsaki/">Alexandra Papoutsaki</a></h4>
-                    <p>Assistant Professor of Computer Science at Pomona College.</p>
                 </div>
                 <div class="col-lg-2">
                     <img class="rounded-circle mx-auto d-block" src="media/people/aaron.jpg" alt="Aaron Gokaslan" height="140">
                     <h4 class="text-center">Aaron Gokaslan</h4>
-                    <p>Undergraduate student at Brown University.</p>
                 </div>
                 <div class="col-lg-2">
                     <img class="rounded-circle mx-auto d-block" src="media/people/ida.jpg" alt="Ida De Smet" height="140">
                     <h4 class="text-center"><a href="https://www.linkedin.com/in/idakdesmet/">Ida De Smet</a></h4>
-                    <p>Undergraduate student at the University of Auckland.</p>
                 </div>
                 <div class="col-lg-2">
                     <img class="rounded-circle mx-auto d-block" src="media/people/jack.png" alt="Jack Wong" height="140">
                     <h4 class="text-center">Jack Wong</h4>
-                    <p>Undergraduate student at the University of Auckland.</p>
                 </div>
                 <div class="col-lg-2">
                     <img class="rounded-circle mx-auto d-block" src="media/people/james.jpg" alt="James Tompkin" height="140">
                     <h4 class="text-center"><a href="http://jamestompkin.com/">James Tompkin</a></h4>
-                    <p>Assistant Professor of Computer Science at Brown University.</p>
                 </div>
                 <div class="col-lg-2">
                     <img class="rounded-circle mx-auto d-block" src="media/people/jeff.jpg" alt="Jeff Huang" height="140">
                     <h4 class="text-center"><a href="https://jeffhuang.com">Jeff Huang</a></h4>
-                    <p>Assistant Professor of Computer Science at Brown University.</p>
                 </div>
             </div>
             <div class="pad">
                 <h3>Other Collaborators</h3>
                 <ul style="margin-top: 20px">
-                    <li><a href="http://cs.brown.edu/~nediyana">Nediyana Daskalova</a> - PhD student at Brown University</li>
-                    <li><a href="http://www.cc.gatech.edu/~hays/">James Hays</a> - Associate Professor at Georgia Institute of Technology</li>
-                    <li>Yuze He - Masters student (Brown '17)</li>
-                    <li>James Laskey - Undergraduate student (Brown '16)</li>
-                    <li><a href="http://www.cc.gatech.edu/~psangklo/">Patsorn Sangkloy</a> - PhD student at Georgia Institute of Technology</li>
-                    <li><a href="https://www.linkedin.com/in/elizabeth-stevenson-9b47a7125/">Elizabeth Stevenson</a> - Software engineering student at the University of Auckland</li>
-                    <li><a href="https://cs.brown.edu/~ptunnell/">Preston Tunnell Wilson</a> - PhD student at Brown University</li>
+                    <li><a href="http://cs.brown.edu/~nediyana">Nediyana Daskalova</a></li>
+                    <li><a href="http://www.cc.gatech.edu/~hays/">James Hays</a></li>
+                    <li>Yuze He</li>
+                    <li>James Laskey</li>
+                    <li><a href="http://www.cc.gatech.edu/~psangklo/">Patsorn Sangkloy</a></li>
+                    <li><a href="https://www.linkedin.com/in/elizabeth-stevenson-9b47a7125/">Elizabeth Stevenson</a></li>
+                    <li><a href="https://cs.brown.edu/~ptunnell/">Preston Tunnell Wilson</a></li>
+                    <li><a href="https://www.linkedin.com/in/xanderkoo/">Xander Koo</a></li>
                 </ul>
                 <h3>Acknowledgements</h3>
                 <p>Webgazer is developed based on the research that is done by Brown University. The work of the calibration example file was developed in the context of a course project with the aim to improve the feedback of WebGazer, proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
@@ -483,7 +483,7 @@ grunt
         <hr class="featurette-divider">
         <div id="license" class="container pad">
             <h2 class="text-center">License</h2>
-            <p class="text-center">Copyright (C) 2019 <a href="http://hci.cs.brown.edu">Brown HCI Group</a><br>
+            <p class="text-center">Copyright (C) 2020 <a href="http://hci.cs.brown.edu">Brown HCI Group</a><br>
             Licensed under <a href="http://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3</a>.
             </p>
 
