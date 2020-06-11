@@ -270,13 +270,14 @@
      */
     webgazer.reg.RidgeReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
+            // [20200611 xk] Previous comment said this was a kludge, but it seems like this is the best solution 
+            
             // Clone data array
             var leftData = new Uint8ClampedArray(data[i].eyes.left.patch.data);
             var rightData = new Uint8ClampedArray(data[i].eyes.right.patch.data);
-            
             // Duplicate ImageData object
             data[i].eyes.left.patch = new ImageData(leftData, data[i].eyes.left.width, data[i].eyes.left.height);
-            data[i].eyes.right.patch = new ImageData(rightData, data[i].eyes.right.width, data[i].eyes.right.height)
+            data[i].eyes.right.patch = new ImageData(rightData, data[i].eyes.right.width, data[i].eyes.right.height);
 
             // Add those data objects to model
             this.addData(data[i].eyes, data[i].screenPos, data[i].type);
