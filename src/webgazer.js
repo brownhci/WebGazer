@@ -1,3 +1,6 @@
+/**
+ * @module webgazer
+ */
 (function(window, undefined) {
     console.log('initializing webgazer');
     //strict mode for type safety
@@ -43,7 +46,7 @@
     webgazer.params.camConstraints = webgazer.params.camConstraints || { video: { width: { min: 320, ideal: 640, max: 1920 }, height: { min: 240, ideal: 480, max: 1080 }, facingMode: "user" } };
 
     webgazer.params.smoothEyeBB = webgazer.params.smoothEyeBB || false;
-    webgazer.params.blinkDetectionOn = webgazer.params.blinkDetectionOn || false;
+    // webgazer.params.blinkDetectionOn = webgazer.params.blinkDetectionOn || false;
 
     // Why is this not in webgazer.params ?
     var debugVideoLoc = '';
@@ -69,7 +72,7 @@
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
     var curTracker = new webgazer.tracker.TFFaceMesh();
     var regs = [new webgazer.reg.RidgeReg()];
-    var blinkDetector = new webgazer.BlinkDetector();
+    // var blinkDetector = new webgazer.BlinkDetector();
 
     //lookup tables
     var curTrackerMap = {
@@ -108,18 +111,18 @@
 
         // Find the size of the box.
         // Pick the smaller of the two video preview sizes
-        smaller = Math.min( vw, vh );
-        larger  = Math.max( vw, vh );
+        var smaller = Math.min( vw, vh );
+        var larger  = Math.max( vw, vh );
 
         // Overall scalar
-        scalar = ( vw == larger ? pw / vw : ph / vh );
+        var scalar = ( vw == larger ? pw / vw : ph / vh );
 
         // Multiply this by 2/3, then adjust it to the size of the preview
-        boxSize = (smaller * webgazer.params.faceFeedbackBoxRatio) * scalar;
+        var boxSize = (smaller * webgazer.params.faceFeedbackBoxRatio) * scalar;
 
         // Set the boundaries of the face overlay validation box based on the preview
-        topVal = (ph - boxSize)/2;
-        leftVal = (pw - boxSize)/2;
+        var topVal = (ph - boxSize)/2;
+        var leftVal = (pw - boxSize)/2;
 
         // top, left, width, height
         return [topVal, leftVal, boxSize, boxSize]
@@ -851,6 +854,7 @@
      * Set the size of the video viewer
      */
     webgazer.setVideoViewerSize = function(w, h) {
+
         webgazer.params.videoViewerWidth = w;
         webgazer.params.videoViewerHeight = h;
 
@@ -1059,6 +1063,9 @@
         return videoElementCanvas;
     }
 
+    /**
+     * @return array [a,b] where a is width ratio and b is height ratio
+     */
     webgazer.getVideoPreviewToCameraResolutionRatio = function() {
         return [webgazer.params.videoViewerWidth / videoElement.videoWidth, webgazer.params.videoViewerHeight / videoElement.videoHeight];
     }

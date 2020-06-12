@@ -1,6 +1,10 @@
 (function(window) {
     'use strict';
 
+    /**
+     * @module facemesh
+     */
+
     window.webgazer = window.webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
 
