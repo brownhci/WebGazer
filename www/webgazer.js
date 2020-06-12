@@ -42774,6 +42774,10 @@ function supports_ogg_theora_video() {
 (function(window) {
     'use strict';
 
+    /**
+     * @module facemesh
+     */
+
     window.webgazer = window.webgazer || {};
     webgazer.tracker = webgazer.tracker || {};
 
@@ -44803,6 +44807,9 @@ function store_points(x, y, k) {
   yPast50[k] = y;
 }
 
+/**
+ * @module webgazer
+ */
 (function(window, undefined) {
     console.log('initializing webgazer');
     //strict mode for type safety

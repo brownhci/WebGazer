@@ -64,6 +64,8 @@ Your browser needs to support the getUserMedia API as seen [here](http://caniuse
 
 ## Publications
 
+  _**Note:** The current iteration of WebGazer no longer corresponds with the 2016 paper. The most recent iteration that does correspond with the paper can be found [here.](https://github.com/brownhci/WebGazer/tree/2a4a70cb49b2d568a09362e1b52fd3bd025cd38d)_
+
 	@inproceedings{papoutsaki2016webgazer,
 	author     = {Alexandra Papoutsaki and Patsorn Sangkloy and James Laskey and Nediyana Daskalova and Jeff Huang and James Hays},
 	title      = {{WebGazer}: Scalable Webcam Eye Tracking Using User Interactions},
