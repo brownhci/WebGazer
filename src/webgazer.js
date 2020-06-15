@@ -76,14 +76,7 @@
 
     //lookup tables
     var curTrackerMap = {
-<<<<<<< HEAD
-        'clmtrackr': function() { return new webgazer.tracker.ClmGaze(); },
-        'trackingjs': function() { return new webgazer.tracker.TrackingjsGaze(); },
-        'js_objectdetect': function() { return new webgazer.tracker.Js_objectdetectGaze(); },
-        'TFFacemesh': function() { return new webgazer.tracker.TFFaceMesh();},
-=======
         'TFFacemesh': function() { return new webgazer.tracker.TFFaceMesh(); },
->>>>>>> tffacemesh_tracker
     };
     var regressionMap = {
         'ridge': function() { return new webgazer.reg.RidgeReg(); },
@@ -319,12 +312,8 @@
                 } else {
                     faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
                     if (latestGazeData){
-<<<<<<< HEAD
-                        webgazer.getTracker().drawFaceOverlay(faceOverlay.getContext('2d'), webgazer.getTracker().getPositions());
-=======
                         var tracker = webgazer.getTracker();
                         tracker.drawFaceOverlay(faceOverlay.getContext('2d'), await tracker.getPositions());
->>>>>>> tffacemesh_tracker
                     }
                 }
             }
@@ -650,12 +639,6 @@
               return null;
             }
         })();
-<<<<<<< HEAD
-        
-        
-=======
-
->>>>>>> tffacemesh_tracker
         return webgazer;
     };
 

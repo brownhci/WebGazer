@@ -122,8 +122,6 @@
 
         this.dataClicks = new webgazer.util.DataWindow(dataWindow);
         this.dataTrail = new webgazer.util.DataWindow(trailDataWindow);
-<<<<<<< HEAD
-=======
 
         // Initialize Kalman filter [20200608 xk] what do we do about parameters?
         // [20200611 xk] unsure what to do w.r.t. dimensionality of these matrices. So far at least 
@@ -168,7 +166,6 @@
         var x_initial = [[500], [500], [0], [0]]; // Initial measurement matrix
 
         this.kalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
->>>>>>> tffacemesh_tracker
     };
 
     /**
