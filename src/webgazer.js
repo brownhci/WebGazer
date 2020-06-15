@@ -67,7 +67,7 @@
     webgazer.params.moveTickSize = 50; //milliseconds
 
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
-    var curTracker = new webgazer.tracker.ClmGaze();
+    var curTracker = new webgazer.tracker.TFFaceMesh();
     var regs = [new webgazer.reg.RidgeReg()];
     var blinkDetector = new webgazer.BlinkDetector();
 
@@ -75,7 +75,8 @@
     var curTrackerMap = {
         'clmtrackr': function() { return new webgazer.tracker.ClmGaze(); },
         'trackingjs': function() { return new webgazer.tracker.TrackingjsGaze(); },
-        'js_objectdetect': function() { return new webgazer.tracker.Js_objectdetectGaze(); }
+        'js_objectdetect': function() { return new webgazer.tracker.Js_objectdetectGaze(); },
+        'TFFacemesh': function() { return new webgazer.tracker.TFFaceMesh();},
     };
     var regressionMap = {
         'ridge': function() { return new webgazer.reg.RidgeReg(); },
@@ -250,9 +251,9 @@
      * @param {Number|undefined} regModelIndex - The prediction index we're looking for
      * @returns {*}
      */
-    function getPrediction(regModelIndex) {
+    async function getPrediction(regModelIndex) {
         var predictions = [];
-        latestEyeFeatures = getPupilFeatures(videoElementCanvas, videoElementCanvas.width, videoElementCanvas.height);
+        latestEyeFeatures = await getPupilFeatures(videoElementCanvas, videoElementCanvas.width, videoElementCanvas.height);
 
         if (regs.length === 0) {
             console.log('regression not set, call setRegression()');
@@ -283,8 +284,7 @@
     var smoothingVals = new webgazer.util.DataWindow(4);
     var k = 0;
 
-    function loop() {
-
+    async function loop() {
         if (!paused) {
 
             // Paint the latest video frame into the canvas which will be analyzed by WebGazer
@@ -293,7 +293,7 @@
             paintCurrentFrame(videoElementCanvas, videoElementCanvas.width, videoElementCanvas.height);
             
             // Get gaze prediction (ask clm to track; pass the data to the regressor; get back a prediction)
-            latestGazeData = getPrediction();
+            latestGazeData = await getPrediction();
             // Count time
             var elapsedTime = performance.now() - clockStart;
             // [20180611 James Tompkin]: What does this line do?
@@ -303,10 +303,17 @@
             if( webgazer.params.showFaceOverlay )
             {
                 // Draw the face overlay
-                faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
-                var cl = webgazer.getTracker().clm;
-                if( cl.getCurrentPosition() ) {
-                    cl.draw(faceOverlay);
+                if (webgazer.getTracker().clm != undefined){
+                    faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
+                    var cl = webgazer.getTracker().clm;
+                    if( cl.getCurrentPosition() ) {
+                        cl.draw(faceOverlay);
+                    }
+                } else {
+                    faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
+                    if (latestGazeData){
+                        webgazer.getTracker().drawFaceOverlay(faceOverlay.getContext('2d'), latestGazeData.eyeFeatures.positions);
+                    }
                 }
             }
 
@@ -452,7 +459,7 @@
      * Initializes all needed dom elements and begins the loop
      * @param {URL} videoStream - The video stream to use
      */
-    function init(videoStream) {
+    async function init(videoStream) {
         //////////////////////////
         // Video and video preview
         //////////////////////////
@@ -535,7 +542,7 @@
         paused = false;
         clockStart = performance.now();
 
-        loop();
+        await loop();
     }
 
     /**
@@ -569,7 +576,7 @@
 
     //PUBLIC FUNCTIONS - CONTROL
 
-    /**
+       /**
      * Starts all state related to webgazer -> dataLoop, video collection, click listener
      * If starting fails, call `onFail` param function.
      * @param {Function} onFail - Callback to call in case it is impossible to find user camera
@@ -596,18 +603,21 @@
 
         // Request webcam access under specific constraints
         // WAIT for access
-        navigator.mediaDevices.getUserMedia( webgazer.params.camConstraints )
-        .then(function(stream){ // set the stream
-          videoStream = stream;
-          init(videoStream);
-        })
-        .catch(function(err) { // error handling
-          onFail();
-          console.log( err );
-          videoElement = null;
-          videoStream = null;
-        });
-
+        (async () => {
+            let videoStream;
+            try {
+              videoStream = await navigator.mediaDevices.getUserMedia( webgazer.params.camConstraints );
+              init(videoStream);
+            } catch(err) {
+              onFail();
+              console.log( err );
+              videoElement = null;
+              videoStream = null;
+              return null;
+            }
+        })();
+        
+        
         return webgazer;
     };
 
@@ -637,12 +647,12 @@
      * Resumes collection of data and predictions if paused
      * @returns {webgazer} this
      */
-    webgazer.resume = function() {
+    webgazer.resume = async function() {
         if (!paused) {
             return webgazer;
         }
         paused = false;
-        loop();
+        await loop();
         return webgazer;
     };
 
@@ -763,7 +773,7 @@
      * Note: The constraints set here are applied to the video track only. They also _replace_ any constraints, so be sure to set everything you need.
      * Warning: Setting a large video resolution will decrease performance, and may require
      */
-    webgazer.setCameraConstraints = function(constraints) {
+    webgazer.setCameraConstraints = async function(constraints) {
         webgazer.params.camConstraints = constraints;
 
         // If the camera stream is already up...
@@ -771,23 +781,22 @@
         {
             webgazer.pause();
             videoTrack = videoStream.getVideoTracks()[0];
-            videoTrack.applyConstraints( webgazer.params.camConstraints ).then(function() {
-                
-                // Now get what was actually set, and update the internal buffer values
-                videoSettings = videoTrack.getSettings();
-                setInternalVideoBufferSizes( videoSettings.width, videoSettings.height );
-
-            }).catch(function(err) { // error handling
-                console.log( err );
-            }).finally(function() {
-                // Reset and recompute sizes of the video viewer. 
-                // This is only to adjust the feedback box, say, if the aspect ratio of the video has changed.
-                webgazer.setVideoViewerSize( webgazer.params.videoViewerWidth, webgazer.params.videoViewerHeight )
-                webgazer.getTracker().reset();
-                webgazer.resume();
-            });
+            try {
+              await videoTrack.applyConstraints( webgazer.params.camConstraints );
+              videoSettings = videoTrack.getSettings();
+              setInternalVideoBufferSizes( videoSettings.width, videoSettings.height );
+            } catch(err) {
+              console.log( err );
+              return;
+            }
+            // Reset and recompute sizes of the video viewer. 
+            // This is only to adjust the feedback box, say, if the aspect ratio of the video has changed.
+            webgazer.setVideoViewerSize( webgazer.params.videoViewerWidth, webgazer.params.videoViewerHeight )
+            webgazer.getTracker().reset();
+            await webgazer.resume();
         }
     }
+
 
     /**
      * Does what it says on the tin.

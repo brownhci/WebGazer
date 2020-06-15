@@ -14,7 +14,8 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		concat: {
 			options: {
-				banner: banner_string
+				banner: banner_string,
+				sourceMap: true
 			},
 			dist: {
 				nonull: true,
@@ -39,10 +40,14 @@ module.exports = function(grunt) {
 					'dependencies/clmtrackr/svmfilter_webgl.js',
 					'dependencies/clmtrackr/svmfilter_fft.js',
 					'dependencies/clmtrackr/mossefilter.js',
+					'dependencies/tensorflow/tfjs-core.js',
+					'dependencies/tensorflow/tfjs-converter.js',
+					'dependencies/tensorflow/facemesh.js',
 					'src/blinkDetector.js',
 					'src/clmGaze.js',
 					'src/trackingjsGaze.js',
 					'src/js_objectdetectGaze.js',
+					'src/facemesh.js',
 					'src/linearReg.js',
 					'src/mat.js',
 					'src/pupil.js',
@@ -81,7 +86,8 @@ module.exports = function(grunt) {
 					if_return: true,
 					join_vars: true,
 					properties: true,
-				}
+				},
+				sourceMap: function(path) { return path.replace(/.js/,".map")}
 			},
 			dist: {
 				src: ['./build/webgazer.js'],
