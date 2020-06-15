@@ -17,6 +17,7 @@
  
     webgazer.tracker.TFFaceMesh = TFFaceMesh;
 
+    // Global variable for face landmark positions array
     TFFaceMesh.prototype.positionsArray = null;
 
     /**
@@ -37,17 +38,18 @@
 
         // Pass in a video stream (or an image, canvas, or 3D tensor) to obtain an
         // array of detected faces from the MediaPipe graph.
-
-        this.positionsArray = await model.estimateFaces(imageCanvas);
-        const predictions = positionsArray;
+        const predictions = await model.estimateFaces(imageCanvas);
         
         if (predictions.length == 0){
             return false;
         }
-        const positions = predictions[0].scaledMesh;
 
-        //Fit the detected eye in a rectangle
-        //https://raw.githubusercontent.com/tensorflow/tfjs-models/master/facemesh/mesh_map.jpg
+        // Save positions to global variable
+        this.positionsArray = predictions[0].scaledMesh;
+        const positions = this.positionsArray;
+
+        // Fit the detected eye in a rectangle
+        // https://raw.githubusercontent.com/tensorflow/tfjs-models/master/facemesh/mesh_map.jpg
         var leftOriginX = Math.round(positions[35][0]);
         var leftOriginY = Math.round(positions[159][1]);
         var leftWidth = Math.round(positions[133][0] - leftOriginX);
@@ -67,8 +69,8 @@
           return null;
         }
 
+        // Start building object to be returned
         var eyeObjs = {};
-        // eyeObjs.positions = positions;
 
         var leftImageData = imageCanvas.getContext('2d').getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);
         eyeObjs.left = {
@@ -91,6 +93,10 @@
         return eyeObjs;
     };
 
+    /**
+     * Returns the positions array corresponding to the last call to getEyePatches.
+     * Requires that getEyePatches() was called previously, else returns null.
+     */
     TFFaceMesh.prototype.getPositions = async function () {
         return this.positionsArray;
     }

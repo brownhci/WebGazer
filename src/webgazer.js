@@ -1,3 +1,6 @@
+/**
+ * @module webgazer
+ */
 (function(window, undefined) {
     console.log('initializing webgazer');
     //strict mode for type safety
@@ -43,7 +46,7 @@
     webgazer.params.camConstraints = webgazer.params.camConstraints || { video: { width: { min: 320, ideal: 640, max: 1920 }, height: { min: 240, ideal: 480, max: 1080 }, facingMode: "user" } };
 
     webgazer.params.smoothEyeBB = webgazer.params.smoothEyeBB || false;
-    webgazer.params.blinkDetectionOn = webgazer.params.blinkDetectionOn || false;
+    // webgazer.params.blinkDetectionOn = webgazer.params.blinkDetectionOn || false;
 
     // Why is this not in webgazer.params ?
     var debugVideoLoc = '';
@@ -69,24 +72,28 @@
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
     var curTracker = new webgazer.tracker.TFFaceMesh();
     var regs = [new webgazer.reg.RidgeReg()];
-    var blinkDetector = new webgazer.BlinkDetector();
+    // var blinkDetector = new webgazer.BlinkDetector();
 
     //lookup tables
     var curTrackerMap = {
+<<<<<<< HEAD
         'clmtrackr': function() { return new webgazer.tracker.ClmGaze(); },
         'trackingjs': function() { return new webgazer.tracker.TrackingjsGaze(); },
         'js_objectdetect': function() { return new webgazer.tracker.Js_objectdetectGaze(); },
         'TFFacemesh': function() { return new webgazer.tracker.TFFaceMesh();},
+=======
+        'TFFacemesh': function() { return new webgazer.tracker.TFFaceMesh(); },
+>>>>>>> tffacemesh_tracker
     };
     var regressionMap = {
         'ridge': function() { return new webgazer.reg.RidgeReg(); },
         'weightedRidge': function() { return new webgazer.reg.RidgeWeightedReg(); },
         'threadedRidge': function() { return new webgazer.reg.RidgeRegThreaded(); },
-        'linear': function() { return new webgazer.reg.LinearReg(); }
     };
 
     //localstorage name
-    var localstorageLabel = 'webgazerGlobalData';
+    var localstorageDataLabel = 'webgazerGlobalData';
+    var localstorageSettingsLabel = 'webgazerGlobalSettings';
     //settings object for future storage of settings
     var settings = {};
     var data = [];
@@ -111,18 +118,18 @@
 
         // Find the size of the box.
         // Pick the smaller of the two video preview sizes
-        smaller = Math.min( vw, vh );
-        larger  = Math.max( vw, vh );
+        var smaller = Math.min( vw, vh );
+        var larger  = Math.max( vw, vh );
 
         // Overall scalar
-        scalar = ( vw == larger ? pw / vw : ph / vh );
+        var scalar = ( vw == larger ? pw / vw : ph / vh );
 
         // Multiply this by 2/3, then adjust it to the size of the preview
-        boxSize = (smaller * webgazer.params.faceFeedbackBoxRatio) * scalar;
+        var boxSize = (smaller * webgazer.params.faceFeedbackBoxRatio) * scalar;
 
         // Set the boundaries of the face overlay validation box based on the preview
-        topVal = (ph - boxSize)/2;
-        leftVal = (pw - boxSize)/2;
+        var topVal = (ph - boxSize)/2;
+        var leftVal = (pw - boxSize)/2;
 
         // top, left, width, height
         return [topVal, leftVal, boxSize, boxSize]
@@ -312,7 +319,12 @@
                 } else {
                     faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
                     if (latestGazeData){
+<<<<<<< HEAD
                         webgazer.getTracker().drawFaceOverlay(faceOverlay.getContext('2d'), webgazer.getTracker().getPositions());
+=======
+                        var tracker = webgazer.getTracker();
+                        tracker.drawFaceOverlay(faceOverlay.getContext('2d'), await tracker.getPositions());
+>>>>>>> tffacemesh_tracker
                     }
                 }
             }
@@ -324,7 +336,7 @@
 
 
             if( latestGazeData ) {
-
+                // [20200608 XK] Smoothing across the most recent 4 predictions, do we need this with Kalman filter?
                 smoothingVals.push(latestGazeData);
                 var x = 0;
                 var y = 0;
@@ -333,6 +345,7 @@
                     x += smoothingVals.get(d).x;
                     y += smoothingVals.get(d).y;
                 }
+
                 var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
 
                 if (store_points_var) {
@@ -378,8 +391,16 @@
      * Records click data and passes it to the regression model
      * @param {Event} event - The listened event
      */
-    var clickListener = function(event) {
+    var clickListener = async function(event) {
         recordScreenPosition(event.clientX, event.clientY, eventTypes[0]); // eventType[0] === 'click'
+
+        if (window.saveDataAcrossSessions) {
+            // Each click stores the next data point into localforage.
+            await setGlobalData();
+
+            // // Debug line
+            // console.log('Model size: ' + JSON.stringify(await localforage.getItem(localstorageDataLabel)).length / 1000000 + 'MB');
+        }
     };
 
     /**
@@ -423,33 +444,45 @@
     /**
      * Loads the global data and passes it to the regression model
      */
-    function loadGlobalData() {
-        var storage = JSON.parse(window.localStorage.getItem(localstorageLabel)) || defaults;
-        settings = storage.settings;
-        data = storage.data;
+    async function loadGlobalData() {
+        // Get settings object from localforage
+        // [20200611 xk] still unsure what this does, maybe would be good for Kalman filter settings etc?
+        settings = await localforage.getItem(localstorageSettingsLabel);
+        settings = settings || defaults;
+
+        // Get click data from localforage
+        var loadData = await localforage.getItem(localstorageDataLabel);
+        loadData = loadData || defaults;
+        
+        // Set global var data to newly loaded data
+        data = loadData;
+
+        // Load data into regression model(s)
         for (var reg in regs) {
-            regs[reg].setData(storage.data);
+            regs[reg].setData(loadData);
         }
     }
 
    /**
     * Constructs the global storage object and adds it to local storage
     */
-    function setGlobalData() {
-        var storage = {
-            'settings': settings,
-            'data': regs[0].getData() || data
-        };
-        window.localStorage.setItem(localstorageLabel, JSON.stringify(storage));
+    async function setGlobalData() {
+        // Grab data from regression model
+        var storeData = regs[0].getData() || data; // Array
+
+        // Store data into localforage
+        localforage.setItem(localstorageSettingsLabel, settings) // [20200605 XK] is 'settings' ever being used?
+        localforage.setItem(localstorageDataLabel, storeData);
         //TODO data should probably be stored in webgazer object instead of each regression model
         //     -> requires duplication of data, but is likely easier on regression model implementors
     }
 
     /**
-     * Clears data from model and global storage
+     * Clears data from model and global storage [20200611 xk] is this unused?
      */
     function clearData() {
-        window.localStorage.set(localstorageLabel, undefined);
+        // Removes data from localforage
+        localforage.clear();
         for (var reg in regs) {
             regs[reg].setData([]);
         }
@@ -516,7 +549,6 @@
         gazeDot.style.width = '10px';
         gazeDot.style.height = '10px';
 
-
         // Add other preview/feedback elements to the screen once the video has shown and its parameters are initialized
         document.body.appendChild(videoElement);
         function setupPreviewVideo(e) {
@@ -535,7 +567,6 @@
         };
         videoElement.addEventListener('timeupdate', setupPreviewVideo);
 
-        
         addMouseEventListeners();
 
         //BEGIN CALLBACK LOOP
@@ -587,7 +618,10 @@
             alert("WebGazer works only over https. If you are doing local development you need to run a local server.");
         }
 
-        loadGlobalData();
+        // Load model data stored in localforage.
+        if (window.saveDataAcrossSessions) {
+            loadGlobalData();
+        }
 
         onFail = onFail || function() {console.log('No stream')};
 
@@ -616,8 +650,12 @@
               return null;
             }
         })();
+<<<<<<< HEAD
         
         
+=======
+
+>>>>>>> tffacemesh_tracker
         return webgazer;
     };
 
@@ -670,7 +708,6 @@
         document.body.removeChild(videoElement);
         document.body.removeChild(videoElementCanvas);
 
-        setGlobalData();
         return webgazer;
     };
 
@@ -833,6 +870,7 @@
      * Set the size of the video viewer
      */
     webgazer.setVideoViewerSize = function(w, h) {
+
         webgazer.params.videoViewerWidth = w;
         webgazer.params.videoViewerHeight = h;
 
@@ -991,6 +1029,14 @@
         return webgazer;
     };
 
+    /**
+     * Set the video element canvas; useful if you want to run WebGazer on your own canvas (e.g., on any random image).
+     * @return The current video element canvas
+     */
+    webgazer.setVideoElementCanvas = function(canvas) {
+        videoElementCanvas = canvas;
+    }
+
 
     //GETTERS
     /**
@@ -1032,15 +1078,10 @@
     webgazer.getVideoElementCanvas = function() {
         return videoElementCanvas;
     }
-  
-    /**
-     * Set the video element canvas; useful if you want to run WebGazer on your own canvas (e.g., on any random image).
-     * @return The current video element canvas
-     */
-    webgazer.setVideoElementCanvas = function(canvas) {
-        videoElementCanvas = canvas;
-    }
 
+    /**
+     * @return array [a,b] where a is width ratio and b is height ratio
+     */
     webgazer.getVideoPreviewToCameraResolutionRatio = function() {
         return [webgazer.params.videoViewerWidth / videoElement.videoWidth, webgazer.params.videoViewerHeight / videoElement.videoHeight];
     }

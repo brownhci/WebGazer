@@ -12,14 +12,12 @@ var trainInterval = 500;
 var screenXClicksArray = new self.webgazer.util.DataWindow(dataWindow);
 var screenYClicksArray = new self.webgazer.util.DataWindow(dataWindow);
 var eyeFeaturesClicks = new self.webgazer.util.DataWindow(dataWindow);
+var dataClicks = new self.webgazer.util.DataWindow(dataWindow);
 
 var screenXTrailArray = new self.webgazer.util.DataWindow(trailDataWindow);
 var screenYTrailArray = new self.webgazer.util.DataWindow(trailDataWindow);
 var eyeFeaturesTrail = new self.webgazer.util.DataWindow(trailDataWindow);
-
-var dataClicks = new self.webgazer.util.DataWindow(dataWindow);
-var dataTrail = new self.webgazer.util.DataWindow(dataWindow);
-
+var dataTrail = new self.webgazer.util.DataWindow(trailDataWindow);
 
 /**
  * Performs ridge regression, according to the Weka code.

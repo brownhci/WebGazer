@@ -95,25 +95,94 @@
     //Helper functions
     /**
      * Grayscales an image patch. Can be used for the whole canvas, detected face, detected eye, etc.
-     * @param  {Array} imageData - image data to be grayscaled
-     * @param  {Number} imageWidth  - width of image data to be grayscaled
-     * @param  {Number} imageHeight - height of image data to be grayscaled
+     * 
+     * Code from tracking.js by Eduardo Lundgren, et al.
+     * https://github.com/eduardolundgren/tracking.js/blob/master/src/tracking.js
+     * 
+     * Software License Agreement (BSD License) Copyright (c) 2014, Eduardo A. Lundgren Melo. All rights reserved.
+     * Redistribution and use of this software in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+     * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+     * The name of Eduardo A. Lundgren Melo may not be used to endorse or promote products derived from this software without specific prior written permission of Eduardo A. Lundgren Melo.
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+     * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+     * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+     * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     * 
+     * @param  {Array} pixels - image data to be grayscaled
+     * @param  {Number} width  - width of image data to be grayscaled
+     * @param  {Number} height - height of image data to be grayscaled
      * @return {Array} grayscaledImage
      */
-    self.webgazer.util.grayscale = function(imageData, imageWidth, imageHeight){
-        //TODO implement ourselves to remove dependency
-        return tracking.Image.grayscale(imageData, imageWidth, imageHeight, false);
+    self.webgazer.util.grayscale = function(pixels, width, height){
+        var gray = new Uint8ClampedArray(pixels.length >> 2);
+        var p = 0;
+        var w = 0;
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                var value = pixels[w] * 0.299 + pixels[w + 1] * 0.587 + pixels[w + 2] * 0.114;
+                gray[p++] = value;
+        
+                gray[p++] = value;
+                gray[p++] = value;
+                gray[p++] = pixels[w + 3];
+        
+                w += 4;
+            }
+        }
+        return gray;
     };
 
     /**
-     * Increase contrast of an image
-     * @param {Array} grayscaleImageSrc - grayscale integer array
+     * Increase contrast of an image.
+     * 
+     * Code from Martin Tschirsich, Copyright (c) 2012.
+     * https://github.com/mtschirs/js-objectdetect/blob/gh-pages/js/objectdetect.js
+     * 
+     * @param {Array} src - grayscale integer array
      * @param {Number} step - sampling rate, control performance
-     * @param {Array} destinationImage - array to hold the resulting image
+     * @param {Array} dst - array to hold the resulting image
      */
-    self.webgazer.util.equalizeHistogram = function(grayscaleImageSrc, step, destinationImage) {
-        //TODO implement ourselves to remove dependency
-        return objectdetect.equalizeHistogram(grayscaleImageSrc, step, destinationImage);
+    self.webgazer.util.equalizeHistogram = function(src, step, dst) {
+        var srcLength = src.length;
+        if (!dst) dst = src;
+        if (!step) step = 5;
+        
+        // Compute histogram and histogram sum:
+        var hist = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0];
+        
+        for (var i = 0; i < srcLength; i += step) {
+            ++hist[src[i]];
+        }
+        
+        // Compute integral histogram:
+        var norm = 255 * step / srcLength,
+            prev = 0;
+        for (var i = 0; i < 256; ++i) {
+            var h = hist[i];
+            prev = h += prev;
+            hist[i] = h * norm; // For non-integer src: ~~(h * norm + 0.5);
+        }
+        
+        // Equalize image:
+        for (var i = 0; i < srcLength; ++i) {
+            dst[i] = hist[src[i]];
+        }
+        return dst;
     };
 
     self.webgazer.util.threshold = function(data, threshold) {
