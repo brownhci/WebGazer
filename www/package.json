@@ -10,6 +10,7 @@
     "browser-sync": "^2.26.7",
     "d3": "^5.9.2",
     "jquery": "^3.5.0",
+    "localforage": "^1.7.3",
     "popper.js": "^1.14.3",
     "sweetalert": "^2.1.2"
   }

@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 	var banner_string =
 	'/** WebGazer.js: Scalable Webcam EyeTracking Using User Interactions \n' +
 	' * \n' +
-	' * Copyright (c) 2016-2019, Brown HCI Group \n' +
+	' * Copyright (c) 2016-2020, Brown HCI Group \n' +
 	'\n' +
 	'* Licensed under GPLv3. Companies with a valuation of less than $10M can use WebGazer.js under LGPLv3. \n' +
 	'*/\n\n';
@@ -20,35 +20,12 @@ module.exports = function(grunt) {
 			dist: {
 				nonull: true,
 				src: [
-					'dependencies/js-objectdetect/js/objectdetect.js',
-					'dependencies/js-objectdetect/js/objectdetect.eye.js  ',
-					'dependencies/js-objectdetect/js/objectdetect.frontalface_alt.js  ',
-					'dependencies/tracking.js/build/tracking.js',
-					'dependencies/tracking.js/build/data/face-min.js',
-					'dependencies/tracking.js/build/data/eye-min.js',
-					'dependencies/clmtrackr/utils.js',
 					'dependencies/numeric-1.2.6.min.js',
-					'dependencies/clmtrackr/mosse.js',
-					'dependencies/clmtrackr/jsfeat-min.js',
-					'dependencies/clmtrackr/frontalface.js',
-					'dependencies/clmtrackr/jsfeat_detect.js',
-					'dependencies/clmtrackr/left_eye_filter.js',
-					'dependencies/clmtrackr/right_eye_filter.js',
-					'dependencies/clmtrackr/nose_filter.js',
-					'dependencies/clmtrackr/model_pca_20_svm.js',
-					'dependencies/clmtrackr/clm.js',
-					'dependencies/clmtrackr/svmfilter_webgl.js',
-					'dependencies/clmtrackr/svmfilter_fft.js',
-					'dependencies/clmtrackr/mossefilter.js',
 					'dependencies/tensorflow/tfjs-core.js',
 					'dependencies/tensorflow/tfjs-converter.js',
 					'dependencies/tensorflow/facemesh.js',
-					'src/blinkDetector.js',
-					'src/clmGaze.js',
-					'src/trackingjsGaze.js',
-					'src/js_objectdetectGaze.js',
+					'dependencies/utils.js',
 					'src/facemesh.js',
-					'src/linearReg.js',
 					'src/mat.js',
 					'src/pupil.js',
 					'src/regression.js',

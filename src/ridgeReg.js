@@ -121,7 +121,51 @@
         this.trailTimes = new webgazer.util.DataWindow(trailDataWindow);
 
         this.dataClicks = new webgazer.util.DataWindow(dataWindow);
-        this.dataTrail = new webgazer.util.DataWindow(dataWindow);
+        this.dataTrail = new webgazer.util.DataWindow(trailDataWindow);
+
+        // Initialize Kalman filter [20200608 xk] what do we do about parameters?
+        // [20200611 xk] unsure what to do w.r.t. dimensionality of these matrices. So far at least 
+        //               by my own anecdotal observation a 4x1 x vector seems to work alright
+        // var F = [ [1, 0, 1, 0, 0, 0],
+        //           [0, 1, 0, 1, 0, 0],
+        //           [0, 0, 1, 0, 1, 0],
+        //           [0, 0, 0, 1, 0, 1],
+        //           [0, 0, 0, 0, 1, 0],
+        //           [0, 0, 0, 0, 0, 1]];
+        var F = [ [1, 0, 1, 0],
+                  [0, 1, 0, 1],
+                  [0, 0, 1, 0],
+                  [0, 0, 0, 1]];
+        
+        //Parameters Q and R may require some fine tuning
+        // var Q = [ [1/4, 0,   1/2, 0,    0,   0],
+        //           [0,   1/4, 0,   1/2,  0,   0],
+        //           [0,   0,   1/4, 0,    1/2, 0],
+        //           [0,   0,   0,   1/4,  0,   1/2],
+        //           [1/2, 0,   1/2, 0,    1,   0],
+        //           [0,   1/2,  0,  1/2,  0,   1]];// * delta_t
+        var Q = [ [1/4, 0,    1/2, 0],
+                  [0,   1/4,  0,   1/2],
+                  [1/2, 0,    1,   0],
+                  [0,  1/2,  0,   1]];// * delta_t
+        var delta_t = 1/10; // The amount of time between frames
+        Q = numeric.mul(Q, delta_t);
+        
+        var H = [ [1, 0, 0, 0, 0, 0],
+                  [0, 1, 0, 0, 0, 0],
+                  [0, 0, 1, 0, 0, 0],
+                  [0, 0, 0, 1, 0, 0]];
+        var H = [ [1, 0, 0, 0],
+                  [0, 1, 0, 0]];
+        var pixel_error = 47; //We will need to fine tune this value [20200611 xk] I just put a random value here 
+        
+        //This matrix represents the expected measurement error
+        var R = numeric.mul(numeric.identity(2), pixel_error);
+
+        var P_initial = numeric.mul(numeric.identity(4), 0.0001); //Initial covariance matrix
+        var x_initial = [[500], [500], [0], [0]]; // Initial measurement matrix
+
+        this.kalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
     };
 
     /**
@@ -202,10 +246,21 @@
         predictedX = Math.floor(predictedX);
         predictedY = Math.floor(predictedY);
 
-        return {
-            x: predictedX,
-            y: predictedY
-        };
+        if (window.applyKalmanFilter) {
+            // Update Kalman model, and get prediction
+            var newGaze = [predictedX, predictedY]; // [20200607 xk] Should we use a 1x4 vector?
+            newGaze = this.kalman.update(newGaze);
+    
+            return {
+                x: newGaze[0],
+                y: newGaze[1]
+            };
+        } else {
+            return {
+                x: predictedX,
+                y: predictedY
+            };
+        }
     };
 
     /**
@@ -215,9 +270,16 @@
      */
     webgazer.reg.RidgeReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
-            //TODO this is a kludge, needs to be fixed
-            data[i].eyes.left.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.left.patch), data[i].eyes.left.width, data[i].eyes.left.height);
-            data[i].eyes.right.patch = new ImageData(new Uint8ClampedArray(data[i].eyes.right.patch), data[i].eyes.right.width, data[i].eyes.right.height);
+            // [20200611 xk] Previous comment said this was a kludge, but it seems like this is the best solution 
+            
+            // Clone data array
+            var leftData = new Uint8ClampedArray(data[i].eyes.left.patch.data);
+            var rightData = new Uint8ClampedArray(data[i].eyes.right.patch.data);
+            // Duplicate ImageData object
+            data[i].eyes.left.patch = new ImageData(leftData, data[i].eyes.left.width, data[i].eyes.left.height);
+            data[i].eyes.right.patch = new ImageData(rightData, data[i].eyes.right.width, data[i].eyes.right.height);
+
+            // Add those data objects to model
             this.addData(data[i].eyes, data[i].screenPos, data[i].type);
         }
     };
@@ -227,7 +289,7 @@
      * @returns {Array.<Object>|*}
      */
     webgazer.reg.RidgeReg.prototype.getData = function() {
-        return this.dataClicks.data.concat(this.dataTrail.data);
+        return this.dataClicks.data;
     }
     
     /**

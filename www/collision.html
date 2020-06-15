@@ -5,9 +5,17 @@
 </head>
 <body>
   <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script src="./node_modules/localforage/dist/localforage.js"></script>
+  
   <script src="./webgazer.js"></script>
 
   <script>
+
+  // Kalman Filter defaults to on.
+  window.applyKalmanFilter = true;
+
+  // Set to true if you want to save the data even if you reload the page.
+  window.saveDataAcrossSessions = false;
 
   const collisionSVG = "collisionSVG";
   var force = [];
@@ -15,11 +23,15 @@
 
   window.onload = async function() {
 
-    var localstorageLabel = 'webgazerGlobalData';
-    window.localStorage.setItem(localstorageLabel, null);
+    if (!window.saveDataAcrossSessions) {
+        var localstorageDataLabel = 'webgazerGlobalData';
+        localforage.setItem(localstorageDataLabel, null);
+        var localstorageSettingsLabel = 'webgazerGlobalSettings';
+        localforage.setItem(localstorageSettingsLabel, null);
+    }
 
     const webgazerInstance = await webgazer.setRegression('ridge') /* currently must set regression and tracker */
-    .setTracker('clmtrackr')
+    .setTracker('TFFacemesh')
     .begin();
     webgazerInstance.showPredictionPoints(false); /* shows a square every 100 milliseconds where current prediction is */
 
@@ -46,8 +58,11 @@
   };
 
   window.onbeforeunload = function() {
-    //webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
-    window.localStorage.clear(); //Comment out if you want to save data across different sessions
+    if (window.saveDataAcrossSessions) {
+        webgazer.end();
+    } else {
+        localforage.clear();
+    }
   }
 
   function setupCollisionSystem() {
@@ -153,7 +168,9 @@
     }
   }
 
-  var collisionEyeListener = function(data, clock) {
+  var webgazerCanvas = null;
+
+  var collisionEyeListener = async function(data, clock) {
     if(!data)
       return;
     
@@ -161,20 +178,26 @@
     nodes[0].py = data.y;
     force.resume();
 
-    var cl = webgazer.getTracker().clm;
+    if (!webgazerCanvas) {
+      webgazerCanvas = webgazer.getVideoElementCanvas();
+    }
+
+    await webgazer.getTracker().getEyePatches(webgazerCanvas, webgazerCanvas.width, webgazerCanvas.height);
+    var fmPositions = await webgazer.getTracker().getPositions();
+
     var whr = webgazer.getVideoPreviewToCameraResolutionRatio();
 
-    var line = d3.select('#eyeline1')
+      var line = d3.select('#eyeline1')
               .attr("x1",data.x)
               .attr("y1",data.y)
-              .attr("x2",cl.getCurrentPosition()[27][0] * whr[0])
-              .attr("y2",cl.getCurrentPosition()[27][1] * whr[1]);
+              .attr("x2",fmPositions[145][0] * whr[0])
+              .attr("y2",fmPositions[145][1] * whr[1]);
 
-    var line = d3.select("#eyeline2")
+      var line = d3.select("#eyeline2")
               .attr("x1",data.x)
               .attr("y1",data.y)
-              .attr("x2",cl.getCurrentPosition()[32][0] * whr[0])
-              .attr("y2",cl.getCurrentPosition()[32][1] * whr[1]);
+              .attr("x2",fmPositions[374][0] * whr[0])
+              .attr("y2",fmPositions[374][1] * whr[1]);
 
     var dot = d3.select("#predictionSquare")
               .attr("x",data.x)

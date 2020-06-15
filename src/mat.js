@@ -79,7 +79,8 @@
     self.webgazer.mat.mult = function(matrix1, matrix2){
 
         if (matrix2.length != matrix1[0].length){
-            console.log('Matrix inner dimensions must agree.');
+            console.log('Matrix inner dimensions must agree:');
+            
         }
 
         var X = new Array(matrix1.length),

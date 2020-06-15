@@ -17,6 +17,9 @@
  
     webgazer.tracker.TFFaceMesh = TFFaceMesh;
 
+    // Global variable for face landmark positions array
+    TFFaceMesh.prototype.positionsArray = null;
+
     /**
      * Isolates the two patches that correspond to the user's eyes
      * @param  {Canvas} imageCanvas - canvas corresponding to the webcam stream
@@ -37,28 +40,16 @@
         // array of detected faces from the MediaPipe graph.
         const predictions = await model.estimateFaces(imageCanvas);
         
-        // if (predictions.length > 0) {
-          
-        //   for (let i = 0; i < predictions.length; i++) {
-        //     const keypoints = predictions[i].scaledMesh;
-
-        //     // Log facial keypoints.
-        //     for (let i = 0; i < keypoints.length; i++) {
-        //       const [x, y, z] = keypoints[i];
-        //       console.log(`Keypoint ${i}: [${x}, ${y}, ${z}]`);
-        //     }
-        //   }
-        // }
-        
         if (predictions.length == 0){
             return false;
         }
-        const positions = predictions[0].scaledMesh;
 
-    
+        // Save positions to global variable
+        this.positionsArray = predictions[0].scaledMesh;
+        const positions = this.positionsArray;
 
-        //Fit the detected eye in a rectangle
-        //https://raw.githubusercontent.com/tensorflow/tfjs-models/master/facemesh/mesh_map.jpg
+        // Fit the detected eye in a rectangle
+        // https://raw.githubusercontent.com/tensorflow/tfjs-models/master/facemesh/mesh_map.jpg
         var leftOriginX = Math.round(positions[35][0]);
         var leftOriginY = Math.round(positions[159][1]);
         var leftWidth = Math.round(positions[133][0] - leftOriginX);
@@ -67,8 +58,6 @@
         var rightOriginY = Math.round(positions[386][1]);
         var rightWidth = Math.round(positions[263][0] - rightOriginX);
         var rightHeight = Math.round(positions[274][1] - rightOriginY);
-
-        
 
         if (leftWidth === 0 || rightWidth === 0){
           console.log('an eye patch had zero width');
@@ -80,8 +69,8 @@
           return null;
         }
 
+        // Start building object to be returned
         var eyeObjs = {};
-        eyeObjs.positions = positions;
 
         var leftImageData = imageCanvas.getContext('2d').getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);
         eyeObjs.left = {
@@ -103,6 +92,14 @@
 
         return eyeObjs;
     };
+
+    /**
+     * Returns the positions array corresponding to the last call to getEyePatches.
+     * Requires that getEyePatches() was called previously, else returns null.
+     */
+    TFFaceMesh.prototype.getPositions = async function () {
+        return this.positionsArray;
+    }
     
 
     /**
