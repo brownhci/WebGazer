@@ -24,6 +24,7 @@ If you want to build the repository from source follow these instructions:
     # Install grunt-cli if not installed (this may require you to use `sudo` or run the console as Administrator)
     npm install -g grunt-cli
     git clone https://github.com/brownhci/WebGazer.git
+    cd WebGazer
     npm install
     # Run grunt to build the webgazer.js and webgazer.min.js file in the build directory
     grunt
@@ -122,6 +123,6 @@ This research is supported by NSF grants IIS-1464061, IIS-1552663, and the Brown
 
 ## License
 
-Copyright (C) 2019 [Brown HCI Group](http://hci.cs.brown.edu)
+Copyright (C) 2020 [Brown HCI Group](http://hci.cs.brown.edu)
 
 Licensed under GPLv3. Companies have the option to license WebGazer.js under LGPLv3 while their valuation is under $10,000,000.
