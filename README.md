@@ -3,7 +3,6 @@
 WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js can run only if the user consents in giving access to their webcam.
 
 * [Official website](https://webgazer.cs.brown.edu)
-* [Documentation](https://webgazer.cs.brown.edu/documentation)
 * [API Docs](https://github.com/brownhci/WebGazer/wiki/Top-Level-API)
 
 ## Features
@@ -61,11 +60,11 @@ The following browsers support WebGazer.js:
   * Opera
   * Safari
 
-Your browser needs to support the getUserMedia API as seen [here](http://caniuse.com/#feat=stream) and IndexedDB as seen [here](https://caniuse.com/#search=indexedDB).
+Your browser needs to support the [getUserMedia](http://caniuse.com/#feat=stream) and [IndexedDB](https://caniuse.com/#search=indexedDB) API.
 
 ## Publications
 
-  _**Note:** The current iteration of WebGazer no longer corresponds with the WebGazer used in the below papers. The most recent iteration that does correspond can be found [here.](https://github.com/brownhci/WebGazer/tree/2a4a70cb49b2d568a09362e1b52fd3bd025cd38d)_
+  _**Note:** The current iteration of WebGazer no longer corresponds with the WebGazer described in the following publications and which can be found [here](https://github.com/brownhci/WebGazer/tree/2a4a70cb49b2d568a09362e1b52fd3bd025cd38d)._
 
 	@inproceedings{papoutsaki2016webgazer,
 	author     = {Alexandra Papoutsaki and Patsorn Sangkloy and James Laskey and Nediyana Daskalova and Jeff Huang and James Hays},
