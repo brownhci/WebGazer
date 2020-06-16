@@ -10,7 +10,7 @@
     "browser-sync": "^2.26.7",
     "d3": "^5.16.0",
     "jquery": "^3.5.0",
-    "popper.js": "^1.14.3",
+    "popper.js": "^1.16.1",
     "sweetalert": "^2.1.2"
   }
 }
