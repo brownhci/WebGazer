@@ -43863,7 +43863,7 @@ function supports_ogg_theora_video() {
      */
     webgazer.reg.RidgeReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
-            // [20200611 xk] Previous comment said this was a kludge, but it seems like this is the best solution for cloning imagedata
+            // [20200611 xk] Previous comment said this was a kludge, but it seems like this is the best solution 
             
             // Clone data array
             var leftData = new Uint8ClampedArray(data[i].eyes.left.patch.data);

@@ -123,10 +123,6 @@
                 var value = pixels[w] * 0.299 + pixels[w + 1] * 0.587 + pixels[w + 2] * 0.114;
                 gray[p++] = value;
         
-                gray[p++] = value;
-                gray[p++] = value;
-                gray[p++] = pixels[w + 3];
-        
                 w += 4;
             }
         }
