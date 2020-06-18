@@ -12,7 +12,9 @@
         //Backend options are webgl, wasm, and CPU.
         //For recent laptops WASM is better than WebGL.
         //TODO: This hack makes loading the model block the UI. We should fix that
-        this.model = (async () => { return await facemesh.load({"maxFaces":1}) })();
+        // this.model = (async () => { return await facemesh.load({"maxFaces":1}) })();
+        this.model = facemesh.load({"maxFaces":1});
+        this.predictionReady = false;
     };
  
     webgazer.tracker.TFFaceMesh = TFFaceMesh;
@@ -90,6 +92,8 @@
             height: rightHeight
         };
 
+        this.predictionReady = true;
+
         return eyeObjs;
     };
 
@@ -97,7 +101,7 @@
      * Returns the positions array corresponding to the last call to getEyePatches.
      * Requires that getEyePatches() was called previously, else returns null.
      */
-    TFFaceMesh.prototype.getPositions = async function () {
+    TFFaceMesh.prototype.getPositions = function () {
         return this.positionsArray;
     }
     
@@ -113,20 +117,22 @@
      * Draw TF_FaceMesh_Overlay
      */
     TFFaceMesh.prototype.drawFaceOverlay= function(ctx, keypoints){
-        ctx.fillStyle = '#32EEDB';
-        ctx.strokeStyle = '#32EEDB';
-        ctx.lineWidth = 0.5;
-      
-        for (let i = 0; i < keypoints.length; i++) {
-            const x = keypoints[i][0];
-            const y = keypoints[i][1];
-
-            ctx.beginPath();
-            ctx.arc(x, y, 1 /* radius */, 0, 2 * Math.PI);
-            ctx.closePath();
-            ctx.fill();
+        // If keypoints is falsy, don't do anything
+        if (keypoints) {
+            ctx.fillStyle = '#32EEDB';
+            ctx.strokeStyle = '#32EEDB';
+            ctx.lineWidth = 0.5;
+          
+            for (let i = 0; i < keypoints.length; i++) {
+                const x = keypoints[i][0];
+                const y = keypoints[i][1];
+    
+                ctx.beginPath();
+                ctx.arc(x, y, 1 /* radius */, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.fill();
+            }
         }
-
     }
 
     /**

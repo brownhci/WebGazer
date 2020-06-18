@@ -42792,7 +42792,9 @@ function supports_ogg_theora_video() {
         //Backend options are webgl, wasm, and CPU.
         //For recent laptops WASM is better than WebGL.
         //TODO: This hack makes loading the model block the UI. We should fix that
-        this.model = (async () => { return await facemesh.load({"maxFaces":1}) })();
+        // this.model = (async () => { return await facemesh.load({"maxFaces":1}) })();
+        this.model = facemesh.load({"maxFaces":1});
+        this.predictionReady = false;
     };
  
     webgazer.tracker.TFFaceMesh = TFFaceMesh;
@@ -42870,6 +42872,8 @@ function supports_ogg_theora_video() {
             height: rightHeight
         };
 
+        this.predictionReady = true;
+
         return eyeObjs;
     };
 
@@ -42877,7 +42881,7 @@ function supports_ogg_theora_video() {
      * Returns the positions array corresponding to the last call to getEyePatches.
      * Requires that getEyePatches() was called previously, else returns null.
      */
-    TFFaceMesh.prototype.getPositions = async function () {
+    TFFaceMesh.prototype.getPositions = function () {
         return this.positionsArray;
     }
     
@@ -42893,20 +42897,22 @@ function supports_ogg_theora_video() {
      * Draw TF_FaceMesh_Overlay
      */
     TFFaceMesh.prototype.drawFaceOverlay= function(ctx, keypoints){
-        ctx.fillStyle = '#32EEDB';
-        ctx.strokeStyle = '#32EEDB';
-        ctx.lineWidth = 0.5;
-      
-        for (let i = 0; i < keypoints.length; i++) {
-            const x = keypoints[i][0];
-            const y = keypoints[i][1];
-
-            ctx.beginPath();
-            ctx.arc(x, y, 1 /* radius */, 0, 2 * Math.PI);
-            ctx.closePath();
-            ctx.fill();
+        // If keypoints is falsy, don't do anything
+        if (keypoints) {
+            ctx.fillStyle = '#32EEDB';
+            ctx.strokeStyle = '#32EEDB';
+            ctx.lineWidth = 0.5;
+          
+            for (let i = 0; i < keypoints.length; i++) {
+                const x = keypoints[i][0];
+                const y = keypoints[i][1];
+    
+                ctx.beginPath();
+                ctx.arc(x, y, 1 /* radius */, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.fill();
+            }
         }
-
     }
 
     /**
@@ -44517,10 +44523,6 @@ function supports_ogg_theora_video() {
                 var value = pixels[w] * 0.299 + pixels[w + 1] * 0.587 + pixels[w + 2] * 0.114;
                 gray[p++] = value;
         
-                gray[p++] = value;
-                gray[p++] = value;
-                gray[p++] = pixels[w + 3];
-        
                 w += 4;
             }
         }
@@ -45065,6 +45067,7 @@ function store_points(x, y, k) {
      */
     async function getPrediction(regModelIndex) {
         var predictions = [];
+        // [20200617 xk] TODO: this call should be made async somehow. will take some work.
         latestEyeFeatures = await getPupilFeatures(videoElementCanvas, videoElementCanvas.width, videoElementCanvas.height);
 
         if (regs.length === 0) {
@@ -45099,13 +45102,17 @@ function store_points(x, y, k) {
     async function loop() {
         if (!paused) {
 
+            // [20200617 XK] TODO: there is currently lag between the camera input and the face overlay. This behavior
+            // is not seen in the facemesh demo. probably need to optimize async implementation. I think the issue lies
+            // in the implementation of getPrediction().
+
             // Paint the latest video frame into the canvas which will be analyzed by WebGazer
             // [20180729 JT] Why do we need to do this? clmTracker does this itself _already_, which is just duplicating the work.
             // Is it because other trackers need a canvas instead of an img/video element?
             paintCurrentFrame(videoElementCanvas, videoElementCanvas.width, videoElementCanvas.height);
             
             // Get gaze prediction (ask clm to track; pass the data to the regressor; get back a prediction)
-            latestGazeData = await getPrediction();
+            latestGazeData = getPrediction();
             // Count time
             var elapsedTime = performance.now() - clockStart;
             // [20180611 James Tompkin]: What does this line do?
@@ -45114,20 +45121,10 @@ function store_points(x, y, k) {
             // Draw face overlay
             if( webgazer.params.showFaceOverlay )
             {
-                // Draw the face overlay
-                if (webgazer.getTracker().clm != undefined){
-                    faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
-                    var cl = webgazer.getTracker().clm;
-                    if( cl.getCurrentPosition() ) {
-                        cl.draw(faceOverlay);
-                    }
-                } else {
-                    faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
-                    if (latestGazeData){
-                        var tracker = webgazer.getTracker();
-                        tracker.drawFaceOverlay(faceOverlay.getContext('2d'), await tracker.getPositions());
-                    }
-                }
+                // Get tracker object
+                var tracker = webgazer.getTracker();
+                faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
+                tracker.drawFaceOverlay(faceOverlay.getContext('2d'), tracker.getPositions());
             }
 
             // Feedback box
@@ -45135,7 +45132,8 @@ function store_points(x, y, k) {
             if( webgazer.params.showFaceFeedbackBox )
                 checkEyesInValidationBox();
 
-
+            latestGazeData = await latestGazeData;
+            
             if( latestGazeData ) {
                 // [20200608 XK] Smoothing across the most recent 4 predictions, do we need this with Kalman filter?
                 smoothingVals.push(latestGazeData);

@@ -253,6 +253,7 @@
      */
     async function getPrediction(regModelIndex) {
         var predictions = [];
+        // [20200617 xk] TODO: this call should be made async somehow. will take some work.
         latestEyeFeatures = await getPupilFeatures(videoElementCanvas, videoElementCanvas.width, videoElementCanvas.height);
 
         if (regs.length === 0) {
@@ -287,13 +288,17 @@
     async function loop() {
         if (!paused) {
 
+            // [20200617 XK] TODO: there is currently lag between the camera input and the face overlay. This behavior
+            // is not seen in the facemesh demo. probably need to optimize async implementation. I think the issue lies
+            // in the implementation of getPrediction().
+
             // Paint the latest video frame into the canvas which will be analyzed by WebGazer
             // [20180729 JT] Why do we need to do this? clmTracker does this itself _already_, which is just duplicating the work.
             // Is it because other trackers need a canvas instead of an img/video element?
             paintCurrentFrame(videoElementCanvas, videoElementCanvas.width, videoElementCanvas.height);
             
             // Get gaze prediction (ask clm to track; pass the data to the regressor; get back a prediction)
-            latestGazeData = await getPrediction();
+            latestGazeData = getPrediction();
             // Count time
             var elapsedTime = performance.now() - clockStart;
             // [20180611 James Tompkin]: What does this line do?
@@ -302,20 +307,10 @@
             // Draw face overlay
             if( webgazer.params.showFaceOverlay )
             {
-                // Draw the face overlay
-                if (webgazer.getTracker().clm != undefined){
-                    faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
-                    var cl = webgazer.getTracker().clm;
-                    if( cl.getCurrentPosition() ) {
-                        cl.draw(faceOverlay);
-                    }
-                } else {
-                    faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
-                    if (latestGazeData){
-                        var tracker = webgazer.getTracker();
-                        tracker.drawFaceOverlay(faceOverlay.getContext('2d'), await tracker.getPositions());
-                    }
-                }
+                // Get tracker object
+                var tracker = webgazer.getTracker();
+                faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
+                tracker.drawFaceOverlay(faceOverlay.getContext('2d'), tracker.getPositions());
             }
 
             // Feedback box
@@ -323,7 +318,8 @@
             if( webgazer.params.showFaceFeedbackBox )
                 checkEyesInValidationBox();
 
-
+            latestGazeData = await latestGazeData;
+            
             if( latestGazeData ) {
                 // [20200608 XK] Smoothing across the most recent 4 predictions, do we need this with Kalman filter?
                 smoothingVals.push(latestGazeData);
