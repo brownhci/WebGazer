@@ -71,7 +71,7 @@
 
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
     var curTracker = new webgazer.tracker.TFFaceMesh();
-    var regs = [new webgazer.reg.RidgeRegThreaded()];
+    var regs = [new webgazer.reg.RidgeReg()];
     // var blinkDetector = new webgazer.BlinkDetector();
 
     //lookup tables

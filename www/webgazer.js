@@ -44523,10 +44523,6 @@ function supports_ogg_theora_video() {
                 var value = pixels[w] * 0.299 + pixels[w + 1] * 0.587 + pixels[w + 2] * 0.114;
                 gray[p++] = value;
         
-                gray[p++] = value;
-                gray[p++] = value;
-                gray[p++] = pixels[w + 3];
-        
                 w += 4;
             }
         }
@@ -44889,7 +44885,7 @@ function store_points(x, y, k) {
 
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
     var curTracker = new webgazer.tracker.TFFaceMesh();
-    var regs = [new webgazer.reg.RidgeRegThreaded()];
+    var regs = [new webgazer.reg.RidgeReg()];
     // var blinkDetector = new webgazer.BlinkDetector();
 
     //lookup tables
