@@ -42830,25 +42830,16 @@ function supports_ogg_theora_video() {
         this.positionsArray = predictions[0].scaledMesh;
         const positions = this.positionsArray;
 
-        // Fit the detected eye in a rectangle
+        // Fit the detected eye in a rectangle. Robust to tilting.
         // https://raw.githubusercontent.com/tensorflow/tfjs-models/master/facemesh/mesh_map.jpg
-        var leftOriginX = Math.round(positions[130][0]);
-        var leftOriginY = Math.round(positions[27][1]);
-        var leftWidth = Math.round(positions[244][0] - leftOriginX);
-        var leftHeight = Math.round(positions[23][1] - leftOriginY);
-        var rightOriginX = Math.round(positions[464][0]);
-        var rightOriginY = Math.round(positions[257][1]);
-        var rightWidth = Math.round(positions[359][0] - rightOriginX);
-        var rightHeight = Math.round(positions[253][1] - rightOriginY);
-
-        // var leftOriginX = Math.round(Math.min(positions[247][0], positions[130][0], positions[25][0]));
-        // var leftOriginY = Math.round(Math.min(positions[247][1], positions[27][1], positions[190][1]));
-        // var leftWidth = Math.round(Math.max(positions[190][0], positions[243][0], positions[233][0]) - leftOriginX);
-        // var leftHeight = Math.round(Math.max(positions[25][1], positions[23][1], positions[112][1]) - leftOriginY);
-        // var rightOriginX = Math.round(Math.min(positions[414][0], positions[463][0], positions[453][0]));
-        // var rightOriginY = Math.round(Math.min(positions[414][1], positions[257][1], positions[467][1]));
-        // var rightWidth = Math.round(Math.max(positions[467][0], positions[359][0], positions[255][0]) - rightOriginX);
-        // var rightHeight = Math.round(Math.max(positions[341][1], positions[253][1], positions[255][1]) - rightOriginY);
+        var leftOriginX = Math.round(Math.min(positions[247][0], positions[130][0], positions[25][0]));
+        var leftOriginY = Math.round(Math.min(positions[247][1], positions[27][1], positions[190][1]));
+        var leftWidth = Math.round(Math.max(positions[190][0], positions[243][0], positions[233][0]) - leftOriginX);
+        var leftHeight = Math.round(Math.max(positions[25][1], positions[23][1], positions[112][1]) - leftOriginY);
+        var rightOriginX = Math.round(Math.min(positions[414][0], positions[463][0], positions[453][0]));
+        var rightOriginY = Math.round(Math.min(positions[414][1], positions[257][1], positions[467][1]));
+        var rightWidth = Math.round(Math.max(positions[467][0], positions[359][0], positions[255][0]) - rightOriginX);
+        var rightHeight = Math.round(Math.max(positions[341][1], positions[253][1], positions[255][1]) - rightOriginY);
 
         if (leftWidth === 0 || rightWidth === 0){
           console.log('an eye patch had zero width');
@@ -45141,11 +45132,6 @@ function store_points(x, y, k) {
                 var tracker = webgazer.getTracker();
                 faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
                 tracker.drawFaceOverlay(faceOverlay.getContext('2d'), tracker.getPositions());
-                
-                // For reading eyetracking
-                if (window.readingEyeBox) {
-                    window.readingEyeBox.setPositions(tracker.getPositions());
-                }
             }
 
             // Feedback box
@@ -45416,9 +45402,6 @@ function store_points(x, y, k) {
         clockStart = performance.now();
 
         await loop();
-        if (window.readingEyeBox) {
-            await window.readingEyeBox.displayEyeBox();
-        }
     }
 
     /**
