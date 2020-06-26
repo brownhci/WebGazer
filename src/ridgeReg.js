@@ -108,6 +108,13 @@
      * @constructor
      */
     webgazer.reg.RidgeReg = function() {
+        this.init();
+    };
+
+    /**
+     * Initialize new arrays and initialize Kalman filter.
+     */
+    webgazer.reg.RidgeReg.prototype.init = function() {
         this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.eyeFeaturesClicks = new webgazer.util.DataWindow(dataWindow);
@@ -126,24 +133,12 @@
         // Initialize Kalman filter [20200608 xk] what do we do about parameters?
         // [20200611 xk] unsure what to do w.r.t. dimensionality of these matrices. So far at least 
         //               by my own anecdotal observation a 4x1 x vector seems to work alright
-        // var F = [ [1, 0, 1, 0, 0, 0],
-        //           [0, 1, 0, 1, 0, 0],
-        //           [0, 0, 1, 0, 1, 0],
-        //           [0, 0, 0, 1, 0, 1],
-        //           [0, 0, 0, 0, 1, 0],
-        //           [0, 0, 0, 0, 0, 1]];
         var F = [ [1, 0, 1, 0],
                   [0, 1, 0, 1],
                   [0, 0, 1, 0],
                   [0, 0, 0, 1]];
         
         //Parameters Q and R may require some fine tuning
-        // var Q = [ [1/4, 0,   1/2, 0,    0,   0],
-        //           [0,   1/4, 0,   1/2,  0,   0],
-        //           [0,   0,   1/4, 0,    1/2, 0],
-        //           [0,   0,   0,   1/4,  0,   1/2],
-        //           [1/2, 0,   1/2, 0,    1,   0],
-        //           [0,   1/2,  0,  1/2,  0,   1]];// * delta_t
         var Q = [ [1/4, 0,    1/2, 0],
                   [0,   1/4,  0,   1/2],
                   [1/2, 0,    1,   0],
@@ -270,8 +265,6 @@
      */
     webgazer.reg.RidgeReg.prototype.setData = function(data) {
         for (var i = 0; i < data.length; i++) {
-            // [20200611 xk] Previous comment said this was a kludge, but it seems like this is the best solution 
-            
             // Clone data array
             var leftData = new Uint8ClampedArray(data[i].eyes.left.patch.data);
             var rightData = new Uint8ClampedArray(data[i].eyes.right.patch.data);

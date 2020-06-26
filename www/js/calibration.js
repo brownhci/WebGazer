@@ -132,7 +132,8 @@ function ShowCalibrationPoint() {
 * This function clears the calibration buttons memory
 */
 function ClearCalibration(){
-  window.localStorage.clear();
+  // Clear data from WebGazer
+
   $(".Calibration").css('background-color','red');
   $(".Calibration").css('opacity',0.2);
   $(".Calibration").prop('disabled',false);

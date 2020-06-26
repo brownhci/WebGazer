@@ -46,6 +46,7 @@ window.onbeforeunload = function() {
  */
 function Restart(){
     document.getElementById("Accuracy").innerHTML = "<a>Not yet Calibrated</a>";
+    webgazer.clearData();
     ClearCalibration();
     PopUpInstruction();
 }
