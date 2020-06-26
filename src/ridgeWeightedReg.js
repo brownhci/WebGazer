@@ -107,10 +107,16 @@
      * @constructor
      */
     webgazer.reg.RidgeWeightedReg = function() {
+        this.init();
+    };
+    
+    /**
+     * Initialize new arrays and initialize Kalman filter.
+     */
+    webgazer.reg.RidgeReg.prototype.init = function() {
         this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.eyeFeaturesClicks = new webgazer.util.DataWindow(dataWindow);
-        this.dataClicks = new webgazer.util.DataWindow(dataWindow);
 
         //sets to one second worth of cursor trail
         this.trailTime = 1000;
@@ -119,6 +125,8 @@
         this.screenYTrailArray = new webgazer.util.DataWindow(trailDataWindow);
         this.eyeFeaturesTrail = new webgazer.util.DataWindow(trailDataWindow);
         this.trailTimes = new webgazer.util.DataWindow(trailDataWindow);
+
+        this.dataClicks = new webgazer.util.DataWindow(dataWindow);
         this.dataTrail = new webgazer.util.DataWindow(trailDataWindow);
 
         // Initialize Kalman filter [20200608 xk] what do we do about parameters?

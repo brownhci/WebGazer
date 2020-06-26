@@ -43,6 +43,13 @@
      * @constructor
      */
     webgazer.reg.RidgeRegThreaded = function() {
+        this.init();
+    };
+
+    /**
+     * Initialize new arrays and initialize Kalman filter.
+     */
+    webgazer.reg.RidgeRegThreaded.prototype.init = function() {
         this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.eyeFeaturesClicks = new webgazer.util.DataWindow(dataWindow);
@@ -92,7 +99,7 @@
         var x_initial = [[500], [500], [0], [0]]; // Initial measurement matrix
 
         this.kalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
-    };
+    }
 
     /**
      * Add given data from eyes

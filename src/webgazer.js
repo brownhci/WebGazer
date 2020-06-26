@@ -301,8 +301,7 @@
             latestGazeData = getPrediction();
             // Count time
             var elapsedTime = performance.now() - clockStart;
-            // [20180611 James Tompkin]: What does this line do?
-            callback(latestGazeData, elapsedTime);
+
 
             // Draw face overlay
             if( webgazer.params.showFaceOverlay )
@@ -319,6 +318,9 @@
                 checkEyesInValidationBox();
 
             latestGazeData = await latestGazeData;
+
+            // [20200623 xk] callback to function passed into setGazeListener(fn)
+            callback(latestGazeData, elapsedTime);
             
             if( latestGazeData ) {
                 // [20200608 XK] Smoothing across the most recent 4 predictions, do we need this with Kalman filter?
@@ -343,7 +345,14 @@
                     }
                 }
                 // GazeDot
+                if (!webgazer.params.showGazeDot) {
+                    webgazer.params.showGazeDot = true;
+                    gazeDot.style.display = 'block';
+                }
                 gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
+            } else {
+                webgazer.params.showGazeDot = false;
+                gazeDot.style.display = 'none';
             }
 
             requestAnimationFrame(loop);
@@ -463,13 +472,13 @@
     }
 
     /**
-     * Clears data from model and global storage [20200611 xk] is this unused?
+     * Clears data from model and global storage
      */
     function clearData() {
         // Removes data from localforage
         localforage.clear();
         for (var reg in regs) {
-            regs[reg].setData([]);
+            regs[reg].init();
         }
     }
 
@@ -495,7 +504,7 @@
         // We set these to stop the video appearing too large when it is added for the very first time
         videoElement.style.width = webgazer.params.videoViewerWidth + 'px';
         videoElement.style.height = webgazer.params.videoViewerHeight + 'px';
-        //videoElement.style.zIndex="-1";
+        // videoElement.style.zIndex="-1";
         
         // Canvas for drawing video to pass to clm tracker
         videoElementCanvas = document.createElement('canvas');
@@ -510,6 +519,18 @@
         faceOverlay.style.position = 'fixed';
         faceOverlay.style.top = topDist;
         faceOverlay.style.left = leftDist;
+
+        // Mirror video feed
+        videoElement.style.setProperty("-moz-transform", "scale(-1, 1)");
+        videoElement.style.setProperty("-webkit-transform", "scale(-1, 1)");
+        videoElement.style.setProperty("-o-transform", "scale(-1, 1)");
+        videoElement.style.setProperty("transform", "scale(-1, 1)");
+        videoElement.style.setProperty("filter", "FlipH");
+        faceOverlay.style.setProperty("-moz-transform", "scale(-1, 1)");
+        faceOverlay.style.setProperty("-webkit-transform", "scale(-1, 1)");
+        faceOverlay.style.setProperty("-o-transform", "scale(-1, 1)");
+        faceOverlay.style.setProperty("transform", "scale(-1, 1)");
+        faceOverlay.style.setProperty("filter", "FlipH");
 
         // Feedback box
         // Lets the user know when their face is in the middle
@@ -1014,6 +1035,13 @@
      */
     webgazer.setVideoElementCanvas = function(canvas) {
         videoElementCanvas = canvas;
+    }
+
+    /**
+     * Clear data from localforage and from regs
+     */
+    webgazer.clearData = async function() {
+        clearData();
     }
 
 
