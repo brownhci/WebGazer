@@ -42830,8 +42830,22 @@ function supports_ogg_theora_video() {
         this.positionsArray = predictions[0].scaledMesh;
         const positions = this.positionsArray;
 
-        // Fit the detected eye in a rectangle. Robust to tilting.
+        // Fit the detected eye in a rectangle. [20200626 xk] not clear which approach is better
         // https://raw.githubusercontent.com/tensorflow/tfjs-models/master/facemesh/mesh_map.jpg
+
+        // // Maintains a relatively stable shape of the bounding box at the cost of cutting off parts of
+        // // the eye when the eye is tilted.
+        // var leftOriginX = Math.round(positions[130][0]);
+        // var leftOriginY = Math.round(positions[27][1]);
+        // var leftWidth = Math.round(positions[243][0] - leftOriginX);
+        // var leftHeight = Math.round(positions[23][1] - leftOriginY);
+        // var rightOriginX = Math.round(positions[463][0]);
+        // var rightOriginY = Math.round(positions[257][1]);
+        // var rightWidth = Math.round(positions[359][0] - rightOriginX);
+        // var rightHeight = Math.round(positions[253][1] - rightOriginY);
+        
+        // Won't really cut off any parts of the eye, at the cost of warping the shape (i.e. height/
+        // width ratio) of the bounding box.
         var leftOriginX = Math.round(Math.min(positions[247][0], positions[130][0], positions[25][0]));
         var leftOriginY = Math.round(Math.min(positions[247][1], positions[27][1], positions[190][1]));
         var leftWidth = Math.round(Math.max(positions[190][0], positions[243][0], positions[233][0]) - leftOriginX);
@@ -44859,6 +44873,7 @@ function store_points(x, y, k) {
 
     // View options
     webgazer.params.showVideo = true;
+    webgazer.params.mirrorVideo = true;
     webgazer.params.showFaceOverlay = true;
     webgazer.params.showFaceFeedbackBox = true;
     webgazer.params.showGazeDot = false;
@@ -45280,7 +45295,7 @@ function store_points(x, y, k) {
     }
 
    /**
-    * Constructs the global storage object and adds it to local storage
+    * Adds data to localforage
     */
     async function setGlobalData() {
         // Grab data from regression model
@@ -45299,6 +45314,8 @@ function store_points(x, y, k) {
     function clearData() {
         // Removes data from localforage
         localforage.clear();
+
+        // Removes data from regression model
         for (var reg in regs) {
             regs[reg].init();
         }
@@ -45343,16 +45360,18 @@ function store_points(x, y, k) {
         faceOverlay.style.left = leftDist;
 
         // Mirror video feed
-        videoElement.style.setProperty("-moz-transform", "scale(-1, 1)");
-        videoElement.style.setProperty("-webkit-transform", "scale(-1, 1)");
-        videoElement.style.setProperty("-o-transform", "scale(-1, 1)");
-        videoElement.style.setProperty("transform", "scale(-1, 1)");
-        videoElement.style.setProperty("filter", "FlipH");
-        faceOverlay.style.setProperty("-moz-transform", "scale(-1, 1)");
-        faceOverlay.style.setProperty("-webkit-transform", "scale(-1, 1)");
-        faceOverlay.style.setProperty("-o-transform", "scale(-1, 1)");
-        faceOverlay.style.setProperty("transform", "scale(-1, 1)");
-        faceOverlay.style.setProperty("filter", "FlipH");
+        if (webgazer.params.mirrorVideo) {
+            videoElement.style.setProperty("-moz-transform", "scale(-1, 1)");
+            videoElement.style.setProperty("-webkit-transform", "scale(-1, 1)");
+            videoElement.style.setProperty("-o-transform", "scale(-1, 1)");
+            videoElement.style.setProperty("transform", "scale(-1, 1)");
+            videoElement.style.setProperty("filter", "FlipH");
+            faceOverlay.style.setProperty("-moz-transform", "scale(-1, 1)");
+            faceOverlay.style.setProperty("-webkit-transform", "scale(-1, 1)");
+            faceOverlay.style.setProperty("-o-transform", "scale(-1, 1)");
+            faceOverlay.style.setProperty("transform", "scale(-1, 1)");
+            faceOverlay.style.setProperty("filter", "FlipH");
+        }
 
         // Feedback box
         // Lets the user know when their face is in the middle
