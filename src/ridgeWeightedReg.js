@@ -113,7 +113,7 @@
     /**
      * Initialize new arrays and initialize Kalman filter.
      */
-    webgazer.reg.RidgeReg.prototype.init = function() {
+    webgazer.reg.RidgeWeightedReg.prototype.init = function() {
         this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.eyeFeaturesClicks = new webgazer.util.DataWindow(dataWindow);
