@@ -44280,12 +44280,16 @@ function supports_ogg_theora_video() {
         this.dataClicks = new webgazer.util.DataWindow(dataWindow);
         this.dataTrail = new webgazer.util.DataWindow(dataWindow);
 
-        this.worker = new Worker('ridgeWorker.js');
-        this.worker.onerror = function(err) { console.log(err.message); };
-        this.worker.onmessage = function(evt){
-          weights.X = evt.data.X;
-          weights.Y = evt.data.Y;
-        };
+        // Place the src/ridgeworker.js file into the same directory as your html file.
+        if (!this.worker) {
+            this.worker = new Worker('ridgeWorker.js'); // [20200708] TODO: Figure out how to make this inline
+            this.worker.onerror = function(err) { console.log(err.message); };
+            this.worker.onmessage = function(evt) {
+                weights.X = evt.data.X;
+                weights.Y = evt.data.Y;
+            };
+            console.log('initialized worker');
+        }
 
         // Initialize Kalman filter [20200608 xk] what do we do about parameters?
         // [20200611 xk] unsure what to do w.r.t. dimensionality of these matrices. So far at least 
@@ -44343,7 +44347,7 @@ function supports_ogg_theora_video() {
      * @returns {Object}
      */
     webgazer.reg.RidgeRegThreaded.prototype.predict = function(eyesObj) {
-        console.log('LOGGING..');
+        // console.log('LOGGING..');
         if (!eyesObj) {
             return null;
         }
@@ -44364,19 +44368,12 @@ function supports_ogg_theora_video() {
             // Update Kalman model, and get prediction
             var newGaze = [predictedX, predictedY]; // [20200607 xk] Should we use a 1x4 vector?
             newGaze = this.kalman.update(newGaze);
-            console.log('Filtered Predicted X,Y');
-            console.log(newGaze[0]);
-            console.log(newGaze[1]);
     
             return {
                 x: newGaze[0],
                 y: newGaze[1]
             };
         } else {
-            console.log('Predicted X,Y');
-            console.log(predictedX);
-            console.log(predictedY);
-
             return {
                 x: predictedX,
                 y: predictedY
@@ -45292,6 +45289,8 @@ function store_points(x, y, k) {
         for (var reg in regs) {
             regs[reg].setData(loadData);
         }
+
+        console.log("loaded stored data into regression model");
     }
 
    /**

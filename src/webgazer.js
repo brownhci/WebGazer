@@ -456,6 +456,8 @@
         for (var reg in regs) {
             regs[reg].setData(loadData);
         }
+
+        console.log("loaded stored data into regression model");
     }
 
    /**
