@@ -1,7 +1,9 @@
 'use strict';
 
 console.log('thread starting');
-importScripts('../src/util.js', '../src/mat.js');
+
+// Add src/util.js and src/mat.js to the same directory as your html file
+importScripts('./util.js', './mat.js'); // [20200708] Figure out how to make all of this wrap up neatly
 var ridgeParameter = Math.pow(10,-5);
 var resizeWidth = 10;
 var resizeHeight = 6;
@@ -125,7 +127,6 @@ function retrain() {
 
     var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
     var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter); 
-    console.log(coefficientsX);
     self.postMessage({'X':coefficientsX, 'Y': coefficientsY});
     self.needsTraining = false;
 }

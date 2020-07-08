@@ -108,6 +108,8 @@ $(document).ready(function(){
                             ClearCanvas();
                           } else {
                             //use restart function to restart the calibration
+                            document.getElementById("Accuracy").innerHTML = "<a>Not yet Calibrated</a>";
+                            webgazer.clearData();
                             ClearCalibration();
                             ClearCanvas();
                             ShowCalibrationPoint();

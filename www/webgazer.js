@@ -42830,8 +42830,22 @@ function supports_ogg_theora_video() {
         this.positionsArray = predictions[0].scaledMesh;
         const positions = this.positionsArray;
 
-        // Fit the detected eye in a rectangle. Robust to tilting.
+        // Fit the detected eye in a rectangle. [20200626 xk] not clear which approach is better
         // https://raw.githubusercontent.com/tensorflow/tfjs-models/master/facemesh/mesh_map.jpg
+
+        // // Maintains a relatively stable shape of the bounding box at the cost of cutting off parts of
+        // // the eye when the eye is tilted.
+        // var leftOriginX = Math.round(positions[130][0]);
+        // var leftOriginY = Math.round(positions[27][1]);
+        // var leftWidth = Math.round(positions[243][0] - leftOriginX);
+        // var leftHeight = Math.round(positions[23][1] - leftOriginY);
+        // var rightOriginX = Math.round(positions[463][0]);
+        // var rightOriginY = Math.round(positions[257][1]);
+        // var rightWidth = Math.round(positions[359][0] - rightOriginX);
+        // var rightHeight = Math.round(positions[253][1] - rightOriginY);
+        
+        // Won't really cut off any parts of the eye, at the cost of warping the shape (i.e. height/
+        // width ratio) of the bounding box.
         var leftOriginX = Math.round(Math.min(positions[247][0], positions[130][0], positions[25][0]));
         var leftOriginY = Math.round(Math.min(positions[247][1], positions[27][1], positions[190][1]));
         var leftWidth = Math.round(Math.max(positions[190][0], positions[243][0], positions[233][0]) - leftOriginX);
@@ -44001,7 +44015,7 @@ function supports_ogg_theora_video() {
     /**
      * Initialize new arrays and initialize Kalman filter.
      */
-    webgazer.reg.RidgeReg.prototype.init = function() {
+    webgazer.reg.RidgeWeightedReg.prototype.init = function() {
         this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
         this.eyeFeaturesClicks = new webgazer.util.DataWindow(dataWindow);
@@ -44266,12 +44280,16 @@ function supports_ogg_theora_video() {
         this.dataClicks = new webgazer.util.DataWindow(dataWindow);
         this.dataTrail = new webgazer.util.DataWindow(dataWindow);
 
-        this.worker = new Worker('ridgeWorker.js');
-        this.worker.onerror = function(err) { console.log(err.message); };
-        this.worker.onmessage = function(evt){
-          weights.X = evt.data.X;
-          weights.Y = evt.data.Y;
-        };
+        // Place the src/ridgeworker.js file into the same directory as your html file.
+        if (!this.worker) {
+            this.worker = new Worker('ridgeWorker.js'); // [20200708] TODO: Figure out how to make this inline
+            this.worker.onerror = function(err) { console.log(err.message); };
+            this.worker.onmessage = function(evt) {
+                weights.X = evt.data.X;
+                weights.Y = evt.data.Y;
+            };
+            console.log('initialized worker');
+        }
 
         // Initialize Kalman filter [20200608 xk] what do we do about parameters?
         // [20200611 xk] unsure what to do w.r.t. dimensionality of these matrices. So far at least 
@@ -44329,7 +44347,7 @@ function supports_ogg_theora_video() {
      * @returns {Object}
      */
     webgazer.reg.RidgeRegThreaded.prototype.predict = function(eyesObj) {
-        console.log('LOGGING..');
+        // console.log('LOGGING..');
         if (!eyesObj) {
             return null;
         }
@@ -44350,19 +44368,12 @@ function supports_ogg_theora_video() {
             // Update Kalman model, and get prediction
             var newGaze = [predictedX, predictedY]; // [20200607 xk] Should we use a 1x4 vector?
             newGaze = this.kalman.update(newGaze);
-            console.log('Filtered Predicted X,Y');
-            console.log(newGaze[0]);
-            console.log(newGaze[1]);
     
             return {
                 x: newGaze[0],
                 y: newGaze[1]
             };
         } else {
-            console.log('Predicted X,Y');
-            console.log(predictedX);
-            console.log(predictedY);
-
             return {
                 x: predictedX,
                 y: predictedY
@@ -44859,6 +44870,7 @@ function store_points(x, y, k) {
 
     // View options
     webgazer.params.showVideo = true;
+    webgazer.params.mirrorVideo = true;
     webgazer.params.showFaceOverlay = true;
     webgazer.params.showFaceFeedbackBox = true;
     webgazer.params.showGazeDot = false;
@@ -45277,10 +45289,12 @@ function store_points(x, y, k) {
         for (var reg in regs) {
             regs[reg].setData(loadData);
         }
+
+        console.log("loaded stored data into regression model");
     }
 
    /**
-    * Constructs the global storage object and adds it to local storage
+    * Adds data to localforage
     */
     async function setGlobalData() {
         // Grab data from regression model
@@ -45299,6 +45313,8 @@ function store_points(x, y, k) {
     function clearData() {
         // Removes data from localforage
         localforage.clear();
+
+        // Removes data from regression model
         for (var reg in regs) {
             regs[reg].init();
         }
@@ -45343,16 +45359,18 @@ function store_points(x, y, k) {
         faceOverlay.style.left = leftDist;
 
         // Mirror video feed
-        videoElement.style.setProperty("-moz-transform", "scale(-1, 1)");
-        videoElement.style.setProperty("-webkit-transform", "scale(-1, 1)");
-        videoElement.style.setProperty("-o-transform", "scale(-1, 1)");
-        videoElement.style.setProperty("transform", "scale(-1, 1)");
-        videoElement.style.setProperty("filter", "FlipH");
-        faceOverlay.style.setProperty("-moz-transform", "scale(-1, 1)");
-        faceOverlay.style.setProperty("-webkit-transform", "scale(-1, 1)");
-        faceOverlay.style.setProperty("-o-transform", "scale(-1, 1)");
-        faceOverlay.style.setProperty("transform", "scale(-1, 1)");
-        faceOverlay.style.setProperty("filter", "FlipH");
+        if (webgazer.params.mirrorVideo) {
+            videoElement.style.setProperty("-moz-transform", "scale(-1, 1)");
+            videoElement.style.setProperty("-webkit-transform", "scale(-1, 1)");
+            videoElement.style.setProperty("-o-transform", "scale(-1, 1)");
+            videoElement.style.setProperty("transform", "scale(-1, 1)");
+            videoElement.style.setProperty("filter", "FlipH");
+            faceOverlay.style.setProperty("-moz-transform", "scale(-1, 1)");
+            faceOverlay.style.setProperty("-webkit-transform", "scale(-1, 1)");
+            faceOverlay.style.setProperty("-o-transform", "scale(-1, 1)");
+            faceOverlay.style.setProperty("transform", "scale(-1, 1)");
+            faceOverlay.style.setProperty("filter", "FlipH");
+        }
 
         // Feedback box
         // Lets the user know when their face is in the middle
