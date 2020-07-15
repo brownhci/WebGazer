@@ -1,7 +1,15 @@
 body {
     min-width:600px!important;
 }
-
+#calibrate_button{
+    float: right;
+    font-weight: 700;
+  height: 4rem;
+  line-height: 4rem;
+  margin-left: 10em;
+  margin-top: 10em;
+  font-size: 1rem;
+}
 /* Video Feed Styling */
 #overlay {
     z-index: 1;
