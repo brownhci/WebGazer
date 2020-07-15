@@ -346,13 +346,11 @@
                     }
                 }
                 // GazeDot
-                if (!webgazer.params.showGazeDot) {
-                    webgazer.params.showGazeDot = true;
+                if (webgazer.params.showGazeDot) {
                     gazeDot.style.display = 'block';
                 }
                 gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
             } else {
-                webgazer.params.showGazeDot = false;
                 gazeDot.style.display = 'none';
             }
 
