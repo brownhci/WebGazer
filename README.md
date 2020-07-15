@@ -8,7 +8,7 @@ WebGazer.js is an eye tracking library that uses common webcams to infer the eye
 ## Features
 
 * Real time gaze prediction on most major browsers
-* No special hardware - WebGazer.js uses common webcams
+* No special hardware; WebGazer.js uses your webcam
 * Self-calibration from clicks and cursor movements
 * Easy to integrate with a few lines of JavaScript
 * Swappable components for eye detection
@@ -99,7 +99,7 @@ Your browser needs to support the [getUserMedia](http://caniuse.com/#feat=stream
   * Alexandra Papoutsaki
   * Aaron Gokaslan
   * Ida De Smet
-  * Jack Wong
+  * Xander Koo
   * James Tompkin
   * Jeff Huang
 
@@ -112,11 +112,11 @@ Your browser needs to support the [getUserMedia](http://caniuse.com/#feat=stream
   * Patsorn Sangkloy
   * Elizabeth Stevenson
   * Preston Tunnell Wilson
-  * Xander Koo
+  * jack Wong
 
 ### Acknowledgements
 
-Webgazer is developed based on the research that is done by Brown University. The work of the calibration example file was developed in the context of a course project with the aim to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
+Webgazer is developed based on the research that is done by Brown University, with recent work at Pomona College. The work of the calibration example file was developed in the context of a course project with the aim to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
 
 This research is supported by NSF grants IIS-1464061, IIS-1552663, and the Brown University Salomon Award.
 
@@ -124,4 +124,4 @@ This research is supported by NSF grants IIS-1464061, IIS-1552663, and the Brown
 
 Copyright (C) 2020 [Brown HCI Group](http://hci.cs.brown.edu)
 
-Licensed under GPLv3. Companies have the option to license WebGazer.js under LGPLv3 while their valuation is under $10,000,000.
+Licensed under GPLv3. Companies have the option to license WebGazer.js under LGPLv3 while their valuation is under $1,000,000.
