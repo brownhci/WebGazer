@@ -1,6 +1,6 @@
 WebGazer.js - Scalable browser-based webcam eye tracking
 
-Copyright (C) 2016 Brown HCI Group
+Copyright (C) 2020 Brown HCI Group
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
