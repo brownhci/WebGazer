@@ -60,8 +60,6 @@ The following browsers support WebGazer.js:
   * Opera
   * Safari
 
-Your browser needs to support the [getUserMedia](http://caniuse.com/#feat=stream) and [IndexedDB](https://caniuse.com/#search=indexedDB) API.
-
 ## Publications
 
   _**Note:** The current iteration of WebGazer no longer corresponds with the WebGazer described in the following publications and which can be found [here](https://github.com/brownhci/WebGazer/tree/2a4a70cb49b2d568a09362e1b52fd3bd025cd38d)._
@@ -112,7 +110,7 @@ Your browser needs to support the [getUserMedia](http://caniuse.com/#feat=stream
   * Patsorn Sangkloy
   * Elizabeth Stevenson
   * Preston Tunnell Wilson
-  * jack Wong
+  * Jack Wong
 
 ### Acknowledgements
 
