@@ -96,16 +96,16 @@ function setupCollisionSystem() {
 
 var button_attrs = calibrate_button.getBoundingClientRect()
 var button_rect = {
-	x:button_attrs.x,
-	y:button_attrs.y,
-	width:button_attrs.width,
-	height:button_attrs.height
+  x:button_attrs.x,
+  y:button_attrs.y,
+  width:button_attrs.width,
+  height:button_attrs.height
 }
   canvas.addEventListener('click',function(evt){
-	var mousePos = getMousePos(canvas, evt);
+  var mousePos = getMousePos(canvas, evt);
     if (isInside(mousePos,button_rect)) {
-		finished_calibration = true
-	}
+    finished_calibration = true
+  }
 }) 
 }
 
@@ -128,15 +128,15 @@ function getMousePos(canvas, event) {
 
 
 function get_distance(x1,x2,y1,y2){
-	let x = x1-x2;
-	let y = y1-y2
-	return Math.sqrt(x*x+y*y)
+  let x = x1-x2;
+  let y = y1-y2
+  return Math.sqrt(x*x+y*y)
 }
 var initial_position = false;
 var time_initial_position = 0;
 var webgazerCanvas = null;
 var total_distance = 0;
-
+var last_position = null;
 var collisionEyeListener = async function(data, clock) {
   if(!data)
     return;
@@ -165,20 +165,33 @@ var collisionEyeListener = async function(data, clock) {
   var x = fmPositions[145][0] - data.x;
   var y = fmPositions[145][1] - data.y  
   if (get_distance(initial_dimensions.x, data.x,initial_dimensions.y,data.y) < initial_dimensions.radius){
-  	initial_position = true;
-  	time_initial_position = clock;
+    initial_position = true;
+    time_initial_position = clock;
   }
   else if ((get_distance(destination_dimensions.x, data.x,destination_dimensions.y,data.y) 
-  	< destination_dimensions.radius) & initial_position) {
-  	
-  	var distance = get_distance(destination_dimensions.x, initial_dimensions.x,
-  		destination_dimensions.y,initial_dimensions.y)
-  	initial_position = false;
-  	console.log('speed is', distance/(clock-time_initial_position));
+    < destination_dimensions.radius) & initial_position) {
+    
+    var distance = get_distance(destination_dimensions.x, initial_dimensions.x,
+      destination_dimensions.y,initial_dimensions.y)
+    console.log('speed is', distance/(clock-time_initial_position));
+    console.log('minimum distance is ', distance);
+    console.log('total distance is', total_distance)
+    initial_position = false;
+    total_distance = 0;
+    
+  }
+  else{
+    if (!last_position){
+      last_position = (({ x, y }) => ({ x, y }))(data)
+      return
+    }
+  total_distance += get_distance(last_position.x,data.x,last_position.y,data.y)
+  last_position = (({ x, y }) => ({ x, y }))(data)    
+
   }
   // if (Math.sqrt(distance_to_destination_x*distance_to_destination_x 
-  // 	+ distance_to_destination_y*distance_to_destination_y) < destination_dimensions.radius){
-  // 	
-  // 	console.log(get_distance(destination_dimensions.x,initial_position.x,destination_dimensions.y,initial_position.y))
+  //  + distance_to_destination_y*distance_to_destination_y) < destination_dimensions.radius){
+  //  
+  //  console.log(get_distance(destination_dimensions.x,initial_position.x,destination_dimensions.y,initial_position.y))
   // }
 }
