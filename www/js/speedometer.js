@@ -1,44 +1,67 @@
+import {isInside,getMousePos,get_distance,onload,initial_dimensions,destination_dimensions} from './helpers.js';
+
 window.applyKalmanFilter = true;
 
-window.saveDataAcrossSessions = false;
+window.saveDataAcrossSessions = true;
 
 const collisionSVG = "collisionSVG";
 
-window.onload = async function() {
-
-  if (!window.saveDataAcrossSessions) {
-      var localstorageDataLabel = 'webgazerGlobalData';
-      localforage.setItem(localstorageDataLabel, null);
-      var localstorageSettingsLabel = 'webgazerGlobalSettings';
-      localforage.setItem(localstorageSettingsLabel, null);
+var collisionEyeListener = async function(data, clock) {
+  if(!data)
+    return;
+  if (!webgazerCanvas) {
+    webgazerCanvas = webgazer.getVideoElementCanvas();
   }
 
-  const webgazerInstance = await webgazer.setRegression('ridge') /* currently must set regression and tracker */
-  .setTracker('TFFacemesh')
-  .begin();
-  webgazerInstance.showPredictionPoints(false); /* shows a square every 100 milliseconds where current prediction is */
+  await webgazer.getTracker().getEyePatches(webgazerCanvas, webgazerCanvas.width, webgazerCanvas.height);
+  var fmPositions = await webgazer.getTracker().getPositions();
+  var whr = webgazer.getVideoPreviewToCameraResolutionRatio();
+  var line = d3.select('#eyeline1')
+          .attr("x1",data.x)
+          .attr("y1",data.y)
+          .attr("x2",fmPositions[145][0] * whr[0])
+          .attr("y2",fmPositions[145][1] * whr[1]);
 
-  function checkIfReady() {
-    var feedbackBox = document.getElementById( webgazer.params.faceFeedbackBoxId );
+  var line = d3.select("#eyeline2")
+          .attr("x1",data.x)
+          .attr("y1",data.y)
+          .attr("x2",fmPositions[374][0] * whr[0])
+          .attr("y2",fmPositions[374][1] * whr[1]);
+
+  var dot = d3.select("#predictionSquare")
+            .attr("x",data.x)
+            .attr("y",data.y);
+
+  var x = fmPositions[145][0] - data.x;
+  var y = fmPositions[145][1] - data.y  
+  if (get_distance(initial_dimensions.x, data.x,initial_dimensions.y,data.y) < initial_dimensions.radius){
+    initial_position = true;
+    time_initial_position = clock;
+  }
+  else if ((get_distance(destination_dimensions.x, data.x,destination_dimensions.y,data.y) 
+    < destination_dimensions.radius) & initial_position) {
     
-    if (!webgazer.isReady()) {
-      setTimeout(checkIfReady, 100);
-    }
-    // This isn't strictly necessary, but it makes the DOM easier to read
-    // to have the z draw order reflect the DOM order.
-    else if( typeof(feedbackBox) == 'undefined' || feedbackBox == null ) {
-      setTimeout(checkIfReady, 100);
-    }
-    else
-    {
-      // Add the SVG component on the top of everything.
-      setupCollisionSystem();
-      webgazer.setGazeListener( collisionEyeListener );
-    }
+    var distance = get_distance(data.x, initial_dimensions.x,
+      data.y,initial_dimensions.y)
+    console.log('speed is', distance/(clock-time_initial_position));
+    console.log('minimum distance is ', distance);
+    console.log('total distance is', total_distance)
+    initial_position = false;
+    total_distance = 0;
+    time_initial_position = 0;
+    
   }
+  else{
+    if (!last_position){
+      last_position = (({ x, y }) => ({ x, y }))(data)
+      return
+    }
+  total_distance += get_distance(last_position.x,data.x,last_position.y,data.y)
+  last_position = (({ x, y }) => ({ x, y }))(data)    
+  }
+}
 
-  setTimeout(checkIfReady,100);
-};
+window.onload = onload(setupCollisionSystem(),collisionEyeListener)
 
 window.onbeforeunload = function() {
   if (window.saveDataAcrossSessions) {
@@ -47,9 +70,10 @@ window.onbeforeunload = function() {
       localforage.clear();
   }
 }
-var canvas = ''
-var initial_dimensions = {x:430,y:100,radius:100}
-var destination_dimensions = {x:1730,y:500,radius:100}
+//var canvas = ''
+// var initial_dimensions = {x:430,y:100,radius:100}
+// var destination_dimensions = {x:1730,y:500,radius:100}
+
 function setupCollisionSystem() {
   var width = window.innerWidth;
   var height = window.innerHeight;
@@ -91,8 +115,11 @@ function setupCollisionSystem() {
   .attr("width",5)
   .attr("height",5)
   .attr("fill","red");
-  canvas = document.getElementById('collisionSVG');
-  var calibrate_button = document.getElementById('calibrate_button');
+  
+}
+
+var canvas = document.getElementById('collisionSVG');
+var calibrate_button = document.getElementById('calibrate_button');
 
 var button_attrs = calibrate_button.getBoundingClientRect()
 var button_rect = {
@@ -101,97 +128,16 @@ var button_rect = {
   width:button_attrs.width,
   height:button_attrs.height
 }
-  canvas.addEventListener('click',function(evt){
+canvas.addEventListener('click',function(evt){
   var mousePos = getMousePos(canvas, evt);
     if (isInside(mousePos,button_rect)) {
     finished_calibration = true
   }
 }) 
-}
-
-var last_time = 0;
 var finished_calibration = false;
-
-
-function isInside(pos, rect){
-    return pos.x > rect.x && pos.x < rect.x+rect.width && pos.y < rect.y+rect.height && pos.y > rect.y
-}
-
-function getMousePos(canvas, event) {
-    var rect = canvas.getBoundingClientRect();
-    return {
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top
-    };
-}
-
-
-
-function get_distance(x1,x2,y1,y2){
-  let x = x1-x2;
-  let y = y1-y2
-  return Math.sqrt(x*x+y*y)
-}
 var initial_position = false;
 var time_initial_position = 0;
 var webgazerCanvas = null;
 var total_distance = 0;
 var last_position = null;
-var collisionEyeListener = async function(data, clock) {
-  if(!data)
-    return;
-  if (!webgazerCanvas) {
-    webgazerCanvas = webgazer.getVideoElementCanvas();
-  }
 
-  await webgazer.getTracker().getEyePatches(webgazerCanvas, webgazerCanvas.width, webgazerCanvas.height);
-  var fmPositions = await webgazer.getTracker().getPositions();
-  var whr = webgazer.getVideoPreviewToCameraResolutionRatio();
-  var line = d3.select('#eyeline1')
-          .attr("x1",data.x)
-          .attr("y1",data.y)
-          .attr("x2",fmPositions[145][0] * whr[0])
-          .attr("y2",fmPositions[145][1] * whr[1]);
-
-  var line = d3.select("#eyeline2")
-          .attr("x1",data.x)
-          .attr("y1",data.y)
-          .attr("x2",fmPositions[374][0] * whr[0])
-          .attr("y2",fmPositions[374][1] * whr[1]);
-
-  var dot = d3.select("#predictionSquare")
-            .attr("x",data.x)
-            .attr("y",data.y);
-  var x = fmPositions[145][0] - data.x;
-  var y = fmPositions[145][1] - data.y  
-  if (get_distance(initial_dimensions.x, data.x,initial_dimensions.y,data.y) < initial_dimensions.radius){
-    initial_position = true;
-    time_initial_position = clock;
-  }
-  else if ((get_distance(destination_dimensions.x, data.x,destination_dimensions.y,data.y) 
-    < destination_dimensions.radius) & initial_position) {
-    
-    var distance = get_distance(destination_dimensions.x, initial_dimensions.x,
-      destination_dimensions.y,initial_dimensions.y)
-    console.log('speed is', distance/(clock-time_initial_position));
-    console.log('minimum distance is ', distance);
-    console.log('total distance is', total_distance)
-    initial_position = false;
-    total_distance = 0;
-    
-  }
-  else{
-    if (!last_position){
-      last_position = (({ x, y }) => ({ x, y }))(data)
-      return
-    }
-  total_distance += get_distance(last_position.x,data.x,last_position.y,data.y)
-  last_position = (({ x, y }) => ({ x, y }))(data)    
-
-  }
-  // if (Math.sqrt(distance_to_destination_x*distance_to_destination_x 
-  //  + distance_to_destination_y*distance_to_destination_y) < destination_dimensions.radius){
-  //  
-  //  console.log(get_distance(destination_dimensions.x,initial_position.x,destination_dimensions.y,initial_position.y))
-  // }
-}
