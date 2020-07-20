@@ -5,7 +5,9 @@ window.applyKalmanFilter = true;
 window.saveDataAcrossSessions = true;
 
 const collisionSVG = "collisionSVG";
+function place_objects(data){
 
+}
 var collisionEyeListener = async function(data, clock) {
   if(!data)
     return;
@@ -31,9 +33,6 @@ var collisionEyeListener = async function(data, clock) {
   var dot = d3.select("#predictionSquare")
             .attr("x",data.x)
             .attr("y",data.y);
-
-  var x = fmPositions[145][0] - data.x;
-  var y = fmPositions[145][1] - data.y;  
   if (get_distance(initial_dimensions.x, data.x,initial_dimensions.y,data.y) < initial_dimensions.radius){
     initial_position = true;
     time_initial_position = clock;
@@ -44,12 +43,11 @@ var collisionEyeListener = async function(data, clock) {
     var distance = get_distance(data.x, initial_dimensions.x,
       data.y,initial_dimensions.y)
     var speed_holder = document.getElementById('speed_result')
-    speed_holder.innerHTML = "Speed is: " 
+    var speed_message  = "Speed is: " 
     + String(Math.round(distance/(clock-time_initial_position) * 1000))
     + " pixels/second";
-    console.log('speed is', distance/(clock-time_initial_position));
-    console.log('minimum distance is ', distance);
-    console.log('total distance is', total_distance)
+    var efficiency = "efficiency is " + String(Math.round(100*distance/total_distance)) + "%";
+    speed_holder.innerHTML = speed_message + " " + efficiency;
     initial_position = false;
     total_distance = 0;
     time_initial_position = 0;
@@ -60,8 +58,14 @@ var collisionEyeListener = async function(data, clock) {
       last_position = (({ x, y }) => ({ x, y }))(data)
       return
     }
-  total_distance += get_distance(last_position.x,data.x,last_position.y,data.y)
-  last_position = (({ x, y }) => ({ x, y }))(data)    
+  var distance_traveled = get_distance(last_position.x,data.x,last_position.y,data.y)
+  var new_x = destination_dimensions.x + data.x - (window.innerWidth/2)
+  var new_y = destination_dimensions.y + data.y - (window.innerHeight/2)
+  document.getElementById('start_circle').setAttribute('cx',new_x)
+  document.getElementById('start_circle').setAttribute('cy',new_y)
+  total_distance += distance_traveled
+  last_position = (({ x, y }) => ({ x, y }))(data)
+
   }
 }
 
@@ -94,7 +98,9 @@ function setupCollisionSystem() {
   .attr("r", destination_dimensions.radius)
   .attr("cy",destination_dimensions.y)
   .attr("cx",destination_dimensions.x)
+  .attr('id','start_circle')
   .style("fill", "red")
+
   svg.append("circle")
   .attr("r", initial_dimensions.radius)
   .attr("cy",initial_dimensions.y)
@@ -121,7 +127,6 @@ function setupCollisionSystem() {
   .attr("id","speed_result")
   .attr("x",width/50)
   .attr("y",height-(height/10))
-  .text("test")
   
 }
 
