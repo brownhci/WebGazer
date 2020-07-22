@@ -10,6 +10,7 @@ const collisionSVG = "collisionSVG";
 function place_objects(data){
 }
 let blinks = 0;
+var blink_detector = new webgazer.BlinkDetector();
 var collisionEyeListener = async function(data, clock) {
   if(!data)
     return;
@@ -19,10 +20,11 @@ var collisionEyeListener = async function(data, clock) {
 
   var patches = await webgazer.getTracker().getEyePatches(webgazerCanvas, webgazerCanvas.width, webgazerCanvas.height);
   var fmPositions = await webgazer.getTracker().getPositions();
-  var blink_detector = new webgazer.BlinkDetector();
+  
   var blink_results = blink_detector.detectBlink(patches)
   if (blink_results.left.blink || blink_results.right.blink){
     blinks++;
+    console.log(blinks)
   }
 
 

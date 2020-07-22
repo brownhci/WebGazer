@@ -43905,11 +43905,11 @@ function supports_ogg_theora_video() {
 
     window.webgazer = window.webgazer || {};
 
-    const defaultWindowSize = 8;
+    const defaultWindowSize = 4;
     const equalizeStep = 5;
     const threshold = 80;
-    const minCorrelation = 0.78;
-    const maxCorrelation = 0.85;
+    const minCorrelation = 0.55;//0.78;
+    const maxCorrelation = 0.65;//0.85;
 //testing random stuff
     /**
      * Constructor for BlinkDetector
@@ -43920,6 +43920,8 @@ function supports_ogg_theora_video() {
         //determines number of previous eyeObj to hold onto
         this.blinkWindow = blinkWindow || defaultWindowSize;
         this.blinkData = new webgazer.util.DataWindow(this.blinkWindow);
+        this.blinkWindowIndex = 0;
+
     };
 
     webgazer.BlinkDetector.prototype.extractBlinkData = function(eyesObj) {
@@ -43940,15 +43942,16 @@ function supports_ogg_theora_video() {
 
     webgazer.BlinkDetector.prototype.isBlink = function(oldEye, newEye) {
         let correlation = 0;
-        for (let i = 0; i < this.blinkWindow; i++) {
-            const data = this.blinkData.get(i);
-            const nextData = this.blinkData.get(i + 1);
-            if (!this.isSameEye(data, nextData)) {
-                return false;
-            }
+        for (let i = 0; i < this.blinkWindow-1; i++) {
+            const data = this.blinkData[i];
+            const nextData = this.blinkData[i + 1];
+            // if (!this.isSameEye(data, nextData)) {
+            //     return false;
+            // }
             correlation += webgazer.util.correlation(data.data, nextData.data);
         }
         correlation /= this.blinkWindow;
+        console.log(correlation)
         return correlation > minCorrelation && correlation < maxCorrelation;
     }
 
@@ -43961,16 +43964,24 @@ function supports_ogg_theora_video() {
         if (!eyesObj) {
             return eyesObj;
         }
+        if (this.blinkData.length < this.blinkWindow) {
+            this.blinkData.push(eyesObj);
+            eyesObj.left.blink = false;
+            eyesObj.right.blink = false;
+            return eyesObj;
+        }
 
-        const data = this.extractBlinkData(eyesObj);
-        this.blinkData.push(data);
+        //replace oldest entry - check to see if .data attribute is set above
+        this.blinkData[this.blinkWindowIndex] = this.extractBlinkData(eyesObj);
+        this.blinkWindowIndex = (this.blinkWindowIndex + 1) % this.blinkWindow;
+
 
         eyesObj.left.blink = false;
         eyesObj.right.blink = false;
 
-        if (this.blinkData.length < this.blinkWindow) {
-            return eyesObj;
-        }
+        // if (this.blinkData.length == this.blinkWindow) {
+        //     return eyesObj;
+        // }
 
         if (this.isBlink()) {
             eyesObj.left.blink = true;
