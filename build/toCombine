@@ -9,6 +9,7 @@
 ../src/ridgeReg.js
 ../src/ridgeWeightedReg.js
 ../src/ridgeRegThreaded.js
+../src/blinkDetector.js
 ../src/util.js
 ../src/precision.js
 ../src/webgazer.js
