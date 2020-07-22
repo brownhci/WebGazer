@@ -5,9 +5,11 @@ window.applyKalmanFilter = true;
 window.saveDataAcrossSessions = true;
 
 const collisionSVG = "collisionSVG";
-function place_objects(data){
 
+//stub - fill out later with procedural svg object generator
+function place_objects(data){
 }
+let blinks = 0;
 var collisionEyeListener = async function(data, clock) {
   if(!data)
     return;
@@ -15,8 +17,16 @@ var collisionEyeListener = async function(data, clock) {
     webgazerCanvas = webgazer.getVideoElementCanvas();
   }
 
-  await webgazer.getTracker().getEyePatches(webgazerCanvas, webgazerCanvas.width, webgazerCanvas.height);
+  var patches = await webgazer.getTracker().getEyePatches(webgazerCanvas, webgazerCanvas.width, webgazerCanvas.height);
   var fmPositions = await webgazer.getTracker().getPositions();
+  var blink_detector = new webgazer.BlinkDetector();
+  var blink_results = blink_detector.detectBlink(patches)
+  if (blink_results.left.blink || blink_results.right.blink){
+    blinks++;
+  }
+
+
+
   var whr = webgazer.getVideoPreviewToCameraResolutionRatio();
   var line = d3.select('#eyeline1')
           .attr("x1",data.x)
@@ -49,6 +59,7 @@ var collisionEyeListener = async function(data, clock) {
     var efficiency = "efficiency is " + String(Math.round(100*distance/total_distance)) + "%";
     speed_holder.innerHTML = speed_message + " " + efficiency;
     initial_position = false;
+
     total_distance = 0;
     time_initial_position = 0;
     
