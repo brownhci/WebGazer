@@ -43905,7 +43905,7 @@ function supports_ogg_theora_video() {
 
     window.webgazer = window.webgazer || {};
 
-    const defaultWindowSize = 4;
+    const defaultWindowSize = 8;
     const equalizeStep = 5;
     const threshold = 80;
     const minCorrelation = 0.55;//0.78;
@@ -43951,7 +43951,6 @@ function supports_ogg_theora_video() {
             correlation += webgazer.util.correlation(data.data, nextData.data);
         }
         correlation /= this.blinkWindow;
-        console.log(correlation)
         return correlation > minCorrelation && correlation < maxCorrelation;
     }
 
@@ -43964,18 +43963,26 @@ function supports_ogg_theora_video() {
         if (!eyesObj) {
             return eyesObj;
         }
-        if (this.blinkData.length < this.blinkWindow) {
-            this.blinkData.push(eyesObj);
-            eyesObj.left.blink = false;
-            eyesObj.right.blink = false;
-            return eyesObj;
-        }
+
+        // if (this.blinkData.length < this.blinkWindow) {
+        //     this.blinkData.push(eyesObj);
+        //     eyesObj.left.blink = false;
+        //     eyesObj.right.blink = false;
+        //     return eyesObj;
+        // }
 
         //replace oldest entry - check to see if .data attribute is set above
         this.blinkData[this.blinkWindowIndex] = this.extractBlinkData(eyesObj);
         this.blinkWindowIndex = (this.blinkWindowIndex + 1) % this.blinkWindow;
 
-
+        for (let i=0;i<this.blinkWindow;i++){
+            if (!(this.blinkData[i])){
+                return eyesObj;
+            }
+            else if (!(this.blinkData[i].data)){
+                return eyesObj;
+            }
+        }
         eyesObj.left.blink = false;
         eyesObj.right.blink = false;
 
@@ -43986,6 +43993,7 @@ function supports_ogg_theora_video() {
         if (this.isBlink()) {
             eyesObj.left.blink = true;
             eyesObj.right.blink = true;
+            this.blinkData = new webgazer.util.DataWindow(this.blinkWindow);
         }
 
         return eyesObj;
