@@ -43930,7 +43930,7 @@ function supports_ogg_theora_video() {
         const equalized = webgazer.util.equalizeHistogram(grayscaled, equalizeStep, grayscaled);
         const thresholded = webgazer.util.threshold(equalized, threshold);
         return {
-            data: thresholded,
+            data: eye.patch.data,
             width: eye.width,
             height: eye.height,
         };
