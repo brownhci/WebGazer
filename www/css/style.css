@@ -18,7 +18,12 @@ body {
 #overlay {
     z-index: 1;
 }
-
+#downloadlink, #create{
+    float: right;
+}
+#eye_tracking_data{
+    display:none;
+}
 /* Navbar styling */
 #webgazerNavbar {
     left: 320px;

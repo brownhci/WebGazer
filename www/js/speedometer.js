@@ -44,23 +44,13 @@ var collisionEyeListener = async function(data, clock) {
     if (!blinking){
       blinking = true;
       blinks++;
+      console.log(blinks)
     }
   }
   else{
     blinking = false;
   }
   var fmPositions = await webgazer.getTracker().getPositions();
-  //can be compared to calibrated eye to see if it is open or not.
-   
-
-  
-  // var blink_results = blink_detector.detectBlink(patches)
-  // if (blink_results.left.blink || blink_results.right.blink){
-  //   blinks++;
-  //   console.log(blinks)
-  // }
-
-
 
   var whr = webgazer.getVideoPreviewToCameraResolutionRatio();
   var line = d3.select('#eyeline1')
@@ -129,7 +119,6 @@ function setupCollisionSystem() {
   var width = window.innerWidth;
   var height = window.innerHeight;
 
-  var numberOfNodes = 2;
   var svg = d3.select("body").append("svg")
   .attr("id", collisionSVG)
   .attr("width", width)
