@@ -1,14 +1,18 @@
 body {
     min-width:600px!important;
 }
-#calibrate_button{
+#calibrate_button, #calibrate_blink_button{
     float: right;
     font-weight: 700;
   height: 4rem;
   line-height: 4rem;
   margin-left: 10em;
-  margin-top: 10em;
+  margin-top: 3em;
   font-size: 1rem;
+  display: block;
+}
+#calibrate_blink_button{
+    clear: both;
 }
 /* Video Feed Styling */
 #overlay {

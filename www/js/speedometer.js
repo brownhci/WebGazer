@@ -11,21 +11,54 @@ function place_objects(data){
 }
 let blinks = 0;
 var blink_detector = new webgazer.BlinkDetector();
+var color_sum_open = 0;
+var color_sum_closed = 0;
+var color_sum_open = 0;
+var calibrate_blink_open = true;
+var calibrate_blink_closed = true;
+var blinking = false;
 var collisionEyeListener = async function(data, clock) {
   if(!data)
     return;
   if (!webgazerCanvas) {
     webgazerCanvas = webgazer.getVideoElementCanvas();
   }
-
   var patches = await webgazer.getTracker().getEyePatches(webgazerCanvas, webgazerCanvas.width, webgazerCanvas.height);
-  var fmPositions = await webgazer.getTracker().getPositions();
-  
-  var blink_results = blink_detector.detectBlink(patches)
-  if (blink_results.left.blink || blink_results.right.blink){
-    blinks++;
-    console.log(blinks)
+  var eye_color_sum = patches.right.patch.data.reduce((a, b) => a + b, 0);
+  if (!calibrate_blink_closed){
+    await new Promise(r => setTimeout(r, 1000));
+    color_sum_closed = eye_color_sum
+    calibrate_blink_open = false;
+    calibrate_blink_closed = true;
+    console.log('closed',color_sum_closed)
+    await new Promise(r => setTimeout(r, 3000));
+    return
   }
+  if (!calibrate_blink_open){
+    //TO-DO add error detection if color_sums aren't significantly different
+    color_sum_open = eye_color_sum
+    calibrate_blink_open = true;
+    console.log('open',color_sum_open)
+  }
+  if (eye_color_sum - color_sum_open < color_sum_closed - eye_color_sum){
+    if (!blinking){
+      blinking = true;
+      blinks++;
+    }
+  }
+  else{
+    blinking = false;
+  }
+  var fmPositions = await webgazer.getTracker().getPositions();
+  //can be compared to calibrated eye to see if it is open or not.
+   
+
+  
+  // var blink_results = blink_detector.detectBlink(patches)
+  // if (blink_results.left.blink || blink_results.right.blink){
+  //   blinks++;
+  //   console.log(blinks)
+  // }
 
 
 
@@ -145,7 +178,7 @@ function setupCollisionSystem() {
 
 var canvas = document.getElementById('collisionSVG');
 var calibrate_button = document.getElementById('calibrate_button');
-
+var calibrate_blink_button = document.getElementById('calibrate_blink_button');
 var button_attrs = calibrate_button.getBoundingClientRect()
 var button_rect = {
   x:button_attrs.x,
@@ -153,10 +186,23 @@ var button_rect = {
   width:button_attrs.width,
   height:button_attrs.height
 }
+
+var button_blink_attrs = calibrate_blink_button.getBoundingClientRect()
+var button_blink_rect = {
+  x:button_blink_attrs.x,
+  y:button_blink_attrs.y,
+  width:button_blink_attrs.width,
+  height:button_blink_attrs.height
+}
+
 canvas.addEventListener('click',function(evt){
   var mousePos = getMousePos(canvas, evt);
     if (isInside(mousePos,button_rect)) {
     finished_calibration = true
+  }
+  else if (isInside(mousePos,button_blink_rect)){
+    calibrate_blink_closed = false;
+    //can display message to user about how long to close eyes
   }
 }) 
 var finished_calibration = false;
