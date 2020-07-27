@@ -18,10 +18,7 @@ var time_initial = 0;
 var last_position = null;
 
 
-
-
-
-var base_left_eye_dist, closed_left_eye_dist;
+var open_left_eye_dist, closed_left_eye_dist;
 var EyeListener = async function(data, clock) {
   if(!data)
     return;
@@ -33,33 +30,41 @@ var EyeListener = async function(data, clock) {
   var eye_color_sum = patches.right.patch.data.reduce((a, b) => a + b, 0);
   //other potential way of getting blink - compare distance between top and bottom of eye
   var fmPositions = await webgazer.getTracker().getPositions();
-  //var base_left_eye_dist = fmPositions[23][1] - fmPositions[145][1]
-  //user has a second to close eyes, then at beep they should open them.
+  //var 
+  //user has two seconds to close eyes, then at beep they should open them.
   if (!calibrate_blink_closed){
-    await new Promise(r => setTimeout(r, 1000));
+  	calibrate_blink_closed = true;
+    await new Promise(r => setTimeout(r, 2000));
+    
+    document.getElementById('closed_downloadphoto').href = document.getElementById('webgazerVideoCanvas').toDataURL('image/png');
+    closed_left_eye_dist = fmPositions[23][1] - fmPositions[145][1]
     color_sum_closed = eye_color_sum;
     document.getElementById('eye_tracking_data').innerHTML += " color_sum_closed " + String(color_sum_closed);
-    base_left_eye_dist = fmPositions[23][1] - fmPositions[145][1]
-    calibrate_blink_open = false;
-    calibrate_blink_closed = true;
-    console.log('closed',color_sum_closed)
+    
+    //console.log('closed',color_sum_closed)
     beep();
-    await new Promise(r => setTimeout(r, 3000));
+    await new Promise(r => setTimeout(r, 3000))
+    calibrate_blink_open = false;
+    
     return
   }
-  if (!calibrate_blink_open){
+  else if (!calibrate_blink_open){
     //TO-DO add error detection if color_sums aren't significantly different - figure out how to
     //prevent this from being called multiple times
     color_sum_open = eye_color_sum
-    closed_left_eye_dist = fmPositions[23][1] - fmPositions[145][1]
+    document.getElementById('open_downloadphoto').href = document.getElementById('webgazerVideoCanvas').toDataURL('image/png');
+    open_left_eye_dist = fmPositions[23][1] - fmPositions[145][1]
+    
+    //console.log('open',color_sum_open)
+    document.getElementById('eye_tracking_data').innerHTML += "color_eye_open " + String(color_sum_open) + '<br>';
+    await new Promise(r => setTimeout(r, 3000));
     calibrate_blink_open = true;
-    console.log('open',color_sum_open)
-    document.getElementById('eye_tracking_data').innerHTML += "color_eye_open " + String(color_sum_open);
   }
   if (eye_color_sum - color_sum_open < color_sum_closed - eye_color_sum){
     if (!blinking){
       blinking = true;
       blinks++;
+      console.log("eye distance =" + String(fmPositions[23][1] - fmPositions[145][1]));
     }
   }
   else{
@@ -92,7 +97,7 @@ var EyeListener = async function(data, clock) {
   	var today = new Date();
   	document.getElementById('eye_tracking_data').innerHTML += checkTime(today.getHours()) + ":" + checkTime(today.getMinutes())
   	document.getElementById('eye_tracking_data').innerHTML += " minute blinks is "+ String(blinks) + 
-  		" distance is " + String(total_distance) + "<br>";
+  		" distance is " + String(Math.round(total_distance)) + "<br>";
   	blinks = 0;
   	total_distance = 0;
   	time_initial = 0;
