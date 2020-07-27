@@ -16,6 +16,14 @@ var calibrate_blink_closed = true;
 var blinking = false;
 var time_initial = 0;
 var last_position = null;
+var config = {
+  container: document.getElementById('heatmap'),
+  radius: 10,
+  maxOpacity: .5,
+  minOpacity: 0,
+  blur: .75
+};
+var heatmap = h337.create(config)
 
 
 var open_left_eye_dist, closed_left_eye_dist;
@@ -30,8 +38,7 @@ var EyeListener = async function(data, clock) {
   var eye_color_sum = patches.right.patch.data.reduce((a, b) => a + b, 0);
   //other potential way of getting blink - compare distance between top and bottom of eye
   var fmPositions = await webgazer.getTracker().getPositions();
-  //var 
-  //user has two seconds to close eyes, then at beep they should open them.
+  //user has 1.5 seconds to close eyes, then at beep they should open them.
   if (!calibrate_blink_closed){
   	calibrate_blink_closed = true;
     await new Promise(r => setTimeout(r, 1500));
@@ -39,9 +46,7 @@ var EyeListener = async function(data, clock) {
     document.getElementById('closed_downloadphoto').href = document.getElementById('webgazerVideoCanvas').toDataURL('image/png');
     closed_left_eye_dist = patches.left.height//fmPositions[23][1] - fmPositions[223][1]
     color_sum_closed = eye_color_sum;
-    document.getElementById('eye_tracking_data').innerHTML += " color_sum_closed " + String(color_sum_closed);
-    
-    //console.log('closed',color_sum_closed)
+    document.getElementById('eye_tracking_data').innerHTML += "color_sum_closed " + String(color_sum_closed) +'<br>';
     beep();
     await new Promise(r => setTimeout(r, 3000))
     calibrate_blink_open = false;
@@ -55,7 +60,6 @@ var EyeListener = async function(data, clock) {
     document.getElementById('open_downloadphoto').href = document.getElementById('webgazerVideoCanvas').toDataURL('image/png');
     open_left_eye_dist = patches.left.height
     
-    //console.log('open',color_sum_open)
     document.getElementById('eye_tracking_data').innerHTML += "color_eye_open " + String(color_sum_open) + '<br>';
     await new Promise(r => setTimeout(r, 3000));
     calibrate_blink_open = true;
@@ -70,17 +74,6 @@ var EyeListener = async function(data, clock) {
   else{
     blinking = false;
   }
-  // if ((fmPositions[23][1] - fmPositions[145][1]) - base_left_eye_dist < (fmPositions[23][1] - fmPositions[145][1]) 
-  // 	- closed_left_eye_dist  ) {
-  // 	if (!blinking){
-	 //      blinking = true;
-	 //      blinks++;
-	 //      console.log("blinked " + String(blinks) + " times")
-	 //    }
-	 //  }
-  // else{
-  //   blinking = false;
-  // }
   
   if (time_initial == 0){
   	time_initial = clock;
@@ -103,6 +96,7 @@ var EyeListener = async function(data, clock) {
   	time_initial = 0;
   	console.log('minute passed')
   }
+  heatmap.addData({x:data.x,y:data.y,value:1})
 }
 
 function setup(){
@@ -118,6 +112,8 @@ function setup(){
   .style("margin","0px")
   .style("position","absolute")
   .style("z-index", 100000);
+
+  
 }
 
 var textFile = null;

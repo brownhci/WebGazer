@@ -20,6 +20,7 @@ module.exports = function(grunt) {
 			dist: {
 				nonull: true,
 				src: [
+					'dependencies/heatmap.js',
 					'dependencies/localforage.min.js',
 					'dependencies/numeric-1.2.6.min.js',
 					'dependencies/tensorflow/tfjs-core.js',
