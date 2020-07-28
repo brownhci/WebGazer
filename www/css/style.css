@@ -1,19 +1,15 @@
 body {
     min-width:600px!important;
 }
-#heatmap_holder{
-    float: right;
-    width: 100%;
-    height: 100%;
-}
+
 #heatmap{
-    float: right;
     width: 100%;
       height: 100%;
   min-height: 100vh;
+  visibility: hidden;
 
 }
-#calibrate_button, #calibrate_blink_button, #create{
+#calibrate_button, #calibrate_blink_button, #create, #see_heatmap{
     float: right;
     font-weight: 700;
   height: 4rem;
@@ -23,7 +19,7 @@ body {
   font-size: 1rem;
   display: block;
 }
-#calibrate_blink_button, #create{
+#calibrate_blink_button, #create, #see_heatmap{
     clear: both;
 }
 /* Video Feed Styling */

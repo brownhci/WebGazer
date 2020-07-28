@@ -145,6 +145,7 @@ var total_distance = 0;
 var canvas = document.getElementById('collisionSVG');
 var calibrate_blink_button = document.getElementById('calibrate_blink_button');
 var create = document.getElementById('create');
+var heat_map = document.getElementById('see_heatmap');
 var button_blink_attrs = calibrate_blink_button.getBoundingClientRect()
 var button_blink_rect = {
   x:button_blink_attrs.x,
@@ -160,6 +161,15 @@ var button_download_rect = {
   height:button_download_attrs.height
 }
 
+var button_heatmap_attrs = heat_map.getBoundingClientRect()
+var button_heatmap_rect = {
+  x:button_heatmap_attrs.x,
+  y:button_heatmap_attrs.y,
+  width:button_heatmap_attrs.width,
+  height:button_heatmap_attrs.height
+}
+
+
 canvas.addEventListener('click',function(evt){
   var mousePos = getMousePos(canvas, evt);
   if (isInside(mousePos,button_blink_rect)){
@@ -173,6 +183,10 @@ canvas.addEventListener('click',function(evt){
   	eye_tracking_data_text = eye_tracking_data_text.replace(/<br>/g,"\n")
     link.href = makeTextFile(eye_tracking_data_text);
     document.getElementById('downloadlink').click()
+  }
+  else if (isInside(mousePos,button_heatmap_rect)){
+  	var see_heatmap = document.getElementById('see_heatmap');
+  	see_heatmap.style.visibility = 'visible';
   }
 })
 
