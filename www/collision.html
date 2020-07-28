@@ -5,8 +5,8 @@
 </head>
 <body>
   <script src="https://d3js.org/d3.v3.min.js"></script>
-  
-  <script src="./webgazer.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.8.1/localforage.js"></script>
+  <script src="./node_modules/webgazer.js/dist/webgazer.var.js"></script>
 
   <script>
 
@@ -36,7 +36,7 @@
 
     function checkIfReady() {
       var feedbackBox = document.getElementById( webgazer.params.faceFeedbackBoxId );
-      
+
       if (!webgazer.isReady()) {
         setTimeout(checkIfReady, 100);
       }
@@ -174,7 +174,7 @@
   var collisionEyeListener = async function(data, clock) {
     if(!data)
       return;
-    
+
     nodes[0].px = data.x;
     nodes[0].py = data.y;
     force.resume();

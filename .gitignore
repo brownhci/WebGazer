@@ -31,3 +31,5 @@ node_modules/
 www/node_modules/
 build/webgazer.js
 build/webgazer.min.js
+.idea/
+dist/

@@ -5,15 +5,57 @@
     "type": "git",
     "url": "https://github.com/brownhci/WebGazer.git"
   },
-  "devDependencies": {
-    "git": "^0.1.5",
-    "grunt": "*",
-    "grunt-contrib-concat": "*",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-uglify-es": "*",
-    "jsdoc": "^3.6.3"
+  "scripts": {
+    "lint": "eslint .",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "build": "webpack --progress --colors --config webpack.config.js --mode=production",
+    "prerelease": "npm run lint && npm test && npm run build"
   },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "keywords": [
+    "webgazer"
+  ],
   "dependencies": {
-    "mime": "^2.4.3"
+    "@tensorflow-models/facemesh": "0.0.3",
+    "@tensorflow/tfjs-backend-webgl": "2.0.1",
+    "@tensorflow/tfjs-converter": "2.0.1",
+    "@tensorflow/tfjs-core": "2.0.1",
+    "localforage": "1.7.3",
+    "numeric": "1.2.6",
+    "regression": "2.0.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.4.4",
+    "@babel/core": "7.4.5",
+    "babel-loader": "8.1.0",
+    "@babel/plugin-external-helpers": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "7.4.4",
+    "@babel/plugin-syntax-class-properties": "^7.2.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.5.5",
+    "@babel/preset-env": "7.4.5",
+    "@babel/preset-flow": "7.0.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-eslint": "10.0.2",
+    "eslint": "6.0.0",
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-config-prettier": "5.0.0",
+    "eslint-plugin-flowtype": "3.10.5",
+    "eslint-plugin-flowtype-errors": "4.1.0",
+    "eslint-plugin-import": "2.17.3",
+    "eslint-plugin-prettier": "3.1.0",
+    "lint-staged": "8.2.1",
+    "parallel-webpack": "2.6.0",
+    "prettier": "1.18.2",
+    "rimraf": "2.6.3",
+    "standard-version": "6.0.1",
+    "webpack": "4.44.0",
+    "webpack-cli": "3.3.12"
   }
 }

@@ -3,12 +3,12 @@
 console.log('thread starting');
 
 // Add src/util.js and src/mat.js to the same directory as your html file
-importScripts('./util.js', './mat.js'); // [20200708] Figure out how to make all of this wrap up neatly
+importScripts('./worker_scripts/util.js', './worker_scripts/mat.js'); // [20200708] Figure out how to make all of this wrap up neatly
 var ridgeParameter = Math.pow(10,-5);
 var resizeWidth = 10;
 var resizeHeight = 6;
 var dataWindow = 700;
-var trailDataWindow = 10; 
+var trailDataWindow = 10;
 var trainInterval = 500;
 
 var screenXClicksArray = new self.webgazer.util.DataWindow(dataWindow);
@@ -57,7 +57,7 @@ function ridge(y, X, k){
                 m_Coefficients[i] = solution[i][0];
             }
             success = true;
-        } 
+        }
         catch (ex){
             k *= 10;
             console.log(ex);
@@ -126,7 +126,7 @@ function retrain() {
     var eyeFeatures = self.eyeFeaturesClicks.data.concat(self.eyeFeaturesTrail.data);
 
     var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
-    var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter); 
+    var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter);
     self.postMessage({'X':coefficientsX, 'Y': coefficientsY});
     self.needsTraining = false;
 }
