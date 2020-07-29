@@ -2,6 +2,7 @@ import '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-converter';
 import '@tensorflow/tfjs-backend-webgl';
 import 'regression';
+import params from './params';
 import './utils2';
 import './precision';
 import localforage from 'localforage';
@@ -34,7 +35,7 @@ webgazer.reg = Reg;
 webgazer.reg.RidgeWeightedReg = ridgeRegWeighted.RidgeWeightedReg;
 webgazer.reg.RidgeRegThreaded = ridgeRegThreaded.RidgeRegThreaded;
 webgazer.util = util;
-webgazer.params = webgazer.params || {};
+webgazer.params = params;
 
 //PRIVATE VARIABLES
 
@@ -45,37 +46,11 @@ var videoElementCanvas = null;
 var faceOverlay = null;
 var faceFeedbackBox = null;
 var gazeDot = null;
-webgazer.params.videoElementId = 'webgazerVideoFeed';
-webgazer.params.videoElementCanvasId = 'webgazerVideoCanvas';
-webgazer.params.faceOverlayId = 'webgazerFaceOverlay';
-webgazer.params.faceFeedbackBoxId = 'webgazerFaceFeedbackBox';
-webgazer.params.gazeDotId = 'webgazerGazeDot'
-
-webgazer.params.videoViewerWidth = 320;
-webgazer.params.videoViewerHeight = 240;
-
-webgazer.params.faceFeedbackBoxRatio = 0.66;
-
-// View options
-webgazer.params.showVideo = true;
-webgazer.params.mirrorVideo = true;
-webgazer.params.showFaceOverlay = true;
-webgazer.params.showFaceFeedbackBox = true;
-webgazer.params.showGazeDot = false;
-
-//Params to clmtrackr and getUserMedia constraints
-webgazer.params.clmParams = webgazer.params.clmParams || {useWebGL : true};
-webgazer.params.camConstraints = webgazer.params.camConstraints || { video: { width: { min: 320, ideal: 640, max: 1920 }, height: { min: 240, ideal: 480, max: 1080 }, facingMode: "user" } };
-
-webgazer.params.smoothEyeBB = webgazer.params.smoothEyeBB || false;
-// webgazer.params.blinkDetectionOn = webgazer.params.blinkDetectionOn || false;
-
 // Why is this not in webgazer.params ?
 var debugVideoLoc = '';
 
 // loop parameters
 var clockStart = performance.now();
-webgazer.params.dataTimestep = 50;
 var latestEyeFeatures = null;
 var latestGazeData = null;
 var paused = false;
@@ -89,8 +64,6 @@ var eventTypes = ['click', 'move'];
 
 //movelistener timeout clock parameters
 var moveClock = performance.now();
-webgazer.params.moveTickSize = 50; //milliseconds
-
 //currently used tracker and regression models, defaults to clmtrackr and linear regression
 var curTracker = new webgazer.tracker.TFFaceMesh();
 var regs = [new webgazer.reg.RidgeReg()];
@@ -208,13 +181,6 @@ function checkEyesInValidationBox() {
   }
   else
     faceFeedbackBox.style.border = 'solid black';
-}
-
-/**
- * Alerts the user of the cursor position, used for debugging & testing
- */
-function checkCursor(){ //used to test
-  alert("Cursor at: " + cursorX + ", " + cursorY);
 }
 
 /**
@@ -669,20 +635,21 @@ webgazer.begin = function(onFail) {
 
   // Request webcam access under specific constraints
   // WAIT for access
-  (async () => {
+  return new Promise(async (resolve, reject) => {
     let videoStream;
     try {
       videoStream = await navigator.mediaDevices.getUserMedia( webgazer.params.camConstraints );
-      init(videoStream);
+      if (webgazer.params.showVideoPreview) {
+        init(videoStream);
+      }
+      resolve(webgazer);
     } catch(err) {
       onFail();
-      console.log( err );
       videoElement = null;
       videoStream = null;
-      return null;
+      reject(err);
     }
-  })();
-  return webgazer;
+  });
 };
 
 

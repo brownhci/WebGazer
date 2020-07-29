@@ -20,15 +20,8 @@ window.onload = function() {
         canvas.height = window.innerHeight;
         canvas.style.position = 'fixed';
     };
+    setup();
 
-    function checkIfReady() {
-        if (webgazer.isReady()) {
-            setup();
-        } else {
-            setTimeout(checkIfReady, 100);
-        }
-    }
-    setTimeout(checkIfReady,100);
 };
 
 // Kalman Filter defaults to on. Can be toggled by user.

@@ -5,6 +5,7 @@
     "type": "git",
     "url": "https://github.com/brownhci/WebGazer.git"
   },
+  "main": "dist/webgazer.commonjs2.js",
   "scripts": {
     "lint": "eslint .",
     "clean": "rimraf dist",
@@ -12,6 +13,11 @@
     "build": "webpack --progress --colors --config webpack.config.js --mode=production",
     "prerelease": "npm run lint && npm test && npm run build"
   },
+  "files": [
+    "dist",
+    "src",
+    "dist/webgazer.min.js"
+  ],
   "lint-staged": {
     "*.js": [
       "eslint --fix",
