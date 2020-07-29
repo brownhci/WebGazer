@@ -24,7 +24,7 @@ var config = {
   blur: .75
 };
 var heatmap = h337.create(config)
-
+var heatmap_data = []
 
 var open_left_eye_dist, closed_left_eye_dist;
 var EyeListener = async function(data, clock) {
@@ -96,7 +96,16 @@ var EyeListener = async function(data, clock) {
   	time_initial = 0;
   	console.log('minute passed')
   }
-  heatmap.addData({x:data.x,y:data.y,value:1})
+  var datum = {x:data.x,y:data.y,value:1}
+  for(let i=0;i<heatmap_data.length;i++){
+  	if(heatmap_data.x==datum.x && heatmap_data==datum.y){
+  		datum.value = heatmap_data.value+1;
+  		console.log("found match at ")
+  		console.log(datum)
+  	}
+  }
+  heatmap_data.push(datum)
+  heatmap.addData(datum)
 }
 
 function setup(){
@@ -185,7 +194,7 @@ canvas.addEventListener('click',function(evt){
     document.getElementById('downloadlink').click()
   }
   else if (isInside(mousePos,button_heatmap_rect)){
-  	var see_heatmap = document.getElementById('see_heatmap');
+  	var see_heatmap = document.getElementById('heatmap');
   	see_heatmap.style.visibility = 'visible';
   }
 })
