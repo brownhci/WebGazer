@@ -83,8 +83,6 @@
     };
     var regressionMap = {
         'ridge': function() { return new webgazer.reg.RidgeReg(); },
-        'weightedRidge': function() { return new webgazer.reg.RidgeWeightedReg(); },
-        'threadedRidge': function() { return new webgazer.reg.RidgeRegThreaded(); },
     };
 
     //localstorage name
