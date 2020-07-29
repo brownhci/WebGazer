@@ -18,6 +18,11 @@
     "src",
     "dist/webgazer.min.js"
   ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run build"
+    }
+  },
   "lint-staged": {
     "*.js": [
       "eslint --fix",
@@ -32,6 +37,7 @@
     "@tensorflow/tfjs-backend-webgl": "2.0.1",
     "@tensorflow/tfjs-converter": "2.0.1",
     "@tensorflow/tfjs-core": "2.0.1",
+    "husky": "^4.2.5",
     "localforage": "1.7.3",
     "numeric": "1.2.6",
     "regression": "2.0.1"
