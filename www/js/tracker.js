@@ -155,6 +155,15 @@ var canvas = document.getElementById('collisionSVG');
 var calibrate_blink_button = document.getElementById('calibrate_blink_button');
 var create = document.getElementById('create');
 var heat_map = document.getElementById('see_heatmap');
+var calibrate_button = document.getElementById('calibrate_button');
+var calibrate_button_attrs = calibrate_button.getBoundingClientRect()
+var calibrate_button_rect = {
+  x:calibrate_button_attrs.x,
+  y:calibrate_button_attrs.y,
+  width:calibrate_button_attrs.width,
+  height:calibrate_button_attrs.height
+}
+
 var button_blink_attrs = calibrate_blink_button.getBoundingClientRect()
 var button_blink_rect = {
   x:button_blink_attrs.x,
@@ -184,6 +193,9 @@ canvas.addEventListener('click',function(evt){
   if (isInside(mousePos,button_blink_rect)){
     calibrate_blink_closed = false;
     
+  }
+  else if (isInside(mousePos,calibrate_button_rect)){
+  	webgazer.removeMouseEventListeners()
   }
   //can display message to user about how long to close eyes
   else if (isInside(mousePos,button_download_rect)){
