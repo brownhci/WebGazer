@@ -28,7 +28,7 @@
         var localstorageSettingsLabel = 'webgazerGlobalSettings';
         localforage.setItem(localstorageSettingsLabel, null);
     }
-
+    webgazer.params.showVideoPreview = true;
     const webgazerInstance = await webgazer.setRegression('ridge') /* currently must set regression and tracker */
     .setTracker('TFFacemesh')
     .begin();

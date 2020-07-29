@@ -1,5 +1,6 @@
 window.onload = function() {
 
+    webgazer.params.showVideoPreview = true;
     //start the webgazer tracker
     webgazer.setRegression('ridge') /* currently must set regression and tracker */
         //.setTracker('clmtrackr')
