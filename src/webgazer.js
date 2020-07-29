@@ -24,8 +24,6 @@
     var faceOverlay = null;
     var faceFeedbackBox = null;
     var gazeDot = null;
-    
-
     webgazer.params.videoElementId = 'webgazerVideoFeed';
     webgazer.params.videoElementCanvasId = 'webgazerVideoCanvas';
     webgazer.params.faceOverlayId = 'webgazerFaceOverlay';
@@ -75,7 +73,7 @@
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
     var curTracker = new webgazer.tracker.TFFaceMesh();
     var regs = [new webgazer.reg.RidgeReg()];
-    var blinkDetector = new webgazer.BlinkDetector();
+    // var blinkDetector = new webgazer.BlinkDetector();
 
     //lookup tables
     var curTrackerMap = {
