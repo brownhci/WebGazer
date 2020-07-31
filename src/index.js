@@ -3,7 +3,7 @@ import '@tensorflow/tfjs-converter';
 import '@tensorflow/tfjs-backend-webgl';
 import 'regression';
 import params from './params';
-import './utils2';
+import './dom_util';
 import './precision';
 import localforage from 'localforage';
 import TFFaceMesh from './facemesh';

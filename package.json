@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
+    "dev": "webpack --progress --colors --config webpack.config.js --mode=development",
     "build": "webpack --progress --colors --config webpack.config.js --mode=production",
     "prerelease": "npm run lint && npm test && npm run build"
   },
