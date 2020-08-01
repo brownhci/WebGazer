@@ -1,7 +1,6 @@
 
 console.log('thread starting');
-//importScripts('../src/util.js', '../src/mat.js');
-@import "src/mat.js"
+importScripts('../src/worker_scripts/util.js', '../src/worker_scripts/mat.js');
 var ridgeParameter = Math.pow(10,-5);
 var resizeWidth = 10;
 var resizeHeight = 6;

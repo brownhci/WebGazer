@@ -1,4 +1,4 @@
-import * as numeric from 'numeric';
+import numeric from 'numeric';
 import mat from './mat';
 import util from './util';
 import params from './params';

@@ -1,4 +1,4 @@
-import { load } from '@tensorflow-models/facemesh';
+import FacemeshModel from '@tensorflow-models/facemesh';
 /**
  * Constructor of TFFaceMesh object
  * @constructor
@@ -8,7 +8,7 @@ const TFFaceMesh = function() {
   //For recent laptops WASM is better than WebGL.
   //TODO: This hack makes loading the model block the UI. We should fix that
   // this.model = (async () => { return await facemesh.load({"maxFaces":1}) })();
-  this.model = load({"maxFaces":1});
+  this.model = FacemeshModel.load({"maxFaces":1});
   this.predictionReady = false;
 };
 

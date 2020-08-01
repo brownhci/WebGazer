@@ -1,6 +1,5 @@
-import '@tensorflow/tfjs-core';
+import '@tensorflow/tfjs';
 import '@tensorflow/tfjs-converter';
-import '@tensorflow/tfjs-backend-webgl';
 import 'regression';
 import params from './params';
 import './dom_util';

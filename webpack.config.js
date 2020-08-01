@@ -10,22 +10,25 @@ const bannerString =`
 
 function createConfig(options) {
   return {
-    entry: './src/index.js',
+    entry: './src/index.mjs',
     output: {
       filename: `webgazer.${options.target}.js`,
       library: 'webgazer',
       libraryTarget: options.target,
       libraryExport: 'default',
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, 'dist2'),
     },
     module: {
       rules: [
         {
-          test: /\.js$/,
-          exclude: /(node_modules)/,
-          use: 'babel-loader'
+          test: /\.mjs$/,
+          type: 'javascript/esm',
+          exclude: /node_modules/
         }
       ]
+    },
+    resolve: {
+      extensions: [".mjs", ".webpack.js", ".web.js", ".js", ".json"]
     },
     plugins: [
       new webpack.BannerPlugin(bannerString),
@@ -34,5 +37,5 @@ function createConfig(options) {
   };
 }
 module.exports = createVariants({
-  target: ['var', 'commonjs2', 'umd', 'amd']
+  target: ['var','commonjs2']
 }, createConfig);

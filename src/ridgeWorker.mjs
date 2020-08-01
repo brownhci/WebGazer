@@ -2,8 +2,8 @@
 
 console.log('thread starting');
 
-// Add src/util.js and src/mat.js to the same directory as your html file
-importScripts('./worker_scripts/util.js', './worker_scripts/mat.js'); // [20200708] Figure out how to make all of this wrap up neatly
+// Add src/util.mjs and src/mat.mjs to the same directory as your html file
+importScripts('./worker_scripts/util.mjs', './worker_scripts/mat.mjs'); // [20200708] Figure out how to make all of this wrap up neatly
 var ridgeParameter = Math.pow(10,-5);
 var resizeWidth = 10;
 var resizeHeight = 6;

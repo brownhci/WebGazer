@@ -1,6 +1,6 @@
 import mat from './mat';
 import util from './util';
-import * as numeric from 'numeric';
+import numeric from 'numeric';
 
 const reg = {};
 
