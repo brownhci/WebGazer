@@ -48,7 +48,7 @@ To run the example files as a server:
 	cd www
 	npm install
 	# Run the webpage index.html as a server
-	browser-sync start --server --files "*"
+	npm run serve
 
 ## Browser Support
 

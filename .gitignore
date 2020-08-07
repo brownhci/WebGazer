@@ -31,8 +31,5 @@ node_modules/
 www/node_modules/
 build/webgazer.js
 build/webgazer.min.js
-www/data/src/WebGazerETRA2018Dataset_Release20180420/
-www/data/src/P*/
-www/data/FramesDataset/
-*/participant_characteristics.csv
-*__pycache__/
+.idea/
+dist2/
