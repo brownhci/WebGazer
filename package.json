@@ -9,7 +9,7 @@
   "main": "dist2/webgazer.commonjs2.js",
   "module": "src/index.mjs",
   "scripts": {
-    "clean": "rimraf dist2",
+    "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "dev": "webpack --progress --colors --config webpack.config.js --mode=development",
     "build": "webpack --progress --colors --config webpack.config.js --mode=production"

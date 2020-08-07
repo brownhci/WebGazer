@@ -16,7 +16,7 @@ function createConfig(options) {
       library: 'webgazer',
       libraryTarget: options.target,
       libraryExport: 'default',
-      path: path.resolve(__dirname, 'dist2'),
+      path: path.resolve(__dirname, 'dist'),
     },
     module: {
       rules: [

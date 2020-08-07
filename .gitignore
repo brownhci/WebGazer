@@ -32,6 +32,5 @@ www/node_modules/
 build/webgazer.js
 build/webgazer.min.js
 .idea/
-dist/webgazer.var.js.map
-dist/webgazer.commonjs2.js.map
+dist/
 dist2/
