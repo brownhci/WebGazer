@@ -1,1 +1,1 @@
-www/webgazer.js
+../../webgazer.js
