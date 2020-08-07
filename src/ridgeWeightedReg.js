@@ -64,7 +64,7 @@
      * @param {Object} eyes - The eyes where looking for gray histogram
      * @returns {Array.<T>} The eyes gray level histogram
      */
-    function getEyeFeats(eyes) {
+    webgazer.reg.RidgeReg.prototype.init.getEyeFeats = function(eyes) {
         var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
         var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
@@ -179,13 +179,13 @@
             this.screenXClicksArray.push([screenPos[0]]);
             this.screenYClicksArray.push([screenPos[1]]);
 
-            this.eyeFeaturesClicks.push(getEyeFeats(eyes));
+            this.eyeFeaturesClicks.push(this.getEyeFeats(eyes));
             this.dataClicks.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         } else if (type === 'move') {
             this.screenXTrailArray.push([screenPos[0]]);
             this.screenYTrailArray.push([screenPos[1]]);
 
-            this.eyeFeaturesTrail.push(getEyeFeats(eyes));
+            this.eyeFeaturesTrail.push(this.getEyeFeats(eyes));
             this.trailTimes.push(performance.now());
             this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         }
@@ -249,7 +249,7 @@
         var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
         var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter);
 
-        var eyeFeats = getEyeFeats(eyesObj);
+        var eyeFeats = this.getEyeFeats(eyesObj);
         var predictedX = 0;
         for(var i=0; i< eyeFeats.length; i++){
             predictedX += eyeFeats[i] * coefficientsX[i];
