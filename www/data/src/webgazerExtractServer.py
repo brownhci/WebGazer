@@ -354,7 +354,6 @@ def writeDataToCSV( p, msg ):
     del out['msgID']
     out['participant'] = p.directory
     pv = p.videos[p.videosPos]
-    ()
     out['frameImageFile'] = pv.frameFilesList[ pv.frameFilesPos ]
     
     out["tobiiLeftScreenGazeX"] = td.leftScreenGazeX
@@ -384,14 +383,12 @@ def writeDataToCSV( p, msg ):
             global_variables.participant.videos[global_variables.participant.videosPos].filename \
             + "_frames" + '/'
         # Target gaze predictions csv
-        gpCSV = outDir + global_variables.participant.directory + '_'  + pv.filename + '_' + csvTempName 
+        gpCSV = outputPrefix + global_variables.participant.directory + '_'  + pv.filename + '_' + csvTempName 
 
         with open( gpCSV, 'a', newline='' ) as f:
             # Note no quotes between clmTracker and eyeFeatures
             # f.write( "\"" + participant.directory + "\",\"" + fname + "\",\"" + str(frameTimeEpoch) + "\",\"" + str(frameNum) + "\",\"" + str(mouseMoveX) + "\",\"" + str(mouseMoveY) + "\",\"" + str(mouseClickX) + "\",\"" + str(mouseClickY) + "\",\"" + keyPressed + "\",\"" + str(keyPressedX) + "\",\"" + str(keyPressedY) + "\",\"" + str(td.leftScreenGazeX) + "\",\"" + str(td.leftScreenGazeY) + "\",\"" + str(td.rightScreenGazeX) + "\",\"" + str(td.rightScreenGazeY) + "\",\"" + str(wgCurrentX) + "\",\"" + str(wgCurrentY) + "\"," + str(clmPos) + "," + str(eyeFeatures) + "\n")
-            ()
             writer = csv.DictWriter(f, fieldnames=fieldnames,delimiter=',',quoting=csv.QUOTE_ALL)
-            ()
             writer.writerow( out )
 
     return frameTimeEpoch
@@ -444,21 +441,19 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
 
             # We may have already processed this video...
-            gpCSVDone = outDir + global_variables.participant.directory + '_' + pv.filename + '_' + csvDoneName
-            gpCSV = outDir + global_variables.participant.directory + '_'  + pv.filename + '_' + csvTempName
-            ()
+            gpCSVDone = outputPrefix + global_variables.participant.directory + '_' + pv.filename + '_' + csvDoneName
+            gpCSV = outputPrefix + global_variables.participant.directory + '_'  + pv.filename + '_' + csvTempName
             if os.path.isfile(gpCSVDone ):
                 print( "    " + gpCSVDone + " already exists and completed; moving on to next video...")
                 sendVideoEnd( self )
                 return
-            elif os.path.isfile(gpCSV ):
+            elif os.path.isfile( gpCSV ):
                 print( "    " + gpCSV + " exists but does not have an entry for each file; deleting csv and starting this video again...")
                 os.remove(gpCSV)
 
                 # Write the header for the new gazePredictions.csv file
                 if writeCSV:
                     with open(gpCSV, 'w', newline='' ) as csvfile:
-                        ()
                         writer = csv.DictWriter(csvfile, fieldnames=fieldnames,delimiter=',',quoting=csv.QUOTE_ALL)
                         writer.writeheader()            
 
@@ -468,7 +463,6 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
             framesDoneFile = outDir + '/' + "framesExtracted.txt"
             if not os.path.isfile( framesDoneFile ):
                 print( "    Extracting video frames (might take a few minutes)... " + str(video) )
-                ()
                 completedProcess = subprocess.run('ffmpeg -i "./' + video + '" -vf showinfo "' + outDir + 'frame_%08d.png"'\
                     , stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)
 
@@ -568,8 +562,8 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                     closeScreenCapOutVideo( global_variables.participant )
 
                 outDir = outputPrefix + global_variables.participant.directory + '/' + pv.filename + "_frames" + '/'
-                gpCSV = outDir + global_variables.participant.directory + '_' + pv.filename +'_' + csvTempName 
-                gpCSVDone = outDir + global_variables.participant.directory + '_'  + pv.filename + '_' + csvDoneName
+                gpCSV = outputPrefix + global_variables.participant.directory + '_' + pv.filename +'_' + csvTempName 
+                gpCSVDone = outputPrefix + global_variables.participant.directory + '_'  + pv.filename + '_' + csvDoneName
                 if os.path.isfile( gpCSV ):
                     os.rename( gpCSV, gpCSVDone )
 
