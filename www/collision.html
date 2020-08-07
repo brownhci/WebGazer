@@ -5,8 +5,8 @@
 </head>
 <body>
   <script src="https://d3js.org/d3.v3.min.js"></script>
-  
-  <script src="./webgazer.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.8.1/localforage.js"></script>
+  <script src="../dist/webgazer.var.js"></script>
 
   <script>
 
@@ -28,32 +28,14 @@
         var localstorageSettingsLabel = 'webgazerGlobalSettings';
         localforage.setItem(localstorageSettingsLabel, null);
     }
-
+    webgazer.params.showVideoPreview = true;
     const webgazerInstance = await webgazer.setRegression('ridge') /* currently must set regression and tracker */
     .setTracker('TFFacemesh')
     .begin();
     webgazerInstance.showPredictionPoints(false); /* shows a square every 100 milliseconds where current prediction is */
-
-    function checkIfReady() {
-      var feedbackBox = document.getElementById( webgazer.params.faceFeedbackBoxId );
-      
-      if (!webgazer.isReady()) {
-        setTimeout(checkIfReady, 100);
-      }
-      // This isn't strictly necessary, but it makes the DOM easier to read
-      // to have the z draw order reflect the DOM order.
-      else if( typeof(feedbackBox) == 'undefined' || feedbackBox == null ) {
-        setTimeout(checkIfReady, 100);
-      }
-      else
-      {
-        // Add the SVG component on the top of everything.
-        setupCollisionSystem();
-        webgazer.setGazeListener( collisionEyeListener );
-      }
-    }
-
-    setTimeout(checkIfReady,100);
+    // Add the SVG component on the top of everything.
+    setupCollisionSystem();
+    webgazer.setGazeListener( collisionEyeListener );
   };
 
   window.onbeforeunload = function() {
@@ -174,7 +156,7 @@
   var collisionEyeListener = async function(data, clock) {
     if(!data)
       return;
-    
+
     nodes[0].px = data.x;
     nodes[0].py = data.y;
     force.resume();
