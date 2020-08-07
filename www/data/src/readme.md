@@ -8,7 +8,7 @@ james_tompkin@brown.edu - Any issues, email me.
 This software takes the ETRA2018 dataset and creates CSV files for each video, containing per-frame WebGazer and Tobii values in normalized screen coordinates.
 After extraction, this makes it simple and efficent to analyse the performance of WebGazer in your favourite _data science_ application.
 
-Works with webgazer.js commit 01a9c68cf0a4b1f3a6d6910bf86d1ff403831ec7 (and onwards) from 30th July 2018 11:49 PM.
+Works with webgazer.js commit 0d23c4ce6a11188d28f6114ca6a5006e7d4b1354
 
 Requirements:
 =============
@@ -25,13 +25,16 @@ Requirements:
 
 Instructions:
 =============
-1. Execute the Python webserver
+1. Download the dataset from 
+>https://webgazer.cs.brown.edu/data/WebGazerETRA2018Dataset_Release20180420.zip
+    Place the unzipped files in www/data/src/
+2. Execute the Python webserver
 > python webgazerExtractServer.py
 
-2. Launch browser
+3. Launch browser
 > http://localhost:8000/webgazerExtractClient.html
 
-3. Watch for outputs in ../FramesDataset/
+4. Watch for outputs in ../FramesDataset/
 
    Contains:
     - Per participant
@@ -48,11 +51,11 @@ Instructions:
         - CLMTracker positions for all 71 2D points
         - Eye features as extracted by WebGazer, 140 features
 
-4. Watch a replay.
+5. Watch a replay.
 
     As it processes, the system can show the interaction events against the screen recording. Note that only laptop participants have screen recording synchronization data, and only then are they roughly aligned. Use the text box to 'try some numbers' and find the sync offset. This varies per participant.
 
-5. Write out screen recording videos with interactions overlaid.
+6. Write out screen recording videos with interactions overlaid.
 
     This uses OpenCV, and is a little flakey, but should work. It will slow down extraction a lot. There's a switch in the code to turn it on; let me know if it breaks (I haven't tested it in a while).
 

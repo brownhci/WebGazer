@@ -20,7 +20,6 @@ module.exports = function(grunt) {
 			dist: {
 				nonull: true,
 				src: [
-					'dependencies/heatmap.js',
 					'dependencies/localforage.min.js',
 					'dependencies/numeric-1.2.6.min.js',
 					'dependencies/tensorflow/tfjs-core.js',
@@ -32,7 +31,8 @@ module.exports = function(grunt) {
 					'src/pupil.js',
 					'src/regression.js',
 					'src/ridgeReg.js',
-					'src/blinkDetector.js',
+					'src/ridgeWeightedReg.js',
+					'src/ridgeRegThreaded.js',
 					'src/util.js',
 					'src/precision.js',
 					'src/webgazer.js'
