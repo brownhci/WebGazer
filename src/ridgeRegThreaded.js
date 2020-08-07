@@ -18,7 +18,7 @@
      * @param {Object} eyes - The eyes where looking for gray histogram
      * @returns {Array.<T>} The eyes gray level histogram
      */
-    function getEyeFeats(eyes) {
+    webgazer.reg.RidgeReg.prototype.init.getEyeFeats = function(eyes) {
         var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
         var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
@@ -118,7 +118,7 @@
         if (eyes.left.blink || eyes.right.blink) {
             return;
         }
-        this.worker.postMessage({'eyes':getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
+        this.worker.postMessage({'eyes':this.getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
     };
 
     /**
@@ -135,7 +135,7 @@
         var coefficientsX = weights.X;
         var coefficientsY = weights.Y;
 
-        var eyeFeats = getEyeFeats(eyesObj);
+        var eyeFeats = this.getEyeFeats(eyesObj);
         var predictedX = 0, predictedY = 0;
         for(var i=0; i< eyeFeats.length; i++){
             predictedX += eyeFeats[i] * coefficientsX[i];
