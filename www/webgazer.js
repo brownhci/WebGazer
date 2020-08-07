@@ -43666,28 +43666,7 @@ function supports_ogg_theora_video() {
         return m_Coefficients;
     }
     
-    /**
-     * Compute eyes size as gray histogram
-     * @param {Object} eyes - The eyes where looking for gray histogram
-     * @returns {Array.<T>} The eyes gray level histogram
-     */
-    function getEyeFeats(eyes) {
-        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
-        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
-
-        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
-
-        var histLeft = [];
-        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
-        var histRight = [];
-        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
-
-        var leftGrayArray = Array.prototype.slice.call(histLeft);
-        var rightGrayArray = Array.prototype.slice.call(histRight);
-
-        return leftGrayArray.concat(rightGrayArray);
-    }
+    
 
     //TODO: still usefull ???
     /**
@@ -43769,7 +43748,29 @@ function supports_ogg_theora_video() {
 
         this.kalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
     };
+    
+    /**
+     * Compute eyes size as gray histogram
+     * @param {Object} eyes - The eyes where looking for gray histogram
+     * @returns {Array.<T>} The eyes gray level histogram
+     */
+    webgazer.reg.RidgeReg.prototype.getEyeFeats = function(eyes) {
+        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
+        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
+
+        var histLeft = [];
+        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
+        var histRight = [];
+        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
+
+        var leftGrayArray = Array.prototype.slice.call(histLeft);
+        var rightGrayArray = Array.prototype.slice.call(histRight);
+
+        return leftGrayArray.concat(rightGrayArray);
+    }
     /**
      * Add given data from eyes
      * @param {Object} eyes - eyes where extract data to add
@@ -43787,13 +43788,13 @@ function supports_ogg_theora_video() {
             this.screenXClicksArray.push([screenPos[0]]);
             this.screenYClicksArray.push([screenPos[1]]);
 
-            this.eyeFeaturesClicks.push(getEyeFeats(eyes));
+            this.eyeFeaturesClicks.push(this.getEyeFeats(eyes));
             this.dataClicks.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         } else if (type === 'move') {
             this.screenXTrailArray.push([screenPos[0]]);
             this.screenYTrailArray.push([screenPos[1]]);
 
-            this.eyeFeaturesTrail.push(getEyeFeats(eyes));
+            this.eyeFeaturesTrail.push(this.getEyeFeats(eyes));
             this.trailTimes.push(performance.now());
             this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         }
@@ -43835,7 +43836,7 @@ function supports_ogg_theora_video() {
         var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
         var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter);
 
-        var eyeFeats = getEyeFeats(eyesObj);
+        var eyeFeats = this.getEyeFeats(eyesObj);
         var predictedX = 0;
         for(var i=0; i< eyeFeats.length; i++){
             predictedX += eyeFeats[i] * coefficientsX[i];
@@ -43961,29 +43962,6 @@ function supports_ogg_theora_video() {
         return m_Coefficients;
     }
 
-    /**
-     * Compute eyes size as gray histogram
-     * @param {Object} eyes - The eyes where looking for gray histogram
-     * @returns {Array.<T>} The eyes gray level histogram
-     */
-    function getEyeFeats(eyes) {
-        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
-        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
-
-        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
-
-        var histLeft = [];
-        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
-        var histRight = [];
-        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
-
-        var leftGrayArray = Array.prototype.slice.call(histLeft);
-        var rightGrayArray = Array.prototype.slice.call(histRight);
-
-        return leftGrayArray.concat(rightGrayArray);
-    }
-
     //TODO: still usefull ???
     /**
      *
@@ -44065,6 +44043,29 @@ function supports_ogg_theora_video() {
     };
 
     /**
+     * Compute eyes size as gray histogram
+     * @param {Object} eyes - The eyes where looking for gray histogram
+     * @returns {Array.<T>} The eyes gray level histogram
+     */
+    webgazer.reg.RidgeReg.prototype.init.getEyeFeats = function(eyes) {
+        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
+
+        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
+
+        var histLeft = [];
+        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
+        var histRight = [];
+        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
+
+        var leftGrayArray = Array.prototype.slice.call(histLeft);
+        var rightGrayArray = Array.prototype.slice.call(histRight);
+
+        return leftGrayArray.concat(rightGrayArray);
+    }
+    
+    /**
      * Add given data from eyes
      * @param {Object} eyes - eyes where extract data to add
      * @param {Object} screenPos - The current screen point
@@ -44081,13 +44082,13 @@ function supports_ogg_theora_video() {
             this.screenXClicksArray.push([screenPos[0]]);
             this.screenYClicksArray.push([screenPos[1]]);
 
-            this.eyeFeaturesClicks.push(getEyeFeats(eyes));
+            this.eyeFeaturesClicks.push(this.getEyeFeats(eyes));
             this.dataClicks.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         } else if (type === 'move') {
             this.screenXTrailArray.push([screenPos[0]]);
             this.screenYTrailArray.push([screenPos[1]]);
 
-            this.eyeFeaturesTrail.push(getEyeFeats(eyes));
+            this.eyeFeaturesTrail.push(this.getEyeFeats(eyes));
             this.trailTimes.push(performance.now());
             this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         }
@@ -44151,7 +44152,7 @@ function supports_ogg_theora_video() {
         var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
         var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter);
 
-        var eyeFeats = getEyeFeats(eyesObj);
+        var eyeFeats = this.getEyeFeats(eyesObj);
         var predictedX = 0;
         for(var i=0; i< eyeFeats.length; i++){
             predictedX += eyeFeats[i] * coefficientsX[i];
@@ -44233,29 +44234,6 @@ function supports_ogg_theora_video() {
     var trailDataWindow = 10;
 
     /**
-     * Compute eyes size as gray histogram
-     * @param {Object} eyes - The eyes where looking for gray histogram
-     * @returns {Array.<T>} The eyes gray level histogram
-     */
-    function getEyeFeats(eyes) {
-        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
-        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
-
-        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
-
-        var histLeft = [];
-        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
-        var histRight = [];
-        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
-
-        var leftGrayArray = Array.prototype.slice.call(histLeft);
-        var rightGrayArray = Array.prototype.slice.call(histRight);
-
-        return leftGrayArray.concat(rightGrayArray);
-    }
-
-    /**
      * Constructor of RidgeRegThreaded object,
      * it retrieve data window, and prepare a worker,
      * this object allow to perform threaded ridge regression
@@ -44323,7 +44301,29 @@ function supports_ogg_theora_video() {
 
         this.kalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
     }
+    
+    /**
+     * Compute eyes size as gray histogram
+     * @param {Object} eyes - The eyes where looking for gray histogram
+     * @returns {Array.<T>} The eyes gray level histogram
+     */
+    webgazer.reg.RidgeReg.prototype.init.getEyeFeats = function(eyes) {
+        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
+        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
+
+        var histLeft = [];
+        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
+        var histRight = [];
+        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
+
+        var leftGrayArray = Array.prototype.slice.call(histLeft);
+        var rightGrayArray = Array.prototype.slice.call(histRight);
+
+        return leftGrayArray.concat(rightGrayArray);
+    }
     /**
      * Add given data from eyes
      * @param {Object} eyes - eyes where extract data to add
@@ -44337,7 +44337,7 @@ function supports_ogg_theora_video() {
         if (eyes.left.blink || eyes.right.blink) {
             return;
         }
-        this.worker.postMessage({'eyes':getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
+        this.worker.postMessage({'eyes':this.getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
     };
 
     /**
@@ -44354,7 +44354,7 @@ function supports_ogg_theora_video() {
         var coefficientsX = weights.X;
         var coefficientsY = weights.Y;
 
-        var eyeFeats = getEyeFeats(eyesObj);
+        var eyeFeats = this.getEyeFeats(eyesObj);
         var predictedX = 0, predictedY = 0;
         for(var i=0; i< eyeFeats.length; i++){
             predictedX += eyeFeats[i] * coefficientsX[i];

@@ -14,29 +14,6 @@
     var trailDataWindow = 10;
 
     /**
-     * Compute eyes size as gray histogram
-     * @param {Object} eyes - The eyes where looking for gray histogram
-     * @returns {Array.<T>} The eyes gray level histogram
-     */
-    webgazer.reg.RidgeReg.prototype.init.getEyeFeats = function(eyes) {
-        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
-        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
-
-        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
-
-        var histLeft = [];
-        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
-        var histRight = [];
-        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
-
-        var leftGrayArray = Array.prototype.slice.call(histLeft);
-        var rightGrayArray = Array.prototype.slice.call(histRight);
-
-        return leftGrayArray.concat(rightGrayArray);
-    }
-
-    /**
      * Constructor of RidgeRegThreaded object,
      * it retrieve data window, and prepare a worker,
      * this object allow to perform threaded ridge regression
@@ -104,7 +81,29 @@
 
         this.kalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
     }
+    
+    /**
+     * Compute eyes size as gray histogram
+     * @param {Object} eyes - The eyes where looking for gray histogram
+     * @returns {Array.<T>} The eyes gray level histogram
+     */
+    webgazer.reg.RidgeReg.prototype.init.getEyeFeats = function(eyes) {
+        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
+        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
+
+        var histLeft = [];
+        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
+        var histRight = [];
+        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
+
+        var leftGrayArray = Array.prototype.slice.call(histLeft);
+        var rightGrayArray = Array.prototype.slice.call(histRight);
+
+        return leftGrayArray.concat(rightGrayArray);
+    }
     /**
      * Add given data from eyes
      * @param {Object} eyes - eyes where extract data to add
