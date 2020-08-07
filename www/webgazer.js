@@ -5,726 +5,6 @@
 * Licensed under GPLv3. Companies with a valuation of less than $10M can use WebGazer.js under LGPLv3. 
 */
 
-/*
- * heatmap.js v2.0.5 | JavaScript Heatmap Library
- *
- * Copyright 2008-2016 Patrick Wied <heatmapjs@patrick-wied.at> - All rights reserved.
- * Dual licensed under MIT and Beerware license 
- *
- * :: 2016-09-05 01:16
- */
-;(function (name, context, factory) {
-
-  // Supports UMD. AMD, CommonJS/Node.js and browser context
-  if (typeof module !== "undefined" && module.exports) {
-    module.exports = factory();
-  } else if (typeof define === "function" && define.amd) {
-    define(factory);
-  } else {
-    context[name] = factory();
-  }
-
-})("h337", this, function () {
-
-// Heatmap Config stores default values and will be merged with instance config
-var HeatmapConfig = {
-  defaultRadius: 40,
-  defaultRenderer: 'canvas2d',
-  defaultGradient: { 0.25: "rgb(0,0,255)", 0.55: "rgb(0,255,0)", 0.85: "yellow", 1.0: "rgb(255,0,0)"},
-  defaultMaxOpacity: 1,
-  defaultMinOpacity: 0,
-  defaultBlur: .85,
-  defaultXField: 'x',
-  defaultYField: 'y',
-  defaultValueField: 'value', 
-  plugins: {}
-};
-var Store = (function StoreClosure() {
-
-  var Store = function Store(config) {
-    this._coordinator = {};
-    this._data = [];
-    this._radi = [];
-    this._min = 10;
-    this._max = 1;
-    this._xField = config['xField'] || config.defaultXField;
-    this._yField = config['yField'] || config.defaultYField;
-    this._valueField = config['valueField'] || config.defaultValueField;
-
-    if (config["radius"]) {
-      this._cfgRadius = config["radius"];
-    }
-  };
-
-  var defaultRadius = HeatmapConfig.defaultRadius;
-
-  Store.prototype = {
-    // when forceRender = false -> called from setData, omits renderall event
-    _organiseData: function(dataPoint, forceRender) {
-        var x = dataPoint[this._xField];
-        var y = dataPoint[this._yField];
-        var radi = this._radi;
-        var store = this._data;
-        var max = this._max;
-        var min = this._min;
-        var value = dataPoint[this._valueField] || 1;
-        var radius = dataPoint.radius || this._cfgRadius || defaultRadius;
-
-        if (!store[x]) {
-          store[x] = [];
-          radi[x] = [];
-        }
-
-        if (!store[x][y]) {
-          store[x][y] = value;
-          radi[x][y] = radius;
-        } else {
-          store[x][y] += value;
-        }
-        var storedVal = store[x][y];
-
-        if (storedVal > max) {
-          if (!forceRender) {
-            this._max = storedVal;
-          } else {
-            this.setDataMax(storedVal);
-          }
-          return false;
-        } else if (storedVal < min) {
-          if (!forceRender) {
-            this._min = storedVal;
-          } else {
-            this.setDataMin(storedVal);
-          }
-          return false;
-        } else {
-          return { 
-            x: x, 
-            y: y,
-            value: value, 
-            radius: radius,
-            min: min,
-            max: max 
-          };
-        }
-    },
-    _unOrganizeData: function() {
-      var unorganizedData = [];
-      var data = this._data;
-      var radi = this._radi;
-
-      for (var x in data) {
-        for (var y in data[x]) {
-
-          unorganizedData.push({
-            x: x,
-            y: y,
-            radius: radi[x][y],
-            value: data[x][y]
-          });
-
-        }
-      }
-      return {
-        min: this._min,
-        max: this._max,
-        data: unorganizedData
-      };
-    },
-    _onExtremaChange: function() {
-      this._coordinator.emit('extremachange', {
-        min: this._min,
-        max: this._max
-      });
-    },
-    addData: function() {
-      if (arguments[0].length > 0) {
-        var dataArr = arguments[0];
-        var dataLen = dataArr.length;
-        while (dataLen--) {
-          this.addData.call(this, dataArr[dataLen]);
-        }
-      } else {
-        // add to store  
-        var organisedEntry = this._organiseData(arguments[0], true);
-        if (organisedEntry) {
-          // if it's the first datapoint initialize the extremas with it
-          if (this._data.length === 0) {
-            this._min = this._max = organisedEntry.value;
-          }
-          this._coordinator.emit('renderpartial', {
-            min: this._min,
-            max: this._max,
-            data: [organisedEntry]
-          });
-        }
-      }
-      return this;
-    },
-    setData: function(data) {
-      var dataPoints = data.data;
-      var pointsLen = dataPoints.length;
-
-
-      // reset data arrays
-      this._data = [];
-      this._radi = [];
-
-      for(var i = 0; i < pointsLen; i++) {
-        this._organiseData(dataPoints[i], false);
-      }
-      this._max = data.max;
-      this._min = data.min || 0;
-      
-      this._onExtremaChange();
-      this._coordinator.emit('renderall', this._getInternalData());
-      return this;
-    },
-    removeData: function() {
-      // TODO: implement
-    },
-    setDataMax: function(max) {
-      this._max = max;
-      this._onExtremaChange();
-      this._coordinator.emit('renderall', this._getInternalData());
-      return this;
-    },
-    setDataMin: function(min) {
-      this._min = min;
-      this._onExtremaChange();
-      this._coordinator.emit('renderall', this._getInternalData());
-      return this;
-    },
-    setCoordinator: function(coordinator) {
-      this._coordinator = coordinator;
-    },
-    _getInternalData: function() {
-      return { 
-        max: this._max,
-        min: this._min, 
-        data: this._data,
-        radi: this._radi 
-      };
-    },
-    getData: function() {
-      return this._unOrganizeData();
-    }/*,
-      TODO: rethink.
-    getValueAt: function(point) {
-      var value;
-      var radius = 100;
-      var x = point.x;
-      var y = point.y;
-      var data = this._data;
-      if (data[x] && data[x][y]) {
-        return data[x][y];
-      } else {
-        var values = [];
-        // radial search for datapoints based on default radius
-        for(var distance = 1; distance < radius; distance++) {
-          var neighbors = distance * 2 +1;
-          var startX = x - distance;
-          var startY = y - distance;
-          for(var i = 0; i < neighbors; i++) {
-            for (var o = 0; o < neighbors; o++) {
-              if ((i == 0 || i == neighbors-1) || (o == 0 || o == neighbors-1)) {
-                if (data[startY+i] && data[startY+i][startX+o]) {
-                  values.push(data[startY+i][startX+o]);
-                }
-              } else {
-                continue;
-              } 
-            }
-          }
-        }
-        if (values.length > 0) {
-          return Math.max.apply(Math, values);
-        }
-      }
-      return false;
-    }*/
-  };
-
-
-  return Store;
-})();
-
-var Canvas2dRenderer = (function Canvas2dRendererClosure() {
-
-  var _getColorPalette = function(config) {
-    var gradientConfig = config.gradient || config.defaultGradient;
-    var paletteCanvas = document.createElement('canvas');
-    var paletteCtx = paletteCanvas.getContext('2d');
-
-    paletteCanvas.width = 256;
-    paletteCanvas.height = 1;
-
-    var gradient = paletteCtx.createLinearGradient(0, 0, 256, 1);
-    for (var key in gradientConfig) {
-      gradient.addColorStop(key, gradientConfig[key]);
-    }
-
-    paletteCtx.fillStyle = gradient;
-    paletteCtx.fillRect(0, 0, 256, 1);
-
-    return paletteCtx.getImageData(0, 0, 256, 1).data;
-  };
-
-  var _getPointTemplate = function(radius, blurFactor) {
-    var tplCanvas = document.createElement('canvas');
-    var tplCtx = tplCanvas.getContext('2d');
-    var x = radius;
-    var y = radius;
-    tplCanvas.width = tplCanvas.height = radius*2;
-
-    if (blurFactor == 1) {
-      tplCtx.beginPath();
-      tplCtx.arc(x, y, radius, 0, 2 * Math.PI, false);
-      tplCtx.fillStyle = 'rgba(0,0,0,1)';
-      tplCtx.fill();
-    } else {
-      var gradient = tplCtx.createRadialGradient(x, y, radius*blurFactor, x, y, radius);
-      gradient.addColorStop(0, 'rgba(0,0,0,1)');
-      gradient.addColorStop(1, 'rgba(0,0,0,0)');
-      tplCtx.fillStyle = gradient;
-      tplCtx.fillRect(0, 0, 2*radius, 2*radius);
-    }
-
-
-
-    return tplCanvas;
-  };
-
-  var _prepareData = function(data) {
-    var renderData = [];
-    var min = data.min;
-    var max = data.max;
-    var radi = data.radi;
-    var data = data.data;
-
-    var xValues = Object.keys(data);
-    var xValuesLen = xValues.length;
-
-    while(xValuesLen--) {
-      var xValue = xValues[xValuesLen];
-      var yValues = Object.keys(data[xValue]);
-      var yValuesLen = yValues.length;
-      while(yValuesLen--) {
-        var yValue = yValues[yValuesLen];
-        var value = data[xValue][yValue];
-        var radius = radi[xValue][yValue];
-        renderData.push({
-          x: xValue,
-          y: yValue,
-          value: value,
-          radius: radius
-        });
-      }
-    }
-
-    return {
-      min: min,
-      max: max,
-      data: renderData
-    };
-  };
-
-
-  function Canvas2dRenderer(config) {
-    var container = config.container;
-    var shadowCanvas = this.shadowCanvas = document.createElement('canvas');
-    var canvas = this.canvas = config.canvas || document.createElement('canvas');
-    var renderBoundaries = this._renderBoundaries = [10000, 10000, 0, 0];
-
-    var computed = getComputedStyle(config.container) || {};
-
-    canvas.className = 'heatmap-canvas';
-
-    this._width = canvas.width = shadowCanvas.width = config.width || +(computed.width.replace(/px/,''));
-    this._height = canvas.height = shadowCanvas.height = config.height || +(computed.height.replace(/px/,''));
-
-    this.shadowCtx = shadowCanvas.getContext('2d');
-    this.ctx = canvas.getContext('2d');
-
-    // @TODO:
-    // conditional wrapper
-
-    canvas.style.cssText = shadowCanvas.style.cssText = 'position:absolute;left:0;top:0;';
-
-    container.style.position = 'relative';
-    container.appendChild(canvas);
-
-    this._palette = _getColorPalette(config);
-    this._templates = {};
-
-    this._setStyles(config);
-  };
-
-  Canvas2dRenderer.prototype = {
-    renderPartial: function(data) {
-      if (data.data.length > 0) {
-        this._drawAlpha(data);
-        this._colorize();
-      }
-    },
-    renderAll: function(data) {
-      // reset render boundaries
-      this._clear();
-      if (data.data.length > 0) {
-        this._drawAlpha(_prepareData(data));
-        this._colorize();
-      }
-    },
-    _updateGradient: function(config) {
-      this._palette = _getColorPalette(config);
-    },
-    updateConfig: function(config) {
-      if (config['gradient']) {
-        this._updateGradient(config);
-      }
-      this._setStyles(config);
-    },
-    setDimensions: function(width, height) {
-      this._width = width;
-      this._height = height;
-      this.canvas.width = this.shadowCanvas.width = width;
-      this.canvas.height = this.shadowCanvas.height = height;
-    },
-    _clear: function() {
-      this.shadowCtx.clearRect(0, 0, this._width, this._height);
-      this.ctx.clearRect(0, 0, this._width, this._height);
-    },
-    _setStyles: function(config) {
-      this._blur = (config.blur == 0)?0:(config.blur || config.defaultBlur);
-
-      if (config.backgroundColor) {
-        this.canvas.style.backgroundColor = config.backgroundColor;
-      }
-
-      this._width = this.canvas.width = this.shadowCanvas.width = config.width || this._width;
-      this._height = this.canvas.height = this.shadowCanvas.height = config.height || this._height;
-
-
-      this._opacity = (config.opacity || 0) * 255;
-      this._maxOpacity = (config.maxOpacity || config.defaultMaxOpacity) * 255;
-      this._minOpacity = (config.minOpacity || config.defaultMinOpacity) * 255;
-      this._useGradientOpacity = !!config.useGradientOpacity;
-    },
-    _drawAlpha: function(data) {
-      var min = this._min = data.min;
-      var max = this._max = data.max;
-      var data = data.data || [];
-      var dataLen = data.length;
-      // on a point basis?
-      var blur = 1 - this._blur;
-
-      while(dataLen--) {
-
-        var point = data[dataLen];
-
-        var x = point.x;
-        var y = point.y;
-        var radius = point.radius;
-        // if value is bigger than max
-        // use max as value
-        var value = Math.min(point.value, max);
-        var rectX = x - radius;
-        var rectY = y - radius;
-        var shadowCtx = this.shadowCtx;
-
-
-
-
-        var tpl;
-        if (!this._templates[radius]) {
-          this._templates[radius] = tpl = _getPointTemplate(radius, blur);
-        } else {
-          tpl = this._templates[radius];
-        }
-        // value from minimum / value range
-        // => [0, 1]
-        var templateAlpha = (value-min)/(max-min);
-        // this fixes #176: small values are not visible because globalAlpha < .01 cannot be read from imageData
-        shadowCtx.globalAlpha = templateAlpha < .01 ? .01 : templateAlpha;
-
-        shadowCtx.drawImage(tpl, rectX, rectY);
-
-        // update renderBoundaries
-        if (rectX < this._renderBoundaries[0]) {
-            this._renderBoundaries[0] = rectX;
-          }
-          if (rectY < this._renderBoundaries[1]) {
-            this._renderBoundaries[1] = rectY;
-          }
-          if (rectX + 2*radius > this._renderBoundaries[2]) {
-            this._renderBoundaries[2] = rectX + 2*radius;
-          }
-          if (rectY + 2*radius > this._renderBoundaries[3]) {
-            this._renderBoundaries[3] = rectY + 2*radius;
-          }
-
-      }
-    },
-    _colorize: function() {
-      var x = this._renderBoundaries[0];
-      var y = this._renderBoundaries[1];
-      var width = this._renderBoundaries[2] - x;
-      var height = this._renderBoundaries[3] - y;
-      var maxWidth = this._width;
-      var maxHeight = this._height;
-      var opacity = this._opacity;
-      var maxOpacity = this._maxOpacity;
-      var minOpacity = this._minOpacity;
-      var useGradientOpacity = this._useGradientOpacity;
-
-      if (x < 0) {
-        x = 0;
-      }
-      if (y < 0) {
-        y = 0;
-      }
-      if (x + width > maxWidth) {
-        width = maxWidth - x;
-      }
-      if (y + height > maxHeight) {
-        height = maxHeight - y;
-      }
-
-      var img = this.shadowCtx.getImageData(x, y, width, height);
-      var imgData = img.data;
-      var len = imgData.length;
-      var palette = this._palette;
-
-
-      for (var i = 3; i < len; i+= 4) {
-        var alpha = imgData[i];
-        var offset = alpha * 4;
-
-
-        if (!offset) {
-          continue;
-        }
-
-        var finalAlpha;
-        if (opacity > 0) {
-          finalAlpha = opacity;
-        } else {
-          if (alpha < maxOpacity) {
-            if (alpha < minOpacity) {
-              finalAlpha = minOpacity;
-            } else {
-              finalAlpha = alpha;
-            }
-          } else {
-            finalAlpha = maxOpacity;
-          }
-        }
-
-        imgData[i-3] = palette[offset];
-        imgData[i-2] = palette[offset + 1];
-        imgData[i-1] = palette[offset + 2];
-        imgData[i] = useGradientOpacity ? palette[offset + 3] : finalAlpha;
-
-      }
-
-      img.data = imgData;
-      this.ctx.putImageData(img, x, y);
-
-      this._renderBoundaries = [1000, 1000, 0, 0];
-
-    },
-    getValueAt: function(point) {
-      var value;
-      var shadowCtx = this.shadowCtx;
-      var img = shadowCtx.getImageData(point.x, point.y, 1, 1);
-      var data = img.data[3];
-      var max = this._max;
-      var min = this._min;
-
-      value = (Math.abs(max-min) * (data/255)) >> 0;
-
-      return value;
-    },
-    getDataURL: function() {
-      return this.canvas.toDataURL();
-    }
-  };
-
-
-  return Canvas2dRenderer;
-})();
-
-
-var Renderer = (function RendererClosure() {
-
-  var rendererFn = false;
-
-  if (HeatmapConfig['defaultRenderer'] === 'canvas2d') {
-    rendererFn = Canvas2dRenderer;
-  }
-
-  return rendererFn;
-})();
-
-
-var Util = {
-  merge: function() {
-    var merged = {};
-    var argsLen = arguments.length;
-    for (var i = 0; i < argsLen; i++) {
-      var obj = arguments[i]
-      for (var key in obj) {
-        merged[key] = obj[key];
-      }
-    }
-    return merged;
-  }
-};
-// Heatmap Constructor
-var Heatmap = (function HeatmapClosure() {
-
-  var Coordinator = (function CoordinatorClosure() {
-
-    function Coordinator() {
-      this.cStore = {};
-    };
-
-    Coordinator.prototype = {
-      on: function(evtName, callback, scope) {
-        var cStore = this.cStore;
-
-        if (!cStore[evtName]) {
-          cStore[evtName] = [];
-        }
-        cStore[evtName].push((function(data) {
-            return callback.call(scope, data);
-        }));
-      },
-      emit: function(evtName, data) {
-        var cStore = this.cStore;
-        if (cStore[evtName]) {
-          var len = cStore[evtName].length;
-          for (var i=0; i<len; i++) {
-            var callback = cStore[evtName][i];
-            callback(data);
-          }
-        }
-      }
-    };
-
-    return Coordinator;
-  })();
-
-
-  var _connect = function(scope) {
-    var renderer = scope._renderer;
-    var coordinator = scope._coordinator;
-    var store = scope._store;
-
-    coordinator.on('renderpartial', renderer.renderPartial, renderer);
-    coordinator.on('renderall', renderer.renderAll, renderer);
-    coordinator.on('extremachange', function(data) {
-      scope._config.onExtremaChange &&
-      scope._config.onExtremaChange({
-        min: data.min,
-        max: data.max,
-        gradient: scope._config['gradient'] || scope._config['defaultGradient']
-      });
-    });
-    store.setCoordinator(coordinator);
-  };
-
-
-  function Heatmap() {
-    var config = this._config = Util.merge(HeatmapConfig, arguments[0] || {});
-    this._coordinator = new Coordinator();
-    if (config['plugin']) {
-      var pluginToLoad = config['plugin'];
-      if (!HeatmapConfig.plugins[pluginToLoad]) {
-        throw new Error('Plugin \''+ pluginToLoad + '\' not found. Maybe it was not registered.');
-      } else {
-        var plugin = HeatmapConfig.plugins[pluginToLoad];
-        // set plugin renderer and store
-        this._renderer = new plugin.renderer(config);
-        this._store = new plugin.store(config);
-      }
-    } else {
-      this._renderer = new Renderer(config);
-      this._store = new Store(config);
-    }
-    _connect(this);
-  };
-
-  // @TODO:
-  // add API documentation
-  Heatmap.prototype = {
-    addData: function() {
-      this._store.addData.apply(this._store, arguments);
-      return this;
-    },
-    removeData: function() {
-      this._store.removeData && this._store.removeData.apply(this._store, arguments);
-      return this;
-    },
-    setData: function() {
-      this._store.setData.apply(this._store, arguments);
-      return this;
-    },
-    setDataMax: function() {
-      this._store.setDataMax.apply(this._store, arguments);
-      return this;
-    },
-    setDataMin: function() {
-      this._store.setDataMin.apply(this._store, arguments);
-      return this;
-    },
-    configure: function(config) {
-      this._config = Util.merge(this._config, config);
-      this._renderer.updateConfig(this._config);
-      this._coordinator.emit('renderall', this._store._getInternalData());
-      return this;
-    },
-    repaint: function() {
-      this._coordinator.emit('renderall', this._store._getInternalData());
-      return this;
-    },
-    getData: function() {
-      return this._store.getData();
-    },
-    getDataURL: function() {
-      return this._renderer.getDataURL();
-    },
-    getValueAt: function(point) {
-
-      if (this._store.getValueAt) {
-        return this._store.getValueAt(point);
-      } else  if (this._renderer.getValueAt) {
-        return this._renderer.getValueAt(point);
-      } else {
-        return null;
-      }
-    }
-  };
-
-  return Heatmap;
-
-})();
-
-
-// core
-var heatmapFactory = {
-  create: function(config) {
-    return new Heatmap(config);
-  },
-  register: function(pluginKey, plugin) {
-    HeatmapConfig.plugins[pluginKey] = plugin;
-  }
-};
-
-return heatmapFactory;
-
-
-});
 /*!
     localForage -- Offline Storage, Improved
     Version 1.7.3
@@ -44386,28 +43666,7 @@ function supports_ogg_theora_video() {
         return m_Coefficients;
     }
     
-    /**
-     * Compute eyes size as gray histogram
-     * @param {Object} eyes - The eyes where looking for gray histogram
-     * @returns {Array.<T>} The eyes gray level histogram
-     */
-    function getEyeFeats(eyes) {
-        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
-        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
-
-        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
-
-        var histLeft = [];
-        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
-        var histRight = [];
-        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
-
-        var leftGrayArray = Array.prototype.slice.call(histLeft);
-        var rightGrayArray = Array.prototype.slice.call(histRight);
-
-        return leftGrayArray.concat(rightGrayArray);
-    }
+    
 
     //TODO: still usefull ???
     /**
@@ -44489,7 +43748,29 @@ function supports_ogg_theora_video() {
 
         this.kalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
     };
+    
+    /**
+     * Compute eyes size as gray histogram
+     * @param {Object} eyes - The eyes where looking for gray histogram
+     * @returns {Array.<T>} The eyes gray level histogram
+     */
+    webgazer.reg.RidgeReg.prototype.getEyeFeats = function(eyes) {
+        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
+        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
+
+        var histLeft = [];
+        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
+        var histRight = [];
+        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
+
+        var leftGrayArray = Array.prototype.slice.call(histLeft);
+        var rightGrayArray = Array.prototype.slice.call(histRight);
+
+        return leftGrayArray.concat(rightGrayArray);
+    }
     /**
      * Add given data from eyes
      * @param {Object} eyes - eyes where extract data to add
@@ -44507,13 +43788,13 @@ function supports_ogg_theora_video() {
             this.screenXClicksArray.push([screenPos[0]]);
             this.screenYClicksArray.push([screenPos[1]]);
 
-            this.eyeFeaturesClicks.push(getEyeFeats(eyes));
+            this.eyeFeaturesClicks.push(this.getEyeFeats(eyes));
             this.dataClicks.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         } else if (type === 'move') {
             this.screenXTrailArray.push([screenPos[0]]);
             this.screenYTrailArray.push([screenPos[1]]);
 
-            this.eyeFeaturesTrail.push(getEyeFeats(eyes));
+            this.eyeFeaturesTrail.push(this.getEyeFeats(eyes));
             this.trailTimes.push(performance.now());
             this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
         }
@@ -44555,7 +43836,7 @@ function supports_ogg_theora_video() {
         var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
         var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter);
 
-        var eyeFeats = getEyeFeats(eyesObj);
+        var eyeFeats = this.getEyeFeats(eyesObj);
         var predictedX = 0;
         for(var i=0; i< eyeFeats.length; i++){
             predictedX += eyeFeats[i] * coefficientsX[i];
@@ -44620,118 +43901,522 @@ function supports_ogg_theora_video() {
     
 }(window));
 
+'use strict';
 (function(window) {
-    "use strict";
 
     window.webgazer = window.webgazer || {};
+    webgazer.reg = webgazer.reg || {};
+    webgazer.mat = webgazer.mat || {};
+    webgazer.util = webgazer.util || {};
+    webgazer.params = webgazer.params || {};
 
-    const defaultWindowSize = 8;
-    const equalizeStep = 5;
-    const threshold = 80;
-    const minCorrelation = 0.55;//0.78;
-    const maxCorrelation = 0.65;//0.85;
-//testing random stuff
+    var ridgeParameter = Math.pow(10,-5);
+    var resizeWidth = 10;
+    var resizeHeight = 6;
+    var dataWindow = 700;
+    var trailDataWindow = 10;
+
     /**
-     * Constructor for BlinkDetector
-     * @param blinkWindow
+     * Performs ridge regression, according to the Weka code.
+     * @param {Array} y - corresponds to screen coordinates (either x or y) for each of n click events
+     * @param {Array.<Array.<Number>>} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
+     * @param {Array} k - ridge parameter
+     * @return{Array} regression coefficients
+     */
+    function ridge(y, X, k){
+        var nc = X[0].length;
+        var m_Coefficients = new Array(nc);
+        var xt = webgazer.mat.transpose(X);
+        var solution = new Array();
+        var success = true;
+        do{
+            var ss = webgazer.mat.mult(xt,X);
+            // Set ridge regression adjustment
+            for (var i = 0; i < nc; i++) {
+                ss[i][i] = ss[i][i] + k;
+            }
+
+            // Carry out the regression
+            var bb = webgazer.mat.mult(xt,y);
+            for(var i = 0; i < nc; i++) {
+                m_Coefficients[i] = bb[i][0];
+            }
+            try{
+                var n = (m_Coefficients.length !== 0 ? m_Coefficients.length/m_Coefficients.length: 0);
+                if (m_Coefficients.length*n !== m_Coefficients.length){
+                    console.log('Array length must be a multiple of m')
+                }
+                solution = (ss.length === ss[0].length ? (numeric.LUsolve(numeric.LU(ss,true),bb)) : (webgazer.mat.QRDecomposition(ss,bb)));
+
+                for (var i = 0; i < nc; i++){
+                    m_Coefficients[i] = solution[i];
+                }
+                success = true;
+            }
+            catch (ex){
+                k *= 10;
+                console.log(ex);
+                success = false;
+            }
+        } while (!success);
+        return m_Coefficients;
+    }
+
+    //TODO: still usefull ???
+    /**
+     *
+     * @returns {Number}
+     */
+    function getCurrentFixationIndex() {
+        var index = 0;
+        var recentX = this.screenXTrailArray.get(0);
+        var recentY = this.screenYTrailArray.get(0);
+        for (var i = this.screenXTrailArray.length - 1; i >= 0; i--) {
+            var currX = this.screenXTrailArray.get(i);
+            var currY = this.screenYTrailArray.get(i);
+            var euclideanDistance = Math.sqrt(Math.pow((currX-recentX),2)+Math.pow((currY-recentY),2));
+            if (euclideanDistance > 72){
+                return i+1;
+            }
+        }
+        return i;
+    }
+
+    /**
+     * Constructor of RidgeWeightedReg object
      * @constructor
      */
-    webgazer.BlinkDetector = function(blinkWindow) {
-        //determines number of previous eyeObj to hold onto
-        this.blinkWindow = blinkWindow || defaultWindowSize;
-        this.blinkData = new webgazer.util.DataWindow(this.blinkWindow);
-        this.blinkWindowIndex = 0;
-
+    webgazer.reg.RidgeWeightedReg = function() {
+        this.init();
     };
-
-    webgazer.BlinkDetector.prototype.extractBlinkData = function(eyesObj) {
-        const eye = eyesObj.right;
-        const grayscaled = webgazer.util.grayscale(eye.patch.data, eye.width, eye.height);
-        const equalized = webgazer.util.equalizeHistogram(grayscaled, equalizeStep, grayscaled);
-        const thresholded = webgazer.util.threshold(equalized, threshold);
-        return {
-            data: eye.patch.data,
-            width: eye.width,
-            height: eye.height,
-        };
-    }
-
-    webgazer.BlinkDetector.prototype.isSameEye = function(oldEye, newEye) {
-        return (oldEye.width === newEye.width) && (oldEye.height === newEye.height);
-    }
-
-    webgazer.BlinkDetector.prototype.isBlink = function(oldEye, newEye) {
-        let correlation = 0;
-        for (let i = 0; i < this.blinkWindow-1; i++) {
-            const data = this.blinkData[i];
-            const nextData = this.blinkData[i + 1];
-            // if (!this.isSameEye(data, nextData)) {
-            //     return false;
-            // }
-            correlation += webgazer.util.correlation(data.data, nextData.data);
-        }
-        correlation /= this.blinkWindow;
-        return correlation > minCorrelation && correlation < maxCorrelation;
-    }
-
+    
     /**
-     *
-     * @param eyesObj
-     * @returns {*}
+     * Initialize new arrays and initialize Kalman filter.
      */
-    webgazer.BlinkDetector.prototype.detectBlink = function(eyesObj) {
-        if (!eyesObj) {
-            return eyesObj;
-        }
+    webgazer.reg.RidgeWeightedReg.prototype.init = function() {
+        this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
+        this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
+        this.eyeFeaturesClicks = new webgazer.util.DataWindow(dataWindow);
 
-        // if (this.blinkData.length < this.blinkWindow) {
-        //     this.blinkData.push(eyesObj);
-        //     eyesObj.left.blink = false;
-        //     eyesObj.right.blink = false;
-        //     return eyesObj;
-        // }
+        //sets to one second worth of cursor trail
+        this.trailTime = 1000;
+        this.trailDataWindow = this.trailTime / webgazer.params.moveTickSize;
+        this.screenXTrailArray = new webgazer.util.DataWindow(trailDataWindow);
+        this.screenYTrailArray = new webgazer.util.DataWindow(trailDataWindow);
+        this.eyeFeaturesTrail = new webgazer.util.DataWindow(trailDataWindow);
+        this.trailTimes = new webgazer.util.DataWindow(trailDataWindow);
 
-        //replace oldest entry - check to see if .data attribute is set above
-        this.blinkData[this.blinkWindowIndex] = this.extractBlinkData(eyesObj);
-        this.blinkWindowIndex = (this.blinkWindowIndex + 1) % this.blinkWindow;
+        this.dataClicks = new webgazer.util.DataWindow(dataWindow);
+        this.dataTrail = new webgazer.util.DataWindow(trailDataWindow);
 
-        for (let i=0;i<this.blinkWindow;i++){
-            if (!(this.blinkData[i])){
-                return eyesObj;
-            }
-            else if (!(this.blinkData[i].data)){
-                return eyesObj;
-            }
-        }
-        eyesObj.left.blink = false;
-        eyesObj.right.blink = false;
+        // Initialize Kalman filter [20200608 xk] what do we do about parameters?
+        // [20200611 xk] unsure what to do w.r.t. dimensionality of these matrices. So far at least 
+        //               by my own anecdotal observation a 4x1 x vector seems to work alright
+        var F = [ [1, 0, 1, 0],
+                  [0, 1, 0, 1],
+                  [0, 0, 1, 0],
+                  [0, 0, 0, 1]];
+        
+        //Parameters Q and R may require some fine tuning
+        var Q = [ [1/4, 0,    1/2, 0],
+                  [0,   1/4,  0,   1/2],
+                  [1/2, 0,    1,   0],
+                  [0,  1/2,  0,   1]];// * delta_t
+        var delta_t = 1/10; // The amount of time between frames
+        Q = numeric.mul(Q, delta_t);
+        
+        var H = [ [1, 0, 0, 0, 0, 0],
+                  [0, 1, 0, 0, 0, 0],
+                  [0, 0, 1, 0, 0, 0],
+                  [0, 0, 0, 1, 0, 0]];
+        var H = [ [1, 0, 0, 0],
+                  [0, 1, 0, 0]];
+        var pixel_error = 47; //We will need to fine tune this value [20200611 xk] I just put a random value here 
+        
+        //This matrix represents the expected measurement error
+        var R = numeric.mul(numeric.identity(2), pixel_error);
 
-        // if (this.blinkData.length == this.blinkWindow) {
-        //     return eyesObj;
-        // }
+        var P_initial = numeric.mul(numeric.identity(4), 0.0001); //Initial covariance matrix
+        var x_initial = [[500], [500], [0], [0]]; // Initial measurement matrix
 
-        if (this.isBlink()) {
-            eyesObj.left.blink = true;
-            eyesObj.right.blink = true;
-            this.blinkData = new webgazer.util.DataWindow(this.blinkWindow);
-        }
-
-        return eyesObj;
+        this.kalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
     };
 
     /**
-     *
-     * @param value
-     * @returns {webgazer.BlinkDetector}
+     * Compute eyes size as gray histogram
+     * @param {Object} eyes - The eyes where looking for gray histogram
+     * @returns {Array.<T>} The eyes gray level histogram
      */
-    webgazer.BlinkDetector.prototype.setBlinkWindow = function(value) {
-        if (webgazer.utils.isInt(value) && value > 0) {
-            this.blinkWindow = value;
-        }
-        return this;
-    }
+    webgazer.reg.RidgeReg.prototype.init.getEyeFeats = function(eyes) {
+        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
+        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
+
+        var histLeft = [];
+        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
+        var histRight = [];
+        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
+
+        var leftGrayArray = Array.prototype.slice.call(histLeft);
+        var rightGrayArray = Array.prototype.slice.call(histRight);
+
+        return leftGrayArray.concat(rightGrayArray);
+    }
+    
+    /**
+     * Add given data from eyes
+     * @param {Object} eyes - eyes where extract data to add
+     * @param {Object} screenPos - The current screen point
+     * @param {Object} type - The type of performed action
+     */
+    webgazer.reg.RidgeWeightedReg.prototype.addData = function(eyes, screenPos, type) {
+        if (!eyes) {
+            return;
+        }
+        if (eyes.left.blink || eyes.right.blink) {
+            return;
+        }
+        if (type === 'click') {
+            this.screenXClicksArray.push([screenPos[0]]);
+            this.screenYClicksArray.push([screenPos[1]]);
+
+            this.eyeFeaturesClicks.push(this.getEyeFeats(eyes));
+            this.dataClicks.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
+        } else if (type === 'move') {
+            this.screenXTrailArray.push([screenPos[0]]);
+            this.screenYTrailArray.push([screenPos[1]]);
+
+            this.eyeFeaturesTrail.push(this.getEyeFeats(eyes));
+            this.trailTimes.push(performance.now());
+            this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
+        }
+
+        // [20180730 JT] Why do we do this? It doesn't return anything...
+        // But as JS is pass by reference, it still affects it.
+        //
+        // Causes problems for when we want to call 'addData' twice in a row on the same object, but perhaps with different screenPos or types (think multiple interactions within one video frame)
+        //eyes.left.patch = Array.from(eyes.left.patch.data);
+        //eyes.right.patch = Array.from(eyes.right.patch.data);
+    };
+
+    /**
+     * Try to predict coordinates from pupil data
+     * after apply linear regression on data set
+     * @param {Object} eyesObj - The current user eyes object
+     * @returns {Object}
+     */
+    webgazer.reg.RidgeWeightedReg.prototype.predict = function(eyesObj) {
+        if (!eyesObj || this.eyeFeaturesClicks.length === 0) {
+            return null;
+        }
+        var acceptTime = performance.now() - this.trailTime;
+        var trailX = [];
+        var trailY = [];
+        var trailFeat = [];
+        for (var i = 0; i < this.trailDataWindow; i++) {
+            if (this.trailTimes.get(i) > acceptTime) {
+                trailX.push(this.screenXTrailArray.get(i));
+                trailY.push(this.screenYTrailArray.get(i));
+                trailFeat.push(this.eyeFeaturesTrail.get(i));
+            }
+        }
+
+        var len = this.eyeFeaturesClicks.data.length;
+        var weightedEyeFeats = Array(len);
+        var weightedXArray = Array(len);
+        var weightedYArray = Array(len);
+        for (var i = 0; i < len; i++) {
+            var weight = Math.sqrt( 1 / (len - i) ); // access from oldest to newest so should start with low weight and increase steadily
+            //abstraction is leaking...
+            var trueIndex = this.eyeFeaturesClicks.getTrueIndex(i);
+            for (var j = 0; j < this.eyeFeaturesClicks.data[trueIndex].length; j++) {
+                var val = this.eyeFeaturesClicks.data[trueIndex][j] * weight;
+                if (weightedEyeFeats[trueIndex] !== undefined){
+                    weightedEyeFeats[trueIndex].push(val);
+                } else {
+                    weightedEyeFeats[trueIndex] = [val];
+                }
+            }
+            weightedXArray[trueIndex] = this.screenXClicksArray.get(i).slice(0, this.screenXClicksArray.get(i).length);
+            weightedYArray[trueIndex] = this.screenYClicksArray.get(i).slice(0, this.screenYClicksArray.get(i).length);
+            weightedXArray[i][0] = weightedXArray[i][0] * weight;
+            weightedYArray[i][0] = weightedYArray[i][0] * weight;
+        }
+
+        var screenXArray = weightedXArray.concat(trailX);
+        var screenYArray = weightedYArray.concat(trailY);
+        var eyeFeatures = weightedEyeFeats.concat(trailFeat);
+
+        var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
+        var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter);
+
+        var eyeFeats = this.getEyeFeats(eyesObj);
+        var predictedX = 0;
+        for(var i=0; i< eyeFeats.length; i++){
+            predictedX += eyeFeats[i] * coefficientsX[i];
+        }
+        var predictedY = 0;
+        for(var i=0; i< eyeFeats.length; i++){
+            predictedY += eyeFeats[i] * coefficientsY[i];
+        }
+
+        predictedX = Math.floor(predictedX);
+        predictedY = Math.floor(predictedY);
+
+        if (window.applyKalmanFilter) {
+            // Update Kalman model, and get prediction
+            var newGaze = [predictedX, predictedY]; // [20200607 xk] Should we use a 1x4 vector?
+            newGaze = this.kalman.update(newGaze);
+    
+            return {
+                x: newGaze[0],
+                y: newGaze[1]
+            };
+        } else {
+            return {
+                x: predictedX,
+                y: predictedY
+            };
+        }
+    };
+
+    /**
+     * Add given data to current data set then,
+     * replace current data member with given data
+     * @param {Array.<Object>} data - The data to set
+     */
+    webgazer.reg.RidgeWeightedReg.prototype.setData = function(data) {
+        for (var i = 0; i < data.length; i++) {
+            // [20200611 xk] Previous comment said this was a kludge, but it seems like this is the best solution 
+
+            // Clone data array
+            var leftData = new Uint8ClampedArray(data[i].eyes.left.patch.data);
+            var rightData = new Uint8ClampedArray(data[i].eyes.right.patch.data);
+            // Duplicate ImageData object
+            data[i].eyes.left.patch = new ImageData(leftData, data[i].eyes.left.width, data[i].eyes.left.height);
+            data[i].eyes.right.patch = new ImageData(rightData, data[i].eyes.right.width, data[i].eyes.right.height);
+
+            this.addData(data[i].eyes, data[i].screenPos, data[i].type);
+        }
+    };
+
+    /**
+     * Return the data
+     * @returns {Array.<Object>|*}
+     */
+    webgazer.reg.RidgeWeightedReg.prototype.getData = function() {
+        return this.dataClicks.data;
+    };
+
+    /**
+     * The RidgeWeightedReg object name
+     * @type {string}
+     */
+    webgazer.reg.RidgeWeightedReg.prototype.name = 'ridge';
+    
 }(window));
+
+'use strict';
+(function(window) {
+
+    window.webgazer = window.webgazer || {};
+    webgazer.reg = webgazer.reg || {};
+    webgazer.mat = webgazer.mat || {};
+    webgazer.util = webgazer.util || {};
+
+    var ridgeParameter = Math.pow(10,-5);
+    var resizeWidth = 10;
+    var resizeHeight = 6;
+    var dataWindow = 700;
+    var weights = {'X':[0],'Y':[0]};
+    var trailDataWindow = 10;
+
+    /**
+     * Constructor of RidgeRegThreaded object,
+     * it retrieve data window, and prepare a worker,
+     * this object allow to perform threaded ridge regression
+     * @constructor
+     */
+    webgazer.reg.RidgeRegThreaded = function() {
+        this.init();
+    };
+
+    /**
+     * Initialize new arrays and initialize Kalman filter.
+     */
+    webgazer.reg.RidgeRegThreaded.prototype.init = function() {
+        this.screenXClicksArray = new webgazer.util.DataWindow(dataWindow);
+        this.screenYClicksArray = new webgazer.util.DataWindow(dataWindow);
+        this.eyeFeaturesClicks = new webgazer.util.DataWindow(dataWindow);
+
+        this.screenXTrailArray = new webgazer.util.DataWindow(trailDataWindow);
+        this.screenYTrailArray = new webgazer.util.DataWindow(trailDataWindow);
+        this.eyeFeaturesTrail = new webgazer.util.DataWindow(trailDataWindow);
+
+        this.dataClicks = new webgazer.util.DataWindow(dataWindow);
+        this.dataTrail = new webgazer.util.DataWindow(dataWindow);
+
+        // Place the src/ridgeworker.js file into the same directory as your html file.
+        if (!this.worker) {
+            this.worker = new Worker('ridgeWorker.js'); // [20200708] TODO: Figure out how to make this inline
+            this.worker.onerror = function(err) { console.log(err.message); };
+            this.worker.onmessage = function(evt) {
+                weights.X = evt.data.X;
+                weights.Y = evt.data.Y;
+            };
+            console.log('initialized worker');
+        }
+
+        // Initialize Kalman filter [20200608 xk] what do we do about parameters?
+        // [20200611 xk] unsure what to do w.r.t. dimensionality of these matrices. So far at least 
+        //               by my own anecdotal observation a 4x1 x vector seems to work alright
+        var F = [ [1, 0, 1, 0],
+                  [0, 1, 0, 1],
+                  [0, 0, 1, 0],
+                  [0, 0, 0, 1]];
+        
+        //Parameters Q and R may require some fine tuning
+        var Q = [ [1/4, 0,    1/2, 0],
+                  [0,   1/4,  0,   1/2],
+                  [1/2, 0,    1,   0],
+                  [0,  1/2,  0,   1]];// * delta_t
+        var delta_t = 1/10; // The amount of time between frames
+        Q = numeric.mul(Q, delta_t);
+        
+        var H = [ [1, 0, 0, 0, 0, 0],
+                  [0, 1, 0, 0, 0, 0],
+                  [0, 0, 1, 0, 0, 0],
+                  [0, 0, 0, 1, 0, 0]];
+        var H = [ [1, 0, 0, 0],
+                  [0, 1, 0, 0]];
+        var pixel_error = 47; //We will need to fine tune this value [20200611 xk] I just put a random value here 
+        
+        //This matrix represents the expected measurement error
+        var R = numeric.mul(numeric.identity(2), pixel_error);
+
+        var P_initial = numeric.mul(numeric.identity(4), 0.0001); //Initial covariance matrix
+        var x_initial = [[500], [500], [0], [0]]; // Initial measurement matrix
+
+        this.kalman = new self.webgazer.util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
+    }
+    
+    /**
+     * Compute eyes size as gray histogram
+     * @param {Object} eyes - The eyes where looking for gray histogram
+     * @returns {Array.<T>} The eyes gray level histogram
+     */
+    webgazer.reg.RidgeReg.prototype.init.getEyeFeats = function(eyes) {
+        var resizedLeft = webgazer.util.resizeEye(eyes.left, resizeWidth, resizeHeight);
+        var resizedright = webgazer.util.resizeEye(eyes.right, resizeWidth, resizeHeight);
+
+        var leftGray = webgazer.util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+        var rightGray = webgazer.util.grayscale(resizedright.data, resizedright.width, resizedright.height);
+
+        var histLeft = [];
+        webgazer.util.equalizeHistogram(leftGray, 5, histLeft);
+        var histRight = [];
+        webgazer.util.equalizeHistogram(rightGray, 5, histRight);
+
+        var leftGrayArray = Array.prototype.slice.call(histLeft);
+        var rightGrayArray = Array.prototype.slice.call(histRight);
+
+        return leftGrayArray.concat(rightGrayArray);
+    }
+    /**
+     * Add given data from eyes
+     * @param {Object} eyes - eyes where extract data to add
+     * @param {Object} screenPos - The current screen point
+     * @param {Object} type - The type of performed action
+     */
+    webgazer.reg.RidgeRegThreaded.prototype.addData = function(eyes, screenPos, type) {
+        if (!eyes) {
+            return;
+        }
+        if (eyes.left.blink || eyes.right.blink) {
+            return;
+        }
+        this.worker.postMessage({'eyes':this.getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
+    };
+
+    /**
+     * Try to predict coordinates from pupil data
+     * after apply linear regression on data set
+     * @param {Object} eyesObj - The current user eyes object
+     * @returns {Object}
+     */
+    webgazer.reg.RidgeRegThreaded.prototype.predict = function(eyesObj) {
+        // console.log('LOGGING..');
+        if (!eyesObj) {
+            return null;
+        }
+        var coefficientsX = weights.X;
+        var coefficientsY = weights.Y;
+
+        var eyeFeats = this.getEyeFeats(eyesObj);
+        var predictedX = 0, predictedY = 0;
+        for(var i=0; i< eyeFeats.length; i++){
+            predictedX += eyeFeats[i] * coefficientsX[i];
+            predictedY += eyeFeats[i] * coefficientsY[i];
+        }
+
+        predictedX = Math.floor(predictedX);
+        predictedY = Math.floor(predictedY);
+
+        if (window.applyKalmanFilter) {
+            // Update Kalman model, and get prediction
+            var newGaze = [predictedX, predictedY]; // [20200607 xk] Should we use a 1x4 vector?
+            newGaze = this.kalman.update(newGaze);
+    
+            return {
+                x: newGaze[0],
+                y: newGaze[1]
+            };
+        } else {
+            return {
+                x: predictedX,
+                y: predictedY
+            };
+        }
+    };
+
+    /**
+     * Add given data to current data set then,
+     * replace current data member with given data
+     * @param {Array.<Object>} data - The data to set
+     */
+    webgazer.reg.RidgeRegThreaded.prototype.setData = function(data) {
+        for (var i = 0; i < data.length; i++) {
+            // [20200611 xk] Previous comment said this was a kludge, but it seems like this is the best solution 
+            
+            // Clone data array
+            var leftData = new Uint8ClampedArray(data[i].eyes.left.patch.data);
+            var rightData = new Uint8ClampedArray(data[i].eyes.right.patch.data);
+            // Duplicate ImageData object
+            data[i].eyes.left.patch = new ImageData(leftData, data[i].eyes.left.width, data[i].eyes.left.height);
+            data[i].eyes.right.patch = new ImageData(rightData, data[i].eyes.right.width, data[i].eyes.right.height);
+
+            this.addData(data[i].eyes, data[i].screenPos, data[i].type);
+        }
+    };
+
+    /**
+     * Return the data
+     * @returns {Array.<Object>|*}
+     */
+    webgazer.reg.RidgeRegThreaded.prototype.getData = function() {
+        return this.dataClicks.data;
+    };
+
+    /**
+     * The RidgeRegThreaded object name
+     * @type {string}
+     */
+    webgazer.reg.RidgeRegThreaded.prototype.name = 'ridge';
+    
+}(window));
+
 'use strict';
 (function() {
 
@@ -45172,8 +44857,6 @@ function store_points(x, y, k) {
     var faceOverlay = null;
     var faceFeedbackBox = null;
     var gazeDot = null;
-    
-
     webgazer.params.videoElementId = 'webgazerVideoFeed';
     webgazer.params.videoElementCanvasId = 'webgazerVideoCanvas';
     webgazer.params.faceOverlayId = 'webgazerFaceOverlay';
@@ -45223,7 +44906,7 @@ function store_points(x, y, k) {
     //currently used tracker and regression models, defaults to clmtrackr and linear regression
     var curTracker = new webgazer.tracker.TFFaceMesh();
     var regs = [new webgazer.reg.RidgeReg()];
-    var blinkDetector = new webgazer.BlinkDetector();
+    // var blinkDetector = new webgazer.BlinkDetector();
 
     //lookup tables
     var curTrackerMap = {
