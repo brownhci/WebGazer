@@ -8,7 +8,7 @@ james_tompkin@brown.edu - Any issues, email me.
 This software takes the ETRA2018 dataset and creates CSV files for each video, containing per-frame WebGazer and Tobii values in normalized screen coordinates.
 After extraction, this makes it simple and efficent to analyse the performance of WebGazer in your favourite _data science_ application.
 
-Works with webgazer.js commit 0d23c4ce6a11188d28f6114ca6a5006e7d4b1354
+Works with webgazer.js commit 5a12c64db54b489cda9bad5a1b90fa9ccfdde4e8
 
 Requirements:
 =============
