@@ -5,22 +5,22 @@
     "type": "git",
     "url": "https://github.com/brownhci/WebGazer.git"
   },
-  "license": "LGPL-3.0-or-later",
-  "main": "dist2/webgazer.commonjs2.js",
+  "license": "GPL-3.0-or-later",
+  "main": "dist/webgazer.commonjs2.js",
   "module": "src/index.mjs",
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "dev": "webpack --progress --colors --config webpack.config.js --mode=development",
-    "build": "webpack --progress --colors --config webpack.config.js --mode=production"
+    "build": "webpack --progress --colors --config webpack.config.js --mode=production",
+    "gen_docs": "jsdoc src/index.mjs"
   },
   "files": [
-    "dist2",
     "src"
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "npm run dev"
+      "pre-commit": "npm run build"
     }
   },
   "keywords": [
@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "file-loader": "^6.0.0",
+    "jsdoc": "^3.6.5",
     "parallel-webpack": "2.6.0",
     "rimraf": "2.6.3",
     "webpack": "4.44.1",
