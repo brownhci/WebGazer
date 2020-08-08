@@ -165,7 +165,7 @@ def sendVideoEnd( wsh ):
     # Progress video if not at end of video list for global_variables.participant
     if global_variables.participant.videosPos+1 >= len(global_variables.participant.videos):
         # New global_variables.participant!
-        global_variables.participant( wsh )
+        newParticipant( wsh )
 
     else:
         # Regular 'video end' message; will trigger return of {'msgID': "1"}
