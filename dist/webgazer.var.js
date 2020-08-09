@@ -89,7 +89,7 @@ var webgazer =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 91);
+/******/ 	return __webpack_require__(__webpack_require__.s = 90);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -20169,7 +20169,7 @@ function linspaceImpl(start, stop, num) {
 }
 //# sourceMappingURL=backend_util.js.map
 // EXTERNAL MODULE: ./node_modules/@tensorflow/tfjs-core/dist/device_util.js
-var device_util = __webpack_require__(37);
+var device_util = __webpack_require__(36);
 
 // CONCATENATED MODULE: ./node_modules/@tensorflow/tfjs-core/dist/backends/split_shared.js
 /**
@@ -31314,7 +31314,7 @@ function getFloat16Decoder() {
     };
 }
 //# sourceMappingURL=io_utils.js.map
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(36).Buffer))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(39).Buffer))
 
 /***/ }),
 /* 14 */
@@ -33115,7 +33115,7 @@ function getBoolArrayParam(attrs, name, def) {
     return def;
 }
 //# sourceMappingURL=operation_mapper.js.map
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(36).Buffer))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(39).Buffer))
 
 /***/ }),
 /* 16 */
@@ -34235,7 +34235,7 @@ __webpack_require__.d(shared_namespaceObject, "maxImpl", function() { return Max
 __webpack_require__.d(shared_namespaceObject, "transposeImpl", function() { return Transpose_impl["a" /* transposeImpl */]; });
 
 // EXTERNAL MODULE: ./node_modules/@tensorflow/tfjs-backend-cpu/dist/kernels/Max_impl.js
-var Max_impl = __webpack_require__(38);
+var Max_impl = __webpack_require__(37);
 
 // EXTERNAL MODULE: ./node_modules/@tensorflow/tfjs-backend-cpu/dist/kernels/Transpose_impl.js
 var Transpose_impl = __webpack_require__(30);
@@ -40327,1803 +40327,6 @@ process.umask = function() { return 0; };
 
 /***/ }),
 /* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(global) {/*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <http://feross.org>
- * @license  MIT
- */
-/* eslint-disable no-proto */
-
-
-
-var base64 = __webpack_require__(65)
-var ieee754 = __webpack_require__(66)
-var isArray = __webpack_require__(67)
-
-exports.Buffer = Buffer
-exports.SlowBuffer = SlowBuffer
-exports.INSPECT_MAX_BYTES = 50
-
-/**
- * If `Buffer.TYPED_ARRAY_SUPPORT`:
- *   === true    Use Uint8Array implementation (fastest)
- *   === false   Use Object implementation (most compatible, even IE6)
- *
- * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
- * Opera 11.6+, iOS 4.2+.
- *
- * Due to various browser bugs, sometimes the Object implementation will be used even
- * when the browser supports typed arrays.
- *
- * Note:
- *
- *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
- *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
- *
- *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
- *
- *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
- *     incorrect length in some situations.
-
- * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
- * get the Object implementation, which is slower but behaves correctly.
- */
-Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
-  ? global.TYPED_ARRAY_SUPPORT
-  : typedArraySupport()
-
-/*
- * Export kMaxLength after typed array support is determined.
- */
-exports.kMaxLength = kMaxLength()
-
-function typedArraySupport () {
-  try {
-    var arr = new Uint8Array(1)
-    arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }}
-    return arr.foo() === 42 && // typed array instances can be augmented
-        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
-        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
-  } catch (e) {
-    return false
-  }
-}
-
-function kMaxLength () {
-  return Buffer.TYPED_ARRAY_SUPPORT
-    ? 0x7fffffff
-    : 0x3fffffff
-}
-
-function createBuffer (that, length) {
-  if (kMaxLength() < length) {
-    throw new RangeError('Invalid typed array length')
-  }
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    // Return an augmented `Uint8Array` instance, for best performance
-    that = new Uint8Array(length)
-    that.__proto__ = Buffer.prototype
-  } else {
-    // Fallback: Return an object instance of the Buffer class
-    if (that === null) {
-      that = new Buffer(length)
-    }
-    that.length = length
-  }
-
-  return that
-}
-
-/**
- * The Buffer constructor returns instances of `Uint8Array` that have their
- * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
- * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
- * and the `Uint8Array` methods. Square bracket notation works as expected -- it
- * returns a single octet.
- *
- * The `Uint8Array` prototype remains unmodified.
- */
-
-function Buffer (arg, encodingOrOffset, length) {
-  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
-    return new Buffer(arg, encodingOrOffset, length)
-  }
-
-  // Common case.
-  if (typeof arg === 'number') {
-    if (typeof encodingOrOffset === 'string') {
-      throw new Error(
-        'If encoding is specified then the first argument must be a string'
-      )
-    }
-    return allocUnsafe(this, arg)
-  }
-  return from(this, arg, encodingOrOffset, length)
-}
-
-Buffer.poolSize = 8192 // not used by this implementation
-
-// TODO: Legacy, not needed anymore. Remove in next major version.
-Buffer._augment = function (arr) {
-  arr.__proto__ = Buffer.prototype
-  return arr
-}
-
-function from (that, value, encodingOrOffset, length) {
-  if (typeof value === 'number') {
-    throw new TypeError('"value" argument must not be a number')
-  }
-
-  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
-    return fromArrayBuffer(that, value, encodingOrOffset, length)
-  }
-
-  if (typeof value === 'string') {
-    return fromString(that, value, encodingOrOffset)
-  }
-
-  return fromObject(that, value)
-}
-
-/**
- * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
- * if value is a number.
- * Buffer.from(str[, encoding])
- * Buffer.from(array)
- * Buffer.from(buffer)
- * Buffer.from(arrayBuffer[, byteOffset[, length]])
- **/
-Buffer.from = function (value, encodingOrOffset, length) {
-  return from(null, value, encodingOrOffset, length)
-}
-
-if (Buffer.TYPED_ARRAY_SUPPORT) {
-  Buffer.prototype.__proto__ = Uint8Array.prototype
-  Buffer.__proto__ = Uint8Array
-  if (typeof Symbol !== 'undefined' && Symbol.species &&
-      Buffer[Symbol.species] === Buffer) {
-    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
-    Object.defineProperty(Buffer, Symbol.species, {
-      value: null,
-      configurable: true
-    })
-  }
-}
-
-function assertSize (size) {
-  if (typeof size !== 'number') {
-    throw new TypeError('"size" argument must be a number')
-  } else if (size < 0) {
-    throw new RangeError('"size" argument must not be negative')
-  }
-}
-
-function alloc (that, size, fill, encoding) {
-  assertSize(size)
-  if (size <= 0) {
-    return createBuffer(that, size)
-  }
-  if (fill !== undefined) {
-    // Only pay attention to encoding if it's a string. This
-    // prevents accidentally sending in a number that would
-    // be interpretted as a start offset.
-    return typeof encoding === 'string'
-      ? createBuffer(that, size).fill(fill, encoding)
-      : createBuffer(that, size).fill(fill)
-  }
-  return createBuffer(that, size)
-}
-
-/**
- * Creates a new filled Buffer instance.
- * alloc(size[, fill[, encoding]])
- **/
-Buffer.alloc = function (size, fill, encoding) {
-  return alloc(null, size, fill, encoding)
-}
-
-function allocUnsafe (that, size) {
-  assertSize(size)
-  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
-  if (!Buffer.TYPED_ARRAY_SUPPORT) {
-    for (var i = 0; i < size; ++i) {
-      that[i] = 0
-    }
-  }
-  return that
-}
-
-/**
- * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
- * */
-Buffer.allocUnsafe = function (size) {
-  return allocUnsafe(null, size)
-}
-/**
- * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
- */
-Buffer.allocUnsafeSlow = function (size) {
-  return allocUnsafe(null, size)
-}
-
-function fromString (that, string, encoding) {
-  if (typeof encoding !== 'string' || encoding === '') {
-    encoding = 'utf8'
-  }
-
-  if (!Buffer.isEncoding(encoding)) {
-    throw new TypeError('"encoding" must be a valid string encoding')
-  }
-
-  var length = byteLength(string, encoding) | 0
-  that = createBuffer(that, length)
-
-  var actual = that.write(string, encoding)
-
-  if (actual !== length) {
-    // Writing a hex string, for example, that contains invalid characters will
-    // cause everything after the first invalid character to be ignored. (e.g.
-    // 'abxxcd' will be treated as 'ab')
-    that = that.slice(0, actual)
-  }
-
-  return that
-}
-
-function fromArrayLike (that, array) {
-  var length = array.length < 0 ? 0 : checked(array.length) | 0
-  that = createBuffer(that, length)
-  for (var i = 0; i < length; i += 1) {
-    that[i] = array[i] & 255
-  }
-  return that
-}
-
-function fromArrayBuffer (that, array, byteOffset, length) {
-  array.byteLength // this throws if `array` is not a valid ArrayBuffer
-
-  if (byteOffset < 0 || array.byteLength < byteOffset) {
-    throw new RangeError('\'offset\' is out of bounds')
-  }
-
-  if (array.byteLength < byteOffset + (length || 0)) {
-    throw new RangeError('\'length\' is out of bounds')
-  }
-
-  if (byteOffset === undefined && length === undefined) {
-    array = new Uint8Array(array)
-  } else if (length === undefined) {
-    array = new Uint8Array(array, byteOffset)
-  } else {
-    array = new Uint8Array(array, byteOffset, length)
-  }
-
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    // Return an augmented `Uint8Array` instance, for best performance
-    that = array
-    that.__proto__ = Buffer.prototype
-  } else {
-    // Fallback: Return an object instance of the Buffer class
-    that = fromArrayLike(that, array)
-  }
-  return that
-}
-
-function fromObject (that, obj) {
-  if (Buffer.isBuffer(obj)) {
-    var len = checked(obj.length) | 0
-    that = createBuffer(that, len)
-
-    if (that.length === 0) {
-      return that
-    }
-
-    obj.copy(that, 0, 0, len)
-    return that
-  }
-
-  if (obj) {
-    if ((typeof ArrayBuffer !== 'undefined' &&
-        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
-      if (typeof obj.length !== 'number' || isnan(obj.length)) {
-        return createBuffer(that, 0)
-      }
-      return fromArrayLike(that, obj)
-    }
-
-    if (obj.type === 'Buffer' && isArray(obj.data)) {
-      return fromArrayLike(that, obj.data)
-    }
-  }
-
-  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
-}
-
-function checked (length) {
-  // Note: cannot use `length < kMaxLength()` here because that fails when
-  // length is NaN (which is otherwise coerced to zero.)
-  if (length >= kMaxLength()) {
-    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
-                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
-  }
-  return length | 0
-}
-
-function SlowBuffer (length) {
-  if (+length != length) { // eslint-disable-line eqeqeq
-    length = 0
-  }
-  return Buffer.alloc(+length)
-}
-
-Buffer.isBuffer = function isBuffer (b) {
-  return !!(b != null && b._isBuffer)
-}
-
-Buffer.compare = function compare (a, b) {
-  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
-    throw new TypeError('Arguments must be Buffers')
-  }
-
-  if (a === b) return 0
-
-  var x = a.length
-  var y = b.length
-
-  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
-    if (a[i] !== b[i]) {
-      x = a[i]
-      y = b[i]
-      break
-    }
-  }
-
-  if (x < y) return -1
-  if (y < x) return 1
-  return 0
-}
-
-Buffer.isEncoding = function isEncoding (encoding) {
-  switch (String(encoding).toLowerCase()) {
-    case 'hex':
-    case 'utf8':
-    case 'utf-8':
-    case 'ascii':
-    case 'latin1':
-    case 'binary':
-    case 'base64':
-    case 'ucs2':
-    case 'ucs-2':
-    case 'utf16le':
-    case 'utf-16le':
-      return true
-    default:
-      return false
-  }
-}
-
-Buffer.concat = function concat (list, length) {
-  if (!isArray(list)) {
-    throw new TypeError('"list" argument must be an Array of Buffers')
-  }
-
-  if (list.length === 0) {
-    return Buffer.alloc(0)
-  }
-
-  var i
-  if (length === undefined) {
-    length = 0
-    for (i = 0; i < list.length; ++i) {
-      length += list[i].length
-    }
-  }
-
-  var buffer = Buffer.allocUnsafe(length)
-  var pos = 0
-  for (i = 0; i < list.length; ++i) {
-    var buf = list[i]
-    if (!Buffer.isBuffer(buf)) {
-      throw new TypeError('"list" argument must be an Array of Buffers')
-    }
-    buf.copy(buffer, pos)
-    pos += buf.length
-  }
-  return buffer
-}
-
-function byteLength (string, encoding) {
-  if (Buffer.isBuffer(string)) {
-    return string.length
-  }
-  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
-      (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
-    return string.byteLength
-  }
-  if (typeof string !== 'string') {
-    string = '' + string
-  }
-
-  var len = string.length
-  if (len === 0) return 0
-
-  // Use a for loop to avoid recursion
-  var loweredCase = false
-  for (;;) {
-    switch (encoding) {
-      case 'ascii':
-      case 'latin1':
-      case 'binary':
-        return len
-      case 'utf8':
-      case 'utf-8':
-      case undefined:
-        return utf8ToBytes(string).length
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return len * 2
-      case 'hex':
-        return len >>> 1
-      case 'base64':
-        return base64ToBytes(string).length
-      default:
-        if (loweredCase) return utf8ToBytes(string).length // assume utf8
-        encoding = ('' + encoding).toLowerCase()
-        loweredCase = true
-    }
-  }
-}
-Buffer.byteLength = byteLength
-
-function slowToString (encoding, start, end) {
-  var loweredCase = false
-
-  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
-  // property of a typed array.
-
-  // This behaves neither like String nor Uint8Array in that we set start/end
-  // to their upper/lower bounds if the value passed is out of range.
-  // undefined is handled specially as per ECMA-262 6th Edition,
-  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
-  if (start === undefined || start < 0) {
-    start = 0
-  }
-  // Return early if start > this.length. Done here to prevent potential uint32
-  // coercion fail below.
-  if (start > this.length) {
-    return ''
-  }
-
-  if (end === undefined || end > this.length) {
-    end = this.length
-  }
-
-  if (end <= 0) {
-    return ''
-  }
-
-  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
-  end >>>= 0
-  start >>>= 0
-
-  if (end <= start) {
-    return ''
-  }
-
-  if (!encoding) encoding = 'utf8'
-
-  while (true) {
-    switch (encoding) {
-      case 'hex':
-        return hexSlice(this, start, end)
-
-      case 'utf8':
-      case 'utf-8':
-        return utf8Slice(this, start, end)
-
-      case 'ascii':
-        return asciiSlice(this, start, end)
-
-      case 'latin1':
-      case 'binary':
-        return latin1Slice(this, start, end)
-
-      case 'base64':
-        return base64Slice(this, start, end)
-
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return utf16leSlice(this, start, end)
-
-      default:
-        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
-        encoding = (encoding + '').toLowerCase()
-        loweredCase = true
-    }
-  }
-}
-
-// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
-// Buffer instances.
-Buffer.prototype._isBuffer = true
-
-function swap (b, n, m) {
-  var i = b[n]
-  b[n] = b[m]
-  b[m] = i
-}
-
-Buffer.prototype.swap16 = function swap16 () {
-  var len = this.length
-  if (len % 2 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 16-bits')
-  }
-  for (var i = 0; i < len; i += 2) {
-    swap(this, i, i + 1)
-  }
-  return this
-}
-
-Buffer.prototype.swap32 = function swap32 () {
-  var len = this.length
-  if (len % 4 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 32-bits')
-  }
-  for (var i = 0; i < len; i += 4) {
-    swap(this, i, i + 3)
-    swap(this, i + 1, i + 2)
-  }
-  return this
-}
-
-Buffer.prototype.swap64 = function swap64 () {
-  var len = this.length
-  if (len % 8 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 64-bits')
-  }
-  for (var i = 0; i < len; i += 8) {
-    swap(this, i, i + 7)
-    swap(this, i + 1, i + 6)
-    swap(this, i + 2, i + 5)
-    swap(this, i + 3, i + 4)
-  }
-  return this
-}
-
-Buffer.prototype.toString = function toString () {
-  var length = this.length | 0
-  if (length === 0) return ''
-  if (arguments.length === 0) return utf8Slice(this, 0, length)
-  return slowToString.apply(this, arguments)
-}
-
-Buffer.prototype.equals = function equals (b) {
-  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
-  if (this === b) return true
-  return Buffer.compare(this, b) === 0
-}
-
-Buffer.prototype.inspect = function inspect () {
-  var str = ''
-  var max = exports.INSPECT_MAX_BYTES
-  if (this.length > 0) {
-    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ')
-    if (this.length > max) str += ' ... '
-  }
-  return '<Buffer ' + str + '>'
-}
-
-Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
-  if (!Buffer.isBuffer(target)) {
-    throw new TypeError('Argument must be a Buffer')
-  }
-
-  if (start === undefined) {
-    start = 0
-  }
-  if (end === undefined) {
-    end = target ? target.length : 0
-  }
-  if (thisStart === undefined) {
-    thisStart = 0
-  }
-  if (thisEnd === undefined) {
-    thisEnd = this.length
-  }
-
-  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
-    throw new RangeError('out of range index')
-  }
-
-  if (thisStart >= thisEnd && start >= end) {
-    return 0
-  }
-  if (thisStart >= thisEnd) {
-    return -1
-  }
-  if (start >= end) {
-    return 1
-  }
-
-  start >>>= 0
-  end >>>= 0
-  thisStart >>>= 0
-  thisEnd >>>= 0
-
-  if (this === target) return 0
-
-  var x = thisEnd - thisStart
-  var y = end - start
-  var len = Math.min(x, y)
-
-  var thisCopy = this.slice(thisStart, thisEnd)
-  var targetCopy = target.slice(start, end)
-
-  for (var i = 0; i < len; ++i) {
-    if (thisCopy[i] !== targetCopy[i]) {
-      x = thisCopy[i]
-      y = targetCopy[i]
-      break
-    }
-  }
-
-  if (x < y) return -1
-  if (y < x) return 1
-  return 0
-}
-
-// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
-// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
-//
-// Arguments:
-// - buffer - a Buffer to search
-// - val - a string, Buffer, or number
-// - byteOffset - an index into `buffer`; will be clamped to an int32
-// - encoding - an optional encoding, relevant is val is a string
-// - dir - true for indexOf, false for lastIndexOf
-function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
-  // Empty buffer means no match
-  if (buffer.length === 0) return -1
-
-  // Normalize byteOffset
-  if (typeof byteOffset === 'string') {
-    encoding = byteOffset
-    byteOffset = 0
-  } else if (byteOffset > 0x7fffffff) {
-    byteOffset = 0x7fffffff
-  } else if (byteOffset < -0x80000000) {
-    byteOffset = -0x80000000
-  }
-  byteOffset = +byteOffset  // Coerce to Number.
-  if (isNaN(byteOffset)) {
-    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
-    byteOffset = dir ? 0 : (buffer.length - 1)
-  }
-
-  // Normalize byteOffset: negative offsets start from the end of the buffer
-  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
-  if (byteOffset >= buffer.length) {
-    if (dir) return -1
-    else byteOffset = buffer.length - 1
-  } else if (byteOffset < 0) {
-    if (dir) byteOffset = 0
-    else return -1
-  }
-
-  // Normalize val
-  if (typeof val === 'string') {
-    val = Buffer.from(val, encoding)
-  }
-
-  // Finally, search either indexOf (if dir is true) or lastIndexOf
-  if (Buffer.isBuffer(val)) {
-    // Special case: looking for empty string/buffer always fails
-    if (val.length === 0) {
-      return -1
-    }
-    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
-  } else if (typeof val === 'number') {
-    val = val & 0xFF // Search for a byte value [0-255]
-    if (Buffer.TYPED_ARRAY_SUPPORT &&
-        typeof Uint8Array.prototype.indexOf === 'function') {
-      if (dir) {
-        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
-      } else {
-        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
-      }
-    }
-    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
-  }
-
-  throw new TypeError('val must be string, number or Buffer')
-}
-
-function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
-  var indexSize = 1
-  var arrLength = arr.length
-  var valLength = val.length
-
-  if (encoding !== undefined) {
-    encoding = String(encoding).toLowerCase()
-    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
-        encoding === 'utf16le' || encoding === 'utf-16le') {
-      if (arr.length < 2 || val.length < 2) {
-        return -1
-      }
-      indexSize = 2
-      arrLength /= 2
-      valLength /= 2
-      byteOffset /= 2
-    }
-  }
-
-  function read (buf, i) {
-    if (indexSize === 1) {
-      return buf[i]
-    } else {
-      return buf.readUInt16BE(i * indexSize)
-    }
-  }
-
-  var i
-  if (dir) {
-    var foundIndex = -1
-    for (i = byteOffset; i < arrLength; i++) {
-      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
-        if (foundIndex === -1) foundIndex = i
-        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
-      } else {
-        if (foundIndex !== -1) i -= i - foundIndex
-        foundIndex = -1
-      }
-    }
-  } else {
-    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
-    for (i = byteOffset; i >= 0; i--) {
-      var found = true
-      for (var j = 0; j < valLength; j++) {
-        if (read(arr, i + j) !== read(val, j)) {
-          found = false
-          break
-        }
-      }
-      if (found) return i
-    }
-  }
-
-  return -1
-}
-
-Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
-  return this.indexOf(val, byteOffset, encoding) !== -1
-}
-
-Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
-  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
-}
-
-Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
-  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
-}
-
-function hexWrite (buf, string, offset, length) {
-  offset = Number(offset) || 0
-  var remaining = buf.length - offset
-  if (!length) {
-    length = remaining
-  } else {
-    length = Number(length)
-    if (length > remaining) {
-      length = remaining
-    }
-  }
-
-  // must be an even number of digits
-  var strLen = string.length
-  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
-
-  if (length > strLen / 2) {
-    length = strLen / 2
-  }
-  for (var i = 0; i < length; ++i) {
-    var parsed = parseInt(string.substr(i * 2, 2), 16)
-    if (isNaN(parsed)) return i
-    buf[offset + i] = parsed
-  }
-  return i
-}
-
-function utf8Write (buf, string, offset, length) {
-  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
-}
-
-function asciiWrite (buf, string, offset, length) {
-  return blitBuffer(asciiToBytes(string), buf, offset, length)
-}
-
-function latin1Write (buf, string, offset, length) {
-  return asciiWrite(buf, string, offset, length)
-}
-
-function base64Write (buf, string, offset, length) {
-  return blitBuffer(base64ToBytes(string), buf, offset, length)
-}
-
-function ucs2Write (buf, string, offset, length) {
-  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
-}
-
-Buffer.prototype.write = function write (string, offset, length, encoding) {
-  // Buffer#write(string)
-  if (offset === undefined) {
-    encoding = 'utf8'
-    length = this.length
-    offset = 0
-  // Buffer#write(string, encoding)
-  } else if (length === undefined && typeof offset === 'string') {
-    encoding = offset
-    length = this.length
-    offset = 0
-  // Buffer#write(string, offset[, length][, encoding])
-  } else if (isFinite(offset)) {
-    offset = offset | 0
-    if (isFinite(length)) {
-      length = length | 0
-      if (encoding === undefined) encoding = 'utf8'
-    } else {
-      encoding = length
-      length = undefined
-    }
-  // legacy write(string, encoding, offset, length) - remove in v0.13
-  } else {
-    throw new Error(
-      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
-    )
-  }
-
-  var remaining = this.length - offset
-  if (length === undefined || length > remaining) length = remaining
-
-  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
-    throw new RangeError('Attempt to write outside buffer bounds')
-  }
-
-  if (!encoding) encoding = 'utf8'
-
-  var loweredCase = false
-  for (;;) {
-    switch (encoding) {
-      case 'hex':
-        return hexWrite(this, string, offset, length)
-
-      case 'utf8':
-      case 'utf-8':
-        return utf8Write(this, string, offset, length)
-
-      case 'ascii':
-        return asciiWrite(this, string, offset, length)
-
-      case 'latin1':
-      case 'binary':
-        return latin1Write(this, string, offset, length)
-
-      case 'base64':
-        // Warning: maxLength not taken into account in base64Write
-        return base64Write(this, string, offset, length)
-
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return ucs2Write(this, string, offset, length)
-
-      default:
-        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
-        encoding = ('' + encoding).toLowerCase()
-        loweredCase = true
-    }
-  }
-}
-
-Buffer.prototype.toJSON = function toJSON () {
-  return {
-    type: 'Buffer',
-    data: Array.prototype.slice.call(this._arr || this, 0)
-  }
-}
-
-function base64Slice (buf, start, end) {
-  if (start === 0 && end === buf.length) {
-    return base64.fromByteArray(buf)
-  } else {
-    return base64.fromByteArray(buf.slice(start, end))
-  }
-}
-
-function utf8Slice (buf, start, end) {
-  end = Math.min(buf.length, end)
-  var res = []
-
-  var i = start
-  while (i < end) {
-    var firstByte = buf[i]
-    var codePoint = null
-    var bytesPerSequence = (firstByte > 0xEF) ? 4
-      : (firstByte > 0xDF) ? 3
-      : (firstByte > 0xBF) ? 2
-      : 1
-
-    if (i + bytesPerSequence <= end) {
-      var secondByte, thirdByte, fourthByte, tempCodePoint
-
-      switch (bytesPerSequence) {
-        case 1:
-          if (firstByte < 0x80) {
-            codePoint = firstByte
-          }
-          break
-        case 2:
-          secondByte = buf[i + 1]
-          if ((secondByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
-            if (tempCodePoint > 0x7F) {
-              codePoint = tempCodePoint
-            }
-          }
-          break
-        case 3:
-          secondByte = buf[i + 1]
-          thirdByte = buf[i + 2]
-          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
-            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
-              codePoint = tempCodePoint
-            }
-          }
-          break
-        case 4:
-          secondByte = buf[i + 1]
-          thirdByte = buf[i + 2]
-          fourthByte = buf[i + 3]
-          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
-            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
-              codePoint = tempCodePoint
-            }
-          }
-      }
-    }
-
-    if (codePoint === null) {
-      // we did not generate a valid codePoint so insert a
-      // replacement char (U+FFFD) and advance only 1 byte
-      codePoint = 0xFFFD
-      bytesPerSequence = 1
-    } else if (codePoint > 0xFFFF) {
-      // encode to utf16 (surrogate pair dance)
-      codePoint -= 0x10000
-      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
-      codePoint = 0xDC00 | codePoint & 0x3FF
-    }
-
-    res.push(codePoint)
-    i += bytesPerSequence
-  }
-
-  return decodeCodePointsArray(res)
-}
-
-// Based on http://stackoverflow.com/a/22747272/680742, the browser with
-// the lowest limit is Chrome, with 0x10000 args.
-// We go 1 magnitude less, for safety
-var MAX_ARGUMENTS_LENGTH = 0x1000
-
-function decodeCodePointsArray (codePoints) {
-  var len = codePoints.length
-  if (len <= MAX_ARGUMENTS_LENGTH) {
-    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
-  }
-
-  // Decode in chunks to avoid "call stack size exceeded".
-  var res = ''
-  var i = 0
-  while (i < len) {
-    res += String.fromCharCode.apply(
-      String,
-      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
-    )
-  }
-  return res
-}
-
-function asciiSlice (buf, start, end) {
-  var ret = ''
-  end = Math.min(buf.length, end)
-
-  for (var i = start; i < end; ++i) {
-    ret += String.fromCharCode(buf[i] & 0x7F)
-  }
-  return ret
-}
-
-function latin1Slice (buf, start, end) {
-  var ret = ''
-  end = Math.min(buf.length, end)
-
-  for (var i = start; i < end; ++i) {
-    ret += String.fromCharCode(buf[i])
-  }
-  return ret
-}
-
-function hexSlice (buf, start, end) {
-  var len = buf.length
-
-  if (!start || start < 0) start = 0
-  if (!end || end < 0 || end > len) end = len
-
-  var out = ''
-  for (var i = start; i < end; ++i) {
-    out += toHex(buf[i])
-  }
-  return out
-}
-
-function utf16leSlice (buf, start, end) {
-  var bytes = buf.slice(start, end)
-  var res = ''
-  for (var i = 0; i < bytes.length; i += 2) {
-    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256)
-  }
-  return res
-}
-
-Buffer.prototype.slice = function slice (start, end) {
-  var len = this.length
-  start = ~~start
-  end = end === undefined ? len : ~~end
-
-  if (start < 0) {
-    start += len
-    if (start < 0) start = 0
-  } else if (start > len) {
-    start = len
-  }
-
-  if (end < 0) {
-    end += len
-    if (end < 0) end = 0
-  } else if (end > len) {
-    end = len
-  }
-
-  if (end < start) end = start
-
-  var newBuf
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    newBuf = this.subarray(start, end)
-    newBuf.__proto__ = Buffer.prototype
-  } else {
-    var sliceLen = end - start
-    newBuf = new Buffer(sliceLen, undefined)
-    for (var i = 0; i < sliceLen; ++i) {
-      newBuf[i] = this[i + start]
-    }
-  }
-
-  return newBuf
-}
-
-/*
- * Need to make sure that buffer isn't trying to write out of bounds.
- */
-function checkOffset (offset, ext, length) {
-  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
-  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
-}
-
-Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var val = this[offset]
-  var mul = 1
-  var i = 0
-  while (++i < byteLength && (mul *= 0x100)) {
-    val += this[offset + i] * mul
-  }
-
-  return val
-}
-
-Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) {
-    checkOffset(offset, byteLength, this.length)
-  }
-
-  var val = this[offset + --byteLength]
-  var mul = 1
-  while (byteLength > 0 && (mul *= 0x100)) {
-    val += this[offset + --byteLength] * mul
-  }
-
-  return val
-}
-
-Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 1, this.length)
-  return this[offset]
-}
-
-Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  return this[offset] | (this[offset + 1] << 8)
-}
-
-Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  return (this[offset] << 8) | this[offset + 1]
-}
-
-Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return ((this[offset]) |
-      (this[offset + 1] << 8) |
-      (this[offset + 2] << 16)) +
-      (this[offset + 3] * 0x1000000)
-}
-
-Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset] * 0x1000000) +
-    ((this[offset + 1] << 16) |
-    (this[offset + 2] << 8) |
-    this[offset + 3])
-}
-
-Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var val = this[offset]
-  var mul = 1
-  var i = 0
-  while (++i < byteLength && (mul *= 0x100)) {
-    val += this[offset + i] * mul
-  }
-  mul *= 0x80
-
-  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
-
-  return val
-}
-
-Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var i = byteLength
-  var mul = 1
-  var val = this[offset + --i]
-  while (i > 0 && (mul *= 0x100)) {
-    val += this[offset + --i] * mul
-  }
-  mul *= 0x80
-
-  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
-
-  return val
-}
-
-Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 1, this.length)
-  if (!(this[offset] & 0x80)) return (this[offset])
-  return ((0xff - this[offset] + 1) * -1)
-}
-
-Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  var val = this[offset] | (this[offset + 1] << 8)
-  return (val & 0x8000) ? val | 0xFFFF0000 : val
-}
-
-Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  var val = this[offset + 1] | (this[offset] << 8)
-  return (val & 0x8000) ? val | 0xFFFF0000 : val
-}
-
-Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset]) |
-    (this[offset + 1] << 8) |
-    (this[offset + 2] << 16) |
-    (this[offset + 3] << 24)
-}
-
-Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset] << 24) |
-    (this[offset + 1] << 16) |
-    (this[offset + 2] << 8) |
-    (this[offset + 3])
-}
-
-Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-  return ieee754.read(this, offset, true, 23, 4)
-}
-
-Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-  return ieee754.read(this, offset, false, 23, 4)
-}
-
-Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 8, this.length)
-  return ieee754.read(this, offset, true, 52, 8)
-}
-
-Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 8, this.length)
-  return ieee754.read(this, offset, false, 52, 8)
-}
-
-function checkInt (buf, value, offset, ext, max, min) {
-  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
-  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
-  if (offset + ext > buf.length) throw new RangeError('Index out of range')
-}
-
-Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) {
-    var maxBytes = Math.pow(2, 8 * byteLength) - 1
-    checkInt(this, value, offset, byteLength, maxBytes, 0)
-  }
-
-  var mul = 1
-  var i = 0
-  this[offset] = value & 0xFF
-  while (++i < byteLength && (mul *= 0x100)) {
-    this[offset + i] = (value / mul) & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) {
-    var maxBytes = Math.pow(2, 8 * byteLength) - 1
-    checkInt(this, value, offset, byteLength, maxBytes, 0)
-  }
-
-  var i = byteLength - 1
-  var mul = 1
-  this[offset + i] = value & 0xFF
-  while (--i >= 0 && (mul *= 0x100)) {
-    this[offset + i] = (value / mul) & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
-  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
-  this[offset] = (value & 0xff)
-  return offset + 1
-}
-
-function objectWriteUInt16 (buf, value, offset, littleEndian) {
-  if (value < 0) value = 0xffff + value + 1
-  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
-    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
-      (littleEndian ? i : 1 - i) * 8
-  }
-}
-
-Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value & 0xff)
-    this[offset + 1] = (value >>> 8)
-  } else {
-    objectWriteUInt16(this, value, offset, true)
-  }
-  return offset + 2
-}
-
-Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value >>> 8)
-    this[offset + 1] = (value & 0xff)
-  } else {
-    objectWriteUInt16(this, value, offset, false)
-  }
-  return offset + 2
-}
-
-function objectWriteUInt32 (buf, value, offset, littleEndian) {
-  if (value < 0) value = 0xffffffff + value + 1
-  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
-    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
-  }
-}
-
-Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset + 3] = (value >>> 24)
-    this[offset + 2] = (value >>> 16)
-    this[offset + 1] = (value >>> 8)
-    this[offset] = (value & 0xff)
-  } else {
-    objectWriteUInt32(this, value, offset, true)
-  }
-  return offset + 4
-}
-
-Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value >>> 24)
-    this[offset + 1] = (value >>> 16)
-    this[offset + 2] = (value >>> 8)
-    this[offset + 3] = (value & 0xff)
-  } else {
-    objectWriteUInt32(this, value, offset, false)
-  }
-  return offset + 4
-}
-
-Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) {
-    var limit = Math.pow(2, 8 * byteLength - 1)
-
-    checkInt(this, value, offset, byteLength, limit - 1, -limit)
-  }
-
-  var i = 0
-  var mul = 1
-  var sub = 0
-  this[offset] = value & 0xFF
-  while (++i < byteLength && (mul *= 0x100)) {
-    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
-      sub = 1
-    }
-    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) {
-    var limit = Math.pow(2, 8 * byteLength - 1)
-
-    checkInt(this, value, offset, byteLength, limit - 1, -limit)
-  }
-
-  var i = byteLength - 1
-  var mul = 1
-  var sub = 0
-  this[offset + i] = value & 0xFF
-  while (--i >= 0 && (mul *= 0x100)) {
-    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
-      sub = 1
-    }
-    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
-  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
-  if (value < 0) value = 0xff + value + 1
-  this[offset] = (value & 0xff)
-  return offset + 1
-}
-
-Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value & 0xff)
-    this[offset + 1] = (value >>> 8)
-  } else {
-    objectWriteUInt16(this, value, offset, true)
-  }
-  return offset + 2
-}
-
-Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value >>> 8)
-    this[offset + 1] = (value & 0xff)
-  } else {
-    objectWriteUInt16(this, value, offset, false)
-  }
-  return offset + 2
-}
-
-Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value & 0xff)
-    this[offset + 1] = (value >>> 8)
-    this[offset + 2] = (value >>> 16)
-    this[offset + 3] = (value >>> 24)
-  } else {
-    objectWriteUInt32(this, value, offset, true)
-  }
-  return offset + 4
-}
-
-Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
-  if (value < 0) value = 0xffffffff + value + 1
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value >>> 24)
-    this[offset + 1] = (value >>> 16)
-    this[offset + 2] = (value >>> 8)
-    this[offset + 3] = (value & 0xff)
-  } else {
-    objectWriteUInt32(this, value, offset, false)
-  }
-  return offset + 4
-}
-
-function checkIEEE754 (buf, value, offset, ext, max, min) {
-  if (offset + ext > buf.length) throw new RangeError('Index out of range')
-  if (offset < 0) throw new RangeError('Index out of range')
-}
-
-function writeFloat (buf, value, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
-  }
-  ieee754.write(buf, value, offset, littleEndian, 23, 4)
-  return offset + 4
-}
-
-Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
-  return writeFloat(this, value, offset, true, noAssert)
-}
-
-Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
-  return writeFloat(this, value, offset, false, noAssert)
-}
-
-function writeDouble (buf, value, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
-  }
-  ieee754.write(buf, value, offset, littleEndian, 52, 8)
-  return offset + 8
-}
-
-Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
-  return writeDouble(this, value, offset, true, noAssert)
-}
-
-Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
-  return writeDouble(this, value, offset, false, noAssert)
-}
-
-// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
-Buffer.prototype.copy = function copy (target, targetStart, start, end) {
-  if (!start) start = 0
-  if (!end && end !== 0) end = this.length
-  if (targetStart >= target.length) targetStart = target.length
-  if (!targetStart) targetStart = 0
-  if (end > 0 && end < start) end = start
-
-  // Copy 0 bytes; we're done
-  if (end === start) return 0
-  if (target.length === 0 || this.length === 0) return 0
-
-  // Fatal error conditions
-  if (targetStart < 0) {
-    throw new RangeError('targetStart out of bounds')
-  }
-  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
-  if (end < 0) throw new RangeError('sourceEnd out of bounds')
-
-  // Are we oob?
-  if (end > this.length) end = this.length
-  if (target.length - targetStart < end - start) {
-    end = target.length - targetStart + start
-  }
-
-  var len = end - start
-  var i
-
-  if (this === target && start < targetStart && targetStart < end) {
-    // descending copy from end
-    for (i = len - 1; i >= 0; --i) {
-      target[i + targetStart] = this[i + start]
-    }
-  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
-    // ascending copy from start
-    for (i = 0; i < len; ++i) {
-      target[i + targetStart] = this[i + start]
-    }
-  } else {
-    Uint8Array.prototype.set.call(
-      target,
-      this.subarray(start, start + len),
-      targetStart
-    )
-  }
-
-  return len
-}
-
-// Usage:
-//    buffer.fill(number[, offset[, end]])
-//    buffer.fill(buffer[, offset[, end]])
-//    buffer.fill(string[, offset[, end]][, encoding])
-Buffer.prototype.fill = function fill (val, start, end, encoding) {
-  // Handle string cases:
-  if (typeof val === 'string') {
-    if (typeof start === 'string') {
-      encoding = start
-      start = 0
-      end = this.length
-    } else if (typeof end === 'string') {
-      encoding = end
-      end = this.length
-    }
-    if (val.length === 1) {
-      var code = val.charCodeAt(0)
-      if (code < 256) {
-        val = code
-      }
-    }
-    if (encoding !== undefined && typeof encoding !== 'string') {
-      throw new TypeError('encoding must be a string')
-    }
-    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
-      throw new TypeError('Unknown encoding: ' + encoding)
-    }
-  } else if (typeof val === 'number') {
-    val = val & 255
-  }
-
-  // Invalid ranges are not set to a default, so can range check early.
-  if (start < 0 || this.length < start || this.length < end) {
-    throw new RangeError('Out of range index')
-  }
-
-  if (end <= start) {
-    return this
-  }
-
-  start = start >>> 0
-  end = end === undefined ? this.length : end >>> 0
-
-  if (!val) val = 0
-
-  var i
-  if (typeof val === 'number') {
-    for (i = start; i < end; ++i) {
-      this[i] = val
-    }
-  } else {
-    var bytes = Buffer.isBuffer(val)
-      ? val
-      : utf8ToBytes(new Buffer(val, encoding).toString())
-    var len = bytes.length
-    for (i = 0; i < end - start; ++i) {
-      this[i + start] = bytes[i % len]
-    }
-  }
-
-  return this
-}
-
-// HELPER FUNCTIONS
-// ================
-
-var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
-
-function base64clean (str) {
-  // Node strips out invalid characters like \n and \t from the string, base64-js does not
-  str = stringtrim(str).replace(INVALID_BASE64_RE, '')
-  // Node converts strings with length < 2 to ''
-  if (str.length < 2) return ''
-  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
-  while (str.length % 4 !== 0) {
-    str = str + '='
-  }
-  return str
-}
-
-function stringtrim (str) {
-  if (str.trim) return str.trim()
-  return str.replace(/^\s+|\s+$/g, '')
-}
-
-function toHex (n) {
-  if (n < 16) return '0' + n.toString(16)
-  return n.toString(16)
-}
-
-function utf8ToBytes (string, units) {
-  units = units || Infinity
-  var codePoint
-  var length = string.length
-  var leadSurrogate = null
-  var bytes = []
-
-  for (var i = 0; i < length; ++i) {
-    codePoint = string.charCodeAt(i)
-
-    // is surrogate component
-    if (codePoint > 0xD7FF && codePoint < 0xE000) {
-      // last char was a lead
-      if (!leadSurrogate) {
-        // no lead yet
-        if (codePoint > 0xDBFF) {
-          // unexpected trail
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-          continue
-        } else if (i + 1 === length) {
-          // unpaired lead
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-          continue
-        }
-
-        // valid lead
-        leadSurrogate = codePoint
-
-        continue
-      }
-
-      // 2 leads in a row
-      if (codePoint < 0xDC00) {
-        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-        leadSurrogate = codePoint
-        continue
-      }
-
-      // valid surrogate pair
-      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
-    } else if (leadSurrogate) {
-      // valid bmp char, but last char was a lead
-      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-    }
-
-    leadSurrogate = null
-
-    // encode utf8
-    if (codePoint < 0x80) {
-      if ((units -= 1) < 0) break
-      bytes.push(codePoint)
-    } else if (codePoint < 0x800) {
-      if ((units -= 2) < 0) break
-      bytes.push(
-        codePoint >> 0x6 | 0xC0,
-        codePoint & 0x3F | 0x80
-      )
-    } else if (codePoint < 0x10000) {
-      if ((units -= 3) < 0) break
-      bytes.push(
-        codePoint >> 0xC | 0xE0,
-        codePoint >> 0x6 & 0x3F | 0x80,
-        codePoint & 0x3F | 0x80
-      )
-    } else if (codePoint < 0x110000) {
-      if ((units -= 4) < 0) break
-      bytes.push(
-        codePoint >> 0x12 | 0xF0,
-        codePoint >> 0xC & 0x3F | 0x80,
-        codePoint >> 0x6 & 0x3F | 0x80,
-        codePoint & 0x3F | 0x80
-      )
-    } else {
-      throw new Error('Invalid code point')
-    }
-  }
-
-  return bytes
-}
-
-function asciiToBytes (str) {
-  var byteArray = []
-  for (var i = 0; i < str.length; ++i) {
-    // Node's code seems to be doing this and not & 0x7F..
-    byteArray.push(str.charCodeAt(i) & 0xFF)
-  }
-  return byteArray
-}
-
-function utf16leToBytes (str, units) {
-  var c, hi, lo
-  var byteArray = []
-  for (var i = 0; i < str.length; ++i) {
-    if ((units -= 2) < 0) break
-
-    c = str.charCodeAt(i)
-    hi = c >> 8
-    lo = c % 256
-    byteArray.push(lo)
-    byteArray.push(hi)
-  }
-
-  return byteArray
-}
-
-function base64ToBytes (str) {
-  return base64.toByteArray(base64clean(str))
-}
-
-function blitBuffer (src, dst, offset, length) {
-  for (var i = 0; i < length; ++i) {
-    if ((i + offset >= dst.length) || (i >= src.length)) break
-    dst[i + offset] = src[i]
-  }
-  return i
-}
-
-function isnan (val) {
-  return val !== val // eslint-disable-line no-self-compare
-}
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(27)))
-
-/***/ }),
-/* 37 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -42171,7 +40374,7 @@ function isBrowser() {
 //# sourceMappingURL=device_util.js.map
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -42212,7 +40415,7 @@ function maxImpl(aVals, reduceSize, outShape, dtype) {
 //# sourceMappingURL=Max_impl.js.map
 
 /***/ }),
-/* 39 */
+/* 38 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -45000,6 +43203,1803 @@ const version = '2.0.1';
 
 
 //# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <http://feross.org>
+ * @license  MIT
+ */
+/* eslint-disable no-proto */
+
+
+
+var base64 = __webpack_require__(65)
+var ieee754 = __webpack_require__(66)
+var isArray = __webpack_require__(67)
+
+exports.Buffer = Buffer
+exports.SlowBuffer = SlowBuffer
+exports.INSPECT_MAX_BYTES = 50
+
+/**
+ * If `Buffer.TYPED_ARRAY_SUPPORT`:
+ *   === true    Use Uint8Array implementation (fastest)
+ *   === false   Use Object implementation (most compatible, even IE6)
+ *
+ * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
+ * Opera 11.6+, iOS 4.2+.
+ *
+ * Due to various browser bugs, sometimes the Object implementation will be used even
+ * when the browser supports typed arrays.
+ *
+ * Note:
+ *
+ *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
+ *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
+ *
+ *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
+ *
+ *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
+ *     incorrect length in some situations.
+
+ * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
+ * get the Object implementation, which is slower but behaves correctly.
+ */
+Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
+  ? global.TYPED_ARRAY_SUPPORT
+  : typedArraySupport()
+
+/*
+ * Export kMaxLength after typed array support is determined.
+ */
+exports.kMaxLength = kMaxLength()
+
+function typedArraySupport () {
+  try {
+    var arr = new Uint8Array(1)
+    arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }}
+    return arr.foo() === 42 && // typed array instances can be augmented
+        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
+        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
+  } catch (e) {
+    return false
+  }
+}
+
+function kMaxLength () {
+  return Buffer.TYPED_ARRAY_SUPPORT
+    ? 0x7fffffff
+    : 0x3fffffff
+}
+
+function createBuffer (that, length) {
+  if (kMaxLength() < length) {
+    throw new RangeError('Invalid typed array length')
+  }
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = new Uint8Array(length)
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    if (that === null) {
+      that = new Buffer(length)
+    }
+    that.length = length
+  }
+
+  return that
+}
+
+/**
+ * The Buffer constructor returns instances of `Uint8Array` that have their
+ * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
+ * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
+ * and the `Uint8Array` methods. Square bracket notation works as expected -- it
+ * returns a single octet.
+ *
+ * The `Uint8Array` prototype remains unmodified.
+ */
+
+function Buffer (arg, encodingOrOffset, length) {
+  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
+    return new Buffer(arg, encodingOrOffset, length)
+  }
+
+  // Common case.
+  if (typeof arg === 'number') {
+    if (typeof encodingOrOffset === 'string') {
+      throw new Error(
+        'If encoding is specified then the first argument must be a string'
+      )
+    }
+    return allocUnsafe(this, arg)
+  }
+  return from(this, arg, encodingOrOffset, length)
+}
+
+Buffer.poolSize = 8192 // not used by this implementation
+
+// TODO: Legacy, not needed anymore. Remove in next major version.
+Buffer._augment = function (arr) {
+  arr.__proto__ = Buffer.prototype
+  return arr
+}
+
+function from (that, value, encodingOrOffset, length) {
+  if (typeof value === 'number') {
+    throw new TypeError('"value" argument must not be a number')
+  }
+
+  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+    return fromArrayBuffer(that, value, encodingOrOffset, length)
+  }
+
+  if (typeof value === 'string') {
+    return fromString(that, value, encodingOrOffset)
+  }
+
+  return fromObject(that, value)
+}
+
+/**
+ * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
+ * if value is a number.
+ * Buffer.from(str[, encoding])
+ * Buffer.from(array)
+ * Buffer.from(buffer)
+ * Buffer.from(arrayBuffer[, byteOffset[, length]])
+ **/
+Buffer.from = function (value, encodingOrOffset, length) {
+  return from(null, value, encodingOrOffset, length)
+}
+
+if (Buffer.TYPED_ARRAY_SUPPORT) {
+  Buffer.prototype.__proto__ = Uint8Array.prototype
+  Buffer.__proto__ = Uint8Array
+  if (typeof Symbol !== 'undefined' && Symbol.species &&
+      Buffer[Symbol.species] === Buffer) {
+    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
+    Object.defineProperty(Buffer, Symbol.species, {
+      value: null,
+      configurable: true
+    })
+  }
+}
+
+function assertSize (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('"size" argument must be a number')
+  } else if (size < 0) {
+    throw new RangeError('"size" argument must not be negative')
+  }
+}
+
+function alloc (that, size, fill, encoding) {
+  assertSize(size)
+  if (size <= 0) {
+    return createBuffer(that, size)
+  }
+  if (fill !== undefined) {
+    // Only pay attention to encoding if it's a string. This
+    // prevents accidentally sending in a number that would
+    // be interpretted as a start offset.
+    return typeof encoding === 'string'
+      ? createBuffer(that, size).fill(fill, encoding)
+      : createBuffer(that, size).fill(fill)
+  }
+  return createBuffer(that, size)
+}
+
+/**
+ * Creates a new filled Buffer instance.
+ * alloc(size[, fill[, encoding]])
+ **/
+Buffer.alloc = function (size, fill, encoding) {
+  return alloc(null, size, fill, encoding)
+}
+
+function allocUnsafe (that, size) {
+  assertSize(size)
+  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) {
+    for (var i = 0; i < size; ++i) {
+      that[i] = 0
+    }
+  }
+  return that
+}
+
+/**
+ * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
+ * */
+Buffer.allocUnsafe = function (size) {
+  return allocUnsafe(null, size)
+}
+/**
+ * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
+ */
+Buffer.allocUnsafeSlow = function (size) {
+  return allocUnsafe(null, size)
+}
+
+function fromString (that, string, encoding) {
+  if (typeof encoding !== 'string' || encoding === '') {
+    encoding = 'utf8'
+  }
+
+  if (!Buffer.isEncoding(encoding)) {
+    throw new TypeError('"encoding" must be a valid string encoding')
+  }
+
+  var length = byteLength(string, encoding) | 0
+  that = createBuffer(that, length)
+
+  var actual = that.write(string, encoding)
+
+  if (actual !== length) {
+    // Writing a hex string, for example, that contains invalid characters will
+    // cause everything after the first invalid character to be ignored. (e.g.
+    // 'abxxcd' will be treated as 'ab')
+    that = that.slice(0, actual)
+  }
+
+  return that
+}
+
+function fromArrayLike (that, array) {
+  var length = array.length < 0 ? 0 : checked(array.length) | 0
+  that = createBuffer(that, length)
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+function fromArrayBuffer (that, array, byteOffset, length) {
+  array.byteLength // this throws if `array` is not a valid ArrayBuffer
+
+  if (byteOffset < 0 || array.byteLength < byteOffset) {
+    throw new RangeError('\'offset\' is out of bounds')
+  }
+
+  if (array.byteLength < byteOffset + (length || 0)) {
+    throw new RangeError('\'length\' is out of bounds')
+  }
+
+  if (byteOffset === undefined && length === undefined) {
+    array = new Uint8Array(array)
+  } else if (length === undefined) {
+    array = new Uint8Array(array, byteOffset)
+  } else {
+    array = new Uint8Array(array, byteOffset, length)
+  }
+
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = array
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    that = fromArrayLike(that, array)
+  }
+  return that
+}
+
+function fromObject (that, obj) {
+  if (Buffer.isBuffer(obj)) {
+    var len = checked(obj.length) | 0
+    that = createBuffer(that, len)
+
+    if (that.length === 0) {
+      return that
+    }
+
+    obj.copy(that, 0, 0, len)
+    return that
+  }
+
+  if (obj) {
+    if ((typeof ArrayBuffer !== 'undefined' &&
+        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
+      if (typeof obj.length !== 'number' || isnan(obj.length)) {
+        return createBuffer(that, 0)
+      }
+      return fromArrayLike(that, obj)
+    }
+
+    if (obj.type === 'Buffer' && isArray(obj.data)) {
+      return fromArrayLike(that, obj.data)
+    }
+  }
+
+  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
+}
+
+function checked (length) {
+  // Note: cannot use `length < kMaxLength()` here because that fails when
+  // length is NaN (which is otherwise coerced to zero.)
+  if (length >= kMaxLength()) {
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
+                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
+  }
+  return length | 0
+}
+
+function SlowBuffer (length) {
+  if (+length != length) { // eslint-disable-line eqeqeq
+    length = 0
+  }
+  return Buffer.alloc(+length)
+}
+
+Buffer.isBuffer = function isBuffer (b) {
+  return !!(b != null && b._isBuffer)
+}
+
+Buffer.compare = function compare (a, b) {
+  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
+    throw new TypeError('Arguments must be Buffers')
+  }
+
+  if (a === b) return 0
+
+  var x = a.length
+  var y = b.length
+
+  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+    if (a[i] !== b[i]) {
+      x = a[i]
+      y = b[i]
+      break
+    }
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+Buffer.isEncoding = function isEncoding (encoding) {
+  switch (String(encoding).toLowerCase()) {
+    case 'hex':
+    case 'utf8':
+    case 'utf-8':
+    case 'ascii':
+    case 'latin1':
+    case 'binary':
+    case 'base64':
+    case 'ucs2':
+    case 'ucs-2':
+    case 'utf16le':
+    case 'utf-16le':
+      return true
+    default:
+      return false
+  }
+}
+
+Buffer.concat = function concat (list, length) {
+  if (!isArray(list)) {
+    throw new TypeError('"list" argument must be an Array of Buffers')
+  }
+
+  if (list.length === 0) {
+    return Buffer.alloc(0)
+  }
+
+  var i
+  if (length === undefined) {
+    length = 0
+    for (i = 0; i < list.length; ++i) {
+      length += list[i].length
+    }
+  }
+
+  var buffer = Buffer.allocUnsafe(length)
+  var pos = 0
+  for (i = 0; i < list.length; ++i) {
+    var buf = list[i]
+    if (!Buffer.isBuffer(buf)) {
+      throw new TypeError('"list" argument must be an Array of Buffers')
+    }
+    buf.copy(buffer, pos)
+    pos += buf.length
+  }
+  return buffer
+}
+
+function byteLength (string, encoding) {
+  if (Buffer.isBuffer(string)) {
+    return string.length
+  }
+  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
+      (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
+    return string.byteLength
+  }
+  if (typeof string !== 'string') {
+    string = '' + string
+  }
+
+  var len = string.length
+  if (len === 0) return 0
+
+  // Use a for loop to avoid recursion
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'ascii':
+      case 'latin1':
+      case 'binary':
+        return len
+      case 'utf8':
+      case 'utf-8':
+      case undefined:
+        return utf8ToBytes(string).length
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return len * 2
+      case 'hex':
+        return len >>> 1
+      case 'base64':
+        return base64ToBytes(string).length
+      default:
+        if (loweredCase) return utf8ToBytes(string).length // assume utf8
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+Buffer.byteLength = byteLength
+
+function slowToString (encoding, start, end) {
+  var loweredCase = false
+
+  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
+  // property of a typed array.
+
+  // This behaves neither like String nor Uint8Array in that we set start/end
+  // to their upper/lower bounds if the value passed is out of range.
+  // undefined is handled specially as per ECMA-262 6th Edition,
+  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
+  if (start === undefined || start < 0) {
+    start = 0
+  }
+  // Return early if start > this.length. Done here to prevent potential uint32
+  // coercion fail below.
+  if (start > this.length) {
+    return ''
+  }
+
+  if (end === undefined || end > this.length) {
+    end = this.length
+  }
+
+  if (end <= 0) {
+    return ''
+  }
+
+  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
+  end >>>= 0
+  start >>>= 0
+
+  if (end <= start) {
+    return ''
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  while (true) {
+    switch (encoding) {
+      case 'hex':
+        return hexSlice(this, start, end)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Slice(this, start, end)
+
+      case 'ascii':
+        return asciiSlice(this, start, end)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Slice(this, start, end)
+
+      case 'base64':
+        return base64Slice(this, start, end)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return utf16leSlice(this, start, end)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = (encoding + '').toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+
+// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
+// Buffer instances.
+Buffer.prototype._isBuffer = true
+
+function swap (b, n, m) {
+  var i = b[n]
+  b[n] = b[m]
+  b[m] = i
+}
+
+Buffer.prototype.swap16 = function swap16 () {
+  var len = this.length
+  if (len % 2 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 16-bits')
+  }
+  for (var i = 0; i < len; i += 2) {
+    swap(this, i, i + 1)
+  }
+  return this
+}
+
+Buffer.prototype.swap32 = function swap32 () {
+  var len = this.length
+  if (len % 4 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 32-bits')
+  }
+  for (var i = 0; i < len; i += 4) {
+    swap(this, i, i + 3)
+    swap(this, i + 1, i + 2)
+  }
+  return this
+}
+
+Buffer.prototype.swap64 = function swap64 () {
+  var len = this.length
+  if (len % 8 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 64-bits')
+  }
+  for (var i = 0; i < len; i += 8) {
+    swap(this, i, i + 7)
+    swap(this, i + 1, i + 6)
+    swap(this, i + 2, i + 5)
+    swap(this, i + 3, i + 4)
+  }
+  return this
+}
+
+Buffer.prototype.toString = function toString () {
+  var length = this.length | 0
+  if (length === 0) return ''
+  if (arguments.length === 0) return utf8Slice(this, 0, length)
+  return slowToString.apply(this, arguments)
+}
+
+Buffer.prototype.equals = function equals (b) {
+  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+  if (this === b) return true
+  return Buffer.compare(this, b) === 0
+}
+
+Buffer.prototype.inspect = function inspect () {
+  var str = ''
+  var max = exports.INSPECT_MAX_BYTES
+  if (this.length > 0) {
+    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ')
+    if (this.length > max) str += ' ... '
+  }
+  return '<Buffer ' + str + '>'
+}
+
+Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+  if (!Buffer.isBuffer(target)) {
+    throw new TypeError('Argument must be a Buffer')
+  }
+
+  if (start === undefined) {
+    start = 0
+  }
+  if (end === undefined) {
+    end = target ? target.length : 0
+  }
+  if (thisStart === undefined) {
+    thisStart = 0
+  }
+  if (thisEnd === undefined) {
+    thisEnd = this.length
+  }
+
+  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
+    throw new RangeError('out of range index')
+  }
+
+  if (thisStart >= thisEnd && start >= end) {
+    return 0
+  }
+  if (thisStart >= thisEnd) {
+    return -1
+  }
+  if (start >= end) {
+    return 1
+  }
+
+  start >>>= 0
+  end >>>= 0
+  thisStart >>>= 0
+  thisEnd >>>= 0
+
+  if (this === target) return 0
+
+  var x = thisEnd - thisStart
+  var y = end - start
+  var len = Math.min(x, y)
+
+  var thisCopy = this.slice(thisStart, thisEnd)
+  var targetCopy = target.slice(start, end)
+
+  for (var i = 0; i < len; ++i) {
+    if (thisCopy[i] !== targetCopy[i]) {
+      x = thisCopy[i]
+      y = targetCopy[i]
+      break
+    }
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
+// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
+//
+// Arguments:
+// - buffer - a Buffer to search
+// - val - a string, Buffer, or number
+// - byteOffset - an index into `buffer`; will be clamped to an int32
+// - encoding - an optional encoding, relevant is val is a string
+// - dir - true for indexOf, false for lastIndexOf
+function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
+  // Empty buffer means no match
+  if (buffer.length === 0) return -1
+
+  // Normalize byteOffset
+  if (typeof byteOffset === 'string') {
+    encoding = byteOffset
+    byteOffset = 0
+  } else if (byteOffset > 0x7fffffff) {
+    byteOffset = 0x7fffffff
+  } else if (byteOffset < -0x80000000) {
+    byteOffset = -0x80000000
+  }
+  byteOffset = +byteOffset  // Coerce to Number.
+  if (isNaN(byteOffset)) {
+    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
+    byteOffset = dir ? 0 : (buffer.length - 1)
+  }
+
+  // Normalize byteOffset: negative offsets start from the end of the buffer
+  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
+  if (byteOffset >= buffer.length) {
+    if (dir) return -1
+    else byteOffset = buffer.length - 1
+  } else if (byteOffset < 0) {
+    if (dir) byteOffset = 0
+    else return -1
+  }
+
+  // Normalize val
+  if (typeof val === 'string') {
+    val = Buffer.from(val, encoding)
+  }
+
+  // Finally, search either indexOf (if dir is true) or lastIndexOf
+  if (Buffer.isBuffer(val)) {
+    // Special case: looking for empty string/buffer always fails
+    if (val.length === 0) {
+      return -1
+    }
+    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
+  } else if (typeof val === 'number') {
+    val = val & 0xFF // Search for a byte value [0-255]
+    if (Buffer.TYPED_ARRAY_SUPPORT &&
+        typeof Uint8Array.prototype.indexOf === 'function') {
+      if (dir) {
+        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
+      } else {
+        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
+      }
+    }
+    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
+  }
+
+  throw new TypeError('val must be string, number or Buffer')
+}
+
+function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
+  var indexSize = 1
+  var arrLength = arr.length
+  var valLength = val.length
+
+  if (encoding !== undefined) {
+    encoding = String(encoding).toLowerCase()
+    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
+        encoding === 'utf16le' || encoding === 'utf-16le') {
+      if (arr.length < 2 || val.length < 2) {
+        return -1
+      }
+      indexSize = 2
+      arrLength /= 2
+      valLength /= 2
+      byteOffset /= 2
+    }
+  }
+
+  function read (buf, i) {
+    if (indexSize === 1) {
+      return buf[i]
+    } else {
+      return buf.readUInt16BE(i * indexSize)
+    }
+  }
+
+  var i
+  if (dir) {
+    var foundIndex = -1
+    for (i = byteOffset; i < arrLength; i++) {
+      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+        if (foundIndex === -1) foundIndex = i
+        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
+      } else {
+        if (foundIndex !== -1) i -= i - foundIndex
+        foundIndex = -1
+      }
+    }
+  } else {
+    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
+    for (i = byteOffset; i >= 0; i--) {
+      var found = true
+      for (var j = 0; j < valLength; j++) {
+        if (read(arr, i + j) !== read(val, j)) {
+          found = false
+          break
+        }
+      }
+      if (found) return i
+    }
+  }
+
+  return -1
+}
+
+Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
+  return this.indexOf(val, byteOffset, encoding) !== -1
+}
+
+Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
+}
+
+Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
+}
+
+function hexWrite (buf, string, offset, length) {
+  offset = Number(offset) || 0
+  var remaining = buf.length - offset
+  if (!length) {
+    length = remaining
+  } else {
+    length = Number(length)
+    if (length > remaining) {
+      length = remaining
+    }
+  }
+
+  // must be an even number of digits
+  var strLen = string.length
+  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
+
+  if (length > strLen / 2) {
+    length = strLen / 2
+  }
+  for (var i = 0; i < length; ++i) {
+    var parsed = parseInt(string.substr(i * 2, 2), 16)
+    if (isNaN(parsed)) return i
+    buf[offset + i] = parsed
+  }
+  return i
+}
+
+function utf8Write (buf, string, offset, length) {
+  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+function asciiWrite (buf, string, offset, length) {
+  return blitBuffer(asciiToBytes(string), buf, offset, length)
+}
+
+function latin1Write (buf, string, offset, length) {
+  return asciiWrite(buf, string, offset, length)
+}
+
+function base64Write (buf, string, offset, length) {
+  return blitBuffer(base64ToBytes(string), buf, offset, length)
+}
+
+function ucs2Write (buf, string, offset, length) {
+  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+Buffer.prototype.write = function write (string, offset, length, encoding) {
+  // Buffer#write(string)
+  if (offset === undefined) {
+    encoding = 'utf8'
+    length = this.length
+    offset = 0
+  // Buffer#write(string, encoding)
+  } else if (length === undefined && typeof offset === 'string') {
+    encoding = offset
+    length = this.length
+    offset = 0
+  // Buffer#write(string, offset[, length][, encoding])
+  } else if (isFinite(offset)) {
+    offset = offset | 0
+    if (isFinite(length)) {
+      length = length | 0
+      if (encoding === undefined) encoding = 'utf8'
+    } else {
+      encoding = length
+      length = undefined
+    }
+  // legacy write(string, encoding, offset, length) - remove in v0.13
+  } else {
+    throw new Error(
+      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
+    )
+  }
+
+  var remaining = this.length - offset
+  if (length === undefined || length > remaining) length = remaining
+
+  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
+    throw new RangeError('Attempt to write outside buffer bounds')
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'hex':
+        return hexWrite(this, string, offset, length)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Write(this, string, offset, length)
+
+      case 'ascii':
+        return asciiWrite(this, string, offset, length)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Write(this, string, offset, length)
+
+      case 'base64':
+        // Warning: maxLength not taken into account in base64Write
+        return base64Write(this, string, offset, length)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return ucs2Write(this, string, offset, length)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+
+Buffer.prototype.toJSON = function toJSON () {
+  return {
+    type: 'Buffer',
+    data: Array.prototype.slice.call(this._arr || this, 0)
+  }
+}
+
+function base64Slice (buf, start, end) {
+  if (start === 0 && end === buf.length) {
+    return base64.fromByteArray(buf)
+  } else {
+    return base64.fromByteArray(buf.slice(start, end))
+  }
+}
+
+function utf8Slice (buf, start, end) {
+  end = Math.min(buf.length, end)
+  var res = []
+
+  var i = start
+  while (i < end) {
+    var firstByte = buf[i]
+    var codePoint = null
+    var bytesPerSequence = (firstByte > 0xEF) ? 4
+      : (firstByte > 0xDF) ? 3
+      : (firstByte > 0xBF) ? 2
+      : 1
+
+    if (i + bytesPerSequence <= end) {
+      var secondByte, thirdByte, fourthByte, tempCodePoint
+
+      switch (bytesPerSequence) {
+        case 1:
+          if (firstByte < 0x80) {
+            codePoint = firstByte
+          }
+          break
+        case 2:
+          secondByte = buf[i + 1]
+          if ((secondByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
+            if (tempCodePoint > 0x7F) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 3:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
+            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 4:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          fourthByte = buf[i + 3]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
+            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+              codePoint = tempCodePoint
+            }
+          }
+      }
+    }
+
+    if (codePoint === null) {
+      // we did not generate a valid codePoint so insert a
+      // replacement char (U+FFFD) and advance only 1 byte
+      codePoint = 0xFFFD
+      bytesPerSequence = 1
+    } else if (codePoint > 0xFFFF) {
+      // encode to utf16 (surrogate pair dance)
+      codePoint -= 0x10000
+      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
+      codePoint = 0xDC00 | codePoint & 0x3FF
+    }
+
+    res.push(codePoint)
+    i += bytesPerSequence
+  }
+
+  return decodeCodePointsArray(res)
+}
+
+// Based on http://stackoverflow.com/a/22747272/680742, the browser with
+// the lowest limit is Chrome, with 0x10000 args.
+// We go 1 magnitude less, for safety
+var MAX_ARGUMENTS_LENGTH = 0x1000
+
+function decodeCodePointsArray (codePoints) {
+  var len = codePoints.length
+  if (len <= MAX_ARGUMENTS_LENGTH) {
+    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
+  }
+
+  // Decode in chunks to avoid "call stack size exceeded".
+  var res = ''
+  var i = 0
+  while (i < len) {
+    res += String.fromCharCode.apply(
+      String,
+      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
+    )
+  }
+  return res
+}
+
+function asciiSlice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i] & 0x7F)
+  }
+  return ret
+}
+
+function latin1Slice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i])
+  }
+  return ret
+}
+
+function hexSlice (buf, start, end) {
+  var len = buf.length
+
+  if (!start || start < 0) start = 0
+  if (!end || end < 0 || end > len) end = len
+
+  var out = ''
+  for (var i = start; i < end; ++i) {
+    out += toHex(buf[i])
+  }
+  return out
+}
+
+function utf16leSlice (buf, start, end) {
+  var bytes = buf.slice(start, end)
+  var res = ''
+  for (var i = 0; i < bytes.length; i += 2) {
+    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256)
+  }
+  return res
+}
+
+Buffer.prototype.slice = function slice (start, end) {
+  var len = this.length
+  start = ~~start
+  end = end === undefined ? len : ~~end
+
+  if (start < 0) {
+    start += len
+    if (start < 0) start = 0
+  } else if (start > len) {
+    start = len
+  }
+
+  if (end < 0) {
+    end += len
+    if (end < 0) end = 0
+  } else if (end > len) {
+    end = len
+  }
+
+  if (end < start) end = start
+
+  var newBuf
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    newBuf = this.subarray(start, end)
+    newBuf.__proto__ = Buffer.prototype
+  } else {
+    var sliceLen = end - start
+    newBuf = new Buffer(sliceLen, undefined)
+    for (var i = 0; i < sliceLen; ++i) {
+      newBuf[i] = this[i + start]
+    }
+  }
+
+  return newBuf
+}
+
+/*
+ * Need to make sure that buffer isn't trying to write out of bounds.
+ */
+function checkOffset (offset, ext, length) {
+  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
+  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
+}
+
+Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    checkOffset(offset, byteLength, this.length)
+  }
+
+  var val = this[offset + --byteLength]
+  var mul = 1
+  while (byteLength > 0 && (mul *= 0x100)) {
+    val += this[offset + --byteLength] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  return this[offset]
+}
+
+Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return this[offset] | (this[offset + 1] << 8)
+}
+
+Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return (this[offset] << 8) | this[offset + 1]
+}
+
+Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return ((this[offset]) |
+      (this[offset + 1] << 8) |
+      (this[offset + 2] << 16)) +
+      (this[offset + 3] * 0x1000000)
+}
+
+Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] * 0x1000000) +
+    ((this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    this[offset + 3])
+}
+
+Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var i = byteLength
+  var mul = 1
+  var val = this[offset + --i]
+  while (i > 0 && (mul *= 0x100)) {
+    val += this[offset + --i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  if (!(this[offset] & 0x80)) return (this[offset])
+  return ((0xff - this[offset] + 1) * -1)
+}
+
+Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset] | (this[offset + 1] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset + 1] | (this[offset] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset]) |
+    (this[offset + 1] << 8) |
+    (this[offset + 2] << 16) |
+    (this[offset + 3] << 24)
+}
+
+Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] << 24) |
+    (this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    (this[offset + 3])
+}
+
+Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, true, 23, 4)
+}
+
+Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, false, 23, 4)
+}
+
+Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, true, 52, 8)
+}
+
+Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, false, 52, 8)
+}
+
+function checkInt (buf, value, offset, ext, max, min) {
+  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
+  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+}
+
+Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+    checkInt(this, value, offset, byteLength, maxBytes, 0)
+  }
+
+  var mul = 1
+  var i = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+    checkInt(this, value, offset, byteLength, maxBytes, 0)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+function objectWriteUInt16 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
+    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
+      (littleEndian ? i : 1 - i) * 8
+  }
+}
+
+Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+function objectWriteUInt32 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffffffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
+    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
+  }
+}
+
+Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset + 3] = (value >>> 24)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 1] = (value >>> 8)
+    this[offset] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = 0
+  var mul = 1
+  var sub = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+      sub = 1
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  var sub = 0
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+      sub = 1
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  if (value < 0) value = 0xff + value + 1
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 3] = (value >>> 24)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (value < 0) value = 0xffffffff + value + 1
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+function checkIEEE754 (buf, value, offset, ext, max, min) {
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+  if (offset < 0) throw new RangeError('Index out of range')
+}
+
+function writeFloat (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 23, 4)
+  return offset + 4
+}
+
+Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, false, noAssert)
+}
+
+function writeDouble (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 52, 8)
+  return offset + 8
+}
+
+Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, false, noAssert)
+}
+
+// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
+Buffer.prototype.copy = function copy (target, targetStart, start, end) {
+  if (!start) start = 0
+  if (!end && end !== 0) end = this.length
+  if (targetStart >= target.length) targetStart = target.length
+  if (!targetStart) targetStart = 0
+  if (end > 0 && end < start) end = start
+
+  // Copy 0 bytes; we're done
+  if (end === start) return 0
+  if (target.length === 0 || this.length === 0) return 0
+
+  // Fatal error conditions
+  if (targetStart < 0) {
+    throw new RangeError('targetStart out of bounds')
+  }
+  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
+  if (end < 0) throw new RangeError('sourceEnd out of bounds')
+
+  // Are we oob?
+  if (end > this.length) end = this.length
+  if (target.length - targetStart < end - start) {
+    end = target.length - targetStart + start
+  }
+
+  var len = end - start
+  var i
+
+  if (this === target && start < targetStart && targetStart < end) {
+    // descending copy from end
+    for (i = len - 1; i >= 0; --i) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
+    // ascending copy from start
+    for (i = 0; i < len; ++i) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else {
+    Uint8Array.prototype.set.call(
+      target,
+      this.subarray(start, start + len),
+      targetStart
+    )
+  }
+
+  return len
+}
+
+// Usage:
+//    buffer.fill(number[, offset[, end]])
+//    buffer.fill(buffer[, offset[, end]])
+//    buffer.fill(string[, offset[, end]][, encoding])
+Buffer.prototype.fill = function fill (val, start, end, encoding) {
+  // Handle string cases:
+  if (typeof val === 'string') {
+    if (typeof start === 'string') {
+      encoding = start
+      start = 0
+      end = this.length
+    } else if (typeof end === 'string') {
+      encoding = end
+      end = this.length
+    }
+    if (val.length === 1) {
+      var code = val.charCodeAt(0)
+      if (code < 256) {
+        val = code
+      }
+    }
+    if (encoding !== undefined && typeof encoding !== 'string') {
+      throw new TypeError('encoding must be a string')
+    }
+    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
+      throw new TypeError('Unknown encoding: ' + encoding)
+    }
+  } else if (typeof val === 'number') {
+    val = val & 255
+  }
+
+  // Invalid ranges are not set to a default, so can range check early.
+  if (start < 0 || this.length < start || this.length < end) {
+    throw new RangeError('Out of range index')
+  }
+
+  if (end <= start) {
+    return this
+  }
+
+  start = start >>> 0
+  end = end === undefined ? this.length : end >>> 0
+
+  if (!val) val = 0
+
+  var i
+  if (typeof val === 'number') {
+    for (i = start; i < end; ++i) {
+      this[i] = val
+    }
+  } else {
+    var bytes = Buffer.isBuffer(val)
+      ? val
+      : utf8ToBytes(new Buffer(val, encoding).toString())
+    var len = bytes.length
+    for (i = 0; i < end - start; ++i) {
+      this[i + start] = bytes[i % len]
+    }
+  }
+
+  return this
+}
+
+// HELPER FUNCTIONS
+// ================
+
+var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
+
+function base64clean (str) {
+  // Node strips out invalid characters like \n and \t from the string, base64-js does not
+  str = stringtrim(str).replace(INVALID_BASE64_RE, '')
+  // Node converts strings with length < 2 to ''
+  if (str.length < 2) return ''
+  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
+  while (str.length % 4 !== 0) {
+    str = str + '='
+  }
+  return str
+}
+
+function stringtrim (str) {
+  if (str.trim) return str.trim()
+  return str.replace(/^\s+|\s+$/g, '')
+}
+
+function toHex (n) {
+  if (n < 16) return '0' + n.toString(16)
+  return n.toString(16)
+}
+
+function utf8ToBytes (string, units) {
+  units = units || Infinity
+  var codePoint
+  var length = string.length
+  var leadSurrogate = null
+  var bytes = []
+
+  for (var i = 0; i < length; ++i) {
+    codePoint = string.charCodeAt(i)
+
+    // is surrogate component
+    if (codePoint > 0xD7FF && codePoint < 0xE000) {
+      // last char was a lead
+      if (!leadSurrogate) {
+        // no lead yet
+        if (codePoint > 0xDBFF) {
+          // unexpected trail
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        } else if (i + 1 === length) {
+          // unpaired lead
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        }
+
+        // valid lead
+        leadSurrogate = codePoint
+
+        continue
+      }
+
+      // 2 leads in a row
+      if (codePoint < 0xDC00) {
+        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+        leadSurrogate = codePoint
+        continue
+      }
+
+      // valid surrogate pair
+      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
+    } else if (leadSurrogate) {
+      // valid bmp char, but last char was a lead
+      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+    }
+
+    leadSurrogate = null
+
+    // encode utf8
+    if (codePoint < 0x80) {
+      if ((units -= 1) < 0) break
+      bytes.push(codePoint)
+    } else if (codePoint < 0x800) {
+      if ((units -= 2) < 0) break
+      bytes.push(
+        codePoint >> 0x6 | 0xC0,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x10000) {
+      if ((units -= 3) < 0) break
+      bytes.push(
+        codePoint >> 0xC | 0xE0,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x110000) {
+      if ((units -= 4) < 0) break
+      bytes.push(
+        codePoint >> 0x12 | 0xF0,
+        codePoint >> 0xC & 0x3F | 0x80,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else {
+      throw new Error('Invalid code point')
+    }
+  }
+
+  return bytes
+}
+
+function asciiToBytes (str) {
+  var byteArray = []
+  for (var i = 0; i < str.length; ++i) {
+    // Node's code seems to be doing this and not & 0x7F..
+    byteArray.push(str.charCodeAt(i) & 0xFF)
+  }
+  return byteArray
+}
+
+function utf16leToBytes (str, units) {
+  var c, hi, lo
+  var byteArray = []
+  for (var i = 0; i < str.length; ++i) {
+    if ((units -= 2) < 0) break
+
+    c = str.charCodeAt(i)
+    hi = c >> 8
+    lo = c % 256
+    byteArray.push(lo)
+    byteArray.push(hi)
+  }
+
+  return byteArray
+}
+
+function base64ToBytes (str) {
+  return base64.toByteArray(base64clean(str))
+}
+
+function blitBuffer (src, dst, offset, length) {
+  for (var i = 0; i < length; ++i) {
+    if ((i + offset >= dst.length) || (i >= src.length)) break
+    dst[i + offset] = src[i]
+  }
+  return i
+}
+
+function isnan (val) {
+  return val !== val // eslint-disable-line no-self-compare
+}
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(27)))
 
 /***/ }),
 /* 40 */
@@ -47913,7 +47913,7 @@ class Utf8IteratorImpl extends _lazy_iterator__WEBPACK_IMPORTED_MODULE_1__[/* On
     }
 }
 //# sourceMappingURL=byte_chunk_iterator.js.map
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(36).Buffer))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(39).Buffer))
 
 /***/ }),
 /* 58 */
@@ -48029,12 +48029,12 @@ class SplitIteratorImpl extends _lazy_iterator__WEBPACK_IMPORTED_MODULE_0__[/* O
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const blazeface = __webpack_require__(82);
-const tfconv = __webpack_require__(39);
+const blazeface = __webpack_require__(81);
+const tfconv = __webpack_require__(38);
 const tf = __webpack_require__(0);
-const keypoints_1 = __webpack_require__(83);
-const pipeline_1 = __webpack_require__(84);
-const uv_coords_1 = __webpack_require__(86);
+const keypoints_1 = __webpack_require__(82);
+const pipeline_1 = __webpack_require__(83);
+const uv_coords_1 = __webpack_require__(85);
 const FACEMESH_GRAPHMODEL_PATH = 'https://tfhub.dev/mediapipe/tfjs-model/facemesh/1/default/1';
 const MESH_MODEL_INPUT_WIDTH = 192;
 const MESH_MODEL_INPUT_HEIGHT = 192;
@@ -48206,11 +48206,11 @@ exports.FaceMesh = FaceMesh;
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var tfjsCore = __webpack_require__(0);
-var tfjsLayers = __webpack_require__(88);
-var tfjsConverter = __webpack_require__(39);
-var tfjsData = __webpack_require__(89);
-var tfjsBackendCpu = __webpack_require__(90);
-var tfjsBackendWebgl = __webpack_require__(87);
+var tfjsLayers = __webpack_require__(87);
+var tfjsConverter = __webpack_require__(38);
+var tfjsData = __webpack_require__(88);
+var tfjsBackendCpu = __webpack_require__(89);
+var tfjsBackendWebgl = __webpack_require__(86);
 
 /** @license See the LICENSE file. */
 // This code is auto-generated, do not modify this file!
@@ -48276,7 +48276,7 @@ exports.version = version$1;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var _device_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(37);
+/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var _device_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(36);
 /* harmony import */ var _environment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
 /**
  * @license
@@ -49906,6313 +49906,6 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-/* WEBPACK VAR INJECTION */(function(Buffer) {/**
- * @license
- * Copyright 2020 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-var tfc = __webpack_require__(0);
-
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
-
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
-
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
-***************************************************************************** */
-
-var __assign = Object.assign || function __assign(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-    }
-    return t;
-};
-
-function __awaiter(thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-}
-
-function __generator(thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-}
-
-/**
- * @license
- * Copyright 2019 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * =============================================================================
- */
-/** DataType enum. */
-var DataType;
-(function (DataType) {
-    DataType[DataType["DT_INVALID"] = 0] = "DT_INVALID";
-    DataType[DataType["DT_FLOAT"] = 1] = "DT_FLOAT";
-    DataType[DataType["DT_DOUBLE"] = 2] = "DT_DOUBLE";
-    DataType[DataType["DT_INT32"] = 3] = "DT_INT32";
-    DataType[DataType["DT_UINT8"] = 4] = "DT_UINT8";
-    DataType[DataType["DT_INT16"] = 5] = "DT_INT16";
-    DataType[DataType["DT_INT8"] = 6] = "DT_INT8";
-    DataType[DataType["DT_STRING"] = 7] = "DT_STRING";
-    DataType[DataType["DT_COMPLEX64"] = 8] = "DT_COMPLEX64";
-    DataType[DataType["DT_INT64"] = 9] = "DT_INT64";
-    DataType[DataType["DT_BOOL"] = 10] = "DT_BOOL";
-    DataType[DataType["DT_QINT8"] = 11] = "DT_QINT8";
-    DataType[DataType["DT_QUINT8"] = 12] = "DT_QUINT8";
-    DataType[DataType["DT_QINT32"] = 13] = "DT_QINT32";
-    DataType[DataType["DT_BFLOAT16"] = 14] = "DT_BFLOAT16";
-    DataType[DataType["DT_FLOAT_REF"] = 101] = "DT_FLOAT_REF";
-    DataType[DataType["DT_DOUBLE_REF"] = 102] = "DT_DOUBLE_REF";
-    DataType[DataType["DT_INT32_REF"] = 103] = "DT_INT32_REF";
-    DataType[DataType["DT_UINT8_REF"] = 104] = "DT_UINT8_REF";
-    DataType[DataType["DT_INT16_REF"] = 105] = "DT_INT16_REF";
-    DataType[DataType["DT_INT8_REF"] = 106] = "DT_INT8_REF";
-    DataType[DataType["DT_STRING_REF"] = 107] = "DT_STRING_REF";
-    DataType[DataType["DT_COMPLEX64_REF"] = 108] = "DT_COMPLEX64_REF";
-    DataType[DataType["DT_INT64_REF"] = 109] = "DT_INT64_REF";
-    DataType[DataType["DT_BOOL_REF"] = 110] = "DT_BOOL_REF";
-    DataType[DataType["DT_QINT8_REF"] = 111] = "DT_QINT8_REF";
-    DataType[DataType["DT_QUINT8_REF"] = 112] = "DT_QUINT8_REF";
-    DataType[DataType["DT_QINT32_REF"] = 113] = "DT_QINT32_REF";
-    DataType[DataType["DT_BFLOAT16_REF"] = 114] = "DT_BFLOAT16_REF";
-})(DataType || (DataType = {}));
-var SaverDef;
-(function (SaverDef) {
-    /** CheckpointFormatVersion enum. */
-    var CheckpointFormatVersion;
-    (function (CheckpointFormatVersion) {
-        CheckpointFormatVersion[CheckpointFormatVersion["LEGACY"] = 0] = "LEGACY";
-        CheckpointFormatVersion[CheckpointFormatVersion["V1"] = 1] = "V1";
-        CheckpointFormatVersion[CheckpointFormatVersion["V2"] = 2] = "V2";
-    })(CheckpointFormatVersion = SaverDef.CheckpointFormatVersion || (SaverDef.CheckpointFormatVersion = {}));
-})(SaverDef || (SaverDef = {}));
-
-/**
- * @license
- * Copyright 2019 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var CUSTOM_OPS = {};
-/**
- * Register an Op for graph model executor. This allow you to register
- * TensorFlow custom op or override existing op.
- *
- * Here is an example of registering a new MatMul Op.
- * ```js
- * const customMatmul = (node) =>
- *    tf.matMul(
- *        node.inputs[0], node.inputs[1],
- *        node.attrs['transpose_a'], node.attrs['transpose_b']);
- *
- * tf.registerOp('MatMul', customMatmul);
- * ```
- * The inputs and attrs of the node object is based on the TensorFlow op
- * registry.
- *
- * @param name The Tensorflow Op name.
- * @param opFunc An op function which is called with the current graph node
- * during execution and needs to return a tensor or a list of tensors. The node
- * has the following attributes:
- *    - attr: A map from attribute name to its value
- *    - inputs: A list of input tensors
- */
-/** @doc {heading: 'Models', subheading: 'Op Registry'} */
-function registerOp(name, opFunc) {
-    var opMapper = {
-        tfOpName: name,
-        category: 'custom',
-        inputs: [],
-        attrs: [],
-        customExecutor: opFunc
-    };
-    CUSTOM_OPS[name] = opMapper;
-}
-/**
- * Retrieve the OpMapper object for the registered op.
- *
- * @param name The Tensorflow Op name.
- */
-/** @doc {heading: 'Models', subheading: 'Op Registry'} */
-function getRegisteredOp(name) {
-    return CUSTOM_OPS[name];
-}
-/**
- * Deregister the Op for graph model executor.
- *
- * @param name The Tensorflow Op name.
- */
-/** @doc {heading: 'Models', subheading: 'Op Registry'} */
-function deregisterOp(name) {
-    delete CUSTOM_OPS[name];
-}
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-function getParamValue(paramName, node, tensorMap, context) {
-    var inputParam = node.inputParams[paramName];
-    if (inputParam && inputParam.inputIndexStart !== undefined) {
-        var start = inputParam.inputIndexStart;
-        var end = inputParam.inputIndexEnd === 0 ?
-            undefined :
-            (inputParam.inputIndexEnd === undefined ? start + 1 :
-                inputParam.inputIndexEnd);
-        if (inputParam.type === 'tensor') {
-            return getTensor(node.inputNames[inputParam.inputIndexStart], tensorMap, context);
-        }
-        if (inputParam.type === 'tensors') {
-            var inputs = node.inputNames.slice(start, end);
-            return inputs.map(function (name) { return getTensor(name, tensorMap, context); });
-        }
-        var data = Array.prototype.slice.call(getTensor(node.inputNames.slice(start)[0], tensorMap, context)
-            .dataSync());
-        return inputParam.type === 'number' ? data[0] : data;
-    }
-    var attrParam = node.attrParams[paramName];
-    return attrParam && attrParam.value;
-}
-/**
- * Retrieve the tensor based on input name by extracting the node name and
- * output index information.
- * @param name Node input name
- * @param tensorsMap Tensors map keyed by the node
- */
-function getTensor(name, tensorsMap, context) {
-    var _a = parseNodeName(name), nodeName = _a[0], index = _a[1];
-    var contextId = context.currentContextIds.find(function (contextId) {
-        return !!tensorsMap[getNodeNameWithContextId(nodeName, contextId)];
-    });
-    return contextId !== undefined ?
-        tensorsMap[getNodeNameWithContextId(nodeName, contextId)][index] :
-        undefined;
-}
-/**
- * Retrieve the tensors based on input name for current context.
- * @param name Node input name
- * @param tensorsMap Tensors map keyed by the node
- */
-function getTensorsForCurrentContenxt(name, tensorsMap, context) {
-    return tensorsMap[getNodeNameWithContextId(name, context.currentContextId)];
-}
-/**
- * Returns the node name and index from the Node input name.
- * @param inputName The input name of the node, in format of
- * node_name:output_index, i.e. MatMul:0, if the output_index is not set, it is
- * default to 0.
- */
-function getNodeNameAndIndex(inputName, context) {
-    var _a = parseNodeName(inputName), nodeName = _a[0], index = _a[1];
-    return [
-        getNodeNameWithContextId(nodeName, context && context.currentContextId),
-        index
-    ];
-}
-function getNodeNameWithContextId(name, contextId) {
-    return !!contextId ? name + "-" + contextId : name;
-}
-function parseNodeName(name) {
-    var parts = name.split(':');
-    if (parts.length === 1) {
-        return [name, 0];
-    }
-    var nodeName = parts[0];
-    return [nodeName, Number(parts[parts.length - 1])];
-}
-function split(arr, size) {
-    var res = [];
-    for (var i = 0; i < arr.length; i += size) {
-        res.push(arr.slice(i, i + size));
-    }
-    return res;
-}
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json = [
-    {
-        'tfOpName': 'Add',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'AddV2',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'AddN',
-        'category': 'arithmetic',
-        'inputs': [{ 'start': 0, 'end': 0, 'name': 'tensors', 'type': 'tensors' }]
-    },
-    {
-        'tfOpName': 'BiasAdd',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Sub',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'RealDiv',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Div',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'DivNoNan',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'FloorDiv',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Mul',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Maximum',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' }
-        ]
-    },
-    {
-        'tfOpName': 'Minimum',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' }
-        ]
-    },
-    {
-        'tfOpName': 'Pow',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'SquaredDifference',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Mod',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'FloorMod',
-        'category': 'arithmetic',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    }
-];
-
-var arithmetic = {
-    __proto__: null,
-    json: json
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$1 = [
-    {
-        'tfOpName': 'Abs',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Acos',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Asin',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Atan',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Atan2',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'y', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Ceil',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'ClipByValue',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'clip_value_min', 'name': 'clipValueMin', 'type': 'number' },
-            { 'tfName': 'clip_value_max', 'name': 'clipValueMax', 'type': 'number' }
-        ]
-    },
-    {
-        'tfOpName': 'Complex',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'real', 'type': 'tensor' },
-            { 'start': 1, 'name': 'imag', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'ComplexAbs',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Cos',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Cosh',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Elu',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Exp',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Floor',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Log',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Imag',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }, {
-                'tfName': 'Tout',
-                'name': 'outputType',
-                'type': 'dtype',
-                'notSupported': true
-            }
-        ]
-    },
-    {
-        'tfOpName': 'Neg',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Real',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }, {
-                'tfName': 'Tout',
-                'name': 'outputType',
-                'type': 'dtype',
-                'notSupported': true
-            }
-        ]
-    },
-    {
-        'tfOpName': 'Prelu',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'alpha', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Relu',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Relu6',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }, {
-                'tfName': 'clipValueMin',
-                'name': 'clipValueMin',
-                'type': 'number',
-                'defaultValue': 0
-            },
-            {
-                'tfName': 'clipValueMax',
-                'name': 'clipValueMax',
-                'type': 'number',
-                'defaultValue': 6
-            }
-        ]
-    },
-    {
-        'tfOpName': 'Selu',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Sigmoid',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Sin',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Sinh',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Sqrt',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Rsqrt',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Square',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Tan',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Tanh',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Sign',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Round',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Expm1',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Log1p',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Reciprocal',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Softplus',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Asinh',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Acosh',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Atanh',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Erf',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Prod',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'axes', 'type': 'number[]' },
-        ],
-        'attrs': [
-            {
-                'tfName': 'keep_dims',
-                'name': 'keepDims',
-                'type': 'bool',
-                'notSupported': true
-            },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'LeakyRelu',
-        'category': 'basic_math',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            {
-                'tfName': 'alpha',
-                'name': 'alpha',
-                'type': 'number',
-                'defaultValue': 0.2
-            },
-            {
-                'tfName': 'T',
-                'name': 'dtype',
-                'type': 'dtype',
-                'notSupported': true
-            }
-        ]
-    }
-];
-
-var basicMath = {
-    __proto__: null,
-    json: json$1
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$2 = [
-    {
-        'tfOpName': 'LoopCond',
-        'category': 'control',
-        'inputs': [{ 'start': 0, 'name': 'pred', 'type': 'tensor' }]
-    },
-    {
-        'tfOpName': 'Switch',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'name': 'data', 'type': 'tensor' },
-            { 'start': 1, 'name': 'pred', 'type': 'tensor' }
-        ]
-    },
-    {
-        'tfOpName': 'Merge',
-        'category': 'control',
-        'inputs': [{ 'start': 0, 'end': 0, 'name': 'tensors', 'type': 'tensors' }]
-    },
-    {
-        'tfOpName': 'Enter',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'name': 'tensor', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true },
-            { 'tfName': 'frame_name', 'name': 'frameName', 'type': 'string' },
-            { 'tfName': 'is_constant', 'name': 'isConstant', 'type': 'bool' }
-        ]
-    },
-    {
-        'tfOpName': 'Exit',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'name': 'tensor', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'NextIteration',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'name': 'tensor', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'TensorArrayV3',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'name': 'size', 'type': 'number' },
-        ],
-        'attrs': [
-            { 'tfName': 'dtype', 'name': 'dtype', 'type': 'dtype' },
-            { 'tfName': 'element_shape', 'name': 'elementShape', 'type': 'shape' },
-            { 'tfName': 'dynamic_size', 'name': 'dynamicSize', 'type': 'bool' },
-            { 'tfName': 'clear_after_read', 'name': 'clearAfterRead', 'type': 'bool' },
-            {
-                'tfName': 'identical_element_shapes',
-                'name': 'identicalElementShapes',
-                'type': 'bool'
-            },
-            { 'tfName': 'tensor_array_name', 'name': 'name', 'type': 'string' }
-        ]
-    },
-    {
-        'tfOpName': 'TensorArrayWriteV3',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'name': 'tensorArrayId', 'type': 'number' },
-            { 'start': 1, 'name': 'index', 'type': 'number' },
-            { 'start': 2, 'name': 'tensor', 'type': 'tensor' },
-            { 'start': 3, 'name': 'flowIn', 'type': 'number' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'TensorArrayReadV3',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'name': 'tensorArrayId', 'type': 'number' },
-            { 'start': 1, 'name': 'index', 'type': 'number' },
-            { 'start': 2, 'name': 'flowIn', 'type': 'number' },
-        ],
-        'attrs': [{
-                'tfName': 'dtype',
-                'name': 'dtype',
-                'type': 'dtype',
-                'notSupported': true
-            }]
-    },
-    {
-        'tfOpName': 'TensorArrayGatherV3',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'name': 'tensorArrayId', 'type': 'number' },
-            { 'start': 1, 'name': 'indices', 'type': 'number[]' },
-            { 'start': 2, 'name': 'flowIn', 'type': 'number' },
-        ],
-        'attrs': [
-            { 'tfName': 'dtype', 'name': 'dtype', 'type': 'dtype' },
-            { 'tfName': 'element_shape', 'name': 'elementShape', 'type': 'shape' }
-        ]
-    },
-    {
-        'tfOpName': 'TensorArrayScatterV3',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'name': 'tensorArrayId', 'type': 'number' },
-            { 'start': 1, 'name': 'indices', 'type': 'number[]' },
-            { 'start': 2, 'name': 'tensor', 'type': 'tensor' },
-            { 'start': 3, 'name': 'flowIn', 'type': 'number' },
-        ],
-        'attrs': [{ 'tfName': 'T', 'name': 'dtype', 'type': 'dtype' }]
-    },
-    {
-        'tfOpName': 'TensorArrayConcatV3',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'name': 'tensorArrayId', 'type': 'number' },
-            { 'start': 1, 'name': 'flowIn', 'type': 'number' },
-        ],
-        'attrs': [
-            { 'tfName': 'dtype', 'name': 'dtype', 'type': 'dtype' }, {
-                'tfName': 'element_shape_except0',
-                'name': 'elementShapeExcept0',
-                'type': 'shape',
-                'notSupported': true
-            }
-        ]
-    },
-    {
-        'tfOpName': 'TensorArraySplitV3',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'name': 'tensorArrayId', 'type': 'number' },
-            { 'start': 1, 'name': 'tensor', 'type': 'tensor' },
-            { 'start': 2, 'name': 'lengths', 'type': 'number[]' },
-            { 'start': 3, 'name': 'flowIn', 'type': 'number' },
-        ],
-        'attrs': [{ 'tfName': 'T', 'name': 'dtype', 'type': 'dtype' }]
-    },
-    {
-        'tfOpName': 'TensorArraySizeV3',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'name': 'tensorArrayId', 'type': 'number' },
-            { 'start': 1, 'name': 'flowIn', 'type': 'number' }
-        ]
-    },
-    {
-        'tfOpName': 'TensorArrayCloseV3',
-        'category': 'control',
-        'inputs': [{ 'start': 0, 'name': 'tensorArrayId', 'type': 'number' }]
-    },
-    {
-        'tfOpName': 'StatelessIf',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'name': 'cond', 'type': 'tensor' },
-            { 'start': 1, 'end': 0, 'name': 'args', 'type': 'tensors' }
-        ],
-        'attrs': [
-            { 'tfName': 'then_branch', 'name': 'thenBranch', 'type': 'func' },
-            { 'tfName': 'else_branch', 'name': 'elseBranch', 'type': 'func' }
-        ]
-    },
-    {
-        'tfOpName': 'If',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'name': 'cond', 'type': 'tensor' },
-            { 'start': 1, 'end': 0, 'name': 'args', 'type': 'tensors' }
-        ],
-        'attrs': [
-            { 'tfName': 'then_branch', 'name': 'thenBranch', 'type': 'func' },
-            { 'tfName': 'else_branch', 'name': 'elseBranch', 'type': 'func' }
-        ]
-    },
-    {
-        'tfOpName': 'StatelessWhile',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'end': 0, 'name': 'args', 'type': 'tensors' },
-        ],
-        'attrs': [
-            { 'tfName': 'cond', 'name': 'cond', 'type': 'func' },
-            { 'tfName': 'body', 'name': 'body', 'type': 'func' }
-        ]
-    },
-    {
-        'tfOpName': 'While',
-        'category': 'control',
-        'inputs': [
-            { 'start': 0, 'end': 0, 'name': 'args', 'type': 'tensors' },
-        ],
-        'attrs': [
-            { 'tfName': 'cond', 'name': 'cond', 'type': 'func' },
-            { 'tfName': 'body', 'name': 'body', 'type': 'func' }
-        ]
-    }
-];
-
-var control = {
-    __proto__: null,
-    json: json$2
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$3 = [
-    {
-        'tfOpName': 'AvgPool',
-        'category': 'convolution',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'strides', 'name': 'strides', 'type': 'number[]' },
-            { 'tfName': 'padding', 'name': 'pad', 'type': 'string' }, {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'notSupported': true
-            },
-            { 'tfName': 'ksize', 'name': 'kernelSize', 'type': 'number[]' },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'MaxPool',
-        'category': 'convolution',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'strides', 'name': 'strides', 'type': 'number[]' },
-            { 'tfName': 'padding', 'name': 'pad', 'type': 'string' }, {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'notSupported': true
-            },
-            { 'tfName': 'ksize', 'name': 'kernelSize', 'type': 'number[]' },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'MaxPoolWithArgmax',
-        'category': 'convolution',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'strides', 'name': 'strides', 'type': 'number[]' },
-            { 'tfName': 'padding', 'name': 'pad', 'type': 'string' },
-            { 'tfName': 'ksize', 'name': 'kernelSize', 'type': 'number[]' }, {
-                'tfName': 'include_batch_in_index',
-                'name': 'includeBatchInIndex',
-                'type': 'bool'
-            },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'AvgPool3D',
-        'category': 'convolution',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'strides', 'name': 'strides', 'type': 'number[]' },
-            { 'tfName': 'padding', 'name': 'pad', 'type': 'string' }, {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'notSupported': true
-            },
-            { 'tfName': 'ksize', 'name': 'kernelSize', 'type': 'number[]' },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'MaxPool3D',
-        'category': 'convolution',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'strides', 'name': 'strides', 'type': 'number[]' },
-            { 'tfName': 'padding', 'name': 'pad', 'type': 'string' }, {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'notSupported': true
-            },
-            { 'tfName': 'ksize', 'name': 'kernelSize', 'type': 'number[]' },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Conv1D',
-        'category': 'convolution',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'filter', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'stride', 'name': 'stride', 'type': 'number' },
-            { 'tfName': 'padding', 'name': 'pad', 'type': 'string' }, {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'defaultValue': 'NWC'
-            },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }, {
-                'tfName': 'dilation',
-                'name': 'dilation',
-                'type': 'number',
-                'defaultValue': 1
-            }
-        ]
-    },
-    {
-        'tfOpName': 'Conv2D',
-        'category': 'convolution',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'filter', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true },
-            { 'tfName': 'strides', 'name': 'strides', 'type': 'number[]' },
-            { 'tfName': 'padding', 'name': 'pad', 'type': 'string' },
-            { 'tfName': 'useCudnnOnGpu', 'name': 'useCudnnOnGpu', 'type': 'bool' }, {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'defaultValue': 'NHWC'
-            },
-            {
-                'tfName': 'explicit_paddings',
-                'name': 'explicitPaddings',
-                'type': 'number[]',
-                'defaultValue': []
-            },
-            { 'tfName': 'dilations', 'name': 'dilations', 'type': 'number[]' }
-        ]
-    },
-    {
-        'tfOpName': '_FusedConv2D',
-        'category': 'convolution',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'filter', 'type': 'tensor' },
-            { 'start': 2, end: 0, 'name': 'args', 'type': 'tensors' },
-        ],
-        'attrs': [
-            { 'tfName': 'num_args', 'name': 'numArgs', 'type': 'number' },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true },
-            { 'tfName': 'strides', 'name': 'strides', 'type': 'number[]' },
-            { 'tfName': 'padding', 'name': 'pad', 'type': 'string' },
-            {
-                'tfName': 'explicit_paddings',
-                'name': 'explicitPaddings',
-                'type': 'number[]',
-                'defaultValue': []
-            },
-            {
-                'tfName': 'use_cudnn_on_gpu',
-                'name': 'useCudnnOnGpu',
-                'type': 'bool',
-                'defaultValue': true
-            },
-            {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'defaultValue': 'NHWC'
-            },
-            {
-                'tfName': 'dilations',
-                'name': 'dilations',
-                'type': 'number[]',
-                'defaultValue': [1, 1, 1, 1]
-            },
-            {
-                'tfName': 'fused_ops',
-                'name': 'fusedOps',
-                'type': 'string[]',
-                'defaultValue': []
-            },
-            {
-                'tfName': 'epsilon',
-                'name': 'epsilon',
-                'type': 'number',
-                'defaultValue': 0.0001
-            },
-        ]
-    },
-    {
-        'tfOpName': 'Conv2DBackpropInput',
-        'category': 'convolution',
-        'inputs': [
-            { 'start': 2, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'filter', 'type': 'tensor' },
-            { 'start': 0, 'name': 'outputShape', 'type': 'number[]' },
-        ],
-        'attrs': [
-            { 'tfName': 'strides', 'name': 'strides', 'type': 'number[]' },
-            { 'tfName': 'padding', 'name': 'pad', 'type': 'string' },
-            {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'notSupported': true
-            },
-            {
-                'tfName': 'explicit_paddings',
-                'name': 'explicitPaddings',
-                'type': 'number[]',
-                'defaultValue': []
-            },
-        ]
-    },
-    {
-        'tfOpName': 'DepthwiseConv2d',
-        'category': 'convolution',
-        'inputs': [
-            { 'start': 0, 'name': 'input', 'type': 'tensor' },
-            { 'start': 1, 'name': 'filter', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'strides', 'name': 'strides', 'type': 'number[]' },
-            { 'tfName': 'padding', 'name': 'pad', 'type': 'string' }, {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'defaultValue': 'NHWC'
-            },
-            {
-                'tfName': 'explicit_paddings',
-                'name': 'explicitPaddings',
-                'type': 'number[]',
-                'defaultValue': []
-            },
-            { 'tfName': 'dilations', 'name': 'dilations', 'type': 'number[]' }
-        ]
-    },
-    {
-        'tfOpName': 'DepthwiseConv2dNative',
-        'category': 'convolution',
-        'inputs': [
-            { 'start': 0, 'name': 'input', 'type': 'tensor' },
-            { 'start': 1, 'name': 'filter', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'strides', 'name': 'strides', 'type': 'number[]' },
-            { 'tfName': 'padding', 'name': 'pad', 'type': 'string' }, {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'defaultValue': 'NHWC'
-            },
-            {
-                'tfName': 'explicit_paddings',
-                'name': 'explicitPaddings',
-                'type': 'number[]',
-                'defaultValue': []
-            },
-            { 'tfName': 'dilations', 'name': 'dilations', 'type': 'number[]' }
-        ]
-    },
-    {
-        'tfOpName': 'FusedDepthwiseConv2dNative',
-        'category': 'convolution',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'filter', 'type': 'tensor' },
-            { 'start': 2, end: 0, 'name': 'args', 'type': 'tensors' },
-        ],
-        'attrs': [
-            { 'tfName': 'num_args', 'name': 'numArgs', 'type': 'number' },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true },
-            { 'tfName': 'strides', 'name': 'strides', 'type': 'number[]' },
-            { 'tfName': 'padding', 'name': 'pad', 'type': 'string' }, {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'defaultValue': 'NHWC'
-            },
-            {
-                'tfName': 'dilations',
-                'name': 'dilations',
-                'type': 'number[]',
-                'defaultValue': [1, 1, 1, 1]
-            },
-            {
-                'tfName': 'fused_ops',
-                'name': 'fusedOps',
-                'type': 'string[]',
-                'defaultValue': []
-            }
-        ]
-    },
-    {
-        'tfOpName': 'Conv3D',
-        'category': 'convolution',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'filter', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'strides', 'name': 'strides', 'type': 'number[]' },
-            { 'tfName': 'padding', 'name': 'pad', 'type': 'string' }, {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'defaultValue': 'NHWC'
-            },
-            { 'tfName': 'dilations', 'name': 'dilations', 'type': 'number[]' }
-        ],
-    }
-];
-
-var convolution = {
-    __proto__: null,
-    json: json$3
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$4 = [
-    {
-        'tfOpName': 'Fill',
-        'category': 'creation',
-        'inputs': [
-            { 'start': 0, 'name': 'shape', 'type': 'number[]' },
-            { 'start': 1, 'name': 'value', 'type': 'number' },
-        ],
-        'attrs': [{ 'tfName': 'T', 'name': 'dtype', 'type': 'dtype' }]
-    },
-    {
-        'tfOpName': 'LinSpace',
-        'category': 'creation',
-        'inputs': [
-            { 'start': 0, 'name': 'start', 'type': 'number' },
-            { 'start': 1, 'name': 'stop', 'type': 'number' },
-            { 'start': 2, 'name': 'num', 'type': 'number' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'OneHot',
-        'category': 'creation',
-        'inputs': [
-            { 'start': 0, 'name': 'indices', 'type': 'tensor' },
-            { 'start': 1, 'name': 'depth', 'type': 'number' },
-            { 'start': 2, 'name': 'onValue', 'type': 'number', 'defaultValue': 1 },
-            { 'start': 3, 'name': 'offValue', 'type': 'number', 'defaultValue': 0 },
-        ],
-        'attrs': [
-            {
-                'tfName': 'axis',
-                'name': 'axis',
-                'type': 'number',
-                'notSupported': true
-            },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Ones',
-        'category': 'creation',
-        'inputs': [
-            { 'start': 0, 'name': 'shape', 'type': 'number[]' },
-        ],
-        'attrs': [{ 'tfName': 'T', 'name': 'dtype', 'type': 'dtype' }]
-    },
-    {
-        'tfOpName': 'OnesLike',
-        'category': 'creation',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [{ 'tfName': 'dtype', 'name': 'dtype', 'type': 'dtype' }]
-    },
-    {
-        'tfOpName': 'RandomUniform',
-        'category': 'creation',
-        'inputs': [
-            { 'start': 0, 'name': 'shape', 'type': 'number[]' },
-        ],
-        'attrs': [
-            {
-                'tfName': 'minval',
-                'name': 'minval',
-                'type': 'number',
-                'defaultValue': 0
-            },
-            {
-                'tfName': 'maxval',
-                'name': 'maxval',
-                'type': 'number',
-                'defaultValue': 1
-            },
-            { 'tfName': 'dtype', 'name': 'dtype', 'type': 'dtype' },
-            { 'tfName': 'seed', 'name': 'seed', 'type': 'number', 'defaultValue': 0 }, {
-                'tfName': 'seed2',
-                'name': 'seed2',
-                'type': 'number',
-                'defaultValue': 0,
-                'notSupported': true
-            },
-            { 'tfName': 'T', 'name': 'T', 'type': 'number', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Range',
-        'category': 'creation',
-        'inputs': [
-            { 'start': 0, 'name': 'start', 'type': 'number' },
-            { 'start': 1, 'name': 'stop', 'type': 'number' },
-            { 'start': 2, 'name': 'step', 'type': 'number', 'defaultValue': 0 },
-        ],
-        'attrs': [{ 'tfName': 'Tidx', 'name': 'dtype', 'type': 'dtype' }]
-    },
-    {
-        'tfOpName': 'TruncatedNormal',
-        'category': 'creation',
-        'inputs': [
-            { 'start': 0, 'name': 'shape', 'type': 'number[]' },
-        ],
-        'attrs': [
-            {
-                'tfName': 'means',
-                'name': 'mean',
-                'type': 'number',
-                'defaultValue': 0.0
-            },
-            {
-                'tfName': 'stddev',
-                'name': 'stdDev',
-                'type': 'number',
-                'defaultValue': 1.0
-            },
-            { 'tfName': 'seed', 'name': 'seed', 'type': 'number' }, {
-                'tfName': 'seed2',
-                'name': 'seed2',
-                'type': 'number',
-                'defaultValue': 0,
-                'notSupported': true
-            },
-            { 'tfName': 'dtype', 'name': 'dtype', 'type': 'dtype' },
-            { 'tfName': 'T', 'name': 'T', 'type': 'number', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Zeros',
-        'category': 'creation',
-        'inputs': [
-            { 'start': 0, 'name': 'shape', 'type': 'number[]' },
-        ],
-        'attrs': [{ 'tfName': 'T', 'name': 'dtype', 'type': 'dtype' }]
-    },
-    {
-        'tfOpName': 'ZerosLike',
-        'category': 'creation',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [{ 'tfName': 'T', 'name': 'dtype', 'type': 'dtype' }]
-    },
-    {
-        'tfOpName': 'Multinomial',
-        'category': 'creation',
-        'inputs': [
-            { 'start': 0, 'name': 'logits', 'type': 'tensor' },
-            { 'start': 1, 'name': 'numSamples', 'type': 'number' },
-        ],
-        'attrs': [
-            { 'tfName': 'seed', 'name': 'seed', 'type': 'number' },
-            { 'tfName': 'seed2', 'name': 'seed2', 'type': 'number' },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype' },
-            { 'tfName': 'output_dtype', 'name': 'output_dtype', 'type': 'dtype' }
-        ]
-    }
-];
-
-var creation = {
-    __proto__: null,
-    json: json$4
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$5 = [
-    {
-        'tfOpName': 'NonMaxSuppressionV2',
-        'category': 'dynamic',
-        'inputs': [
-            { 'start': 0, 'name': 'boxes', 'type': 'tensor' },
-            { 'start': 1, 'name': 'scores', 'type': 'tensor' },
-            { 'start': 2, 'name': 'maxOutputSize', 'type': 'number' },
-            { 'start': 3, 'name': 'iouThreshold', 'type': 'number' }
-        ]
-    },
-    {
-        'tfOpName': 'NonMaxSuppressionV3',
-        'category': 'dynamic',
-        'inputs': [
-            { 'start': 0, 'name': 'boxes', 'type': 'tensor' },
-            { 'start': 1, 'name': 'scores', 'type': 'tensor' },
-            { 'start': 2, 'name': 'maxOutputSize', 'type': 'number' },
-            { 'start': 3, 'name': 'iouThreshold', 'type': 'number' },
-            { 'start': 4, 'name': 'scoreThreshold', 'type': 'number' }
-        ]
-    },
-    {
-        'tfOpName': 'NonMaxSuppressionV5',
-        'category': 'dynamic',
-        'inputs': [
-            { 'start': 0, 'name': 'boxes', 'type': 'tensor' },
-            { 'start': 1, 'name': 'scores', 'type': 'tensor' },
-            { 'start': 2, 'name': 'maxOutputSize', 'type': 'number' },
-            { 'start': 3, 'name': 'iouThreshold', 'type': 'number' },
-            { 'start': 4, 'name': 'scoreThreshold', 'type': 'number' },
-            { 'start': 5, 'name': 'softNmsSigma', 'type': 'number' }
-        ]
-    },
-    {
-        'tfOpName': 'Where',
-        'category': 'dynamic',
-        'inputs': [
-            { 'start': 0, 'name': 'condition', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'ListDiff',
-        'category': 'dynamic',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'y', 'type': 'tensor' },
-        ],
-        'attrs': [{
-                'tfName': 'T',
-                'name': 'dtype',
-                'type': 'dtype',
-                'notSupported': true
-            }]
-    }
-];
-
-var dynamic = {
-    __proto__: null,
-    json: json$5
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$6 = [{
-        'tfOpName': 'TopKV2',
-        'category': 'evaluation',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'k', 'type': 'number' },
-        ],
-        'attrs': [{ 'tfName': 'sorted', 'name': 'sorted', 'type': 'bool' }]
-    }];
-
-var evaluation = {
-    __proto__: null,
-    json: json$6
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$7 = [
-    {
-        'tfOpName': 'PlaceholderWithDefault',
-        'category': 'graph',
-        'inputs': [
-            { 'start': 0, 'name': 'default', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'shape', 'name': 'shape', 'type': 'shape' },
-            { 'tfName': 'dtype', 'name': 'dtype', 'type': 'dtype' }
-        ]
-    },
-    {
-        'tfOpName': 'Placeholder',
-        'category': 'graph',
-        'attrs': [
-            { 'tfName': 'shape', 'name': 'shape', 'type': 'shape' },
-            { 'tfName': 'dtype', 'name': 'dtype', 'type': 'dtype' }
-        ]
-    },
-    { 'tfOpName': 'Const', 'category': 'graph' }, {
-        'tfOpName': 'Identity',
-        'category': 'graph',
-        'inputs': [{ 'start': 0, 'name': 'x', 'type': 'tensor' }]
-    },
-    {
-        'tfOpName': 'IdentityN',
-        'category': 'graph',
-        'inputs': [{ 'start': 0, 'end': 0, 'name': 'x', 'type': 'tensors' }]
-    },
-    {
-        'tfOpName': 'Snapshot',
-        'category': 'graph',
-        'inputs': [{ 'start': 0, 'name': 'x', 'type': 'tensor' }]
-    },
-    {
-        'tfOpName': 'Rank',
-        'category': 'graph',
-        'inputs': [{ 'start': 0, 'name': 'x', 'type': 'tensor' }]
-    },
-    {
-        'tfOpName': 'Size',
-        'category': 'graph',
-        'inputs': [{ 'start': 0, 'name': 'x', 'type': 'tensor' }]
-    },
-    {
-        'tfOpName': 'Shape',
-        'category': 'graph',
-        'inputs': [{ 'start': 0, 'name': 'x', 'type': 'tensor' }]
-    },
-    {
-        'tfOpName': 'ShapeN',
-        'category': 'graph',
-        'inputs': [{ 'start': 0, 'end': 0, 'name': 'x', 'type': 'tensors' }]
-    },
-    {
-        'tfOpName': 'Print',
-        'category': 'graph',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'data', 'type': 'tensors' },
-        ],
-        'attrs': [
-            { 'tfName': 'message', 'name': 'message', 'type': 'string' }, {
-                'tfName': 'first_n',
-                'name': 'firstN',
-                'type': 'number',
-                'notSupported': true
-            },
-            {
-                'tfName': 'summarize',
-                'name': 'summarize',
-                'type': 'number',
-                'defaultValue': 3
-            }
-        ]
-    },
-    { 'tfOpName': 'NoOp', 'category': 'graph', 'inputs': [] }, {
-        'tfOpName': 'StopGradient',
-        'category': 'graph',
-        'inputs': [{ 'start': 0, 'name': 'x', 'type': 'tensor' }]
-    },
-    {
-        'tfOpName': 'FakeQuantWithMinMaxVars',
-        'category': 'graph',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'min', 'name': 'min', 'type': 'number' },
-            { 'tfName': 'max', 'name': 'max', 'type': 'number' }
-        ]
-    }
-];
-
-var graph = {
-    __proto__: null,
-    json: json$7
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$8 = [
-    {
-        'tfOpName': 'ResizeBilinear',
-        'category': 'image',
-        'inputs': [
-            { 'start': 0, 'name': 'images', 'type': 'tensor' },
-            { 'start': 1, 'name': 'size', 'type': 'number[]' },
-        ],
-        'attrs': [
-            { 'tfName': 'align_corners', 'name': 'alignCorners', 'type': 'bool' },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'ResizeNearestNeighbor',
-        'category': 'image',
-        'inputs': [
-            { 'start': 0, 'name': 'images', 'type': 'tensor' },
-            { 'start': 1, 'name': 'size', 'type': 'number[]' },
-        ],
-        'attrs': [
-            { 'tfName': 'align_corners', 'name': 'alignCorners', 'type': 'bool' },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'CropAndResize',
-        'category': 'image',
-        'inputs': [
-            { 'start': 0, 'name': 'image', 'type': 'tensor' },
-            { 'start': 1, 'name': 'boxes', 'type': 'tensor' },
-            { 'start': 2, 'name': 'boxInd', 'type': 'tensor' },
-            { 'start': 3, 'name': 'cropSize', 'type': 'number[]' },
-        ],
-        'attrs': [
-            { 'tfName': 'method', 'name': 'method', 'type': 'string' }, {
-                'tfName': 'extrapolation_value',
-                'name': 'extrapolationValue',
-                'type': 'number'
-            }
-        ]
-    }
-];
-
-var image = {
-    __proto__: null,
-    json: json$8
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$9 = [
-    {
-        'tfOpName': 'Equal',
-        'category': 'logical',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'NotEqual',
-        'category': 'logical',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Greater',
-        'category': 'logical',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'GreaterEqual',
-        'category': 'logical',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Less',
-        'category': 'logical',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'LessEqual',
-        'category': 'logical',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'LogicalAnd',
-        'category': 'logical',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'LogicalNot',
-        'category': 'logical',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'LogicalOr',
-        'category': 'logical',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Select',
-        'category': 'logical',
-        'inputs': [
-            { 'start': 0, 'name': 'condition', 'type': 'tensor' },
-            { 'start': 1, 'name': 'a', 'type': 'tensor' },
-            { 'start': 2, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'SelectV2',
-        'category': 'logical',
-        'inputs': [
-            { 'start': 0, 'name': 'condition', 'type': 'tensor' },
-            { 'start': 1, 'name': 'a', 'type': 'tensor' },
-            { 'start': 2, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [{
-                'tfName': 'T',
-                'name': 'dtype',
-                'type': 'dtype',
-                'notSupported': true
-            }]
-    }
-];
-
-var logical = {
-    __proto__: null,
-    json: json$9
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$a = [
-    {
-        'tfOpName': '_FusedMatMul',
-        'category': 'matrices',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-            { 'start': 2, end: 0, 'name': 'args', 'type': 'tensors' },
-        ],
-        'attrs': [
-            { 'tfName': 'num_args', 'name': 'numArgs', 'type': 'number' }, {
-                'tfName': 'fused_ops',
-                'name': 'fusedOps',
-                'type': 'string[]',
-                'defaultValue': []
-            },
-            {
-                'tfName': 'epsilon',
-                'name': 'epsilon',
-                'type': 'number',
-                'defaultValue': 0.0001
-            },
-            {
-                'tfName': 'transpose_a',
-                'name': 'transposeA',
-                'type': 'bool',
-                'defaultValue': false
-            },
-            {
-                'tfName': 'transpose_b',
-                'name': 'transposeB',
-                'type': 'bool',
-                'defaultValue': false
-            },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'MatMul',
-        'category': 'matrices',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            {
-                'tfName': 'transpose_a',
-                'name': 'transposeA',
-                'type': 'bool',
-                'defaultValue': false
-            },
-            {
-                'tfName': 'transpose_b',
-                'name': 'transposeB',
-                'type': 'bool',
-                'defaultValue': false
-            },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'BatchMatMul',
-        'category': 'matrices',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            {
-                'tfName': 'adj_x',
-                'name': 'transposeA',
-                'type': 'bool',
-                'defaultValue': false
-            },
-            {
-                'tfName': 'adj_y',
-                'name': 'transposeB',
-                'type': 'bool',
-                'defaultValue': false
-            },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'BatchMatMulV2',
-        'category': 'matrices',
-        'inputs': [
-            { 'start': 0, 'name': 'a', 'type': 'tensor' },
-            { 'start': 1, 'name': 'b', 'type': 'tensor' },
-        ],
-        'attrs': [
-            {
-                'tfName': 'adj_x',
-                'name': 'transposeA',
-                'type': 'bool',
-                'defaultValue': false
-            },
-            {
-                'tfName': 'adj_y',
-                'name': 'transposeB',
-                'type': 'bool',
-                'defaultValue': false
-            },
-            { 'tfName': 'T', 'name': 'dtype', 'type': 'dtype', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'Transpose',
-        'category': 'matrices',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'perm', 'type': 'number[]' },
-        ],
-        'attrs': [{
-                'tfName': 'T',
-                'name': 'dtype',
-                'type': 'dtype',
-                'notSupported': true
-            }]
-    }
-];
-
-var matrices = {
-    __proto__: null,
-    json: json$a
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$b = [
-    {
-        'tfOpName': 'FusedBatchNorm',
-        'category': 'normalization',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'scale', 'type': 'tensor' },
-            { 'start': 2, 'name': 'offset', 'type': 'tensor' },
-            { 'start': 3, 'name': 'mean', 'type': 'tensor' },
-            { 'start': 4, 'name': 'variance', 'type': 'tensor' },
-        ],
-        'attrs': [
-            {
-                'tfName': 'epsilon',
-                'name': 'epsilon',
-                'type': 'number',
-                'defaultValue': 0.001
-            },
-            {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'notSupported': true
-            }
-        ]
-    },
-    {
-        'tfOpName': 'FusedBatchNormV2',
-        'category': 'normalization',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'scale', 'type': 'tensor' },
-            { 'start': 2, 'name': 'offset', 'type': 'tensor' },
-            { 'start': 3, 'name': 'mean', 'type': 'tensor' },
-            { 'start': 4, 'name': 'variance', 'type': 'tensor' },
-        ],
-        'attrs': [
-            {
-                'tfName': 'epsilon',
-                'name': 'epsilon',
-                'type': 'number',
-                'defaultValue': 0.001
-            },
-            {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'notSupported': true
-            }
-        ]
-    },
-    {
-        'tfOpName': 'FusedBatchNormV3',
-        'category': 'normalization',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'scale', 'type': 'tensor' },
-            { 'start': 2, 'name': 'offset', 'type': 'tensor' },
-            { 'start': 3, 'name': 'mean', 'type': 'tensor' },
-            { 'start': 4, 'name': 'variance', 'type': 'tensor' },
-        ],
-        'attrs': [
-            {
-                'tfName': 'epsilon',
-                'name': 'epsilon',
-                'type': 'number',
-                'defaultValue': 0.001
-            },
-            {
-                'tfName': 'data_format',
-                'name': 'dataFormat',
-                'type': 'string',
-                'notSupported': true
-            }
-        ]
-    },
-    {
-        'tfOpName': 'LRN',
-        'category': 'normalization',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            {
-                'tfName': 'depth_radius',
-                'name': 'radius',
-                'type': 'number',
-                'defaultValue': 5
-            },
-            { 'tfName': 'bias', 'name': 'bias', 'type': 'number', 'defaultValue': 1.0 },
-            {
-                'tfName': 'alpha',
-                'name': 'alpha',
-                'type': 'number',
-                'defaultValue': 1.0
-            },
-            {
-                'tfName': 'beta',
-                'name': 'beta',
-                'type': 'number',
-                'defaultValue': 0.5
-            }
-        ]
-    },
-    {
-        'tfOpName': 'Softmax',
-        'category': 'normalization',
-        'inputs': [{ 'start': 0, 'name': 'x', 'type': 'tensor' }]
-    },
-    {
-        'tfOpName': 'LogSoftmax',
-        'category': 'normalization',
-        'inputs': [{ 'start': 0, 'name': 'x', 'type': 'tensor' }]
-    },
-    {
-        'tfOpName': 'SparseToDense',
-        'category': 'normalization',
-        'inputs': [
-            { 'start': 0, 'name': 'sparseIndices', 'type': 'tensor' },
-            { 'start': 1, 'name': 'outputShape', 'type': 'number[]' },
-            { 'start': 2, 'name': 'sparseValues', 'type': 'tensor' },
-            { 'start': 3, 'name': 'defaultValue', 'type': 'tensor' },
-        ],
-        'attrs': [{
-                'tfName': 'validate_indices',
-                'name': 'validateIndices',
-                'type': 'bool',
-                'defaultValue': true,
-                'notSupported': true
-            }]
-    }
-];
-
-var normalization = {
-    __proto__: null,
-    json: json$b
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$c = [
-    {
-        'tfOpName': 'Max',
-        'category': 'reduction',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'axis', 'type': 'number[]' },
-        ],
-        'attrs': [{ 'tfName': 'keep_dims', 'name': 'keepDims', 'type': 'bool' }]
-    },
-    {
-        'tfOpName': 'Mean',
-        'category': 'reduction',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'axis', 'type': 'number[]' },
-        ],
-        'attrs': [{ 'tfName': 'keep_dims', 'name': 'keepDims', 'type': 'bool' }]
-    },
-    {
-        'tfOpName': 'Min',
-        'category': 'reduction',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'axis', 'type': 'number[]' },
-        ],
-        'attrs': [{ 'tfName': 'keep_dims', 'name': 'keepDims', 'type': 'bool' }]
-    },
-    {
-        'tfOpName': 'Sum',
-        'category': 'reduction',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'axis', 'type': 'number[]' },
-        ],
-        'attrs': [{ 'tfName': 'keep_dims', 'name': 'keepDims', 'type': 'bool' }]
-    },
-    {
-        'tfOpName': 'All',
-        'category': 'reduction',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'axis', 'type': 'number[]' },
-        ],
-        'attrs': [{ 'tfName': 'keep_dims', 'name': 'keepDims', 'type': 'bool' }]
-    },
-    {
-        'tfOpName': 'Any',
-        'category': 'reduction',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'axis', 'type': 'number[]' },
-        ],
-        'attrs': [{ 'tfName': 'keep_dims', 'name': 'keepDims', 'type': 'bool' }]
-    },
-    {
-        'tfOpName': 'ArgMax',
-        'category': 'reduction',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'axis', 'type': 'number' }
-        ]
-    },
-    {
-        'tfOpName': 'ArgMin',
-        'category': 'reduction',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'axis', 'type': 'number' }
-        ]
-    },
-    {
-        'tfOpName': 'Prod',
-        'category': 'reduction',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'axis', 'type': 'number[]' },
-        ],
-        'attrs': [{ 'tfName': 'keep_dims', 'name': 'keepDims', 'type': 'bool' }]
-    },
-    {
-        'tfOpName': 'Cumsum',
-        'category': 'reduction',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'axis', 'type': 'number' },
-        ],
-        'attrs': [
-            { 'tfName': 'exclusive', 'name': 'exclusive', 'type': 'bool' },
-            { 'tfName': 'reverse', 'name': 'reverse', 'type': 'bool' }
-        ]
-    }
-];
-
-var reduction = {
-    __proto__: null,
-    json: json$c
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$d = [
-    {
-        'tfOpName': 'ConcatV2',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'end': -1, 'name': 'tensors', 'type': 'tensors' },
-            { 'start': -1, 'name': 'axis', 'type': 'number' }
-        ],
-        'attrs': [{ 'tfName': 'N', 'name': 'n', 'type': 'number', 'defaultValue': 2 }]
-    },
-    {
-        'tfOpName': 'Concat',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 1, 'end': 0, 'name': 'tensors', 'type': 'tensors' },
-            { 'start': 0, 'name': 'axis', 'type': 'number' }
-        ],
-        'attrs': [{ 'tfName': 'N', 'name': 'n', 'type': 'number', 'defaultValue': 2 }]
-    },
-    {
-        'tfOpName': 'GatherV2',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'indices', 'type': 'tensor' },
-            { 'start': 2, 'name': 'axis', 'type': 'number', 'defaultValue': 0 }
-        ]
-    },
-    {
-        'tfOpName': 'Gather',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'indices', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'axis', 'name': 'axis', 'type': 'number', 'defaultValue': 0 }, {
-                'tfName': 'validate_indices',
-                'name': 'validateIndices',
-                'type': 'bool',
-                'notSupported': true
-            }
-        ]
-    },
-    {
-        'tfOpName': 'Reverse',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'dims', 'type': 'bool', 'notSupported': true }
-        ]
-    },
-    {
-        'tfOpName': 'ReverseV2',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'axis', 'type': 'number[]' }
-        ]
-    },
-    {
-        'tfOpName': 'Slice',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'begin', 'type': 'number[]' },
-            { 'start': 2, 'name': 'size', 'type': 'number[]' }
-        ]
-    },
-    {
-        'tfOpName': 'StridedSlice',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'begin', 'type': 'number[]' },
-            { 'start': 2, 'name': 'end', 'type': 'number[]' },
-            { 'start': 3, 'name': 'strides', 'type': 'number[]' },
-        ],
-        'attrs': [
-            {
-                'tfName': 'begin_mask',
-                'name': 'beginMask',
-                'type': 'number',
-                'defaultValue': 0
-            },
-            {
-                'tfName': 'end_mask',
-                'name': 'endMask',
-                'type': 'number',
-                'defaultValue': 0
-            },
-            {
-                'tfName': 'new_axis_mask',
-                'name': 'newAxisMask',
-                'type': 'number',
-                'defaultValue': 0
-            },
-            {
-                'tfName': 'ellipsis_mask',
-                'name': 'ellipsisMask',
-                'type': 'number',
-                'defaultValue': 0
-            },
-            {
-                'tfName': 'shrink_axis_mask',
-                'name': 'shrinkAxisMask',
-                'type': 'number',
-                'defaultValue': 0
-            }
-        ]
-    },
-    {
-        'tfOpName': 'Pack',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'end': 0, 'name': 'tensors', 'type': 'tensors' },
-        ],
-        'attrs': [
-            { 'tfName': 'axis', 'name': 'axis', 'type': 'number', 'defaultValue': 0 }
-        ]
-    },
-    {
-        'tfOpName': 'Unpack',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'name': 'tensor', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'axis', 'name': 'axis', 'type': 'number', 'defaultValue': 0 }, {
-                'tfName': 'num',
-                'name': 'num',
-                'type': 'number',
-                'defaultValue': 0,
-                'notSupported': true
-            }
-        ]
-    },
-    {
-        'tfOpName': 'Tile',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'reps', 'type': 'number[]' }
-        ]
-    },
-    {
-        'tfOpName': 'Split',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'name': 'axis', 'type': 'number', 'defaultValue': 0 },
-            { 'start': 1, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [{
-                'tfName': 'num_split',
-                'name': 'numOrSizeSplits',
-                'type': 'number',
-                'defaultValue': 1
-            }]
-    },
-    {
-        'tfOpName': 'SplitV',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'numOrSizeSplits', 'type': 'number[]' },
-            { 'start': 2, 'name': 'axis', 'type': 'number', 'defaultValue': 0 }
-        ]
-    },
-    {
-        'tfOpName': 'ScatterNd',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'name': 'indices', 'type': 'tensor' },
-            { 'start': 1, 'name': 'values', 'type': 'tensor' },
-            { 'start': 2, 'name': 'shape', 'type': 'number[]' }
-        ]
-    },
-    {
-        'tfOpName': 'GatherNd',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'indices', 'type': 'tensor' }
-        ]
-    },
-    {
-        'tfOpName': 'SparseToDense',
-        'category': 'slice_join',
-        'inputs': [
-            { 'start': 0, 'name': 'sparseIndices', 'type': 'tensor' },
-            { 'start': 1, 'name': 'outputShape', 'type': 'number[]' },
-            { 'start': 2, 'name': 'sparseValues', 'type': 'tensor' },
-            { 'start': 3, 'name': 'defaultValue', 'type': 'tensor' },
-        ],
-        'attrs': [{
-                'tfName': 'validate_indices',
-                'name': 'validateIndices',
-                'type': 'bool',
-                'defaultValue': false,
-                'notSupported': true
-            }]
-    }
-];
-
-var sliceJoin = {
-    __proto__: null,
-    json: json$d
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$e = [
-    {
-        'tfOpName': 'FFT',
-        'category': 'spectral',
-        'inputs': [{ 'start': 0, 'name': 'x', 'type': 'tensor' }]
-    },
-    {
-        'tfOpName': 'IFFT',
-        'category': 'spectral',
-        'inputs': [{ 'start': 0, 'name': 'x', 'type': 'tensor' }]
-    },
-    {
-        'tfOpName': 'RFFT',
-        'category': 'spectral',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' }, {
-                'start': 1,
-                'name': 'fft_length',
-                'type': 'number',
-                'notSupported': true
-            }
-        ]
-    },
-    {
-        'tfOpName': 'IRFFT',
-        'category': 'spectral',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' }, {
-                'start': 1,
-                'name': 'fft_length',
-                'type': 'number',
-                'notSupported': true
-            }
-        ]
-    }
-];
-
-var spectral = {
-    __proto__: null,
-    json: json$e
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var json$f = [
-    {
-        'tfOpName': 'Cast',
-        'category': 'transformation',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            {
-                'tfName': 'SrcT',
-                'name': 'sdtype',
-                'type': 'dtype',
-                'notSupported': true
-            },
-            { 'tfName': 'DstT', 'name': 'dtype', 'type': 'dtype' }
-        ]
-    },
-    {
-        'tfOpName': 'ExpandDims',
-        'category': 'transformation',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'axis', 'type': 'number' }
-        ]
-    },
-    {
-        'tfOpName': 'Pad',
-        'category': 'transformation',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'padding', 'type': 'number[]' },
-        ],
-        'attrs': [{
-                'tfName': 'constant_value',
-                'name': 'constantValue',
-                'type': 'number',
-                'defaultValue': 0
-            }]
-    },
-    {
-        'tfOpName': 'PadV2',
-        'category': 'transformation',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'padding', 'type': 'number[]' }, {
-                'start': 2,
-                'name': 'constantValue',
-                'type': 'number',
-                'defaultValue': 0
-            }
-        ]
-    },
-    {
-        'tfOpName': 'Reshape',
-        'category': 'transformation',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'shape', 'type': 'number[]' }
-        ]
-    },
-    {
-        'tfOpName': 'Squeeze',
-        'category': 'transformation',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [{
-                'tfName': 'axis',
-                'tfDeprecatedName': 'squeeze_dims',
-                'name': 'axis',
-                'type': 'number[]'
-            }]
-    },
-    {
-        'tfOpName': 'SpaceToBatchND',
-        'category': 'transformation',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'blockShape', 'type': 'number[]' },
-            { 'start': 2, 'name': 'paddings', 'type': 'number[]' }
-        ]
-    },
-    {
-        'tfOpName': 'BatchToSpaceND',
-        'category': 'transformation',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'blockShape', 'type': 'number[]' },
-            { 'start': 2, 'name': 'crops', 'type': 'number[]' }
-        ]
-    },
-    {
-        'tfOpName': 'DepthToSpace',
-        'category': 'transformation',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-        ],
-        'attrs': [
-            { 'tfName': 'block_size', 'name': 'blockSize', 'type': 'number' },
-            { 'tfName': 'data_format', 'name': 'dataFormat', 'type': 'string' }
-        ]
-    },
-    {
-        'tfOpName': 'BroadcastTo',
-        'category': 'transformation',
-        'inputs': [
-            { 'start': 0, 'name': 'x', 'type': 'tensor' },
-            { 'start': 1, 'name': 'shape', 'type': 'number[]' },
-        ],
-        'attrs': []
-    }
-];
-
-var transformation = {
-    __proto__: null,
-    json: json$f
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var OperationMapper = /** @class */ (function () {
-    // Loads the op mapping from the JSON file.
-    function OperationMapper() {
-        var ops = [
-            arithmetic, basicMath, control, convolution, creation, dynamic,
-            evaluation, logical, image, graph, matrices, normalization, reduction,
-            sliceJoin, spectral, transformation
-        ];
-        var mappersJson = [].concat.apply([], ops.map(function (op) { return op.json; }));
-        this.opMappers = mappersJson.reduce(function (map, mapper) {
-            map[mapper.tfOpName] = mapper;
-            return map;
-        }, {});
-    }
-    Object.defineProperty(OperationMapper, "Instance", {
-        // Singleton instance for the mapper
-        get: function () {
-            return this._instance || (this._instance = new this());
-        },
-        enumerable: true,
-        configurable: true
-    });
-    // Converts the model from Tensorflow GraphDef to local representation for
-    // TensorFlow.js API
-    OperationMapper.prototype.transformGraph = function (graph, signature) {
-        var _this = this;
-        if (signature === void 0) { signature = {}; }
-        var tfNodes = graph.node;
-        var placeholders = [];
-        var weights = [];
-        var nodes = tfNodes.reduce(function (map, node) {
-            map[node.name] = _this.mapNode(node);
-            if (node.op.startsWith('Placeholder')) {
-                placeholders.push(map[node.name]);
-            }
-            if (node.op === 'Const') {
-                weights.push(map[node.name]);
-            }
-            return map;
-        }, {});
-        var inputs = [];
-        var outputs = [];
-        var inputNodeNameToKey = {};
-        var outputNodeNameToKey = {};
-        if (signature != null) {
-            inputNodeNameToKey = this.mapSignatureEntries(signature.inputs);
-            outputNodeNameToKey = this.mapSignatureEntries(signature.outputs);
-        }
-        var allNodes = Object.keys(nodes);
-        allNodes.forEach(function (key) {
-            var node = nodes[key];
-            node.inputNames.forEach(function (name) {
-                var nodeName = getNodeNameAndIndex(name)[0];
-                node.inputs.push(nodes[nodeName]);
-                nodes[nodeName].children.push(node);
-            });
-        });
-        // if signature has not outputs set, add any node that does not have
-        // outputs.
-        if (Object.keys(outputNodeNameToKey).length === 0) {
-            allNodes.forEach(function (key) {
-                var node = nodes[key];
-                if (node.children.length === 0) {
-                    outputs.push(node);
-                }
-            });
-        }
-        else {
-            Object.keys(outputNodeNameToKey).forEach(function (name) {
-                var nodeName = getNodeNameAndIndex(name)[0];
-                var node = nodes[nodeName];
-                if (node != null) {
-                    node.signatureKey = outputNodeNameToKey[name];
-                    outputs.push(node);
-                }
-            });
-        }
-        if (Object.keys(inputNodeNameToKey).length > 0) {
-            Object.keys(inputNodeNameToKey).forEach(function (name) {
-                var nodeName = getNodeNameAndIndex(name)[0];
-                var node = nodes[nodeName];
-                if (node) {
-                    node.signatureKey = inputNodeNameToKey[name];
-                    inputs.push(node);
-                }
-            });
-        }
-        else {
-            inputs = placeholders;
-        }
-        var functions = {};
-        if (graph.library != null && graph.library.function != null) {
-            functions = graph.library.function.reduce(function (functions, func) {
-                functions[func.signature.name] = _this.mapFunction(func);
-                return functions;
-            }, {});
-        }
-        return {
-            nodes: nodes,
-            inputs: inputs,
-            outputs: outputs,
-            weights: weights,
-            placeholders: placeholders,
-            signature: signature,
-            functions: functions
-        };
-    };
-    OperationMapper.prototype.mapSignatureEntries = function (entries) {
-        return Object.keys(entries || {})
-            .reduce(function (prev, curr) {
-            prev[entries[curr].name] = curr;
-            return prev;
-        }, {});
-    };
-    OperationMapper.prototype.mapNode = function (node) {
-        // Unsupported ops will cause an error at run-time (not parse time), since
-        // they may not be used by the actual execution subgraph.
-        var mapper = getRegisteredOp(node.op) || this.opMappers[node.op] || {};
-        if (node.attr == null) {
-            node.attr = {};
-        }
-        var newNode = {
-            name: node.name,
-            op: node.op,
-            category: mapper.category,
-            inputNames: (node.input ||
-                []).map(function (input) { return input.startsWith('^') ? input.substr(1) : input; }),
-            inputs: [],
-            children: [],
-            inputParams: {},
-            attrParams: {},
-            rawAttrs: node.attr
-        };
-        if (mapper.inputs != null) {
-            newNode.inputParams =
-                mapper.inputs.reduce(function (map, param) {
-                    map[param.name] = {
-                        type: param.type,
-                        inputIndexStart: param.start,
-                        inputIndexEnd: param.end
-                    };
-                    return map;
-                }, {});
-        }
-        if (mapper.attrs != null) {
-            newNode.attrParams =
-                mapper.attrs.reduce(function (map, param) {
-                    var type = param.type;
-                    var value = undefined;
-                    switch (param.type) {
-                        case 'string':
-                            value = getStringParam(node.attr, param.tfName, param.defaultValue);
-                            if (value === undefined && !!param.tfDeprecatedName) {
-                                value = getStringParam(node.attr, param.tfDeprecatedName, param.defaultValue);
-                            }
-                            break;
-                        case 'string[]':
-                            value = getStringArrayParam(node.attr, param.tfName, param.defaultValue);
-                            if (value === undefined && !!param.tfDeprecatedName) {
-                                value = getStringArrayParam(node.attr, param.tfDeprecatedName, param.defaultValue);
-                            }
-                            break;
-                        case 'number':
-                            value = getNumberParam(node.attr, param.tfName, (param.defaultValue || 0));
-                            if (value === undefined && !!param.tfDeprecatedName) {
-                                value = getNumberParam(node.attr, param.tfDeprecatedName, param.defaultValue);
-                            }
-                            break;
-                        case 'number[]':
-                            value = getNumericArrayParam(node.attr, param.tfName, param.defaultValue);
-                            if (value === undefined && !!param.tfDeprecatedName) {
-                                value = getNumericArrayParam(node.attr, param.tfDeprecatedName, param.defaultValue);
-                            }
-                            break;
-                        case 'bool':
-                            value = getBoolParam(node.attr, param.tfName, param.defaultValue);
-                            if (value === undefined && !!param.tfDeprecatedName) {
-                                value = getBoolParam(node.attr, param.tfDeprecatedName, param.defaultValue);
-                            }
-                            break;
-                        case 'bool[]':
-                            value = getBoolArrayParam(node.attr, param.tfName, param.defaultValue);
-                            if (value === undefined && !!param.tfDeprecatedName) {
-                                value = getBoolArrayParam(node.attr, param.tfDeprecatedName, param.defaultValue);
-                            }
-                            break;
-                        case 'shape':
-                            value = getTensorShapeParam(node.attr, param.tfName, param.defaultValue);
-                            if (value === undefined && !!param.tfDeprecatedName) {
-                                value = getTensorShapeParam(node.attr, param.tfDeprecatedName, param.defaultValue);
-                            }
-                            break;
-                        case 'shape[]':
-                            value = getTensorShapeArrayParam(node.attr, param.tfName, param.defaultValue);
-                            if (value === undefined && !!param.tfDeprecatedName) {
-                                value = getTensorShapeArrayParam(node.attr, param.tfDeprecatedName, param.defaultValue);
-                            }
-                            break;
-                        case 'dtype':
-                            value = getDtypeParam(node.attr, param.tfName, param.defaultValue);
-                            if (value === undefined && !!param.tfDeprecatedName) {
-                                value = getDtypeParam(node.attr, param.tfDeprecatedName, param.defaultValue);
-                            }
-                            break;
-                        case 'dtype[]':
-                            value = getDtypeArrayParam(node.attr, param.tfName, param.defaultValue);
-                            if (value === undefined && !!param.tfDeprecatedName) {
-                                value = getDtypeArrayParam(node.attr, param.tfDeprecatedName, param.defaultValue);
-                            }
-                            break;
-                        case 'func':
-                            value = getFuncParam(node.attr, param.tfName, param.defaultValue);
-                            if (value === undefined && !!param.tfDeprecatedName) {
-                                value = getFuncParam(node.attr, param.tfDeprecatedName, param.defaultValue);
-                            }
-                            break;
-                        case 'tensor':
-                        case 'tensors':
-                            break;
-                        default:
-                            throw new Error("Unsupported param type: " + param.type + " for op: " + node.op);
-                    }
-                    map[param.name] = { value: value, type: type };
-                    return map;
-                }, {});
-        }
-        return newNode;
-    };
-    // map the TFunctionDef to TFJS graph object
-    OperationMapper.prototype.mapFunction = function (functionDef) {
-        var _this = this;
-        var tfNodes = functionDef.nodeDef;
-        var placeholders = [];
-        var weights = [];
-        var nodes = {};
-        if (tfNodes != null) {
-            nodes = tfNodes.reduce(function (map, node) {
-                map[node.name] = _this.mapNode(node);
-                if (node.op === 'Const') {
-                    weights.push(map[node.name]);
-                }
-                return map;
-            }, {});
-        }
-        var inputs = [];
-        var outputs = [];
-        functionDef.signature.inputArg.forEach(function (arg) {
-            var nodeName = getNodeNameAndIndex(arg.name)[0];
-            var node = {
-                name: nodeName,
-                op: 'Placeholder',
-                inputs: [],
-                inputNames: [],
-                category: 'graph',
-                inputParams: {},
-                attrParams: { dtype: { value: parseDtypeParam(arg.type), type: 'dtype' } },
-                children: []
-            };
-            node.signatureKey = arg.name;
-            inputs.push(node);
-            nodes[nodeName] = node;
-        });
-        var allNodes = Object.keys(nodes);
-        allNodes.forEach(function (key) {
-            var node = nodes[key];
-            node.inputNames.forEach(function (name) {
-                var nodeName = getNodeNameAndIndex(name)[0];
-                node.inputs.push(nodes[nodeName]);
-                nodes[nodeName].children.push(node);
-            });
-        });
-        var returnNodeMap = functionDef.ret;
-        functionDef.signature.outputArg.forEach(function (output) {
-            var _a = getNodeNameAndIndex(returnNodeMap[output.name]), nodeName = _a[0], index = _a[1];
-            var node = nodes[nodeName];
-            if (node != null) {
-                node.defaultOutput = index;
-                outputs.push(node);
-            }
-        });
-        var signature = this.mapArgsToSignature(functionDef);
-        return { nodes: nodes, inputs: inputs, outputs: outputs, weights: weights, placeholders: placeholders, signature: signature };
-    };
-    OperationMapper.prototype.mapArgsToSignature = function (functionDef) {
-        var _this = this;
-        return {
-            methodName: functionDef.signature.name,
-            inputs: functionDef.signature.inputArg.reduce(function (map, arg) {
-                map[arg.name] = _this.mapArgToTensorInfo(arg);
-                return map;
-            }, {}),
-            outputs: functionDef.signature.outputArg.reduce(function (map, arg) {
-                map[arg.name] = _this.mapArgToTensorInfo(arg, functionDef.ret);
-                return map;
-            }, {}),
-        };
-    };
-    OperationMapper.prototype.mapArgToTensorInfo = function (arg, nameMap) {
-        var name = arg.name;
-        if (nameMap != null) {
-            name = nameMap[name];
-        }
-        return { name: name, dtype: arg.type };
-    };
-    return OperationMapper;
-}());
-function decodeBase64(text) {
-    var global = tfc.env().global;
-    if (typeof global.atob !== 'undefined') {
-        return global.atob(text);
-    }
-    else if (typeof Buffer !== 'undefined') {
-        return new Buffer(text, 'base64').toString();
-    }
-    else {
-        throw new Error('Unable to decode base64 in this environment. ' +
-            'Missing built-in atob() or Buffer()');
-    }
-}
-function parseStringParam(s, keepCase) {
-    var value = Array.isArray(s) ? String.fromCharCode.apply(null, s) : decodeBase64(s);
-    return keepCase ? value : value.toLowerCase();
-}
-function getStringParam(attrs, name, def, keepCase) {
-    if (keepCase === void 0) { keepCase = false; }
-    var param = attrs[name];
-    if (param != null) {
-        return parseStringParam(param.s, keepCase);
-    }
-    return def;
-}
-function getBoolParam(attrs, name, def) {
-    var param = attrs[name];
-    return param ? param.b : def;
-}
-function getNumberParam(attrs, name, def) {
-    var param = attrs[name] || {};
-    var value = param['i'] != null ? param['i'] : (param['f'] != null ? param['f'] : def);
-    return (typeof value === 'number') ? value : parseInt(value, 10);
-}
-function parseDtypeParam(value) {
-    if (typeof (value) === 'string') {
-        // tslint:disable-next-line:no-any
-        value = DataType[value];
-    }
-    switch (value) {
-        case DataType.DT_FLOAT:
-            return 'float32';
-        case DataType.DT_INT32:
-        case DataType.DT_INT64:
-        case DataType.DT_INT8:
-        case DataType.DT_UINT8:
-            return 'int32';
-        case DataType.DT_BOOL:
-            return 'bool';
-        case DataType.DT_DOUBLE:
-            return 'float32';
-        case DataType.DT_STRING:
-            return 'string';
-        default:
-            // Unknown dtype error will happen at runtime (instead of parse time),
-            // since these nodes might not be used by the actual subgraph execution.
-            return null;
-    }
-}
-function getFuncParam(attrs, name, def) {
-    var param = attrs[name];
-    if (param && param.func) {
-        return param.func.name;
-    }
-    return def;
-}
-function getDtypeParam(attrs, name, def) {
-    var param = attrs[name];
-    if (param && param.type) {
-        return parseDtypeParam(param.type);
-    }
-    return def;
-}
-function getDtypeArrayParam(attrs, name, def) {
-    var param = attrs[name];
-    if (param && param.list && param.list.type) {
-        return param.list.type.map(function (v) { return parseDtypeParam(v); });
-    }
-    return def;
-}
-function parseTensorShapeParam(shape) {
-    if (shape.unknownRank) {
-        return undefined;
-    }
-    if (shape.dim != null) {
-        return shape.dim.map(function (dim) {
-            return (typeof dim.size === 'number') ? dim.size : parseInt(dim.size, 10);
-        });
-    }
-    return [];
-}
-function getTensorShapeParam(attrs, name, def) {
-    var param = attrs[name];
-    if (param && param.shape) {
-        return parseTensorShapeParam(param.shape);
-    }
-    return def;
-}
-function getNumericArrayParam(attrs, name, def) {
-    var param = attrs[name];
-    if (param) {
-        return ((param.list.f && param.list.f.length ? param.list.f :
-            param.list.i) ||
-            [])
-            .map(function (v) { return (typeof v === 'number') ? v : parseInt(v, 10); });
-    }
-    return def;
-}
-function getStringArrayParam(attrs, name, def, keepCase) {
-    if (keepCase === void 0) { keepCase = false; }
-    var param = attrs[name];
-    if (param && param.list && param.list.s) {
-        return param.list.s.map(function (v) {
-            return parseStringParam(v, keepCase);
-        });
-    }
-    return def;
-}
-function getTensorShapeArrayParam(attrs, name, def) {
-    var param = attrs[name];
-    if (param && param.list && param.list.shape) {
-        return param.list.shape.map(function (v) {
-            return parseTensorShapeParam(v);
-        });
-    }
-    return def;
-}
-function getBoolArrayParam(attrs, name, def) {
-    var param = attrs[name];
-    if (param && param.list && param.list.b) {
-        return param.list.b;
-    }
-    return def;
-}
-
-/**
- * @license
- * Copyright 2019 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-/**
- * Helper class for lookup inputs and params for nodes in the model graph.
- */
-var NodeValueImpl = /** @class */ (function () {
-    function NodeValueImpl(node, tensorMap, context) {
-        var _this = this;
-        this.node = node;
-        this.tensorMap = tensorMap;
-        this.context = context;
-        this.inputs = [];
-        this.attrs = {};
-        this.inputs = node.inputNames.map(function (name) { return _this.getInput(name); });
-        if (node.rawAttrs != null) {
-            this.attrs = Object.keys(node.rawAttrs)
-                .reduce(function (attrs, key) {
-                attrs[key] = _this.getAttr(key);
-                return attrs;
-            }, {});
-        }
-    }
-    /**
-     * Return the value of the attribute or input param.
-     * @param name String: name of attribute or input param.
-     */
-    NodeValueImpl.prototype.getInput = function (name) {
-        return getTensor(name, this.tensorMap, this.context);
-    };
-    /**
-     * Return the value of the attribute or input param.
-     * @param name String: name of attribute or input param.
-     */
-    NodeValueImpl.prototype.getAttr = function (name, defaultValue) {
-        var value = this.node.rawAttrs[name];
-        if (value.tensor != null) {
-            return getTensor(name, this.tensorMap, this.context);
-        }
-        if (value.i != null || value.f != null) {
-            return getNumberParam(this.node.rawAttrs, name, defaultValue);
-        }
-        if (value.s != null) {
-            return getStringParam(this.node.rawAttrs, name, defaultValue);
-        }
-        if (value.b != null) {
-            return getBoolParam(this.node.rawAttrs, name, defaultValue);
-        }
-        if (value.shape != null) {
-            return getTensorShapeParam(this.node.rawAttrs, name, defaultValue);
-        }
-        if (value.type != null) {
-            return getDtypeParam(this.node.rawAttrs, name, defaultValue);
-        }
-        if (value.list != null) {
-            if (value.list.i != null || value.list.f != null) {
-                return getNumericArrayParam(this.node.rawAttrs, name, defaultValue);
-            }
-            if (value.list.s != null) {
-                return getStringArrayParam(this.node.rawAttrs, name, defaultValue);
-            }
-            if (value.list.shape != null) {
-                return getTensorShapeArrayParam(this.node.rawAttrs, name, defaultValue);
-            }
-            if (value.list.b != null) {
-                return getBoolArrayParam(this.node.rawAttrs, name, defaultValue);
-            }
-            if (value.list.type != null) {
-                return getDtypeArrayParam(this.node.rawAttrs, name, defaultValue);
-            }
-        }
-        return defaultValue;
-    };
-    return NodeValueImpl;
-}());
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var executeOp = function (node, tensorMap, context) {
-    switch (node.op) {
-        case 'BiasAdd':
-        case 'AddV2':
-        case 'Add': {
-            return [tfc.add(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'AddN': {
-            return [tfc.addN(getParamValue('tensors', node, tensorMap, context))];
-        }
-        case 'FloorMod':
-        case 'Mod':
-            return [tfc.mod(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        case 'Mul':
-            return [tfc.mul(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        case 'RealDiv':
-        case 'Div': {
-            return [tfc.div(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'DivNoNan': {
-            return [tfc.divNoNan(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'FloorDiv': {
-            return [tfc.floorDiv(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'Sub': {
-            return [tfc.sub(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'Minimum': {
-            return [tfc.minimum(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'Maximum': {
-            return [tfc.maximum(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'Pow': {
-            return [tfc.pow(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'SquaredDifference': {
-            return [tfc.squaredDifference(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        default:
-            throw TypeError("Node type " + node.op + " is not implemented");
-    }
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var executeOp$1 = function (node, tensorMap, context) {
-    switch (node.op) {
-        case 'Abs':
-        case 'ComplexAbs':
-            return [tfc.abs(getParamValue('x', node, tensorMap, context))];
-        case 'Acos':
-            return [tfc.acos(getParamValue('x', node, tensorMap, context))];
-        case 'Acosh':
-            return [tfc.acosh(getParamValue('x', node, tensorMap, context))];
-        case 'Asin':
-            return [tfc.asin(getParamValue('x', node, tensorMap, context))];
-        case 'Asinh':
-            return [tfc.asinh(getParamValue('x', node, tensorMap, context))];
-        case 'Atan':
-            return [tfc.atan(getParamValue('x', node, tensorMap, context))];
-        case 'Atan2':
-            return [tfc.atan2(getParamValue('x', node, tensorMap, context), getParamValue('y', node, tensorMap, context))];
-        case 'Atanh':
-            return [tfc.atanh(getParamValue('x', node, tensorMap, context))];
-        case 'Ceil':
-            return [tfc.ceil(getParamValue('x', node, tensorMap, context))];
-        case 'Complex':
-            return [tfc.complex(getParamValue('real', node, tensorMap, context), getParamValue('imag', node, tensorMap, context))];
-        case 'Cos':
-            return [tfc.cos(getParamValue('x', node, tensorMap, context))];
-        case 'Cosh':
-            return [tfc.cosh(getParamValue('x', node, tensorMap, context))];
-        case 'Elu':
-            return [tfc.elu(getParamValue('x', node, tensorMap, context))];
-        case 'Erf':
-            return [tfc.erf(getParamValue('x', node, tensorMap, context))];
-        case 'Exp':
-            return [tfc.exp(getParamValue('x', node, tensorMap, context))];
-        case 'Expm1': {
-            return [tfc.expm1(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'Floor':
-            return [tfc.floor(getParamValue('x', node, tensorMap, context))];
-        case 'Log':
-            return [tfc.log(getParamValue('x', node, tensorMap, context))];
-        case 'Log1p': {
-            return [tfc.log1p(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'Imag':
-            return [tfc.imag(getParamValue('x', node, tensorMap, context))];
-        case 'Neg':
-            return [tfc.neg(getParamValue('x', node, tensorMap, context))];
-        case 'Reciprocal': {
-            return [tfc.reciprocal(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'Real':
-            return [tfc.real(getParamValue('x', node, tensorMap, context))];
-        case 'Relu':
-            return [tfc.relu(getParamValue('x', node, tensorMap, context))];
-        case 'Round': {
-            return [tfc.round(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'Selu':
-            return [tfc.selu(getParamValue('x', node, tensorMap, context))];
-        case 'Sigmoid':
-            return [tfc.sigmoid(getParamValue('x', node, tensorMap, context))];
-        case 'Sin':
-            return [tfc.sin(getParamValue('x', node, tensorMap, context))];
-        case 'Sign': {
-            return [tfc.sign(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'Sinh': {
-            return [tfc.sinh(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'Softplus': {
-            return [tfc.softplus(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'Sqrt': {
-            return [tfc.sqrt(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'Square': {
-            return [tfc.square(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'Tanh': {
-            return [tfc.tanh(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'Tan':
-            return [tfc.tan(getParamValue('x', node, tensorMap, context))];
-        case 'Relu6':
-        case 'ClipByValue':
-            return [tfc.clipByValue(getParamValue('x', node, tensorMap, context), getParamValue('clipValueMin', node, tensorMap, context), getParamValue('clipValueMax', node, tensorMap, context))];
-        case 'Rsqrt':
-            return [tfc.rsqrt(getTensor(node.inputNames[0], tensorMap, context))];
-        case 'Prod':
-            return [tfc.prod(getParamValue('x', node, tensorMap, context), getParamValue('axes', node, tensorMap, context))];
-        case 'LeakyRelu':
-            return [tfc.leakyRelu(getParamValue('x', node, tensorMap, context), getParamValue('alpha', node, tensorMap, context))];
-        case 'Prelu':
-            return [tfc.prelu(getParamValue('x', node, tensorMap, context), getParamValue('alpha', node, tensorMap, context))];
-        default:
-            throw TypeError("Node type " + node.op + " is not implemented");
-    }
-};
-
-/**
- * @license
- * Copyright 2020 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-function assertShapesMatchAllowUndefinedSize(shapeA, shapeB, errorMessagePrefix) {
-    if (errorMessagePrefix === void 0) { errorMessagePrefix = ''; }
-    tfc.util.assert(shapesEqualAllowUndefinedSize(shapeA, shapeB), function () { return errorMessagePrefix + (" Shapes " + shapeA + " and " + shapeB + " must match"); });
-}
-function shapesEqualAllowUndefinedSize(n1, n2) {
-    if (n1.length !== n2.length) {
-        return false;
-    }
-    for (var i = 0; i < n1.length; i++) {
-        if (n1[i] !== -1 && n2[i] !== -1 && n1[i] !== n2[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-/**
- * The TensorArray object keeps an array of Tensors.  It
- * allows reading from the array and writing to the array.
- */
-var TensorArray = /** @class */ (function () {
-    function TensorArray(name, dtype, maxSize, elementShape, identicalElementShapes, dynamicSize, clearAfterRead) {
-        this.name = name;
-        this.dtype = dtype;
-        this.maxSize = maxSize;
-        this.elementShape = elementShape;
-        this.identicalElementShapes = identicalElementShapes;
-        this.dynamicSize = dynamicSize;
-        this.clearAfterRead = clearAfterRead;
-        this.tensors = [];
-        this.closed_ = false;
-        this.id = TensorArray.nextId++;
-    }
-    Object.defineProperty(TensorArray.prototype, "closed", {
-        get: function () {
-            return this.closed_;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Close the current TensorArray.
-     */
-    TensorArray.prototype.clearAndClose = function () {
-        this.tensors.forEach(function (tensor) { return tensor.tensor.dispose(); });
-        this.tensors = [];
-        this.closed_ = true;
-    };
-    TensorArray.prototype.size = function () {
-        return this.tensors.length;
-    };
-    /**
-     * Read the value at location index in the TensorArray.
-     * @param index Number the index to read from.
-     */
-    TensorArray.prototype.read = function (index) {
-        if (this.closed_) {
-            throw new Error("TensorArray " + this.name + " has already been closed.");
-        }
-        if (index < 0 || index >= this.size()) {
-            throw new Error("Tried to read from index " + index + ", but array size is: " + this.size());
-        }
-        var tensorWithState = this.tensors[index];
-        if (tensorWithState.cleared) {
-            throw new Error("TensorArray " + this.name + ": Could not read index " + index + " twice because it was cleared after a previous read " +
-                "(perhaps try setting clear_after_read = false?).");
-        }
-        if (this.clearAfterRead) {
-            tensorWithState.cleared = true;
-        }
-        tensorWithState.read = true;
-        return tensorWithState.tensor;
-    };
-    /**
-     * Helper method to read multiple tensors from the specified indices.
-     */
-    TensorArray.prototype.readMany = function (indices) {
-        var _this = this;
-        return indices.map(function (index) { return _this.read(index); });
-    };
-    /**
-     * Write value into the index of the TensorArray.
-     * @param index number the index to write to.
-     * @param tensor
-     */
-    TensorArray.prototype.write = function (index, tensor) {
-        if (this.closed_) {
-            throw new Error("TensorArray " + this.name + " has already been closed.");
-        }
-        if (index < 0 || !this.dynamicSize && index >= this.maxSize) {
-            throw new Error("Tried to write to index " + index + ", but array is not resizeable and size is: " + this.maxSize);
-        }
-        var t = this.tensors[index] || {};
-        if (tensor.dtype !== this.dtype) {
-            throw new Error("TensorArray " + this.name + ": Could not write to TensorArray index " + index + ",\n          because the value dtype is " + tensor.dtype + ", but TensorArray dtype is " + this.dtype + ".");
-        }
-        // Set the shape for the first time write to unknow shape tensor array
-        if (this.size() === 0 &&
-            (this.elementShape == null || this.elementShape.length === 0)) {
-            this.elementShape = tensor.shape;
-        }
-        assertShapesMatchAllowUndefinedSize(this.elementShape, tensor.shape, "TensorArray " + this.name + ": Could not write to TensorArray index " + index + ".");
-        if (t && t.read) {
-            throw new Error("TensorArray " + this.name + ": Could not write to TensorArray index " + index + ", because it has already been read.");
-        }
-        if (t && t.written) {
-            throw new Error("TensorArray " + this.name + ": Could not write to TensorArray index " + index + ", because it has already been written.");
-        }
-        t.tensor = tensor;
-        t.written = true;
-        this.tensors[index] = t;
-    };
-    /**
-     * Helper method to write multiple tensors to the specified indices.
-     */
-    TensorArray.prototype.writeMany = function (indices, tensors) {
-        var _this = this;
-        if (indices.length !== tensors.length) {
-            throw new Error("TensorArray " + this.name + ": could not write multiple tensors," +
-                ("because the index size: " + indices.length + " is not the same as tensors size: " + tensors.length + "."));
-        }
-        indices.forEach(function (i, index) { return _this.write(i, tensors[index]); });
-    };
-    /**
-     * Return selected values in the TensorArray as a packed Tensor. All of
-     * selected values must have been written and their shapes must all match.
-     * @param [indices] number[] Optional. Taking values in [0, max_value). If the
-     *    TensorArray is not dynamic, max_value=size(). If not specified returns
-     *    all tensors in the original order.
-     * @param [dtype]
-     */
-    TensorArray.prototype.gather = function (indices, dtype) {
-        if (!!dtype && dtype !== this.dtype) {
-            throw new Error("TensorArray dtype is " + this.dtype + " but gather requested dtype " + dtype);
-        }
-        if (!indices) {
-            indices = [];
-            for (var i = 0; i < this.size(); i++) {
-                indices.push(i);
-            }
-        }
-        else {
-            indices = indices.slice(0, this.size());
-        }
-        if (indices.length === 0) {
-            return tfc.tensor([], [0].concat(this.elementShape));
-        }
-        // Read all the PersistentTensors into a vector to keep track of
-        // their memory.
-        var tensors = this.readMany(indices);
-        assertShapesMatchAllowUndefinedSize(this.elementShape, tensors[0].shape, 'TensorArray shape mismatch: ');
-        return tfc.stack(tensors, 0);
-    };
-    /**
-     * Return the values in the TensorArray as a concatenated Tensor.
-     */
-    TensorArray.prototype.concat = function (dtype) {
-        if (!!dtype && dtype !== this.dtype) {
-            throw new Error("TensorArray dtype is " + this.dtype + " but concat requested dtype " + dtype);
-        }
-        if (this.size() === 0) {
-            return tfc.tensor([], [0].concat(this.elementShape));
-        }
-        var indices = [];
-        for (var i = 0; i < this.size(); i++) {
-            indices.push(i);
-        }
-        // Collect all the tensors from the tensors array.
-        var tensors = this.readMany(indices);
-        assertShapesMatchAllowUndefinedSize(this.elementShape, tensors[0].shape, "TensorArray shape mismatch: tensor array shape (" + this.elementShape + ") vs first tensor shape (" + tensors[0].shape + ")");
-        return tfc.concat(tensors, 0);
-    };
-    /**
-     * Scatter the values of a Tensor in specific indices of a TensorArray.
-     * @param indices nummber[] values in [0, max_value). If the
-     *    TensorArray is not dynamic, max_value=size().
-     * @param tensor Tensor input tensor.
-     */
-    TensorArray.prototype.scatter = function (indices, tensor) {
-        if (tensor.dtype !== this.dtype) {
-            throw new Error("TensorArray dtype is " + this.dtype + " but tensor has dtype " + tensor.dtype);
-        }
-        if (indices.length !== tensor.shape[0]) {
-            throw new Error("Expected len(indices) == tensor.shape[0], but saw: " + indices.length + " vs. " + tensor.shape[0]);
-        }
-        var maxIndex = Math.max.apply(Math, indices);
-        if (!this.dynamicSize && maxIndex >= this.maxSize) {
-            throw new Error("Max index must be < array size (" + maxIndex + "  vs. " + this.maxSize + ")");
-        }
-        this.writeMany(indices, tfc.unstack(tensor, 0));
-    };
-    /**
-     * Split the values of a Tensor into the TensorArray.
-     * @param length number[] with the lengths to use when splitting value along
-     *    its first dimension.
-     * @param tensor Tensor, the tensor to split.
-     */
-    TensorArray.prototype.split = function (length, tensor) {
-        var _this = this;
-        if (tensor.dtype !== this.dtype) {
-            throw new Error("TensorArray dtype is " + this.dtype + " but tensor has dtype " + tensor.dtype);
-        }
-        var totalLength = 0;
-        var cumulativeLengths = length.map(function (len) {
-            totalLength += len;
-            return totalLength;
-        });
-        if (totalLength !== tensor.shape[0]) {
-            throw new Error("Expected sum of lengths to be equal to\n          tensor.shape[0], but sum of lengths is\n        " + totalLength + ", and tensor's shape is: " + tensor.shape);
-        }
-        if (!this.dynamicSize && length.length !== this.maxSize) {
-            throw new Error("TensorArray's size is not equal to the size of lengths (" + this.maxSize + " vs. " + length.length + "), " +
-                'and the TensorArray is not marked as dynamically resizeable');
-        }
-        var elementPerRow = totalLength === 0 ? 0 : tensor.size / totalLength;
-        var tensors = [];
-        tfc.tidy(function () {
-            tensor = tensor.reshape([1, totalLength, elementPerRow]);
-            for (var i = 0; i < length.length; ++i) {
-                var previousLength = (i === 0) ? 0 : cumulativeLengths[i - 1];
-                var indices_1 = [0, previousLength, 0];
-                var sizes = [1, length[i], elementPerRow];
-                tensors[i] = tfc.slice(tensor, indices_1, sizes).reshape(_this.elementShape);
-            }
-            return tensors;
-        });
-        var indices = [];
-        for (var i = 0; i < length.length; i++) {
-            indices[i] = i;
-        }
-        this.writeMany(indices, tensors);
-    };
-    TensorArray.nextId = 0;
-    return TensorArray;
-}());
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var _this = undefined;
-var executeOp$2 = function (node, tensorMap, context) { return __awaiter(_this, void 0, void 0, function () {
-    var _a, thenFunc, elseFunc, cond, args, condValue, bodyFunc, condFunc, args, condTensor, condValue, result, condTensor_1, pred, data_1, inputName, frameId, data, tensor, input, size, dtype, elementShape, dynamicSize, clearAfterRead, identicalElementShapes, name_1, tensorArray, id, index, writeTensor, writeTensorArray, readId, readIndex, readTensorArray, gatherId, gatherIndices, gatherDtype, gatherTensorArray, scatterId, scatterIndices, scatterTensor, scatterTensorArray, concatId, concatTensorArray, concatDtype, splitId, splitTensor, lengths, splitTensorArray, sizeId, sizeTensorArray, closeId, closeTensorArray;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
-            case 0:
-                _a = node.op;
-                switch (_a) {
-                    case 'If': return [3 /*break*/, 1];
-                    case 'StatelessIf': return [3 /*break*/, 1];
-                    case 'While': return [3 /*break*/, 3];
-                    case 'StatelessWhile': return [3 /*break*/, 3];
-                    case 'LoopCond': return [3 /*break*/, 11];
-                    case 'Switch': return [3 /*break*/, 12];
-                    case 'Merge': return [3 /*break*/, 14];
-                    case 'Enter': return [3 /*break*/, 15];
-                    case 'Exit': return [3 /*break*/, 16];
-                    case 'NextIteration': return [3 /*break*/, 17];
-                    case 'TensorArrayV3': return [3 /*break*/, 18];
-                    case 'TensorArrayWriteV3': return [3 /*break*/, 19];
-                    case 'TensorArrayReadV3': return [3 /*break*/, 20];
-                    case 'TensorArrayGatherV3': return [3 /*break*/, 21];
-                    case 'TensorArrayScatterV3': return [3 /*break*/, 22];
-                    case 'TensorArrayConcatV3': return [3 /*break*/, 23];
-                    case 'TensorArraySplitV3': return [3 /*break*/, 24];
-                    case 'TensorArraySizeV3': return [3 /*break*/, 25];
-                    case 'TensorArrayCloseV3': return [3 /*break*/, 26];
-                }
-                return [3 /*break*/, 27];
-            case 1:
-                thenFunc = getParamValue('thenBranch', node, tensorMap, context);
-                elseFunc = getParamValue('elseBranch', node, tensorMap, context);
-                cond = getParamValue('cond', node, tensorMap, context);
-                args = getParamValue('args', node, tensorMap, context);
-                return [4 /*yield*/, cond.data()];
-            case 2:
-                condValue = _b.sent();
-                if (condValue[0]) {
-                    return [2 /*return*/, context.functionMap[thenFunc].executeFunctionAsync(args)];
-                }
-                else {
-                    return [2 /*return*/, context.functionMap[elseFunc].executeFunctionAsync(args)];
-                }
-            case 3:
-                bodyFunc = getParamValue('body', node, tensorMap, context);
-                condFunc = getParamValue('cond', node, tensorMap, context);
-                args = getParamValue('args', node, tensorMap, context);
-                return [4 /*yield*/, context.functionMap[condFunc].executeFunctionAsync(args)];
-            case 4:
-                condTensor = (_b.sent())[0];
-                return [4 /*yield*/, condTensor.data()];
-            case 5:
-                condValue = _b.sent();
-                result = args;
-                _b.label = 6;
-            case 6:
-                if (!condValue[0]) return [3 /*break*/, 10];
-                return [4 /*yield*/, context.functionMap[bodyFunc].executeFunctionAsync(result)];
-            case 7:
-                result =
-                    _b.sent();
-                return [4 /*yield*/, context.functionMap[condFunc].executeFunctionAsync(result)];
-            case 8:
-                condTensor_1 = (_b.sent())[0];
-                return [4 /*yield*/, condTensor_1.data()];
-            case 9:
-                condValue = _b.sent();
-                return [3 /*break*/, 6];
-            case 10: return [2 /*return*/, result];
-            case 11: return [2 /*return*/, [
-                    getParamValue('pred', node, tensorMap, context).clone()
-                ]];
-            case 12:
-                pred = getParamValue('pred', node, tensorMap, context);
-                data_1 = getParamValue('data', node, tensorMap, context);
-                return [4 /*yield*/, pred.data()];
-            case 13: 
-            // Outputs nodes :0 => false, :1 => true
-            return [2 /*return*/, (_b.sent())[0] ? [undefined, data_1.clone()] :
-                    [data_1.clone(), undefined]];
-            case 14:
-                inputName = node.inputNames.find(function (name) { return getTensor(name, tensorMap, context) !== undefined; });
-                return [2 /*return*/, inputName ? [getTensor(inputName, tensorMap, context).clone()] :
-                        undefined];
-            case 15:
-                frameId = getParamValue('frameName', node, tensorMap, context);
-                data = getParamValue('tensor', node, tensorMap, context);
-                context.enterFrame(frameId);
-                return [2 /*return*/, [data.clone()]];
-            case 16:
-                tensor = getParamValue('tensor', node, tensorMap, context);
-                context.exitFrame();
-                return [2 /*return*/, [tensor.clone()]];
-            case 17:
-                input = getParamValue('tensor', node, tensorMap, context);
-                context.nextIteration();
-                return [2 /*return*/, [input.clone()]];
-            case 18:
-                size = getParamValue('size', node, tensorMap, context);
-                dtype = getParamValue('dtype', node, tensorMap, context);
-                elementShape = getParamValue('elementShape', node, tensorMap, context);
-                dynamicSize = getParamValue('dynamicSize', node, tensorMap, context);
-                clearAfterRead = getParamValue('clearAfterRead', node, tensorMap, context);
-                identicalElementShapes = getParamValue('identicalElementShapes', node, tensorMap, context);
-                name_1 = getParamValue('name', node, tensorMap, context);
-                tensorArray = new TensorArray(name_1, dtype, size, elementShape, identicalElementShapes, dynamicSize, clearAfterRead);
-                context.addTensorArray(tensorArray);
-                return [2 /*return*/, [tfc.scalar(tensorArray.id), tfc.scalar(1.0)]];
-            case 19:
-                id = getParamValue('tensorArrayId', node, tensorMap, context);
-                index = getParamValue('index', node, tensorMap, context);
-                writeTensor = getParamValue('tensor', node, tensorMap, context);
-                writeTensorArray = context.getTensorArray(id);
-                writeTensorArray.write(index, writeTensor);
-                return [2 /*return*/, [tfc.scalar(1.0)]];
-            case 20:
-                readId = getParamValue('tensorArrayId', node, tensorMap, context);
-                readIndex = getParamValue('index', node, tensorMap, context);
-                readTensorArray = context.getTensorArray(readId);
-                return [2 /*return*/, [readTensorArray.read(readIndex)]];
-            case 21:
-                gatherId = getParamValue('tensorArrayId', node, tensorMap, context);
-                gatherIndices = getParamValue('indices', node, tensorMap, context);
-                gatherDtype = getParamValue('dtype', node, tensorMap, context);
-                gatherTensorArray = context.getTensorArray(gatherId);
-                return [2 /*return*/, [gatherTensorArray.gather(gatherIndices, gatherDtype)]];
-            case 22:
-                scatterId = getParamValue('tensorArrayId', node, tensorMap, context);
-                scatterIndices = getParamValue('indices', node, tensorMap, context);
-                scatterTensor = getParamValue('tensor', node, tensorMap, context);
-                scatterTensorArray = context.getTensorArray(scatterId);
-                scatterTensorArray.scatter(scatterIndices, scatterTensor);
-                return [2 /*return*/, [tfc.scalar(1.0)]];
-            case 23:
-                concatId = getParamValue('tensorArrayId', node, tensorMap, context);
-                concatTensorArray = context.getTensorArray(concatId);
-                concatDtype = getParamValue('dtype', node, tensorMap, context);
-                return [2 /*return*/, [concatTensorArray.concat(concatDtype)]];
-            case 24:
-                splitId = getParamValue('tensorArrayId', node, tensorMap, context);
-                splitTensor = getParamValue('tensor', node, tensorMap, context);
-                lengths = getParamValue('lengths', node, tensorMap, context);
-                splitTensorArray = context.getTensorArray(splitId);
-                splitTensorArray.split(lengths, splitTensor);
-                return [2 /*return*/, [tfc.scalar(1.0)]];
-            case 25:
-                sizeId = getParamValue('tensorArrayId', node, tensorMap, context);
-                sizeTensorArray = context.getTensorArray(sizeId);
-                return [2 /*return*/, [tfc.scalar(sizeTensorArray.size(), 'int32')]];
-            case 26:
-                closeId = getParamValue('tensorArrayId', node, tensorMap, context);
-                closeTensorArray = context.getTensorArray(closeId);
-                closeTensorArray.clearAndClose();
-                return [2 /*return*/, [tfc.scalar(0)]];
-            case 27: throw TypeError("Node type " + node.op + " is not implemented");
-        }
-    });
-}); };
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var executeOp$3 = function (node, tensorMap, context) {
-    switch (node.op) {
-        case 'Conv1D': {
-            var stride = getParamValue('stride', node, tensorMap, context);
-            var pad = getParamValue('pad', node, tensorMap, context);
-            var dataFormat = getParamValue('dataFormat', node, tensorMap, context)
-                .toUpperCase();
-            var dilation = getParamValue('dilation', node, tensorMap, context);
-            return [tfc.conv1d(getParamValue('x', node, tensorMap, context), getParamValue('filter', node, tensorMap, context), stride, pad, dataFormat, dilation)];
-        }
-        case 'Conv2D': {
-            var stride = getParamValue('strides', node, tensorMap, context);
-            var pad = getParamValue('pad', node, tensorMap, context);
-            var dataFormat = getParamValue('dataFormat', node, tensorMap, context)
-                .toUpperCase();
-            var dilations = getParamValue('dilations', node, tensorMap, context);
-            return [tfc.conv2d(getParamValue('x', node, tensorMap, context), getParamValue('filter', node, tensorMap, context), [stride[1], stride[2]], pad, dataFormat, [dilations[1], dilations[2]])];
-        }
-        case '_FusedConv2D':
-        case 'FusedDepthwiseConv2dNative': {
-            var _a = getParamValue('fusedOps', node, tensorMap, context), extraOp = _a[0], activationFunc = _a[1];
-            var isBiasAdd = extraOp === 'biasadd';
-            var isPrelu = activationFunc === 'prelu';
-            var isBatchNorm = extraOp === 'fusedbatchnorm';
-            var numArgs = getParamValue('numArgs', node, tensorMap, context);
-            if (isBiasAdd) {
-                if (isPrelu && numArgs !== 2) {
-                    throw new Error('FusedConv2d and DepthwiseConv2d with BiasAdd and Prelu ' +
-                        'must have two extra arguments: bias and alpha.');
-                }
-                if (!isPrelu && numArgs !== 1) {
-                    throw new Error('FusedConv2d and DepthwiseConv2d with BiasAdd must have ' +
-                        'one extra argument: bias.');
-                }
-            }
-            if (isBatchNorm) {
-                throw new Error('FusedConv2d and DepthwiseConv2d with FusedBatchNorm is not supported.');
-            }
-            var stride = getParamValue('strides', node, tensorMap, context);
-            var pad = getParamValue('pad', node, tensorMap, context);
-            var dataFormat = getParamValue('dataFormat', node, tensorMap, context)
-                .toUpperCase();
-            var dilations = getParamValue('dilations', node, tensorMap, context);
-            var _b = getParamValue('args', node, tensorMap, context), biasArg = _b[0], preluArg = _b[1];
-            var kernelMethod = node.op === '_FusedConv2D' ?
-                tfc.fused.conv2d :
-                tfc.fused.depthwiseConv2d;
-            return [kernelMethod({
-                    x: getParamValue('x', node, tensorMap, context),
-                    filter: getParamValue('filter', node, tensorMap, context),
-                    strides: [stride[1], stride[2]],
-                    pad: pad,
-                    dataFormat: dataFormat,
-                    dilations: [dilations[1], dilations[2]],
-                    bias: biasArg,
-                    activation: activationFunc,
-                    preluActivationWeights: preluArg
-                })];
-        }
-        case 'Conv2DBackpropInput':
-        case 'Conv2dTranspose': {
-            var shape = getParamValue('outputShape', node, tensorMap, context);
-            var stride = getParamValue('strides', node, tensorMap, context);
-            var pad = getParamValue('pad', node, tensorMap, context);
-            return [tfc.conv2dTranspose(getParamValue('x', node, tensorMap, context), getParamValue('filter', node, tensorMap, context), shape, [stride[1], stride[2]], pad)];
-        }
-        case 'DepthwiseConv2dNative':
-        case 'DepthwiseConv2d': {
-            var stride = getParamValue('strides', node, tensorMap, context);
-            var pad = getParamValue('pad', node, tensorMap, context);
-            var dilations = getParamValue('dilations', node, tensorMap, context);
-            var dataFormat = getParamValue('dataFormat', node, tensorMap, context)
-                .toUpperCase();
-            return [tfc.depthwiseConv2d(getParamValue('input', node, tensorMap, context), getParamValue('filter', node, tensorMap, context), [stride[1], stride[2]], pad, dataFormat, [dilations[1], dilations[2]])];
-        }
-        case 'Conv3D': {
-            var stride = getParamValue('strides', node, tensorMap, context);
-            var pad = getParamValue('pad', node, tensorMap, context);
-            var dataFormat = getParamValue('dataFormat', node, tensorMap, context)
-                .toUpperCase();
-            var dilations = getParamValue('dilations', node, tensorMap, context);
-            return [tfc.conv3d(getParamValue('x', node, tensorMap, context), getParamValue('filter', node, tensorMap, context), [stride[1], stride[2], stride[3]], pad, dataFormat, [dilations[1], dilations[2], dilations[3]])];
-        }
-        case 'AvgPool': {
-            var stride = getParamValue('strides', node, tensorMap, context);
-            var pad = getParamValue('pad', node, tensorMap, context);
-            var kernelSize = getParamValue('kernelSize', node, tensorMap, context);
-            return [tfc.avgPool(getParamValue('x', node, tensorMap, context), [kernelSize[1], kernelSize[2]], [stride[1], stride[2]], pad)];
-        }
-        case 'MaxPool': {
-            var stride = getParamValue('strides', node, tensorMap, context);
-            var pad = getParamValue('pad', node, tensorMap, context);
-            var kernelSize = getParamValue('kernelSize', node, tensorMap, context);
-            return [tfc.maxPool(getParamValue('x', node, tensorMap, context), [kernelSize[1], kernelSize[2]], [stride[1], stride[2]], pad)];
-        }
-        case 'MaxPoolWithArgmax': {
-            var stride = getParamValue('strides', node, tensorMap, context);
-            var pad = getParamValue('pad', node, tensorMap, context);
-            var kernelSize = getParamValue('kernelSize', node, tensorMap, context);
-            var includeBatchInIndex = getParamValue('includeBatchInIndex', node, tensorMap, context);
-            var _c = tfc.maxPoolWithArgmax(getParamValue('x', node, tensorMap, context), [kernelSize[1], kernelSize[2]], [stride[1], stride[2]], pad, includeBatchInIndex), result = _c.result, indexes = _c.indexes;
-            return [result, indexes];
-        }
-        case 'AvgPool3D': {
-            var stride = getParamValue('strides', node, tensorMap, context);
-            var pad = getParamValue('pad', node, tensorMap, context);
-            var kernelSize = getParamValue('kernelSize', node, tensorMap, context);
-            return [tfc.avgPool3d(getParamValue('x', node, tensorMap, context), [kernelSize[1], kernelSize[2], kernelSize[3]], [stride[1], stride[2], stride[3]], pad)];
-        }
-        case 'MaxPool3D': {
-            var stride = getParamValue('strides', node, tensorMap, context);
-            var pad = getParamValue('pad', node, tensorMap, context);
-            var kernelSize = getParamValue('kernelSize', node, tensorMap, context);
-            return [tfc.maxPool3d(getParamValue('x', node, tensorMap, context), [kernelSize[1], kernelSize[2], kernelSize[3]], [stride[1], stride[2], stride[3]], pad)];
-        }
-        default:
-            throw TypeError("Node type " + node.op + " is not implemented");
-    }
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var executeOp$4 = function (node, tensorMap, context) {
-    switch (node.op) {
-        case 'Fill': {
-            var shape = getParamValue('shape', node, tensorMap, context);
-            var dtype = getParamValue('dtype', node, tensorMap, context);
-            var value = getParamValue('value', node, tensorMap, context);
-            return [tfc.fill(shape, value, dtype)];
-        }
-        case 'LinSpace': {
-            var start = getParamValue('start', node, tensorMap, context);
-            var stop_1 = getParamValue('stop', node, tensorMap, context);
-            var num = getParamValue('num', node, tensorMap, context);
-            return [tfc.linspace(start, stop_1, num)];
-        }
-        case 'Multinomial': {
-            var logits = getParamValue('logits', node, tensorMap, context);
-            var numSamples = getParamValue('numSamples', node, tensorMap, context);
-            var seed = getParamValue('seed', node, tensorMap, context);
-            return [tfc.multinomial(logits, numSamples, seed)];
-        }
-        case 'OneHot': {
-            var indices = getParamValue('indices', node, tensorMap, context);
-            var depth = getParamValue('depth', node, tensorMap, context);
-            var onValue = getParamValue('onValue', node, tensorMap, context);
-            var offValue = getParamValue('offValue', node, tensorMap, context);
-            return [tfc.oneHot(indices, depth, onValue, offValue)];
-        }
-        case 'Ones': {
-            return [tfc.ones(getParamValue('shape', node, tensorMap, context), getParamValue('dtype', node, tensorMap, context))];
-        }
-        case 'OnesLike': {
-            return [tfc.onesLike(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'RandomUniform': {
-            return [tfc.randomUniform(
-                // tslint:disable-next-line:no-any
-                getParamValue('shape', node, tensorMap, context), getParamValue('minval', node, tensorMap, context), getParamValue('maxval', node, tensorMap, context), getParamValue('dtype', node, tensorMap, context))];
-        }
-        case 'Range': {
-            var start = getParamValue('start', node, tensorMap, context);
-            var stop_2 = getParamValue('stop', node, tensorMap, context);
-            var step = getParamValue('step', node, tensorMap, context);
-            return [tfc.range(start, stop_2, step, getParamValue('dtype', node, tensorMap, context))];
-        }
-        case 'TruncatedNormal': {
-            var shape = getParamValue('shape', node, tensorMap, context);
-            var mean = getParamValue('mean', node, tensorMap, context);
-            var stdDev = getParamValue('stdDev', node, tensorMap, context);
-            var seed = getParamValue('seed', node, tensorMap, context);
-            return [tfc.truncatedNormal(shape, mean, stdDev, getParamValue('dtype', node, tensorMap, context), seed)];
-        }
-        case 'Zeros': {
-            return [tfc.zeros(getParamValue('shape', node, tensorMap, context), getParamValue('dtype', node, tensorMap, context))];
-        }
-        case 'ZerosLike': {
-            return [tfc.zerosLike(getParamValue('x', node, tensorMap, context))];
-        }
-        default:
-            throw TypeError("Node type " + node.op + " is not implemented");
-    }
-};
-
-/**
- * @license
- * Copyright 2018 Google Inc. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var _this$1 = undefined;
-var executeOp$5 = function (node, tensorMap, context) { return __awaiter(_this$1, void 0, void 0, function () {
-    var _a, boxes, scores, maxOutputSize, iouThreshold, scoreThreshold, softNmsSigma, result, condition, result;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
-            case 0:
-                _a = node.op;
-                switch (_a) {
-                    case 'NonMaxSuppressionV5': return [3 /*break*/, 1];
-                    case 'NonMaxSuppressionV3': return [3 /*break*/, 1];
-                    case 'NonMaxSuppressionV2': return [3 /*break*/, 1];
-                    case 'Where': return [3 /*break*/, 5];
-                    case 'ListDiff': return [3 /*break*/, 7];
-                }
-                return [3 /*break*/, 8];
-            case 1:
-                boxes = getParamValue('boxes', node, tensorMap, context);
-                scores = getParamValue('scores', node, tensorMap, context);
-                maxOutputSize = getParamValue('maxOutputSize', node, tensorMap, context);
-                iouThreshold = getParamValue('iouThreshold', node, tensorMap, context);
-                scoreThreshold = getParamValue('scoreThreshold', node, tensorMap, context);
-                if (!(node.op === 'NonMaxSuppressionV5')) return [3 /*break*/, 3];
-                softNmsSigma = getParamValue('softNmsSigma', node, tensorMap, context);
-                return [4 /*yield*/, tfc.image.nonMaxSuppressionWithScoreAsync(boxes, scores, maxOutputSize, iouThreshold, scoreThreshold, softNmsSigma)];
-            case 2:
-                result = _b.sent();
-                return [2 /*return*/, [result.selectedIndices, result.selectedScores]];
-            case 3: return [4 /*yield*/, tfc.image.nonMaxSuppressionAsync(boxes, scores, maxOutputSize, iouThreshold, scoreThreshold)];
-            case 4: return [2 /*return*/, [_b.sent()]];
-            case 5:
-                condition = getParamValue('condition', node, tensorMap, context)
-                    .asType('bool');
-                return [4 /*yield*/, tfc.whereAsync(condition)];
-            case 6:
-                result = [_b.sent()];
-                condition.dispose();
-                return [2 /*return*/, result];
-            case 7:
-                {
-                    return [2 /*return*/, tfc.setdiff1dAsync(getParamValue('x', node, tensorMap, context), getParamValue('y', node, tensorMap, context))];
-                }
-            case 8: throw TypeError("Node type " + node.op + " is not implemented");
-        }
-    });
-}); };
-
-/**
- * @license
- * Copyright 2018 Google Inc. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var executeOp$6 = function (node, tensorMap, context) {
-    switch (node.op) {
-        case 'TopKV2': {
-            var x = getParamValue('x', node, tensorMap, context);
-            var k = getParamValue('k', node, tensorMap, context);
-            var sorted = getParamValue('sorted', node, tensorMap, context);
-            var result = tfc.topk(x, k, sorted);
-            return [result.values, result.indices];
-        }
-        default:
-            throw TypeError("Node type " + node.op + " is not implemented");
-    }
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var executeOp$7 = function (node, tensorMap, context) {
-    switch (node.op) {
-        case 'Const': {
-            return tensorMap[node.name];
-        }
-        case 'PlaceholderWithDefault':
-            var def = getParamValue('default', node, tensorMap, context);
-            return [getTensor(node.name, tensorMap, context) || def];
-        case 'Placeholder':
-            return [getTensor(node.name, tensorMap, context)];
-        case 'Identity':
-        case 'StopGradient':
-        case 'FakeQuantWithMinMaxVars': // This op is currently ignored.
-            return [
-                getParamValue('x', node, tensorMap, context).clone()
-            ];
-        case 'IdentityN':
-            return getParamValue('x', node, tensorMap, context)
-                .map(function (t) { return t.clone(); });
-        case 'Snapshot':
-            var snapshot = getParamValue('x', node, tensorMap, context);
-            return [snapshot.clone()];
-        case 'Shape':
-            return [tfc.tensor1d(getParamValue('x', node, tensorMap, context).shape, 'int32')];
-        case 'ShapeN':
-            return getParamValue('x', node, tensorMap, context)
-                .map(function (t) { return tfc.tensor1d(t.shape); });
-        case 'Size':
-            return [tfc.scalar(getParamValue('x', node, tensorMap, context).size, 'int32')];
-        case 'Rank':
-            return [tfc.scalar(getParamValue('x', node, tensorMap, context).rank, 'int32')];
-        case 'NoOp':
-            return [tfc.scalar(1)];
-        case 'Print':
-            var input = getParamValue('x', node, tensorMap, context);
-            var data = getParamValue('data', node, tensorMap, context);
-            var message = getParamValue('message', node, tensorMap, context);
-            var summarize = getParamValue('summarize', node, tensorMap, context);
-            console.warn('The graph has a tf.print() operation,' +
-                'usually used for debugging, which slows down performance.');
-            console.log(message);
-            for (var i = 0; i < data.length; i++) {
-                console.log(Array.prototype.slice.call(data[i].dataSync()).slice(0, summarize));
-            }
-            return [input];
-        default:
-            throw TypeError("Node type " + node.op + " is not implemented");
-    }
-};
-
-/**
- * @license
- * Copyright 2018 Google Inc. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var executeOp$8 = function (node, tensorMap, context) {
-    switch (node.op) {
-        case 'ResizeBilinear': {
-            var images = getParamValue('images', node, tensorMap, context);
-            var size = getParamValue('size', node, tensorMap, context);
-            var alignCorners = getParamValue('alignCorners', node, tensorMap, context);
-            return [tfc.image.resizeBilinear(images, [size[0], size[1]], alignCorners)];
-        }
-        case 'ResizeNearestNeighbor': {
-            var images = getParamValue('images', node, tensorMap, context);
-            var size = getParamValue('size', node, tensorMap, context);
-            var alignCorners = getParamValue('alignCorners', node, tensorMap, context);
-            return [tfc.image.resizeNearestNeighbor(images, [size[0], size[1]], alignCorners)];
-        }
-        case 'CropAndResize': {
-            var image = getParamValue('image', node, tensorMap, context);
-            var boxes = getParamValue('boxes', node, tensorMap, context);
-            var boxInd = getParamValue('boxInd', node, tensorMap, context);
-            var cropSize = getParamValue('cropSize', node, tensorMap, context);
-            var method = getParamValue('method', node, tensorMap, context);
-            var extrapolationValue = getParamValue('extrapolationValue', node, tensorMap, context);
-            return [tfc.image.cropAndResize(image, boxes, boxInd, cropSize, method, extrapolationValue)];
-        }
-        default:
-            throw TypeError("Node type " + node.op + " is not implemented");
-    }
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var executeOp$9 = function (node, tensorMap, context) {
-    switch (node.op) {
-        case 'Equal': {
-            return [tfc.equal(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'NotEqual': {
-            return [tfc.notEqual(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'Greater': {
-            return [tfc.greater(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'GreaterEqual': {
-            return [tfc.greaterEqual(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'Less': {
-            return [tfc.less(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'LessEqual': {
-            return [tfc.lessEqual(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'LogicalAnd': {
-            return [tfc.logicalAnd(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'LogicalNot': {
-            return [tfc.logicalNot(getParamValue('a', node, tensorMap, context))];
-        }
-        case 'LogicalOr': {
-            return [tfc.logicalOr(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        case 'Select':
-        case 'SelectV2': {
-            return [tfc.where(getParamValue('condition', node, tensorMap, context), getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context))];
-        }
-        default:
-            throw TypeError("Node type " + node.op + " is not implemented");
-    }
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var executeOp$a = function (node, tensorMap, context) {
-    switch (node.op) {
-        case 'BatchMatMul':
-        case 'BatchMatMulV2':
-        case 'MatMul':
-            return [tfc.matMul(getParamValue('a', node, tensorMap, context), getParamValue('b', node, tensorMap, context), getParamValue('transposeA', node, tensorMap, context), getParamValue('transposeB', node, tensorMap, context))];
-        case 'Transpose':
-            return [tfc.transpose(getParamValue('x', node, tensorMap, context), getParamValue('perm', node, tensorMap, context))];
-        case '_FusedMatMul':
-            var _a = getParamValue('fusedOps', node, tensorMap, context), extraOp = _a[0], activationFunc = _a[1];
-            var isBiasAdd = extraOp === 'biasadd';
-            var isPrelu = activationFunc === 'prelu';
-            var numArgs = getParamValue('numArgs', node, tensorMap, context);
-            if (isBiasAdd) {
-                if (isPrelu && numArgs !== 2) {
-                    throw new Error('Fused MatMul with BiasAdd and Prelu must have two ' +
-                        'extra arguments: bias and alpha.');
-                }
-                if (!isPrelu && numArgs !== 1) {
-                    throw new Error('Fused MatMul with BiasAdd must have one extra argument: bias.');
-                }
-            }
-            var _b = getParamValue('args', node, tensorMap, context), biasArg = _b[0], preluArg = _b[1];
-            return [tfc.fused.matMul({
-                    a: getParamValue('a', node, tensorMap, context),
-                    b: getParamValue('b', node, tensorMap, context),
-                    transposeA: getParamValue('transposeA', node, tensorMap, context),
-                    transposeB: getParamValue('transposeB', node, tensorMap, context),
-                    bias: biasArg,
-                    activation: activationFunc,
-                    preluActivationWeights: preluArg
-                })];
-        default:
-            throw TypeError("Node type " + node.op + " is not implemented");
-    }
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var executeOp$b = function (node, tensorMap, context) {
-    switch (node.op) {
-        case 'FusedBatchNorm':
-        case 'FusedBatchNormV2': {
-            return [tfc.batchNorm(getParamValue('x', node, tensorMap, context), getParamValue('mean', node, tensorMap, context), getParamValue('variance', node, tensorMap, context), getParamValue('offset', node, tensorMap, context), getParamValue('scale', node, tensorMap, context), getParamValue('epsilon', node, tensorMap, context))];
-        }
-        case 'FusedBatchNormV3': {
-            return [tfc.batchNorm(getParamValue('x', node, tensorMap, context), getParamValue('mean', node, tensorMap, context), getParamValue('variance', node, tensorMap, context), getParamValue('offset', node, tensorMap, context), getParamValue('scale', node, tensorMap, context), getParamValue('epsilon', node, tensorMap, context))];
-        }
-        case 'LRN': {
-            return [tfc.localResponseNormalization(getParamValue('x', node, tensorMap, context), getParamValue('radius', node, tensorMap, context), getParamValue('bias', node, tensorMap, context), getParamValue('alpha', node, tensorMap, context), getParamValue('beta', node, tensorMap, context))];
-        }
-        case 'Softmax': {
-            return [tfc.softmax(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'LogSoftmax': {
-            return [tfc.logSoftmax(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'SparseToDense': {
-            return [tfc.sparseToDense(getParamValue('sparseIndices', node, tensorMap, context), getParamValue('outputShape', node, tensorMap, context), getParamValue('sparseValues', node, tensorMap, context), getParamValue('defaultValue', node, tensorMap, context))];
-        }
-        default:
-            throw TypeError("Node type " + node.op + " is not implemented");
-    }
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var executeOp$c = function (node, tensorMap, context) {
-    switch (node.op) {
-        case 'Max': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            var keepDims = getParamValue('keepDims', node, tensorMap, context);
-            return [tfc.max(getParamValue('x', node, tensorMap, context), axis, keepDims)];
-        }
-        case 'Mean': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            var keepDims = getParamValue('keepDims', node, tensorMap, context);
-            return [tfc.mean(getParamValue('x', node, tensorMap, context), axis, keepDims)];
-        }
-        case 'Min': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            var keepDims = getParamValue('keepDims', node, tensorMap, context);
-            return [tfc.min(getParamValue('x', node, tensorMap, context), axis, keepDims)];
-        }
-        case 'Sum': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            var keepDims = getParamValue('keepDims', node, tensorMap, context);
-            return [tfc.sum(getParamValue('x', node, tensorMap, context), axis, keepDims)];
-        }
-        case 'All': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            var keepDims = getParamValue('keepDims', node, tensorMap, context);
-            return [tfc.all(getParamValue('x', node, tensorMap, context), axis, keepDims)];
-        }
-        case 'Any': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            var keepDims = getParamValue('keepDims', node, tensorMap, context);
-            return [tfc.any(getParamValue('x', node, tensorMap, context), axis, keepDims)];
-        }
-        case 'ArgMax': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            return [tfc.argMax(getParamValue('x', node, tensorMap, context), axis)];
-        }
-        case 'ArgMin': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            return [tfc.argMin(getParamValue('x', node, tensorMap, context), axis)];
-        }
-        case 'Prod': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            var keepDims = getParamValue('keepDims', node, tensorMap, context);
-            return [tfc.prod(getParamValue('x', node, tensorMap, context), axis, keepDims)];
-        }
-        case 'Cumsum': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            var exclusive = getParamValue('exclusive', node, tensorMap, context);
-            var reverse = getParamValue('reverse', node, tensorMap, context);
-            return [tfc.cumsum(getParamValue('x', node, tensorMap, context), axis, exclusive, reverse)];
-        }
-        default:
-            throw TypeError("Node type " + node.op + " is not implemented");
-    }
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var executeOp$d = function (node, tensorMap, context) {
-    switch (node.op) {
-        case 'ConcatV2':
-        case 'Concat': {
-            var n = getParamValue('n', node, tensorMap, context);
-            var axis = getParamValue('axis', node, tensorMap, context);
-            var inputs = getParamValue('tensors', node, tensorMap, context);
-            inputs = inputs.slice(0, n);
-            return [tfc.concat(inputs, axis)];
-        }
-        case 'GatherV2':
-        case 'Gather': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            var input = getParamValue('x', node, tensorMap, context);
-            var indices = getParamValue('indices', node, tensorMap, context);
-            return [tfc.gather(input, indices.asType('int32'), axis)];
-        }
-        case 'ReverseV2':
-        case 'Reverse': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            var input = getParamValue('x', node, tensorMap, context);
-            return [tfc.reverse(input, axis)];
-        }
-        case 'Slice': {
-            // tslint:disable-next-line:no-any
-            var begin = getParamValue('begin', node, tensorMap, context);
-            // tslint:disable-next-line:no-any
-            var size = getParamValue('size', node, tensorMap, context);
-            return [tfc.slice(getParamValue('x', node, tensorMap, context), begin, size)];
-        }
-        case 'StridedSlice': {
-            var begin = getParamValue('begin', node, tensorMap, context);
-            var end = getParamValue('end', node, tensorMap, context);
-            var strides = getParamValue('strides', node, tensorMap, context);
-            var beginMask = getParamValue('beginMask', node, tensorMap, context);
-            var endMask = getParamValue('endMask', node, tensorMap, context);
-            var ellipsisMask = getParamValue('ellipsisMask', node, tensorMap, context);
-            var newAxisMask = getParamValue('newAxisMask', node, tensorMap, context);
-            var shrinkAxisMask = getParamValue('shrinkAxisMask', node, tensorMap, context);
-            var tensor = getParamValue('x', node, tensorMap, context);
-            if (begin.length === 1 && tensor.shape.length > 1) {
-                for (var i = 1; i < tensor.shape.length; i++) {
-                    begin.push(0);
-                    end.push(tensor.shape[i]);
-                    strides.push(strides[0]);
-                }
-            }
-            return [tfc.stridedSlice(tensor, begin, end, strides, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask)];
-        }
-        case 'Pack': {
-            return tfc.tidy(function () {
-                var axis = getParamValue('axis', node, tensorMap, context);
-                var tensors = getParamValue('tensors', node, tensorMap, context);
-                // Reshape the tensors to the first tensor's shape if they don't match.
-                var shape = tensors[0].shape;
-                var squeezedShape = tensors[0].squeeze().shape;
-                var mapped = tensors.map(function (tensor) {
-                    var sameShape = tfc.util.arraysEqual(tensor.shape, shape);
-                    if (!sameShape &&
-                        !tfc.util.arraysEqual(tensor.squeeze().shape, squeezedShape)) {
-                        throw new Error('the input tensors shape does not match');
-                    }
-                    return sameShape ? tensor : tensor.reshape(shape);
-                });
-                return [tfc.stack(mapped, axis)];
-            });
-        }
-        case 'Unpack': {
-            return tfc.tidy(function () {
-                var axis = getParamValue('axis', node, tensorMap, context);
-                var tensor = getParamValue('tensor', node, tensorMap, context);
-                return tfc.unstack(tensor, axis);
-            });
-        }
-        case 'Tile': {
-            var reps = getParamValue('reps', node, tensorMap, context);
-            return [tfc.tile(getParamValue('x', node, tensorMap, context), reps)];
-        }
-        case 'Split':
-        case 'SplitV': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            var numOrSizeSplits = getParamValue('numOrSizeSplits', node, tensorMap, context);
-            return tfc.split(getParamValue('x', node, tensorMap, context), numOrSizeSplits, axis);
-        }
-        case 'ScatterNd': {
-            var indices = getParamValue('indices', node, tensorMap, context);
-            var values = getParamValue('values', node, tensorMap, context);
-            var shape = getParamValue('shape', node, tensorMap, context);
-            return [tfc.scatterND(indices, values, shape)];
-        }
-        case 'GatherNd': {
-            var x = getParamValue('x', node, tensorMap, context);
-            var indices = getParamValue('indices', node, tensorMap, context);
-            return [tfc.gatherND(x, indices)];
-        }
-        case 'SparseToDense': {
-            var indices = getParamValue('sparseIndices', node, tensorMap, context);
-            var shape = getParamValue('outputShape', node, tensorMap, context);
-            var sparseValues = getParamValue('sparseValues', node, tensorMap, context);
-            var defaultValue = getParamValue('defaultValue', node, tensorMap, context);
-            return [tfc.sparseToDense(indices, sparseValues, shape, sparseValues.dtype === defaultValue.dtype ?
-                    defaultValue :
-                    defaultValue.asType(sparseValues.dtype))];
-        }
-        default:
-            throw TypeError("Node type " + node.op + " is not implemented");
-    }
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var executeOp$e = function (node, tensorMap, context) {
-    switch (node.op) {
-        case 'FFT': {
-            return [tfc.fft(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'IFFT': {
-            return [tfc.ifft(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'RFFT': {
-            return [tfc.rfft(getParamValue('x', node, tensorMap, context))];
-        }
-        case 'IRFFT': {
-            return [tfc.irfft(getParamValue('x', node, tensorMap, context))];
-        }
-        default:
-            throw TypeError("Node type " + node.op + " is not implemented");
-    }
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var executeOp$f = function (node, tensorMap, context) {
-    switch (node.op) {
-        case 'Cast': {
-            return [tfc.cast(getParamValue('x', node, tensorMap, context), getParamValue('dtype', node, tensorMap, context))];
-        }
-        case 'ExpandDims': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            return [tfc.expandDims(getParamValue('x', node, tensorMap, context), axis)];
-        }
-        case 'Squeeze': {
-            var axis = getParamValue('axis', node, tensorMap, context);
-            return [tfc.squeeze(getParamValue('x', node, tensorMap, context), axis)];
-        }
-        case 'Reshape': {
-            return [tfc.reshape(getParamValue('x', node, tensorMap, context), getParamValue('shape', node, tensorMap, context))];
-        }
-        case 'PadV2':
-        case 'Pad': {
-            return [tfc.pad(getParamValue('x', node, tensorMap, context), split(getParamValue('padding', node, tensorMap, context), 2), getParamValue('constantValue', node, tensorMap, context))];
-        }
-        case 'SpaceToBatchND': {
-            var blockShape = getParamValue('blockShape', node, tensorMap, context);
-            var paddings = split(getParamValue('paddings', node, tensorMap, context), 2);
-            return [tfc.spaceToBatchND(getParamValue('x', node, tensorMap, context), blockShape, paddings)];
-        }
-        case 'BatchToSpaceND': {
-            var blockShape = getParamValue('blockShape', node, tensorMap, context);
-            var crops = split(getParamValue('crops', node, tensorMap, context), 2);
-            return [tfc.batchToSpaceND(getParamValue('x', node, tensorMap, context), blockShape, crops)];
-        }
-        case 'DepthToSpace': {
-            var blockSize = getParamValue('blockSize', node, tensorMap, context);
-            var dataFormat = getParamValue('dataFormat', node, tensorMap, context).toUpperCase();
-            return [tfc.depthToSpace(getParamValue('x', node, tensorMap, context), blockSize, dataFormat)];
-        }
-        case 'BroadcastTo': {
-            return [tfc.broadcastTo(getParamValue('x', node, tensorMap, context), getParamValue('shape', node, tensorMap, context))];
-        }
-        default:
-            throw TypeError("Node type " + node.op + " is not implemented");
-    }
-};
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-/**
- * Executes the op defined by the node object.
- * @param node
- * @param tensorMap contains tensors for executed nodes and weights
- */
-function executeOp$g(node, tensorMap, context) {
-    var value = (function (node, tensorMap, context) {
-        switch (node.category) {
-            case 'arithmetic':
-                return tfc.tidy(function () { return executeOp(node, tensorMap, context); });
-            case 'basic_math':
-                return tfc.tidy(function () { return executeOp$1(node, tensorMap, context); });
-            case 'control':
-                return executeOp$2(node, tensorMap, context);
-            case 'convolution':
-                return tfc.tidy(function () { return executeOp$3(node, tensorMap, context); });
-            case 'creation':
-                return tfc.tidy(function () { return executeOp$4(node, tensorMap, context); });
-            case 'dynamic':
-                return executeOp$5(node, tensorMap, context);
-            case 'evaluation':
-                return tfc.tidy(function () { return executeOp$6(node, tensorMap, context); });
-            case 'image':
-                return tfc.tidy(function () { return executeOp$8(node, tensorMap, context); });
-            case 'graph':
-                return tfc.tidy(function () { return executeOp$7(node, tensorMap, context); });
-            case 'logical':
-                return tfc.tidy(function () { return executeOp$9(node, tensorMap, context); });
-            case 'matrices':
-                return tfc.tidy(function () { return executeOp$a(node, tensorMap, context); });
-            case 'normalization':
-                return tfc.tidy(function () { return executeOp$b(node, tensorMap, context); });
-            case 'reduction':
-                return tfc.tidy(function () { return executeOp$c(node, tensorMap, context); });
-            case 'slice_join':
-                return tfc.tidy(function () { return executeOp$d(node, tensorMap, context); });
-            case 'spectral':
-                return tfc.tidy(function () { return executeOp$e(node, tensorMap, context); });
-            case 'transformation':
-                return tfc.tidy(function () { return executeOp$f(node, tensorMap, context); });
-            case 'custom':
-                var opMapper = getRegisteredOp(node.op);
-                if (opMapper && opMapper.customExecutor) {
-                    return opMapper.customExecutor(new NodeValueImpl(node, tensorMap, context));
-                }
-                else {
-                    throw TypeError("Custom op " + node.op + " is not registered.");
-                }
-            default:
-                throw TypeError("Unknown op '" + node.op + "'. File an issue at " +
-                    "https://github.com/tensorflow/tfjs/issues so we can add it" +
-                    ", or register a custom execution with tf.registerOp()");
-        }
-    })(node, tensorMap, context);
-    if (value instanceof Promise) {
-        return value.then(function (data) { return [].concat(data); });
-    }
-    return [].concat(value);
-}
-
-/**
- * ExecutionContext captures the runtime environment of the node. It keeps
- * track of the current frame and iteration for the control flow ops.
- *
- * For example, typical Dynamic RNN model may contain loops, for which
- * TensorFlow will generate graphs with Enter/Exit nodes to control the
- * current execution frame, and NextIteration Nodes for iteration id increment.
- * For model with branch logic, TensorFLow will generate Switch/Merge ops.
- */
-var ExecutionContext = /** @class */ (function () {
-    function ExecutionContext(weightMap, tensorArrayMap, functionMap) {
-        if (functionMap === void 0) { functionMap = {}; }
-        this.weightMap = weightMap;
-        this.tensorArrayMap = tensorArrayMap;
-        this.functionMap = functionMap;
-        this.rootContext = { id: 0, frameName: '', iterationId: 0 };
-        this.contexts = [this.rootContext];
-        this.lastId = 0;
-        this.generateCurrentContextIds();
-    }
-    ExecutionContext.prototype.newFrame = function (id, frameName) {
-        return { id: id, frameName: frameName, iterationId: 0 };
-    };
-    Object.defineProperty(ExecutionContext.prototype, "currentContext", {
-        get: function () {
-            return this.contexts;
-        },
-        /**
-         * Set the current context
-         * @param contexts: ExecutionContextInfo[] the current path of execution
-         * frames
-         */
-        set: function (contexts) {
-            if (this.contexts !== contexts) {
-                this.contexts = contexts;
-                this.generateCurrentContextIds();
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ExecutionContext.prototype, "currentContextId", {
-        /**
-         * Returns the current context in string format.
-         */
-        get: function () {
-            return this._currentContextIds[0];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ExecutionContext.prototype, "currentContextIds", {
-        /**
-         * Returns the current context and all parent contexts in string format.
-         * This allow access to the nodes in the current and parent frames.
-         */
-        get: function () {
-            return this._currentContextIds;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ExecutionContext.prototype.generateCurrentContextIds = function () {
-        var names = [];
-        for (var i = 0; i < this.contexts.length - 1; i++) {
-            var contexts = this.contexts.slice(0, this.contexts.length - i);
-            names.push(this.contextIdforContexts(contexts));
-        }
-        names.push('');
-        this._currentContextIds = names;
-    };
-    ExecutionContext.prototype.contextIdforContexts = function (contexts) {
-        return contexts ?
-            contexts
-                .map(function (context) { return (context.id === 0 && context.iterationId === 0) ?
-                '' :
-                context.frameName + "-" + context.iterationId; })
-                .join('/') :
-            '';
-    };
-    /**
-     * Enter a new frame, a new context is pushed on the current context list.
-     * @param frameId new frame id
-     */
-    ExecutionContext.prototype.enterFrame = function (frameId) {
-        if (this.contexts) {
-            this.lastId++;
-            this.contexts = this.contexts.slice();
-            this.contexts.push(this.newFrame(this.lastId, frameId));
-            this._currentContextIds.unshift(this.contextIdforContexts(this.contexts));
-        }
-    };
-    /**
-     * Exit the current frame, the last context is removed from the current
-     * context list.
-     */
-    ExecutionContext.prototype.exitFrame = function () {
-        if (this.contexts && this.contexts.length > 1) {
-            this.contexts = this.contexts.slice();
-            this.contexts.splice(-1);
-            this.currentContextIds.shift();
-        }
-        else {
-            throw new Error('Cannot exit frame, the context is empty');
-        }
-    };
-    /**
-     * Enter the next iteration of a loop, the iteration id of last context is
-     * increased.
-     */
-    ExecutionContext.prototype.nextIteration = function () {
-        if (this.contexts && this.contexts.length > 0) {
-            this.contexts = this.contexts.slice();
-            this.lastId++;
-            var context = Object.assign({}, this.contexts[this.contexts.length - 1]);
-            context.iterationId += 1;
-            context.id = this.lastId;
-            this.contexts.splice(-1, 1, context);
-            this._currentContextIds.splice(0, 1, this.contextIdforContexts(this.contexts));
-        }
-        else {
-            throw new Error('Cannot increase frame iteration, the context is empty');
-        }
-    };
-    ExecutionContext.prototype.getWeight = function (name) {
-        return this.weightMap[name];
-    };
-    ExecutionContext.prototype.addTensorArray = function (tensorArray) {
-        this.tensorArrayMap[tensorArray.id] = tensorArray;
-    };
-    ExecutionContext.prototype.getTensorArray = function (id) {
-        return this.tensorArrayMap[id];
-    };
-    return ExecutionContext;
-}());
-
-/**
- * @license
- * Copyright 2019 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-/**
- * Given graph inputs and desired outputs, find the minimal set of nodes
- * to execute in order to compute the outputs. In addition return other useful
- * info such:
- * - Missing inputs needed to compute the output.
- * - Whether the subgraph contains dynamic ops (control flow, dynamic shape).
- * - Alternative inputs in order to avoid async (dynamic op) execution.
- */
-function getExecutionSubgraph(inputs, outputs, weightMap) {
-    var usedNodes = new Set();
-    var missingInputs = [];
-    var dynamicNode = null;
-    var syncInputs = null;
-    // Start with the outputs, going backwards and find all the nodes that are
-    // needed to compute those outputs.
-    var seen = new Set();
-    var inputNodeNames = Object.keys(inputs).map(function (name) { return parseNodeName(name)[0]; });
-    var frontier = outputs.slice();
-    while (frontier.length > 0) {
-        var node = frontier.pop();
-        if (isControlFlow(node) || isDynamicShape(node)) {
-            if (dynamicNode == null) {
-                dynamicNode = node;
-                syncInputs = dynamicNode.children.map(function (child) { return child.name; })
-                    .filter(function (name) { return usedNodes.has(name); });
-            }
-        }
-        usedNodes.add(node.name);
-        // Weights are dead end since we already have their values.
-        if (weightMap[node.name] != null) {
-            continue;
-        }
-        // This node is a dead end since it's one of the user-provided inputs.
-        if (inputNodeNames.indexOf(node.name) !== -1) {
-            continue;
-        }
-        if (node.inputs.length === 0) {
-            missingInputs.push(node.name);
-            continue;
-        }
-        node.inputs.forEach(function (input) {
-            // Don't add to the frontier if it is already there.
-            if (seen.has(input.name)) {
-                return;
-            }
-            seen.add(input.name);
-            frontier.push(input);
-        });
-    }
-    return { inputs: inputs, outputs: outputs, usedNodes: usedNodes, missingInputs: missingInputs, dynamicNode: dynamicNode, syncInputs: syncInputs };
-}
-/**
- * Given the execution info, return a list of nodes in topological order that
- * need to be executed to compute the output.
- */
-function getNodesInTopologicalOrder(graph, weightMap, executionInfo) {
-    var usedNodes = executionInfo.usedNodes, inputs = executionInfo.inputs;
-    var frontier = [];
-    var inputNodes = Object.keys(inputs)
-        .map(function (name) { return parseNodeName(name)[0]; })
-        .map(function (name) { return graph.nodes[name]; });
-    inputNodes.forEach(function (input) {
-        if (usedNodes.has(input.name)) {
-            frontier.push(input);
-        }
-    });
-    graph.weights.forEach(function (weight) {
-        if (usedNodes.has(weight.name)) {
-            frontier.push(weight);
-        }
-    });
-    var seen = new Set();
-    var orderedNodes = [];
-    while (frontier.length > 0) {
-        var node = frontier.pop();
-        seen.add(node.name);
-        if (!weightMap[node.name]) {
-            orderedNodes.push(node);
-        }
-        node.children.forEach(function (child) {
-            if (!seen.has(child.name) && usedNodes.has(child.name) &&
-                child.inputs.every(function (input) { return seen.has(input.name); })) {
-                frontier.push(child);
-            }
-        });
-    }
-    return orderedNodes;
-}
-var CONTROL_FLOW_OPS = [
-    'Switch', 'Merge', 'Enter', 'Exit', 'NextIteration', 'StatelessIf',
-    'StatelessWhile'
-];
-var DYNAMIC_SHAPE_OPS = [
-    'NonMaxSuppressionV2', 'NonMaxSuppressionV3', 'NonMaxSuppressionV5', 'Where'
-];
-function isControlFlow(node) {
-    return CONTROL_FLOW_OPS.indexOf(node.op) >= 0;
-}
-function isDynamicShape(node) {
-    return DYNAMIC_SHAPE_OPS.indexOf(node.op) >= 0;
-}
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var GraphExecutor = /** @class */ (function () {
-    /**
-     *
-     * @param graph Graph the model or function graph to be executed.
-     * @param parent When building function exector you need to set the parent
-     * executor. Since the weights and function executor maps are set at parant
-     * level, that function executor can access the function maps and weight maps
-     * through the parent.
-     */
-    function GraphExecutor(graph, parent) {
-        var _this = this;
-        this.graph = graph;
-        this.parent = parent;
-        this.compiledMap = new Map();
-        this._weightMap = {};
-        this.SEPERATOR = ',';
-        this._functions = {};
-        this._functionExecutorMap = {};
-        this._outputs = graph.outputs;
-        this._inputs = graph.inputs;
-        this._signature = graph.signature;
-        this._functions = graph.functions;
-        // create sub-graph executors
-        if (graph.functions != null) {
-            Object.keys(graph.functions).forEach(function (name) {
-                _this._functionExecutorMap[name] =
-                    new GraphExecutor(graph.functions[name], _this);
-            });
-        }
-    }
-    Object.defineProperty(GraphExecutor.prototype, "weightIds", {
-        get: function () {
-            return this.parent ? this.parent.weightIds : this._weightIds;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphExecutor.prototype, "functionExecutorMap", {
-        get: function () {
-            return this.parent ? this.parent.functionExecutorMap :
-                this._functionExecutorMap;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphExecutor.prototype, "weightMap", {
-        get: function () {
-            return this.parent ? this.parent.weightMap : this._weightMap;
-        },
-        set: function (weightMap) {
-            var weightIds = Object.keys(weightMap).map(function (key) { return weightMap[key].map(function (tensor) { return tensor.id; }); });
-            this._weightIds = [].concat.apply([], weightIds);
-            this._weightMap = weightMap;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphExecutor.prototype, "inputs", {
-        get: function () {
-            return this._inputs.map(function (node) {
-                return {
-                    name: node.name,
-                    shape: node.attrParams['shape'] ?
-                        node.attrParams['shape'].value :
-                        undefined,
-                    dtype: node.attrParams['dtype'] ?
-                        node.attrParams['dtype'].value :
-                        undefined
-                };
-            });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphExecutor.prototype, "outputs", {
-        get: function () {
-            return this._outputs.map(function (node) {
-                return {
-                    name: node.name,
-                    shape: node.attrParams['shape'] ?
-                        node.attrParams['shape'].value :
-                        undefined,
-                    dtype: node.attrParams['dtype'] ?
-                        node.attrParams['dtype'].value :
-                        undefined
-                };
-            });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphExecutor.prototype, "inputNodes", {
-        get: function () {
-            return this._inputs.map(function (node) { return node.signatureKey || node.name; });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphExecutor.prototype, "outputNodes", {
-        get: function () {
-            return this._outputs.map(function (node) {
-                var name = node.signatureKey || node.name;
-                return node.defaultOutput ? (name + ":" + node.defaultOutput) : name;
-            });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphExecutor.prototype, "functions", {
-        get: function () {
-            var _this = this;
-            return Object.keys(this._functions).reduce(function (map, key) {
-                map[key] = _this._functions[key].signature;
-                return map;
-            }, {});
-        },
-        enumerable: true,
-        configurable: true
-    });
-    GraphExecutor.prototype.getCompilationKey = function (inputs, outputs) {
-        var sortedInputs = inputs.map(function (node) { return node.name; }).sort();
-        var sortedOutputs = outputs.map(function (node) { return node.name; }).sort();
-        return sortedInputs.join(this.SEPERATOR) + '--' +
-            sortedOutputs.join(this.SEPERATOR);
-    };
-    /**
-     * Compiles the inference graph and returns the minimal set of nodes that are
-     * required for execution, in the correct execution order.
-     */
-    GraphExecutor.prototype.compile = function (inputs, outputs) {
-        var executionInfo = getExecutionSubgraph(inputs, outputs, this.weightMap);
-        var missingInputs = executionInfo.missingInputs, dynamicNode = executionInfo.dynamicNode, syncInputs = executionInfo.syncInputs;
-        if (dynamicNode != null) {
-            throw new Error("This execution contains the node '" + dynamicNode.name + "', which has " +
-                ("the dynamic op '" + dynamicNode.op + "'. Please use ") +
-                "model.executeAsync() instead. Alternatively, to avoid the " +
-                ("dynamic ops, specify the inputs [" + syncInputs + "]"));
-        }
-        if (missingInputs.length > 0) {
-            var outNames = outputs.map(function (n) { return n.name; });
-            var inNames = Object.keys(inputs);
-            throw new Error("Cannot compute the outputs [" + outNames + "] from the provided inputs " +
-                ("[" + inNames + "]. Missing the following inputs: [" + missingInputs + "]"));
-        }
-        return getNodesInTopologicalOrder(this.graph, this.weightMap, executionInfo);
-    };
-    /**
-     * Executes the inference for given input tensors.
-     * @param inputs Tensor map for the model inputs, keyed by the input node
-     * names.
-     * @param outputs output node name from the Tensorflow model, if no outputs
-     * are specified, the default outputs of the model would be used. You can
-     * inspect intermediate nodes of the model by adding them to the outputs
-     * array.
-     */
-    GraphExecutor.prototype.execute = function (inputs, outputs) {
-        var _this = this;
-        inputs = this.mapInputs(inputs);
-        var names = Object.keys(inputs).sort();
-        this.checkInputs(inputs);
-        this.checkInputShapeAndType(inputs);
-        outputs = this.mapOutputs(outputs);
-        this.checkOutputs(outputs);
-        var inputNodes = names.map(function (name) { return _this.graph.nodes[parseNodeName(name)[0]]; });
-        var outputNodes = outputs.map(function (name) { return _this.graph.nodes[parseNodeName(name)[0]]; });
-        var compilationKey = this.getCompilationKey(inputNodes, outputNodes);
-        // Do nothing if the compiled graph cache contains the input.
-        var orderedNodes = this.compiledMap.get(compilationKey);
-        if (orderedNodes == null) {
-            orderedNodes = this.compile(inputs, outputNodes);
-            this.compiledMap.set(compilationKey, orderedNodes);
-        }
-        var tensorArrayMap = {};
-        return tfc.tidy(function () {
-            var context = new ExecutionContext(_this.weightMap, tensorArrayMap, _this.functionExecutorMap);
-            var tensorsMap = __assign({}, _this.weightMap);
-            Object.keys(inputs).forEach(function (name) {
-                var _a = parseNodeName(name), nodeName = _a[0], index = _a[1];
-                var tensors = [];
-                tensors[index] = inputs[name];
-                tensorsMap[nodeName] = tensors;
-            });
-            var tensorsToKeep = _this.getFrozenTensorIds(tensorsMap);
-            var intermediateTensorConsumerCount = {};
-            for (var i = 0; i < orderedNodes.length; i++) {
-                var node = orderedNodes[i];
-                if (!tensorsMap[node.name]) {
-                    var tensors = executeOp$g(node, tensorsMap, context);
-                    if (tensors instanceof Promise) {
-                        throw new Error("The execution of the op '" + node.op + "' returned a promise. " +
-                            "Please use model.executeAsync() instead.");
-                    }
-                    tensorsMap[node.name] = tensors;
-                    _this.checkTensorForDisposal(node.name, node, tensorsMap, context, tensorsToKeep, outputs, intermediateTensorConsumerCount);
-                }
-            }
-            return outputs.map(function (name) { return getTensor(name, tensorsMap, context); });
-        });
-    };
-    GraphExecutor.prototype.getFrozenTensorIds = function (tensorMap) {
-        var ids = [].concat.apply([], Object.keys(tensorMap)
-            .map(function (key) { return tensorMap[key]; })
-            .map(function (tensors) { return tensors.map(function (tensor) { return tensor.id; }); }));
-        return new Set(ids);
-    };
-    GraphExecutor.prototype.checkTensorForDisposal = function (nodeName, node, tensorMap, context, tensorsToKeep, outputNames, intermediateTensorConsumerCount) {
-        // Skip output nodes and any control flow nodes, since its dependency is
-        // tricky to track correctly.
-        if (node.category === 'control' || outputNames.indexOf(nodeName) !== -1) {
-            return;
-        }
-        tensorMap[nodeName].forEach(function (tensor) {
-            if (tensor != null) {
-                intermediateTensorConsumerCount[tensor.id] =
-                    (intermediateTensorConsumerCount[tensor.id] || 0) +
-                        node.children.length;
-            }
-        });
-        node.inputs.forEach(function (input) {
-            // Skip any control flow nodes, since its dependency is tricky to track
-            // correctly.
-            if (input.category !== 'control') {
-                var tensors = getTensorsForCurrentContenxt(input.name, tensorMap, context);
-                if (tensors != null) {
-                    tensors.forEach(function (tensor) {
-                        if (tensor && !tensorsToKeep.has(tensor.id)) {
-                            var count = intermediateTensorConsumerCount[tensor.id];
-                            if (count === 1) {
-                                tensor.dispose();
-                                delete intermediateTensorConsumerCount[tensor.id];
-                            }
-                            else if (count != null) {
-                                // only intermediate nodes has count set, inputs and weights are
-                                // not.
-                                intermediateTensorConsumerCount[tensor.id]--;
-                            }
-                        }
-                    });
-                }
-            }
-        });
-    };
-    /**
-     * Executes the inference for given input tensors in Async fashion.
-     * @param inputs Tensor map for the model inputs, keyed by the input node
-     * names.
-     * @param outputs output node name from the Tensorflow model, if no outputs
-     * are specified, the default outputs of the model would be used. You can
-     * inspect intermediate nodes of the model by adding them to the outputs
-     * array.
-     * @param disableWarning disable the no dynamic ops warning message, default
-     * to false
-     */
-    GraphExecutor.prototype.executeAsync = function (inputs, outputs, disableWarning) {
-        if (disableWarning === void 0) { disableWarning = false; }
-        return __awaiter(this, void 0, void 0, function () {
-            var tensorArrayMap, context, tensorMap, results, outputIds, inputIds;
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        inputs = this.mapInputs(inputs);
-                        this.checkInputs(inputs);
-                        this.checkInputShapeAndType(inputs);
-                        outputs = this.mapOutputs(outputs);
-                        this.checkOutputs(outputs);
-                        tensorArrayMap = {};
-                        context = new ExecutionContext(this.weightMap, tensorArrayMap, this.functionExecutorMap);
-                        return [4 /*yield*/, this.executeWithControlFlow(inputs, context, outputs, disableWarning)];
-                    case 1:
-                        tensorMap = _a.sent();
-                        results = outputs.map(function (name) { return getTensor(name, tensorMap, context); });
-                        outputIds = new Set(results.map(function (t) { return t.id; }));
-                        inputIds = new Set(Object.keys(inputs).map(function (name) { return inputs[name].id; }));
-                        Object.keys(tensorMap).forEach(function (key) {
-                            var tensorArray = tensorMap[key];
-                            tensorArray.forEach(function (tensor) {
-                                if (tensor && !tensor.isDisposed && !outputIds.has(tensor.id) &&
-                                    !inputIds.has(tensor.id) &&
-                                    _this.weightIds.indexOf(tensor.id) === -1) {
-                                    tensor.dispose();
-                                }
-                            });
-                        });
-                        return [2 /*return*/, results];
-                }
-            });
-        });
-    };
-    GraphExecutor.prototype.executeFunctionAsync = function (inputs) {
-        return __awaiter(this, void 0, void 0, function () {
-            var mappedInputs;
-            var _this = this;
-            return __generator(this, function (_a) {
-                mappedInputs = inputs.reduce(function (map, tensor, index) {
-                    map[_this.inputs[index].name] = tensor;
-                    return map;
-                }, {});
-                return [2 /*return*/, this.executeAsync(mappedInputs, this.outputNodes, true)];
-            });
-        });
-    };
-    /**
-     * When there are control flow nodes in the graph, the graph execution use
-     * ExecutionContext to keep track of the frames and loop iterators.
-     * @param inputs placeholder tensors for the graph.
-     * @param context the execution context object for current execution.
-     * @param disableWarning disable no async op warning
-     */
-    GraphExecutor.prototype.executeWithControlFlow = function (inputs, context, outputNames, disableWarning) {
-        return __awaiter(this, void 0, void 0, function () {
-            var names, inputNodes, outputNodes, _a, usedNodes, missingInputs, dynamicNode, syncInputs, stack, tensorsMap, intermediateTensorConsumerCount, tensorsToKeep, added, promises, missingOutputs, alternativeMsg;
-            var _this = this;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        names = Object.keys(inputs);
-                        inputNodes = names.map(function (name) { return _this.graph.nodes[parseNodeName(name)[0]]; });
-                        outputNodes = outputNames.map(function (name) { return _this.graph.nodes[parseNodeName(name)[0]]; });
-                        _a = getExecutionSubgraph(inputs, outputNodes, this.weightMap), usedNodes = _a.usedNodes, missingInputs = _a.missingInputs, dynamicNode = _a.dynamicNode, syncInputs = _a.syncInputs;
-                        stack = inputNodes.concat(this.graph.weights).map(function (node) {
-                            return { node: node, contexts: context.currentContext };
-                        });
-                        tensorsMap = __assign({}, this.weightMap);
-                        Object.keys(inputs).forEach(function (name) {
-                            var _a = parseNodeName(name), nodeName = _a[0], index = _a[1];
-                            var tensors = [];
-                            tensors[index] = inputs[name];
-                            tensorsMap[nodeName] = tensors;
-                        });
-                        intermediateTensorConsumerCount = {};
-                        tensorsToKeep = this.getFrozenTensorIds(tensorsMap);
-                        added = {};
-                        _b.label = 1;
-                    case 1:
-                        if (!(stack.length > 0)) return [3 /*break*/, 3];
-                        promises = this.processStack(inputNodes, stack, context, tensorsMap, added, tensorsToKeep, outputNames, intermediateTensorConsumerCount, usedNodes);
-                        return [4 /*yield*/, Promise.all(promises)];
-                    case 2:
-                        _b.sent();
-                        return [3 /*break*/, 1];
-                    case 3:
-                        if (dynamicNode == null && !disableWarning) {
-                            console.warn("This model execution did not contain any nodes with control flow " +
-                                "or dynamic output shapes. You can use model.execute() instead.");
-                        }
-                        missingOutputs = outputNodes
-                            .filter(function (node) { return !isControlFlow(node) &&
-                            !getTensor(node.name, tensorsMap, context); })
-                            .map(function (node) { return node.name; });
-                        if (missingOutputs.length > 0) {
-                            alternativeMsg = '';
-                            if (dynamicNode != null) {
-                                alternativeMsg =
-                                    "Alternatively, to avoid the dynamic ops, use model.execute() " +
-                                        ("and specify the inputs [" + syncInputs + "]");
-                            }
-                            throw new Error("Cannot compute the outputs [" + missingOutputs + "] from the provided " +
-                                ("inputs [" + names + "]. Consider providing the following inputs: ") +
-                                ("[" + missingInputs + "]. " + alternativeMsg));
-                        }
-                        return [2 /*return*/, tensorsMap];
-                }
-            });
-        });
-    };
-    GraphExecutor.prototype.processStack = function (inputNodes, stack, context, tensorMap, added, tensorsToKeep, outputNames, intermediateTensorConsumerCount, usedNodes) {
-        var _this = this;
-        var promises = [];
-        var _loop_1 = function () {
-            var item = stack.pop();
-            context.currentContext = item.contexts;
-            var nodeName = '';
-            // The tensor of the Enter op with isConstant set should be set
-            // in the parent scope, so it will be available as constant for the
-            // whole loop.
-            if (item.node.op === 'Enter' &&
-                getParamValue('isConstant', item.node, tensorMap, context)) {
-                nodeName = getNodeNameAndIndex(item.node.name, context)[0];
-            }
-            // only process nodes that are not provided as input nodes.
-            if (inputNodes.indexOf(item.node) === -1) {
-                var tensors = executeOp$g(item.node, tensorMap, context);
-                if (!nodeName) {
-                    nodeName = getNodeNameAndIndex(item.node.name, context)[0];
-                }
-                var currentContext_1 = context.currentContext;
-                if (tensors instanceof Promise) {
-                    promises.push(tensors.then(function (t) {
-                        tensorMap[nodeName] = t;
-                        context.currentContext = currentContext_1;
-                        _this.checkTensorForDisposal(nodeName, item.node, tensorMap, context, tensorsToKeep, outputNames, intermediateTensorConsumerCount);
-                        _this.processChildNodes(item.node, stack, context, tensorMap, added, usedNodes);
-                        return t;
-                    }));
-                }
-                else {
-                    tensorMap[nodeName] = tensors;
-                    this_1.checkTensorForDisposal(nodeName, item.node, tensorMap, context, tensorsToKeep, outputNames, intermediateTensorConsumerCount);
-                    this_1.processChildNodes(item.node, stack, context, tensorMap, added, usedNodes);
-                }
-            }
-            else {
-                this_1.processChildNodes(item.node, stack, context, tensorMap, added, usedNodes);
-            }
-        };
-        var this_1 = this;
-        while (stack.length > 0) {
-            _loop_1();
-        }
-        return promises;
-    };
-    GraphExecutor.prototype.processChildNodes = function (node, stack, context, tensorMap, added, usedNodes) {
-        node.children.forEach(function (childNode) {
-            var nodeName = getNodeNameAndIndex(childNode.name, context)[0];
-            if (added[nodeName] || !usedNodes.has(childNode.name)) {
-                return;
-            }
-            // Merge op can be pushed if any of its inputs has value.
-            if (childNode.op === 'Merge') {
-                if (childNode.inputNames.some(function (name) {
-                    return !!getTensor(name, tensorMap, context);
-                })) {
-                    added[nodeName] = true;
-                    stack.push({ contexts: context.currentContext, node: childNode });
-                }
-            }
-            else // Otherwise all inputs must to have value.
-             if (childNode.inputNames.every(function (name) {
-                return !!getTensor(name, tensorMap, context);
-            })) {
-                added[nodeName] = true;
-                stack.push({ contexts: context.currentContext, node: childNode });
-            }
-        });
-    };
-    /**
-     * Releases the memory used by the weight tensors.
-     */
-    GraphExecutor.prototype.dispose = function () {
-        var _this = this;
-        Object.keys(this.weightMap)
-            .forEach(function (key) { return _this.weightMap[key].forEach(function (tensor) { return tensor.dispose(); }); });
-    };
-    GraphExecutor.prototype.checkInputShapeAndType = function (inputs) {
-        var _this = this;
-        Object.keys(inputs).forEach(function (name) {
-            var input = inputs[name];
-            var nodeName = parseNodeName(name)[0];
-            var node = _this.graph.nodes[nodeName];
-            if (node.attrParams['shape'] && node.attrParams['shape'].value) {
-                var shape_1 = node.attrParams['shape'].value;
-                var match = shape_1.length === input.shape.length &&
-                    input.shape.every(function (dim, index) { return shape_1[index] === -1 || shape_1[index] === dim; });
-                tfc.util.assert(match, function () { return "The shape of dict['" + node.name + "'] provided in " +
-                    ("model.execute(dict) must be [" + shape_1 + "], but was ") +
-                    ("[" + input.shape + "]"); });
-            }
-            if (node.attrParams['dtype'] && node.attrParams['dtype'].value) {
-                tfc.util.assert(input.dtype === node.attrParams['dtype'].value, function () { return "The dtype of dict['" + node.name + "'] provided in " +
-                    "model.execute(dict) must be " +
-                    (node.attrParams['dtype'].value + ", but was " + input.dtype); });
-            }
-        });
-    };
-    GraphExecutor.prototype.mapInputs = function (inputs) {
-        var result = {};
-        for (var inputName in inputs) {
-            if (this._signature != null && this._signature.inputs != null &&
-                this._signature.inputs[inputName] != null) {
-                var tensor = this._signature.inputs[inputName];
-                result[tensor.name] = inputs[inputName];
-            }
-            else {
-                result[inputName] = inputs[inputName];
-            }
-        }
-        return result;
-    };
-    GraphExecutor.prototype.checkInputs = function (inputs) {
-        var _this = this;
-        var notInGraph = Object.keys(inputs).filter(function (name) {
-            var nodeName = parseNodeName(name)[0];
-            return _this.graph.nodes[nodeName] == null;
-        });
-        if (notInGraph.length > 0) {
-            throw new Error("The dict provided in model.execute(dict) has " +
-                ("keys: [" + notInGraph + "] that are not part of graph"));
-        }
-    };
-    GraphExecutor.prototype.mapOutputs = function (outputs) {
-        var _this = this;
-        return outputs.map(function (name) {
-            if (_this._signature != null && _this._signature.outputs != null &&
-                _this._signature.outputs[name] != null) {
-                var tensor = _this._signature.outputs[name];
-                return tensor.name;
-            }
-            return name;
-        }, {});
-    };
-    GraphExecutor.prototype.checkOutputs = function (outputs) {
-        var _this = this;
-        outputs.forEach(function (name) {
-            var normalizedName = parseNodeName(name)[0];
-            if (!_this.graph.nodes[normalizedName]) {
-                throw new Error("The output '" + name + "' is not found in the graph");
-            }
-        });
-    };
-    return GraphExecutor;
-}());
-
-/**
- * @license
- * Copyright 2018 Google LLC. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-var TFHUB_SEARCH_PARAM = '?tfjs-format=file';
-var DEFAULT_MODEL_NAME = 'model.json';
-/**
- * A `tf.GraphModel` is a directed, acyclic graph built from a
- * SavedModel GraphDef and allows inference execution.
- *
- * A `tf.GraphModel` can only be created by loading from a model converted from
- * a [TensorFlow SavedModel](https://www.tensorflow.org/guide/saved_model) using
- * the command line converter tool and loaded via `tf.loadGraphModel`.
- */
-/** @doc {heading: 'Models', subheading: 'Classes'} */
-var GraphModel = /** @class */ (function () {
-    /**
-     * @param modelUrl url for the model, or an `io.IOHandler`.
-     * @param weightManifestUrl url for the weight file generated by
-     * scripts/convert.py script.
-     * @param requestOption options for Request, which allows to send credentials
-     * and custom headers.
-     * @param onProgress Optional, progress callback function, fired periodically
-     * before the load is completed.
-     */
-    function GraphModel(modelUrl, loadOptions) {
-        if (loadOptions === void 0) { loadOptions = {}; }
-        this.modelUrl = modelUrl;
-        this.loadOptions = loadOptions;
-        this.version = 'n/a';
-        if (loadOptions == null) {
-            this.loadOptions = {};
-        }
-    }
-    Object.defineProperty(GraphModel.prototype, "modelVersion", {
-        // Returns the version information for the tensorflow model GraphDef.
-        get: function () {
-            return this.version;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphModel.prototype, "inputNodes", {
-        get: function () {
-            return this.executor.inputNodes;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphModel.prototype, "outputNodes", {
-        get: function () {
-            return this.executor.outputNodes;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphModel.prototype, "inputs", {
-        get: function () {
-            return this.executor.inputs;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphModel.prototype, "outputs", {
-        get: function () {
-            return this.executor.outputs;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphModel.prototype, "weights", {
-        get: function () {
-            return this.executor.weightMap;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    GraphModel.prototype.findIOHandler = function () {
-        var path = this.modelUrl;
-        if (path.load != null) {
-            // Path is an IO Handler.
-            this.handler = path;
-        }
-        else if (this.loadOptions.requestInit != null) {
-            this.handler = tfc.io.browserHTTPRequest(path, this.loadOptions);
-        }
-        else {
-            var handlers = tfc.io.getLoadHandlers(path, this.loadOptions);
-            if (handlers.length === 0) {
-                // For backward compatibility: if no load handler can be found,
-                // assume it is a relative http path.
-                handlers.push(tfc.io.browserHTTPRequest(path, this.loadOptions));
-            }
-            else if (handlers.length > 1) {
-                throw new Error("Found more than one (" + handlers.length + ") load handlers for " +
-                    ("URL '" + [path] + "'"));
-            }
-            this.handler = handlers[0];
-        }
-    };
-    /**
-     * Loads the model and weight files, construct the in memory weight map and
-     * compile the inference graph.
-     */
-    GraphModel.prototype.load = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var artifacts;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.findIOHandler();
-                        if (this.handler.load == null) {
-                            throw new Error('Cannot proceed with model loading because the IOHandler provided ' +
-                                'does not have the `load` method implemented.');
-                        }
-                        return [4 /*yield*/, this.handler.load()];
-                    case 1:
-                        artifacts = _a.sent();
-                        return [2 /*return*/, this.loadSync(artifacts)];
-                }
-            });
-        });
-    };
-    /**
-     * Synchronously construct the in memory weight map and
-     * compile the inference graph.
-     */
-    /** @doc {heading: 'Models', subheading: 'Classes', ignoreCI: true} */
-    GraphModel.prototype.loadSync = function (artifacts) {
-        this.artifacts = artifacts;
-        var graph = this.artifacts.modelTopology;
-        var signature = {};
-        if (this.artifacts.userDefinedMetadata != null) {
-            signature = // tslint:disable-next-line:no-any
-                this.artifacts.userDefinedMetadata.signature;
-        }
-        this.version = graph.versions.producer + "." + graph.versions.minConsumer;
-        var weightMap = tfc.io.decodeWeights(this.artifacts.weightData, this.artifacts.weightSpecs);
-        this.executor = new GraphExecutor(OperationMapper.Instance.transformGraph(graph, signature));
-        this.executor.weightMap = this.convertTensorMapToTensorsMap(weightMap);
-        return true;
-    };
-    /**
-     * Save the configuration and/or weights of the GraphModel.
-     *
-     * An `IOHandler` is an object that has a `save` method of the proper
-     * signature defined. The `save` method manages the storing or
-     * transmission of serialized data ("artifacts") that represent the
-     * model's topology and weights onto or via a specific medium, such as
-     * file downloads, local storage, IndexedDB in the web browser and HTTP
-     * requests to a server. TensorFlow.js provides `IOHandler`
-     * implementations for a number of frequently used saving mediums, such as
-     * `tf.io.browserDownloads` and `tf.io.browserLocalStorage`. See `tf.io`
-     * for more details.
-     *
-     * This method also allows you to refer to certain types of `IOHandler`s
-     * as URL-like string shortcuts, such as 'localstorage://' and
-     * 'indexeddb://'.
-     *
-     * Example 1: Save `model`'s topology and weights to browser [local
-     * storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage);
-     * then load it back.
-     *
-     * ```js
-     * const modelUrl =
-     *    'https://storage.googleapis.com/tfjs-models/savedmodel/mobilenet_v2_1.0_224/model.json';
-     * const model = await tf.loadGraphModel(modelUrl);
-     * const zeros = tf.zeros([1, 224, 224, 3]);
-     * model.predict(zeros).print();
-     *
-     * const saveResults = await model.save('localstorage://my-model-1');
-     *
-     * const loadedModel = await tf.loadGraphModel('localstorage://my-model-1');
-     * console.log('Prediction from loaded model:');
-     * model.predict(zeros).print();
-     * ```
-     *
-     * @param handlerOrURL An instance of `IOHandler` or a URL-like,
-     * scheme-based string shortcut for `IOHandler`.
-     * @param config Options for saving the model.
-     * @returns A `Promise` of `SaveResult`, which summarizes the result of
-     * the saving, such as byte sizes of the saved artifacts for the model's
-     *   topology and weight values.
-     */
-    /**
-     * @doc {heading: 'Models', subheading: 'Classes', ignoreCI: true}
-     */
-    GraphModel.prototype.save = function (handlerOrURL, config) {
-        return __awaiter(this, void 0, void 0, function () {
-            var handlers;
-            return __generator(this, function (_a) {
-                if (typeof handlerOrURL === 'string') {
-                    handlers = tfc.io.getSaveHandlers(handlerOrURL);
-                    if (handlers.length === 0) {
-                        throw new Error("Cannot find any save handlers for URL '" + handlerOrURL + "'");
-                    }
-                    else if (handlers.length > 1) {
-                        throw new Error("Found more than one (" + handlers.length + ") save handlers for " +
-                            ("URL '" + handlerOrURL + "'"));
-                    }
-                    handlerOrURL = handlers[0];
-                }
-                if (handlerOrURL.save == null) {
-                    throw new Error('GraphModel.save() cannot proceed because the IOHandler ' +
-                        'provided does not have the `save` attribute defined.');
-                }
-                return [2 /*return*/, handlerOrURL.save(this.artifacts)];
-            });
-        });
-    };
-    /**
-     * Execute the inference for the input tensors.
-     *
-     * @param input The input tensors, when there is single input for the model,
-     * inputs param should be a `tf.Tensor`. For models with mutliple inputs,
-     * inputs params should be in either `tf.Tensor`[] if the input order is
-     * fixed, or otherwise NamedTensorMap format.
-     *
-     * For model with multiple inputs, we recommend you use NamedTensorMap as the
-     * input type, if you use `tf.Tensor`[], the order of the array needs to
-     * follow the
-     * order of inputNodes array. @see {@link GraphModel.inputNodes}
-     *
-     * You can also feed any intermediate nodes using the NamedTensorMap as the
-     * input type. For example, given the graph
-     *    InputNode => Intermediate => OutputNode,
-     * you can execute the subgraph Intermediate => OutputNode by calling
-     *    model.execute('IntermediateNode' : tf.tensor(...));
-     *
-     * This is useful for models that uses tf.dynamic_rnn, where the intermediate
-     * state needs to be fed manually.
-     *
-     * For batch inference execution, the tensors for each input need to be
-     * concatenated together. For example with mobilenet, the required input shape
-     * is [1, 244, 244, 3], which represents the [batch, height, width, channel].
-     * If we are provide a batched data of 100 images, the input tensor should be
-     * in the shape of [100, 244, 244, 3].
-     *
-     * @param config Prediction configuration for specifying the batch size and
-     * output node names. Currently the batch size option is ignored for graph
-     * model.
-     *
-     * @returns Inference result tensors. The output would be single `tf.Tensor`
-     * if model has single output node, otherwise Tensor[] or NamedTensorMap[]
-     * will be returned for model with multiple outputs.
-     */
-    /** @doc {heading: 'Models', subheading: 'Classes'} */
-    GraphModel.prototype.predict = function (inputs, config) {
-        return this.execute(inputs, this.outputNodes);
-    };
-    GraphModel.prototype.normalizeInputs = function (inputs) {
-        if (!(inputs instanceof tfc.Tensor) && !Array.isArray(inputs)) {
-            // The input is already a NamedTensorMap.
-            return inputs;
-        }
-        inputs = Array.isArray(inputs) ? inputs : [inputs];
-        if (inputs.length !== this.inputNodes.length) {
-            throw new Error('Input tensor count mismatch,' +
-                ("the graph model has " + this.inputNodes.length + " placeholders, ") +
-                ("while there are " + inputs.length + " input tensors."));
-        }
-        return this.inputNodes.reduce(function (map, inputName, i) {
-            map[inputName] = inputs[i];
-            return map;
-        }, {});
-    };
-    GraphModel.prototype.normalizeOutputs = function (outputs) {
-        outputs = outputs || this.outputNodes;
-        return !Array.isArray(outputs) ? [outputs] : outputs;
-    };
-    /**
-     * Executes inference for the model for given input tensors.
-     * @param inputs tensor, tensor array or tensor map of the inputs for the
-     * model, keyed by the input node names.
-     * @param outputs output node name from the Tensorflow model, if no
-     * outputs are specified, the default outputs of the model would be used.
-     * You can inspect intermediate nodes of the model by adding them to the
-     * outputs array.
-     *
-     * @returns A single tensor if provided with a single output or no outputs
-     * are provided and there is only one default output, otherwise return a
-     * tensor array. The order of the tensor array is the same as the outputs
-     * if provided, otherwise the order of outputNodes attribute of the model.
-     */
-    /** @doc {heading: 'Models', subheading: 'Classes'} */
-    GraphModel.prototype.execute = function (inputs, outputs) {
-        inputs = this.normalizeInputs(inputs);
-        outputs = this.normalizeOutputs(outputs);
-        var result = this.executor.execute(inputs, outputs);
-        return result.length > 1 ? result : result[0];
-    };
-    /**
-     * Executes inference for the model for given input tensors in async
-     * fashion, use this method when your model contains control flow ops.
-     * @param inputs tensor, tensor array or tensor map of the inputs for the
-     * model, keyed by the input node names.
-     * @param outputs output node name from the Tensorflow model, if no outputs
-     * are specified, the default outputs of the model would be used. You can
-     * inspect intermediate nodes of the model by adding them to the outputs
-     * array.
-     *
-     * @returns A Promise of single tensor if provided with a single output or
-     * no outputs are provided and there is only one default output, otherwise
-     * return a tensor map.
-     */
-    /** @doc {heading: 'Models', subheading: 'Classes'} */
-    GraphModel.prototype.executeAsync = function (inputs, outputs) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        inputs = this.normalizeInputs(inputs);
-                        outputs = this.normalizeOutputs(outputs);
-                        return [4 /*yield*/, this.executor.executeAsync(inputs, outputs)];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.length > 1 ? result : result[0]];
-                }
-            });
-        });
-    };
-    GraphModel.prototype.convertTensorMapToTensorsMap = function (map) {
-        return Object.keys(map).reduce(function (newMap, key) {
-            newMap[key] = [map[key]];
-            return newMap;
-        }, {});
-    };
-    /**
-     * Releases the memory used by the weight tensors.
-     */
-    /** @doc {heading: 'Models', subheading: 'Classes'} */
-    GraphModel.prototype.dispose = function () {
-        this.executor.dispose();
-    };
-    return GraphModel;
-}());
-/**
- * Load a graph model given a URL to the model definition.
- *
- * Example of loading MobileNetV2 from a URL and making a prediction with a
- * zeros input:
- *
- * ```js
- * const modelUrl =
- *    'https://storage.googleapis.com/tfjs-models/savedmodel/mobilenet_v2_1.0_224/model.json';
- * const model = await tf.loadGraphModel(modelUrl);
- * const zeros = tf.zeros([1, 224, 224, 3]);
- * model.predict(zeros).print();
- * ```
- *
- * Example of loading MobileNetV2 from a TF Hub URL and making a prediction with
- * a zeros input:
- *
- * ```js
- * const modelUrl =
- *    'https://tfhub.dev/google/imagenet/mobilenet_v2_140_224/classification/2';
- * const model = await tf.loadGraphModel(modelUrl, {fromTFHub: true});
- * const zeros = tf.zeros([1, 224, 224, 3]);
- * model.predict(zeros).print();
- * ```
- * @param modelUrl The url or an `io.IOHandler` that loads the model.
- * @param options Options for the HTTP request, which allows to send credentials
- *    and custom headers.
- */
-/** @doc {heading: 'Models', subheading: 'Loading'} */
-function loadGraphModel(modelUrl, options) {
-    if (options === void 0) { options = {}; }
-    return __awaiter(this, void 0, void 0, function () {
-        var model;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    if (modelUrl == null) {
-                        throw new Error('modelUrl in loadGraphModel() cannot be null. Please provide a url ' +
-                            'or an IOHandler that loads the model');
-                    }
-                    if (options == null) {
-                        options = {};
-                    }
-                    if (options.fromTFHub) {
-                        if (modelUrl.load == null) {
-                            if (!modelUrl.endsWith('/')) {
-                                modelUrl = modelUrl + '/';
-                            }
-                            modelUrl = "" + modelUrl + DEFAULT_MODEL_NAME + TFHUB_SEARCH_PARAM;
-                        }
-                    }
-                    model = new GraphModel(modelUrl, options);
-                    return [4 /*yield*/, model.load()];
-                case 1:
-                    _a.sent();
-                    return [2 /*return*/, model];
-            }
-        });
-    });
-}
-
-/** @license See the LICENSE file. */
-// This code is auto-generated, do not modify this file!
-var version = '2.0.1';
-
-exports.GraphModel = GraphModel;
-exports.deregisterOp = deregisterOp;
-exports.loadGraphModel = loadGraphModel;
-exports.registerOp = registerOp;
-exports.version_converter = version;
-//# sourceMappingURL=tf-converter.node.js.map
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(36).Buffer))
-
-/***/ }),
-/* 81 */
-/***/ (function(module, exports, __webpack_require__) {
-
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
   if (true) {
     !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
@@ -56595,7 +50288,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 82 */
+/* 81 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56603,7 +50296,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "load", function() { return load; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BlazeFaceModel", function() { return BlazeFaceModel; });
 /* harmony import */ var _tensorflow_tfjs_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
-/* harmony import */ var _tensorflow_tfjs_converter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(39);
+/* harmony import */ var _tensorflow_tfjs_converter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(38);
 /**
     * @license
     * Copyright 2020 Google LLC. All Rights Reserved.
@@ -56624,7 +50317,7 @@ const disposeBox=t=>{t.startEndTensor.dispose(),t.startPoint.dispose(),t.endPoin
 
 
 /***/ }),
-/* 83 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -56669,14 +50362,14 @@ exports.MESH_ANNOTATIONS = {
 //# sourceMappingURL=keypoints.js.map
 
 /***/ }),
-/* 84 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tf = __webpack_require__(0);
-const box_1 = __webpack_require__(85);
+const box_1 = __webpack_require__(84);
 const LANDMARKS_COUNT = 468;
 const UPDATE_REGION_OF_INTEREST_IOU_THRESHOLD = 0.25;
 class Pipeline {
@@ -56799,7 +50492,7 @@ exports.Pipeline = Pipeline;
 //# sourceMappingURL=pipeline.js.map
 
 /***/ }),
-/* 85 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -56872,7 +50565,7 @@ exports.enlargeBox = enlargeBox;
 //# sourceMappingURL=box.js.map
 
 /***/ }),
-/* 86 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57351,7 +51044,7 @@ exports.UV_COORDS = [
 //# sourceMappingURL=uv_coords.js.map
 
 /***/ }),
-/* 87 */
+/* 86 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -70110,7 +63803,7 @@ const webgl = { forceHalfFloat: forceHalfFloat };
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 88 */
+/* 87 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -89780,7 +83473,7 @@ const callbacks_callbacks = { earlyStopping };
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 89 */
+/* 88 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -91894,7 +85587,7 @@ const version = '2.0.1';
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 90 */
+/* 89 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -92028,7 +85721,7 @@ const divImpl = createBinaryKernelImpl((a, b) => a / b);
 const divConfig = createBinaryKernelConfig(dist["Div"], divImpl);
 //# sourceMappingURL=Div.js.map
 // EXTERNAL MODULE: ./node_modules/@tensorflow/tfjs-backend-cpu/dist/kernels/Max_impl.js
-var Max_impl = __webpack_require__(38);
+var Max_impl = __webpack_require__(37);
 
 // EXTERNAL MODULE: ./node_modules/@tensorflow/tfjs-backend-cpu/dist/kernels/Transpose_impl.js
 var Transpose_impl = __webpack_require__(30);
@@ -92365,7 +86058,7 @@ Object(dist["registerBackend"])('cpu', () => new base["a" /* MathBackendCPU */](
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 91 */
+/* 90 */
 /***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -92375,11 +86068,8 @@ __webpack_require__.r(__webpack_exports__);
 // EXTERNAL MODULE: ./node_modules/@tensorflow/tfjs/dist/tf.node.js
 var tf_node = __webpack_require__(60);
 
-// EXTERNAL MODULE: ./node_modules/@tensorflow/tfjs-converter/dist/tf-converter.node.js
-var tf_converter_node = __webpack_require__(80);
-
 // EXTERNAL MODULE: ./node_modules/regression/dist/regression.js
-var regression = __webpack_require__(81);
+var regression = __webpack_require__(80);
 
 // CONCATENATED MODULE: ./src/params.mjs
 const params = {
@@ -94123,7 +87813,6 @@ ridgeRegThreaded_reg.RidgeRegThreaded.prototype.name = 'ridge';
 /* harmony default export */ var ridgeRegThreaded = (ridgeRegThreaded_reg);
 
 // CONCATENATED MODULE: ./src/index.mjs
-
 
 
 

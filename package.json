@@ -13,7 +13,7 @@
     "prebuild": "npm run clean",
     "dev": "webpack --progress --colors --config webpack.config.js --mode=development",
     "build": "webpack --progress --colors --config webpack.config.js --mode=production",
-    "gen_docs": "jsdoc src/index.mjs"
+    "gen_docs": "jsdoc -c jsdoc.conf.json src/*"
   },
   "files": [
     "src"
@@ -28,7 +28,6 @@
   ],
   "dependencies": {
     "@tensorflow-models/facemesh": "0.0.3",
-    "@tensorflow/tfjs-converter": "2.0.1",
     "@tensorflow/tfjs": "2.0.1",
     "husky": "^4.2.5",
     "localforage": "1.7.3",
