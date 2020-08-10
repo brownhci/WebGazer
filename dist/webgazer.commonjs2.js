@@ -86094,6 +86094,8 @@ const params = {
   smoothEyeBB: false,
   dataTimestep: 50,
   showVideoPreview: false,
+  // Whether or not to store accuracy eigenValues, used by the calibration example file
+  storingPoints: false,
 };
 
 /* harmony default export */ var src_params = (params);
@@ -86126,23 +86128,6 @@ window.cancelRequestAnimFrame = (function() {
     window.msCancelRequestAnimationFrame ||
     window.clearTimeout;
 })();
-
-// CONCATENATED MODULE: ./src/precision.mjs
-/*
- * Initialises variables used to store accuracy eigenValues
- * This is used by the calibration example file
- */
-var store_points_var = false;
-var xPast50 = new Array(50);
-var yPast50 = new Array(50);
-
-/*
- * Stores the position of the fifty most recent tracker preditions
- */
-function store_points(x, y, k) {
-  xPast50[k] = x;
-  yPast50[k] = y;
-}
 
 // EXTERNAL MODULE: ./node_modules/localforage/dist/localforage.js
 var localforage = __webpack_require__(32);
@@ -87824,23 +87809,6 @@ ridgeRegThreaded_reg.RidgeRegThreaded.prototype.name = 'ridge';
 
 
 
-/*
- * Initialises variables used to store accuracy eigenValues
- * This is used by the calibration example file
- */
-var src_store_points_var = false;
-var src_xPast50 = new Array(50);
-var src_yPast50 = new Array(50);
-
-/*
- * Stores the position of the fifty most recent tracker preditions
- */
-function src_store_points(x, y, k) {
-  src_xPast50[k] = x;
-  src_yPast50[k] = y;
-}
-
-
 const src_webgazer = {};
 src_webgazer.tracker = {};
 src_webgazer.tracker.TFFaceMesh = facemesh;
@@ -87861,6 +87829,13 @@ var faceFeedbackBox = null;
 var gazeDot = null;
 // Why is this not in webgazer.params ?
 var debugVideoLoc = '';
+
+/*
+ * Initialises variables used to store accuracy eigenValues
+ * This is used by the calibration example file
+ */
+var xPast50 = new Array(50);
+var yPast50 = new Array(50);
 
 // loop parameters
 var clockStart = performance.now();
@@ -88136,10 +88111,10 @@ async function loop() {
 
       var pred = src_webgazer.util.bound({'x':x/len, 'y':y/len});
 
-      if (src_store_points_var) {
+      if (src_webgazer.params.storingPoints) {
         drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
         //store the position of the past fifty occuring tracker preditions
-        src_store_points(pred.x, pred.y, src_k);
+        src_webgazer.storePoints(pred.x, pred.y, src_k);
         src_k++;
         if (src_k == 50) {
           src_k = 0;
@@ -88287,18 +88262,21 @@ function clearData() {
 
 /**
  * Initializes all needed dom elements and begins the loop
- * @param {URL} videoStream - The video stream to use
+ * @param {URL} stream - The video stream to use
  */
-async function init(videoStream) {
+async function init(stream) {
   //////////////////////////
   // Video and video preview
   //////////////////////////
   var topDist = '0px'
   var leftDist = '0px'
 
+  // used for webgazer.stopVideo() and webgazer.setCameraConstraints()
+  videoStream = stream;
+
   videoElement = document.createElement('video');
   videoElement.id = src_webgazer.params.videoElementId;
-  videoElement.srcObject = videoStream;
+  videoElement.srcObject = stream;
   videoElement.autoplay = true;
   videoElement.style.display = src_webgazer.params.showVideo ? 'block' : 'none';
   videoElement.style.position = 'fixed';
@@ -88449,17 +88427,17 @@ src_webgazer.begin = function(onFail) {
   // Request webcam access under specific constraints
   // WAIT for access
   return new Promise(async (resolve, reject) => {
-    let videoStream;
+    let stream;
     try {
-      videoStream = await navigator.mediaDevices.getUserMedia( src_webgazer.params.camConstraints );
+      stream = await navigator.mediaDevices.getUserMedia( src_webgazer.params.camConstraints );
       if (src_webgazer.params.showVideoPreview) {
-        init(videoStream);
+        init(stream);
       }
       resolve(src_webgazer);
     } catch(err) {
       onFail();
       videoElement = null;
-      videoStream = null;
+      stream = null;
       reject(err);
     }
   });
@@ -88742,6 +88720,14 @@ src_webgazer.recordScreenPosition = function(x, y, eventType) {
   return src_webgazer;
 };
 
+/*
+ * Stores the position of the fifty most recent tracker preditions
+ */
+src_webgazer.storePoints = function(x, y, k) {
+  xPast50[k] = x;
+  yPast50[k] = y;
+}
+
 //SETTERS
 /**
  * Sets the tracking module
@@ -88898,6 +88884,13 @@ src_webgazer.getVideoElementCanvas = function() {
  */
 src_webgazer.getVideoPreviewToCameraResolutionRatio = function() {
   return [src_webgazer.params.videoViewerWidth / videoElement.videoWidth, src_webgazer.params.videoViewerHeight / videoElement.videoHeight];
+}
+
+/*
+ * Gets the fifty most recent tracker preditions
+ */
+src_webgazer.getStoredPoints = function() {
+  return [xPast50, yPast50];
 }
 
 /* harmony default export */ var src = __webpack_exports__["default"] = (src_webgazer);

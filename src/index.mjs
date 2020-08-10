@@ -2,29 +2,12 @@ import '@tensorflow/tfjs';
 import 'regression';
 import params from './params';
 import './dom_util';
-import './precision';
 import localforage from 'localforage';
 import TFFaceMesh from './facemesh';
 import Reg from './ridgeReg';
 import ridgeRegWeighted from './ridgeWeightedReg';
 import ridgeRegThreaded from './ridgeRegThreaded';
 import util from './util';
-/*
- * Initialises variables used to store accuracy eigenValues
- * This is used by the calibration example file
- */
-var store_points_var = false;
-var xPast50 = new Array(50);
-var yPast50 = new Array(50);
-
-/*
- * Stores the position of the fifty most recent tracker preditions
- */
-function store_points(x, y, k) {
-  xPast50[k] = x;
-  yPast50[k] = y;
-}
-
 
 const webgazer = {};
 webgazer.tracker = {};
@@ -46,6 +29,13 @@ var faceFeedbackBox = null;
 var gazeDot = null;
 // Why is this not in webgazer.params ?
 var debugVideoLoc = '';
+
+/*
+ * Initialises variables used to store accuracy eigenValues
+ * This is used by the calibration example file
+ */
+var xPast50 = new Array(50);
+var yPast50 = new Array(50);
 
 // loop parameters
 var clockStart = performance.now();
@@ -321,10 +311,10 @@ async function loop() {
 
       var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
 
-      if (store_points_var) {
+      if (webgazer.params.storingPoints) {
         drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
         //store the position of the past fifty occuring tracker preditions
-        store_points(pred.x, pred.y, k);
+        webgazer.storePoints(pred.x, pred.y, k);
         k++;
         if (k == 50) {
           k = 0;
@@ -472,18 +462,21 @@ function clearData() {
 
 /**
  * Initializes all needed dom elements and begins the loop
- * @param {URL} videoStream - The video stream to use
+ * @param {URL} stream - The video stream to use
  */
-async function init(videoStream) {
+async function init(stream) {
   //////////////////////////
   // Video and video preview
   //////////////////////////
   var topDist = '0px'
   var leftDist = '0px'
 
+  // used for webgazer.stopVideo() and webgazer.setCameraConstraints()
+  videoStream = stream;
+
   videoElement = document.createElement('video');
   videoElement.id = webgazer.params.videoElementId;
-  videoElement.srcObject = videoStream;
+  videoElement.srcObject = stream;
   videoElement.autoplay = true;
   videoElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
   videoElement.style.position = 'fixed';
@@ -634,17 +627,17 @@ webgazer.begin = function(onFail) {
   // Request webcam access under specific constraints
   // WAIT for access
   return new Promise(async (resolve, reject) => {
-    let videoStream;
+    let stream;
     try {
-      videoStream = await navigator.mediaDevices.getUserMedia( webgazer.params.camConstraints );
+      stream = await navigator.mediaDevices.getUserMedia( webgazer.params.camConstraints );
       if (webgazer.params.showVideoPreview) {
-        init(videoStream);
+        init(stream);
       }
       resolve(webgazer);
     } catch(err) {
       onFail();
       videoElement = null;
-      videoStream = null;
+      stream = null;
       reject(err);
     }
   });
@@ -927,6 +920,14 @@ webgazer.recordScreenPosition = function(x, y, eventType) {
   return webgazer;
 };
 
+/*
+ * Stores the position of the fifty most recent tracker preditions
+ */
+webgazer.storePoints = function(x, y, k) {
+  xPast50[k] = x;
+  yPast50[k] = y;
+}
+
 //SETTERS
 /**
  * Sets the tracking module
@@ -1083,6 +1084,13 @@ webgazer.getVideoElementCanvas = function() {
  */
 webgazer.getVideoPreviewToCameraResolutionRatio = function() {
   return [webgazer.params.videoViewerWidth / videoElement.videoWidth, webgazer.params.videoViewerHeight / videoElement.videoHeight];
+}
+
+/*
+ * Gets the fifty most recent tracker preditions
+ */
+webgazer.getStoredPoints = function() {
+  return [xPast50, yPast50];
 }
 
 export default webgazer;
