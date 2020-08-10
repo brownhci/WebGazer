@@ -36,3 +36,6 @@ www/data/src/P*/
 www/data/FramesDataset/
 */participant_characteristics.csv
 *__pycache__/
+.idea/
+dist/
+dist2/
