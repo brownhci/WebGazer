@@ -18,7 +18,23 @@ util.Eye = function(patch, imagex, imagey, width, height) {
     this.height = height;
 };
 
+util.getEyeFeats = function(eyes) {
+    var resizedLeft = this.resizeEye(eyes.left, resizeWidth, resizeHeight);
+    var resizedright = this.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
+    var leftGray = this.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+    var rightGray = this.grayscale(resizedright.data, resizedright.width, resizedright.height);
+
+    var histLeft = [];
+    this.equalizeHistogram(leftGray, 5, histLeft);
+    var histRight = [];
+    this.equalizeHistogram(rightGray, 5, histRight);
+
+    var leftGrayArray = Array.prototype.slice.call(histLeft);
+    var rightGrayArray = Array.prototype.slice.call(histRight);
+
+    return leftGrayArray.concat(rightGrayArray);
+}
 //Data Window class
 //operates like an array but 'wraps' data around to keep the array at a fixed windowSize
 /**
