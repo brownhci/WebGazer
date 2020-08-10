@@ -3,7 +3,7 @@
  * points are stored
  */
 function store_points_variable(){
-  store_points_var = true;
+  webgazer.params.storingPoints = true;
 }
 
 /*
@@ -11,15 +11,5 @@ function store_points_variable(){
  * stored any more
  */
 function stop_storing_points_variable(){
-  store_points_var = false;
-}
-
-/*
- * Returns the stored tracker prediction points
- */
-function get_points() {
-  var past50 = new Array(2);
-  past50[0] = xPast50;
-  past50[1] = yPast50;
-  return past50;
+  webgazer.params.storingPoints = false;
 }
