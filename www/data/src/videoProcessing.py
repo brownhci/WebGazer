@@ -5,8 +5,9 @@ import tornado.escape
 import csv
 import cv2
 import numpy as np
-import global_variables
 
+from participant import newParticipant
+import global_variables
 
 
 ##################################################################
@@ -171,3 +172,4 @@ def sendVideoEnd( wsh ):
         # Regular 'video end' message; will trigger return of {'msgID': "1"}
         parcel = {'msgID': "4"}
         wsh.write_message( tornado.escape.json_encode(parcel) )
+

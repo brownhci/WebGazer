@@ -1,4 +1,0 @@
-#!/bin/bash
-
-../dependencies/node_modules/.bin/jsdoc ../src/webgazer.js
-

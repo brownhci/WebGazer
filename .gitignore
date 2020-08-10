@@ -33,3 +33,12 @@ build/webgazer.js
 build/webgazer.min.js
 .idea/
 dist2/
+www/data/src/WebGazerETRA2018Dataset_Release20180420/
+www/data/src/P*/
+www/data/FramesDataset/
+*__pycache__/
+.idea/
+docs/
+dist/*.map
+dist/*.min.js
+.idea/
