@@ -1,1 +1,0 @@
-../dist/webgazer.var.js

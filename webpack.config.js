@@ -12,8 +12,8 @@ function createConfig(options) {
   return {
     entry: './src/index.mjs',
     output: {
-      filename: 'webgazer.' + 
-		options.target + 
+      filename: 'webgazer' + 
+		(options.target == 'var' ? '' : '.' + options.target) + 
 		(options.minified ? '.min' : '') + 
 		'.js',
       library: 'webgazer',

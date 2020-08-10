@@ -88905,4 +88905,4 @@ src_webgazer.getVideoPreviewToCameraResolutionRatio = function() {
 
 /***/ })
 /******/ ])["default"];
-//# sourceMappingURL=webgazer.var.js.map
+//# sourceMappingURL=webgazer.js.map

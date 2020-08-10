@@ -6,7 +6,7 @@
     "url": "https://github.com/brownhci/WebGazer.git"
   },
   "license": "GPL-3.0-or-later",
-  "main": "dist/webgazer.commonjs2.js",
+  "main": "dist/webgazer.js",
   "module": "src/index.mjs",
   "scripts": {
     "clean": "rimraf dist",
