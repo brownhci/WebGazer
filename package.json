@@ -11,6 +11,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
+    "test": "mocha -r jsdom-global/register",
     "dev": "webpack --progress --colors --config webpack.config.js --mode=development",
     "build": "webpack --progress --colors --config webpack.config.js --mode=production",
     "gen_docs": "jsdoc -c jsdoc.conf.json src/*"
@@ -29,14 +30,20 @@
   "dependencies": {
     "@tensorflow-models/facemesh": "0.0.3",
     "@tensorflow/tfjs": "2.0.1",
+    "chai": "^4.2.0",
     "husky": "^4.2.5",
     "localforage": "1.7.3",
+    "node-fetch-polyfill": "^2.0.6",
     "numeric": "1.2.6",
     "regression": "2.0.1"
   },
   "devDependencies": {
+    "canvas": "^2.6.1",
     "file-loader": "^6.0.0",
     "jsdoc": "^3.6.5",
+    "jsdom": "16.4.0",
+    "jsdom-global": "3.0.2",
+    "mocha": "^8.1.1",
     "parallel-webpack": "2.6.0",
     "rimraf": "2.6.3",
     "webpack": "4.44.1",
