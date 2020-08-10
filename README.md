@@ -33,6 +33,12 @@ If you want to build the repository from source follow these instructions:
 
 Examples of how WebGazer.js works can be found [here](https://webgazer.cs.brown.edu/#examples).
 
+### to use on any website
+
+```
+<script src="webgazer.js" type="text/javascript" >
+```
+
 ### to use in any modern framework
 
 ````  
