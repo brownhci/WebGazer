@@ -20,19 +20,30 @@ WebGazer.js is an eye tracking library that uses common webcams to infer the eye
 If you want to build the repository from source follow these instructions:
 
     # Ensure NodeJS is downloaded: https://nodejs.org/en/download/
-    # Install grunt-cli if not installed (this may require you to use `sudo` or run the console as Administrator)
-    npm install -g grunt-cli
     git clone https://github.com/brownhci/WebGazer.git
     cd WebGazer
+    #install the dependencies
     npm install
-    # Run grunt to build the webgazer.js and webgazer.min.js file in the build directory
-    grunt
+    #build the project
+    npm run build
 
 <!-- To use the webgazer script in the head of an HTML file add the `async` tag to ensure the clmtrackr does not collapse to a slower version -->
 
 ## Examples
 
 Examples of how WebGazer.js works can be found [here](https://webgazer.cs.brown.edu/#examples).
+
+### to use in any modern framework
+
+````  
+const webgazer = require('webgazer.js'); // npm package 'webgazer.js' is sync with this repository
+```` 
+
+or you can you do
+
+```` 
+import webgazer from 'webgazer.js'
+````
 
 ### How to run the Example HTML files
 
@@ -48,7 +59,7 @@ To run the example files as a server:
 	cd www
 	npm install
 	# Run the webpage index.html as a server
-	browser-sync start --server --files "*"
+	npm run serve
 
 ## Browser Support
 
