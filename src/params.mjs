@@ -20,6 +20,8 @@ const params = {
   smoothEyeBB: false,
   dataTimestep: 50,
   showVideoPreview: false,
+  // Whether or not to store accuracy eigenValues, used by the calibration example file
+  storingPoints: false,
 };
 
 export default params;
