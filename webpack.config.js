@@ -12,7 +12,10 @@ function createConfig(options) {
   return {
     entry: './src/index.mjs',
     output: {
-      filename: `webgazer.${options.target}.js`,
+      filename: 'webgazer' + 
+		(options.target == 'var' ? '' : '.' + options.target) + 
+		(options.minified ? '.min' : '') + 
+		'.js',
       library: 'webgazer',
       libraryTarget: options.target,
       libraryExport: 'default',
@@ -27,6 +30,9 @@ function createConfig(options) {
         }
       ]
     },
+    optimization: {
+    	minimize: options.minified
+    },
     resolve: {
       extensions: [".mjs", ".webpack.js", ".web.js", ".js", ".json"]
     },
@@ -37,5 +43,6 @@ function createConfig(options) {
   };
 }
 module.exports = createVariants({
+  minified: [true, false],
   target: ['var','commonjs2']
 }, createConfig);
