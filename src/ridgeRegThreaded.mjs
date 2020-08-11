@@ -4,8 +4,6 @@ import numeric from 'numeric';
 const reg = {};
 
 var ridgeParameter = Math.pow(10,-5);
-var resizeWidth = 10;
-var resizeHeight = 6;
 var dataWindow = 700;
 var weights = {'X':[0],'Y':[0]};
 var trailDataWindow = 10;

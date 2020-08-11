@@ -10,6 +10,11 @@ const util = {};
  * @param {Number} width  - width of the eye patch
  * @param {Number} height - height of the eye patch
  */
+
+
+var resizeWidth = 10;
+var resizeHeight = 6;
+
 util.Eye = function(patch, imagex, imagey, width, height) {
     this.patch = patch;
     this.imagex = imagex;
@@ -19,8 +24,8 @@ util.Eye = function(patch, imagex, imagey, width, height) {
 };
 
 util.getEyeFeats = function(eyes) {
-    var resizedLeft = this.resizeEye(eyes.left, resizeWidth, resizeHeight);
-    var resizedright = this.resizeEye(eyes.right, resizeWidth, resizeHeight);
+    var resizedLeft = this.resizeEye(eyes.left, resizeHeight, resizeHeight);
+    var resizedright = this.resizeEye(eyes.right, resizeHeight, resizeHeight);
 
     var leftGray = this.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
     var rightGray = this.grayscale(resizedright.data, resizedright.width, resizedright.height);
