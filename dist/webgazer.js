@@ -86093,7 +86093,6 @@ const params = {
   camConstraints: { video: { width: { min: 320, ideal: 640, max: 1920 }, height: { min: 240, ideal: 480, max: 1080 }, facingMode: "user" } },
   smoothEyeBB: false,
   dataTimestep: 50,
-  showVideoPreview: false,
   // Whether or not to store accuracy eigenValues, used by the calibration example file
   storingPoints: false,
 };
@@ -88430,9 +88429,7 @@ src_webgazer.begin = function(onFail) {
     let stream;
     try {
       stream = await navigator.mediaDevices.getUserMedia( src_webgazer.params.camConstraints );
-      if (src_webgazer.params.showVideoPreview) {
-        init(stream);
-      }
+      init(stream);
       resolve(src_webgazer);
     } catch(err) {
       onFail();
