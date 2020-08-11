@@ -1,1 +1,1 @@
-../../webgazer.js
+../../../dist/webgazer.js
