@@ -19,7 +19,6 @@ const params = {
   camConstraints: { video: { width: { min: 320, ideal: 640, max: 1920 }, height: { min: 240, ideal: 480, max: 1080 }, facingMode: "user" } },
   smoothEyeBB: false,
   dataTimestep: 50,
-  showVideoPreview: false,
   // Whether or not to store accuracy eigenValues, used by the calibration example file
   storingPoints: false,
 };
