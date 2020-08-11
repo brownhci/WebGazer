@@ -1,26 +1,26 @@
 {
   "name": "webgazer",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/brownhci/WebGazer.git"
   },
-  "license": "LGPL-3.0-or-later",
-  "main": "dist2/webgazer.commonjs2.js",
+  "license": "GPL-3.0-or-later",
+  "main": "dist/webgazer.js",
   "module": "src/index.mjs",
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "dev": "webpack --progress --colors --config webpack.config.js --mode=development",
-    "build": "webpack --progress --colors --config webpack.config.js --mode=production"
+    "build": "webpack --progress --colors --config webpack.config.js --mode=production",
+    "gen_docs": "jsdoc -c jsdoc.conf.json src/*"
   },
   "files": [
-    "dist2",
     "src"
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "npm run dev"
+      "pre-commit": "npm run build"
     }
   },
   "keywords": [
@@ -28,7 +28,6 @@
   ],
   "dependencies": {
     "@tensorflow-models/facemesh": "0.0.3",
-    "@tensorflow/tfjs-converter": "2.0.1",
     "@tensorflow/tfjs": "2.0.1",
     "husky": "^4.2.5",
     "localforage": "1.7.3",
@@ -37,6 +36,7 @@
   },
   "devDependencies": {
     "file-loader": "^6.0.0",
+    "jsdoc": "^3.6.5",
     "parallel-webpack": "2.6.0",
     "rimraf": "2.6.3",
     "webpack": "4.44.1",
