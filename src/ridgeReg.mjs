@@ -5,8 +5,6 @@ import params from './params';
 
 const reg = {};
 var ridgeParameter = Math.pow(10,-5);
-var resizeWidth = 10;
-var resizeHeight = 6;
 var dataWindow = 700;
 var trailDataWindow = 10;
 
@@ -54,29 +52,6 @@ function ridge(y, X, k){
     }
   } while (!success);
   return m_Coefficients;
-}
-
-/**
- * Compute eyes size as gray histogram
- * @param {Object} eyes - The eyes where looking for gray histogram
- * @returns {Array.<T>} The eyes gray level histogram
- */
-function getEyeFeats(eyes) {
-  var resizedLeft = util.resizeEye(eyes.left, resizeWidth, resizeHeight);
-  var resizedright = util.resizeEye(eyes.right, resizeWidth, resizeHeight);
-
-  var leftGray = util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-  var rightGray = util.grayscale(resizedright.data, resizedright.width, resizedright.height);
-
-  var histLeft = [];
-  util.equalizeHistogram(leftGray, 5, histLeft);
-  var histRight = [];
-  util.equalizeHistogram(rightGray, 5, histRight);
-
-  var leftGrayArray = Array.prototype.slice.call(histLeft);
-  var rightGrayArray = Array.prototype.slice.call(histRight);
-
-  return leftGrayArray.concat(rightGrayArray);
 }
 
 //TODO: still usefull ???
@@ -177,13 +152,13 @@ reg.RidgeReg.prototype.addData = function(eyes, screenPos, type) {
     this.screenXClicksArray.push([screenPos[0]]);
     this.screenYClicksArray.push([screenPos[1]]);
 
-    this.eyeFeaturesClicks.push(getEyeFeats(eyes));
+    this.eyeFeaturesClicks.push(util.getEyeFeats(eyes));
     this.dataClicks.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
   } else if (type === 'move') {
     this.screenXTrailArray.push([screenPos[0]]);
     this.screenYTrailArray.push([screenPos[1]]);
 
-    this.eyeFeaturesTrail.push(getEyeFeats(eyes));
+    this.eyeFeaturesTrail.push(util.getEyeFeats(eyes));
     this.trailTimes.push(performance.now());
     this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
   }
@@ -225,7 +200,7 @@ reg.RidgeReg.prototype.predict = function(eyesObj) {
   var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
   var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter);
 
-  var eyeFeats = getEyeFeats(eyesObj);
+  var eyeFeats = util.getEyeFeats(eyesObj);
   var predictedX = 0;
   for(var i=0; i< eyeFeats.length; i++){
     predictedX += eyeFeats[i] * coefficientsX[i];

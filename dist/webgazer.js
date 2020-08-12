@@ -86288,7 +86288,6 @@ TFFaceMesh.prototype.name = 'TFFaceMesh';
 
 // EXTERNAL MODULE: ./node_modules/numeric/numeric-1.2.6.js
 var numeric_1_2_6 = __webpack_require__(12);
-var numeric_1_2_6_default = /*#__PURE__*/__webpack_require__.n(numeric_1_2_6);
 
 // CONCATENATED MODULE: ./src/mat.mjs
 const mat = {};
@@ -86606,6 +86605,11 @@ const util = {};
  * @param {Number} width  - width of the eye patch
  * @param {Number} height - height of the eye patch
  */
+
+
+var resizeWidth = 10;
+var resizeHeight = 6;
+
 util.Eye = function(patch, imagex, imagey, width, height) {
     this.patch = patch;
     this.imagex = imagex;
@@ -86614,7 +86618,23 @@ util.Eye = function(patch, imagex, imagey, width, height) {
     this.height = height;
 };
 
+util.getEyeFeats = function(eyes) {
+    var resizedLeft = this.resizeEye(eyes.left, resizeHeight, resizeHeight);
+    var resizedright = this.resizeEye(eyes.right, resizeHeight, resizeHeight);
 
+    var leftGray = this.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
+    var rightGray = this.grayscale(resizedright.data, resizedright.width, resizedright.height);
+
+    var histLeft = [];
+    this.equalizeHistogram(leftGray, 5, histLeft);
+    var histRight = [];
+    this.equalizeHistogram(rightGray, 5, histRight);
+
+    var leftGrayArray = Array.prototype.slice.call(histLeft);
+    var rightGrayArray = Array.prototype.slice.call(histRight);
+
+    return leftGrayArray.concat(rightGrayArray);
+}
 //Data Window class
 //operates like an array but 'wraps' data around to keep the array at a fixed windowSize
 /**
@@ -86998,8 +87018,6 @@ util.KalmanFilter.prototype.update = function(z) {
 
 const ridgeReg_reg = {};
 var ridgeParameter = Math.pow(10,-5);
-var resizeWidth = 10;
-var resizeHeight = 6;
 var dataWindow = 700;
 var trailDataWindow = 10;
 
@@ -87047,29 +87065,6 @@ function ridge(y, X, k){
     }
   } while (!success);
   return m_Coefficients;
-}
-
-/**
- * Compute eyes size as gray histogram
- * @param {Object} eyes - The eyes where looking for gray histogram
- * @returns {Array.<T>} The eyes gray level histogram
- */
-function getEyeFeats(eyes) {
-  var resizedLeft = src_util.resizeEye(eyes.left, resizeWidth, resizeHeight);
-  var resizedright = src_util.resizeEye(eyes.right, resizeWidth, resizeHeight);
-
-  var leftGray = src_util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-  var rightGray = src_util.grayscale(resizedright.data, resizedright.width, resizedright.height);
-
-  var histLeft = [];
-  src_util.equalizeHistogram(leftGray, 5, histLeft);
-  var histRight = [];
-  src_util.equalizeHistogram(rightGray, 5, histRight);
-
-  var leftGrayArray = Array.prototype.slice.call(histLeft);
-  var rightGrayArray = Array.prototype.slice.call(histRight);
-
-  return leftGrayArray.concat(rightGrayArray);
 }
 
 //TODO: still usefull ???
@@ -87170,13 +87165,13 @@ ridgeReg_reg.RidgeReg.prototype.addData = function(eyes, screenPos, type) {
     this.screenXClicksArray.push([screenPos[0]]);
     this.screenYClicksArray.push([screenPos[1]]);
 
-    this.eyeFeaturesClicks.push(getEyeFeats(eyes));
+    this.eyeFeaturesClicks.push(src_util.getEyeFeats(eyes));
     this.dataClicks.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
   } else if (type === 'move') {
     this.screenXTrailArray.push([screenPos[0]]);
     this.screenYTrailArray.push([screenPos[1]]);
 
-    this.eyeFeaturesTrail.push(getEyeFeats(eyes));
+    this.eyeFeaturesTrail.push(src_util.getEyeFeats(eyes));
     this.trailTimes.push(performance.now());
     this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
   }
@@ -87218,7 +87213,7 @@ ridgeReg_reg.RidgeReg.prototype.predict = function(eyesObj) {
   var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
   var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter);
 
-  var eyeFeats = getEyeFeats(eyesObj);
+  var eyeFeats = src_util.getEyeFeats(eyesObj);
   var predictedX = 0;
   for(var i=0; i< eyeFeats.length; i++){
     predictedX += eyeFeats[i] * coefficientsX[i];
@@ -87291,8 +87286,6 @@ ridgeReg_reg.RidgeReg.prototype.name = 'ridge';
 const ridgeWeightedReg_reg = {};
 
 var ridgeWeightedReg_ridgeParameter = Math.pow(10,-5);
-var ridgeWeightedReg_resizeWidth = 10;
-var ridgeWeightedReg_resizeHeight = 6;
 var ridgeWeightedReg_dataWindow = 700;
 var ridgeWeightedReg_trailDataWindow = 10;
 
@@ -87347,23 +87340,7 @@ function ridgeWeightedReg_ridge(y, X, k){
  * @param {Object} eyes - The eyes where looking for gray histogram
  * @returns {Array.<T>} The eyes gray level histogram
  */
-function ridgeWeightedReg_getEyeFeats(eyes) {
-    var resizedLeft = src_util.resizeEye(eyes.left, ridgeWeightedReg_resizeWidth, ridgeWeightedReg_resizeHeight);
-    var resizedright = src_util.resizeEye(eyes.right, ridgeWeightedReg_resizeWidth, ridgeWeightedReg_resizeHeight);
 
-    var leftGray = src_util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-    var rightGray = src_util.grayscale(resizedright.data, resizedright.width, resizedright.height);
-
-    var histLeft = [];
-    src_util.equalizeHistogram(leftGray, 5, histLeft);
-    var histRight = [];
-    src_util.equalizeHistogram(rightGray, 5, histRight);
-
-    var leftGrayArray = Array.prototype.slice.call(histLeft);
-    var rightGrayArray = Array.prototype.slice.call(histRight);
-
-    return leftGrayArray.concat(rightGrayArray);
-}
 
 //TODO: still usefull ???
 /**
@@ -87462,13 +87439,13 @@ ridgeWeightedReg_reg.RidgeWeightedReg.prototype.addData = function(eyes, screenP
         this.screenXClicksArray.push([screenPos[0]]);
         this.screenYClicksArray.push([screenPos[1]]);
 
-        this.eyeFeaturesClicks.push(ridgeWeightedReg_getEyeFeats(eyes));
+        this.eyeFeaturesClicks.push(src_util.getEyeFeats(eyes));
         this.dataClicks.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
     } else if (type === 'move') {
         this.screenXTrailArray.push([screenPos[0]]);
         this.screenYTrailArray.push([screenPos[1]]);
 
-        this.eyeFeaturesTrail.push(ridgeWeightedReg_getEyeFeats(eyes));
+        this.eyeFeaturesTrail.push(src_util.getEyeFeats(eyes));
         this.trailTimes.push(performance.now());
         this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
     }
@@ -87532,7 +87509,7 @@ ridgeWeightedReg_reg.RidgeWeightedReg.prototype.predict = function(eyesObj) {
     var coefficientsX = ridgeWeightedReg_ridge(screenXArray, eyeFeatures, ridgeWeightedReg_ridgeParameter);
     var coefficientsY = ridgeWeightedReg_ridge(screenYArray, eyeFeatures, ridgeWeightedReg_ridgeParameter);
 
-    var eyeFeats = ridgeWeightedReg_getEyeFeats(eyesObj);
+    var eyeFeats = src_util.getEyeFeats(eyesObj);
     var predictedX = 0;
     for(var i=0; i< eyeFeats.length; i++){
         predictedX += eyeFeats[i] * coefficientsX[i];
@@ -87598,41 +87575,17 @@ ridgeWeightedReg_reg.RidgeWeightedReg.prototype.name = 'ridge';
 
 /* harmony default export */ var ridgeWeightedReg = (ridgeWeightedReg_reg);
 
-// CONCATENATED MODULE: ./src/ridgeRegThreaded.js
+// CONCATENATED MODULE: ./src/ridgeRegThreaded.mjs
 
 
 
 const ridgeRegThreaded_reg = {};
 
 var ridgeRegThreaded_ridgeParameter = Math.pow(10,-5);
-var ridgeRegThreaded_resizeWidth = 10;
-var ridgeRegThreaded_resizeHeight = 6;
 var ridgeRegThreaded_dataWindow = 700;
 var weights = {'X':[0],'Y':[0]};
 var ridgeRegThreaded_trailDataWindow = 10;
 
-/**
- * Compute eyes size as gray histogram
- * @param {Object} eyes - The eyes where looking for gray histogram
- * @returns {Array.<T>} The eyes gray level histogram
- */
-function ridgeRegThreaded_getEyeFeats(eyes) {
-    var resizedLeft = src_util.resizeEye(eyes.left, ridgeRegThreaded_resizeWidth, ridgeRegThreaded_resizeHeight);
-    var resizedright = src_util.resizeEye(eyes.right, ridgeRegThreaded_resizeWidth, ridgeRegThreaded_resizeHeight);
-
-    var leftGray = src_util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-    var rightGray = src_util.grayscale(resizedright.data, resizedright.width, resizedright.height);
-
-    var histLeft = [];
-    src_util.equalizeHistogram(leftGray, 5, histLeft);
-    var histRight = [];
-    src_util.equalizeHistogram(rightGray, 5, histRight);
-
-    var leftGrayArray = Array.prototype.slice.call(histLeft);
-    var rightGrayArray = Array.prototype.slice.call(histRight);
-
-    return leftGrayArray.concat(rightGrayArray);
-}
 
 /**
  * Constructor of RidgeRegThreaded object,
@@ -87684,7 +87637,7 @@ ridgeRegThreaded_reg.RidgeRegThreaded.prototype.init = function() {
               [1/2, 0,    1,   0],
               [0,  1/2,  0,   1]];// * delta_t
     var delta_t = 1/10; // The amount of time between frames
-    Q = numeric_1_2_6_default.a.mul(Q, delta_t);
+    Q = numeric_1_2_6.mul(Q, delta_t);
 
     var H = [ [1, 0, 0, 0, 0, 0],
               [0, 1, 0, 0, 0, 0],
@@ -87695,9 +87648,9 @@ ridgeRegThreaded_reg.RidgeRegThreaded.prototype.init = function() {
     var pixel_error = 47; //We will need to fine tune this value [20200611 xk] I just put a random value here
 
     //This matrix represents the expected measurement error
-    var R = numeric_1_2_6_default.a.mul(numeric_1_2_6_default.a.identity(2), pixel_error);
+    var R = numeric_1_2_6.mul(numeric_1_2_6.identity(2), pixel_error);
 
-    var P_initial = numeric_1_2_6_default.a.mul(numeric_1_2_6_default.a.identity(4), 0.0001); //Initial covariance matrix
+    var P_initial = numeric_1_2_6.mul(numeric_1_2_6.identity(4), 0.0001); //Initial covariance matrix
     var x_initial = [[500], [500], [0], [0]]; // Initial measurement matrix
 
     this.kalman = new src_util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
@@ -87716,7 +87669,7 @@ ridgeRegThreaded_reg.RidgeRegThreaded.prototype.addData = function(eyes, screenP
     if (eyes.left.blink || eyes.right.blink) {
         return;
     }
-    this.worker.postMessage({'eyes':ridgeRegThreaded_getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
+    this.worker.postMessage({'eyes':src_util.getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
 };
 
 /**
@@ -87733,7 +87686,7 @@ ridgeRegThreaded_reg.RidgeRegThreaded.prototype.predict = function(eyesObj) {
     var coefficientsX = weights.X;
     var coefficientsY = weights.Y;
 
-    var eyeFeats = ridgeRegThreaded_getEyeFeats(eyesObj);
+    var eyeFeats = src_util.getEyeFeats(eyesObj);
     var predictedX = 0, predictedY = 0;
     for(var i=0; i< eyeFeats.length; i++){
         predictedX += eyeFeats[i] * coefficientsX[i];
