@@ -38,7 +38,11 @@
     "regression": "2.0.1"
   },
   "devDependencies": {
+<<<<<<< HEAD
     "canvas": "^2.6.1",
+=======
+    "chai": "^4.2.0",
+>>>>>>> d3a281f... Refactor and clean
     "file-loader": "^6.0.0",
     "jsdoc": "^3.6.5",
     "jsdom": "16.4.0",

@@ -102,7 +102,7 @@ function onLoad()
     ws.onopen = function(e) 
     {};
 
-    ws.onmessage = function(e) 
+    ws.onmessage = async function(e) 
     {
         // Received image data
         if( e.data instanceof Blob )
@@ -111,7 +111,7 @@ function onLoad()
             ctx = c.getContext('2d')
 
             var fr = new FileReader();
-            fr.onload = function (e) {
+            fr.onload = async function (e) {
                 var buffer = new Uint8ClampedArray(e.target.result);
                 var imageData = new ImageData(buffer, width, height);
                 ctx.putImageData( imageData, 0, 0 )
@@ -194,7 +194,7 @@ function onLoad()
     };
 }
 
-function sendMsg(msg) {
+async function sendMsg(msg) {
     ws.send(msg);
 }
 

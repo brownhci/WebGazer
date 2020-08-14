@@ -124,7 +124,10 @@ class ParticipantData:
                     self.screenHeightPixels = int(row[5])
                     self.pcOrLaptop = str(row[3])  # Equals either 'Laptop' or 'PC'
                     self.touchTypist = str(row[18])  # Equals either 'Yes' or 'No'
-                    self.screencapStartTime = int(row[9])  # 20180316 JT Note: the value in the .csv is currently inaccurate or incomplete
+                    if row[9] != '':
+                        self.screencapStartTime = int(row[9])  # 20180316 JT Note: the value in the .csv is currently inaccurate or incomplete
+                    else:
+                        self.screencapStartTime = 0
                     break
 
         ########################
