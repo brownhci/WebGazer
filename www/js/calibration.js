@@ -21,7 +21,7 @@ function PopUpInstruction(){
     buttons:{
       cancel: false,
       confirm: true
-    }
+    },
   }).then(isConfirm => {
     ShowCalibrationPoint();
   });
