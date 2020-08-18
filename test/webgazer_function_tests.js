@@ -24,7 +24,6 @@ it('top level, non-video no arguments webgazer functions should work', async() =
 			while (document.getElementById('wgGP').style.height == ""){
 				await new Promise(r => setTimeout(r, 1000));
 			}
-			debugger
 			let pred = await webgazer.getCurrentPrediction()
 			
 			return {getCurrentPrediction: JSON.stringify(await webgazer.getCurrentPrediction()),
@@ -34,7 +33,6 @@ it('top level, non-video no arguments webgazer functions should work', async() =
 					removeMouseEventListeners:JSON.stringify(await webgazer.removeMouseEventListeners()),
 					isReady:JSON.stringify(await webgazer.isReady()),
 					
-					//stopVideo:JSON.stringify(await webgazer.stopVideo()),
 					detectCompatibility:JSON.stringify(await webgazer.detectCompatibility()),
 					clearGazeListener:JSON.stringify(await webgazer.clearGazeListener()),
 					getRegression:JSON.stringify(await webgazer.getRegression()),
@@ -70,9 +68,9 @@ it('can record screen position, set tracker and regression and set static video'
 				setRegression: await webgazer.setRegression('ridge')}
 	})
 	for(const [k,v] of Object.entries(screen_functions)){ 
-  			assert.notEqual(Object.keys(v),null)
-  			assert.notEqual(Object.keys(v),{})
-  			}
+		assert.notEqual(Object.keys(v),null)
+		assert.notEqual(Object.keys(v),{})
+  	}
 })
 
 

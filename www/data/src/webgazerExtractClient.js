@@ -60,8 +60,6 @@ function onLoad()
 {
     // Init webgazer and set parameters
     webgazer.setRegression('ridge').setTracker('TFFacemesh');
-    webgazer.params.smoothEyeBB = false;
-    webgazer.params.blinkDetectionOn = true;
 
     // Drawing overlay
     var c = document.getElementById('wsCanvas')

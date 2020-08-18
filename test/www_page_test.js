@@ -8,7 +8,7 @@ describe('Page Basics', async () => {
 		//convert .webm to mp4 https://cloudconvert.com/webm-to-mp4
 		//convert mp4 to y4m with:
 		//ffmpeg -i 1491487691210_2_-study-dot_test_instructions.webm -pix_fmt yuv420p dot.y4m
-		//sed -i '0,/C420mpeg2/s//C420/' *.y4m
+		//sed -i '0,/C420mpeg2/s//C420/' *.y4m (make accessible to chrome)
 		//give absolute path!
 		let my_y4m_video = '/home/robin/workspace/WebGazer/www/data/src/P_02/dot.y4m'
 		browser = await puppeteer.launch({args:['--use-file-for-fake-video-capture='+my_y4m_video,
@@ -44,12 +44,21 @@ describe('Page Basics', async () => {
   	it('clicking the calibration button should send you to new page' , async() =>{
   		await page.goto('http://localhost:3000');
   		const calibration_button = "#calibration_button";
+<<<<<<< HEAD
 		await page.click(calibration_button);
 		expect(page.url()).to.equal('http://localhost:3000/calibration.html?')
 	});
 	//
+=======
+  		const [response] = await Promise.all([
+		  page.waitForNavigation(), 
+		  page.click(calibration_button),
+		]);
+		assert.equal(page.url(),'http://localhost:3000/calibration.html?')
+		expect(response.status()).to.equal(200)
+	});	
+>>>>>>> 05ac092... More top level webgazer tests
 	it('should be able to recognize video input', async() =>{
-		await page.waitForSelector("#start_calibration")
 		await page.evaluate(async() => {
 			document.querySelector("#start_calibration").click()
 		})
@@ -60,9 +69,49 @@ describe('Page Basics', async () => {
 		const videoAvailable = await page.evaluate(async() => {
 			return await webgazer.params.showFaceFeedbackBox;
 		});
-		console.log(videoAvailable)
-		// debugger
 		assert.equal(videoAvailable,true);
+	});
+	it('webgazerVideoFeed should display', async() => {
+		
+		let video_display = await page.evaluate(async() => {
+			return document.getElementById('webgazerVideoFeed').style.display
+		})
+		assert.notEqual(video_display,"none");
+	})
+	it('webgazerFaceFeedbackBox should display', async() => {
+		await page.waitForSelector('#webgazerFaceFeedbackBox')
+		let face_overlay = await page.evaluate(async() => {
+			return await document.getElementById('webgazerFaceFeedbackBox').style.display
+		})
+		assert.notEqual(face_overlay,"none");
+	})
+	it('faceoverlay should hide when showFaceOverlay is false', async() => {
+		face_overlay = await page.evaluate(async() => {
+			await webgazer.showFaceFeedbackBox(false)
+			return await document.getElementById('webgazerFaceFeedbackBox').style.display
+		})
+		assert.equal(face_overlay,"none");
+	})
+	// it('webgazerGazeDot should display', async() => {
+	// 	let webgazer_gazedot = await page.evaluate(async() => {
+	// 		await document.getElementsByClassName('Calibration')[0].click()
+	// 		return await document.getElementById('webgazerGazeDot').style.display
+	// 	})
+	// 	assert.notEqual(webgazer_gazedot,"none");
+	// })
+	// it('webgazerGazeDot should hide when showPredictionPoints is false', async() =>{
+	// 	let webgazer_gazedot = await page.evaluate(async() => {
+	// 		return await document.getElementById('webgazerGazeDot').style.display
+	// 	})
+	// 	assert.equal(webgazer_gazedot,"none");
+	// })
+	it('webgazerVideoFeed should hide when showVideo is false', async() => {
+		video_display = await page.evaluate(async() => {
+			
+			await webgazer.showVideo(false)
+			return await document.getElementById('webgazerVideoFeed').style.display
+		});
+		assert.equal(video_display,"none");
 
 	it('clicking the collision button should send you to new page' , async() =>{
 		await page.goto('http://localhost:3000');
@@ -72,22 +121,14 @@ describe('Page Basics', async () => {
 	});
 });
 
-// webgazer.begin(()=>{})
-// return webgazer instance - errors?
-// webgazer.showVideo(true)
-// return webgazer instance
-// webgazer.showFaceOverlay(true)
-// return webgazer instance 
-// //can we simulate a webcam or do we have to use the video?
-// //how can we simulate webcam input for puppeteer?
-// //https://stackoverflow.com/questions/52464583/possible-to-get-puppeteer-audio-feed-and-or-input-audio-directly-to-puppeteer
 // webgazer.showFaceFeedbackBox(true) 
 // webgazer.showPredictionPoints(true)
 					//getVideoElementCanvas:JSON.stringify(await webgazer.getVideoElementCanvas()),
 					//getVideoPreviewToCameraResolutionRatio:JSON.stringify(await webgazer.getVideoPreviewToCameraResolutionRatio()),
 					//checkEyesInValidationBox
 //setVideoViewerSize: await webgazer.setVideoViewerSize(640, 480),
-
+//stopVideo:JSON.stringify(await webgazer.stopVideo()),
+//see which elements now disappear
 
 
 // webgazer.setStaticVideo('../www/data/src/P_02/1491487691210_2_-study-dot_test_instructions.webm')
@@ -104,3 +145,11 @@ describe('Page Basics', async () => {
 // webgazer.addRegression(name) 
 // webgazer.setGazeListener(listener) 
 // webgazer.setVideoElementCanvas(canvas - get from page) 
+
+// it('webgazer begins without error', async() => {
+	// 	await page.waitForSelector("#start_calibration")
+	// 	let webgazer_begin = await page.evaluate(async() =>{
+	// 		return await webgazer.begin();
+	// 	})
+	// 	assert.notEqual(webgazer_begin,null)
+	// });
