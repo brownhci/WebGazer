@@ -56,8 +56,8 @@ describe('Page Basics', async () => {
 	});	
 	it('should be able to recognize video input', async() =>{
   		await page.waitForSelector('#start_calibration')
-  		//calibration button is not immediately clickable probably related to modals
-  		await page.waitFor(2000)
+  		//calibration button is not immediately clickable due to css transition
+  		await page.waitFor(500)
 
 		await page.evaluate(async() => {
 			document.querySelector("#start_calibration").click()
