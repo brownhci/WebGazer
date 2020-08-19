@@ -32,12 +32,9 @@ it('top level, non-video no arguments webgazer functions should work', async() =
 					getStoredPoints:JSON.stringify(await webgazer.getStoredPoints()),
 					removeMouseEventListeners:JSON.stringify(await webgazer.removeMouseEventListeners()),
 					isReady:JSON.stringify(await webgazer.isReady()),
-					
 					detectCompatibility:JSON.stringify(await webgazer.detectCompatibility()),
 					clearGazeListener:JSON.stringify(await webgazer.clearGazeListener()),
 					getRegression:JSON.stringify(await webgazer.getRegression()),
-					//getEventTypes:JSON.stringify(await webgazer.getEventTypes()), -needs params
-					//
 					getStoredPoints:JSON.stringify(await webgazer.getStoredPoints()),
 					pause:JSON.stringify(await webgazer.pause())
 				}
