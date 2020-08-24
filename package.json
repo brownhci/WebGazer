@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "test": "mocha -r jsdom-global/register",
+    "test": "./test/run_tests_and_server.sh",
     "dev": "webpack --progress --colors --config webpack.config.js --mode=development",
     "build": "webpack --progress --colors --config webpack.config.js --mode=production",
     "gen_docs": "jsdoc -c jsdoc.conf.json src/*"
@@ -19,36 +19,24 @@
   "files": [
     "src"
   ],
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run build"
-    }
-  },
   "keywords": [
     "webgazer"
   ],
   "dependencies": {
     "@tensorflow-models/facemesh": "0.0.3",
     "@tensorflow/tfjs": "2.0.1",
-    "chai": "^4.2.0",
-    "husky": "^4.2.5",
     "localforage": "1.7.3",
-    "node-fetch-polyfill": "^2.0.6",
     "numeric": "1.2.6",
     "regression": "2.0.1"
   },
   "devDependencies": {
-<<<<<<< HEAD
-    "canvas": "^2.6.1",
-=======
     "chai": "^4.2.0",
->>>>>>> d3a281f... Refactor and clean
     "file-loader": "^6.0.0",
     "jsdoc": "^3.6.5",
-    "jsdom": "16.4.0",
-    "jsdom-global": "3.0.2",
     "mocha": "^8.1.1",
+    "ndb": "^1.1.5",
     "parallel-webpack": "2.6.0",
+    "puppeteer": "^5.2.1",
     "rimraf": "2.6.3",
     "webpack": "4.44.1",
     "webpack-cli": "3.3.12"
