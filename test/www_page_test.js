@@ -15,8 +15,7 @@ describe('Page Basics', async () => {
 		browser = await puppeteer.launch({args:['--use-file-for-fake-video-capture='+my_y4m_video,
 		'--allow-file-access', '--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream',
 		'--no-sandbox','--disable-setuid-sandbox',
-		'--enable-webgl-draft-extensions', '--enable-webgl-image-chromium', 
-		'--enable-webgl-swap-chain', '--enable-webgl2-compute-context']
+		]
 		,devtools:true 
 		});
 		page = await browser.newPage();
@@ -57,7 +56,7 @@ describe('Page Basics', async () => {
 	it('should be able to recognize video input', async() =>{
   		await page.waitForSelector('#start_calibration')
   		//calibration button is not immediately clickable due to css transition
-  		await page.waitFor(500)
+  		await page.waitFor(1500)
 
 		await page.evaluate(async() => {
 			document.querySelector("#start_calibration").click()
@@ -69,10 +68,65 @@ describe('Page Basics', async () => {
 		const videoAvailable = await page.evaluate(async() => {
 			return await webgazer.params.showFaceFeedbackBox;
 		});
+		const isReady = await page.evaluate(async() => {
+			return await webgazer.isReady()
+		});
 		assert.equal(videoAvailable,true);
+		assert.equal(isReady,true);
 	});
-	it('webgazerVideoFeed should display', async() => {
+
+	it('mouse clicks and moves should be stored in regs', async()=>{
+		await page.mouse.click(500,600)
+		let regsClicksArray = await page.evaluate(async()=>{
+			return {x:await webgazer.getRegression()[0].screenXClicksArray.data[1],
+					y:await webgazer.getRegression()[0].screenYClicksArray.data[1]}
+		})
+		assert.equal(regsClicksArray.x,500)
+		assert.equal(regsClicksArray.y,600)
+
+		await page.mouse.move(50, 60);
+		let regsTrailArray = await page.evaluate(async()=>{
+			return {x:await webgazer.getRegression()[0].screenXTrailArray.data[0],
+					y:await webgazer.getRegression()[0].screenYTrailArray.data[0]}
+		})
 		
+		debugger
+		assert.equal(regsTrailArray.x[0],50)
+		assert.equal(regsTrailArray.y[0],60)
+
+	})
+
+	it('should be able to store points', async()=>{
+		const points = await page.evaluate(async()=>{
+			await webgazer.storePoints(100, 200, 0)
+			return await webgazer.getStoredPoints() 
+		})
+		assert.equal(points[0][0],100)
+		assert.equal(points[1][0],200)
+	})
+	it('should return regression data', async()=> {
+		await page.evaluate(async() => {
+			document.getElementsByClassName('Calibration')[0].click()
+			
+		})
+		let regs = await page.evaluate(async()=>{
+			return await webgazer.getRegression()
+		})
+		assert.isNotNull(regs)
+	})
+	
+	it('should make predictions', async()=>{
+		const prediction = await page.evaluate(async() => {
+			return await webgazer.getCurrentPrediction()
+		})
+		
+		console.log(prediction)
+		assert.isNotNull(prediction)
+	})
+
+
+	//modifying visibility params
+	it('webgazerVideoFeed should display', async() => {
 		let video_display = await page.evaluate(async() => {
 			return document.getElementById('webgazerVideoFeed').style.display
 		})
@@ -85,18 +139,19 @@ describe('Page Basics', async () => {
 		})
 		assert.notEqual(face_overlay,"none");
 	})
+	it('webgazerGazeDot should display', async() => {
+		let webgazer_gazedot = await page.evaluate(async() => {
+			return document.getElementById('webgazerGazeDot').style.display
+		})
+		assert.notEqual(webgazer_gazedot,"none");
+	})
+
 	it('faceoverlay should hide when showFaceOverlay is false', async() => {
 		face_overlay = await page.evaluate(async() => {
 			await webgazer.showFaceFeedbackBox(false)
 			return document.getElementById('webgazerFaceFeedbackBox').style.display
 		})
 		assert.equal(face_overlay,"none");
-	})
-	it('webgazerGazeDot should display', async() => {
-		let webgazer_gazedot = await page.evaluate(async() => {
-			return document.getElementById('webgazerGazeDot').style.display
-		})
-		assert.notEqual(webgazer_gazedot,"none");
 	})
 	it('webgazerGazeDot should hide when showPredictionPoints is false', async() =>{
 		let webgazer_gazedot = await page.evaluate(async() => {
@@ -139,36 +194,7 @@ describe('Page Basics', async () => {
 	})
 
 
-	//refine
-	it('should be able to record screen position', async()=>{
-		const points = await page.evaluate(async()=>{
-			await webgazer.recordScreenPosition(100, 100) 
-			await webgazer.recordScreenPosition(100, 100, 'mouseclick') 
-			await webgazer.storePoints(100, 100, 0)
-			return await webgazer.getStoredPoints() 
-		})
-		console.log(points)
-	})
-	it('should return regression data', async()=> {
-		const regs = await page.evaluate(async()=>{
-			return await webgazer.getRegression()
-		})
-		console.log(regs)
-	})
-	it('should make predictions', async()=>{
-		await page.evaluate(async() => {
-			await webgazer.showFaceFeedbackBox(true)
-			await webgazer.showVideo(true)
-			await webgazer.setRegression('ridge').setTracker('TFFacemesh')
-			document.getElementsByClassName('Calibration')[0].click()
-		})
-		debugger
-		const prediction = await page.evaluate(async() => {
-			
-			return await webgazer.getCurrentPrediction()
-		})
-		console.log(prediction)
-	})
+	
 
 	it('clicking the collision button should send you to new page' , async() =>{
 		await page.goto('http://localhost:3000');
@@ -179,20 +205,5 @@ describe('Page Basics', async () => {
 });
 //checkEyesInValidationBox exists in code but the comment above says it's wrong and it returns nothing
 
-//stopVideo:JSON.stringify(await webgazer.stopVideo()),
-//see which elements now disappear
 
 
-// webgazer.setStaticVideo('../www/data/src/P_02/1491487691210_2_-study-dot_test_instructions.webm')
-// returns webgazer instance 
-// //returns nothing 
-// webgazer.recordScreenPosition(100, 100) 
-// webgazer.recordScreenPosition(100, 100, 'mouseclick') 
-// webgazer.storePoints(100, 100, 0) 
-// webgazer.setTracker('TFFacemesh') 
-// webgazer.setRegression('ridge') 
-// webgazer.addTrackerModule(name, constructor) 
-// webgazer.addRegressionModule(name, constructor) 
-// webgazer.addRegression(name) 
-// webgazer.setGazeListener(listener) 
-// webgazer.setVideoElementCanvas(canvas - get from page) 

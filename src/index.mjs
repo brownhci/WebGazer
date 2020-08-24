@@ -200,7 +200,7 @@ function getPupilFeatures(canvas, width, height) {
   try {
     return curTracker.getEyePatches(canvas, width, height);
   } catch(err) {
-    console.log(err);
+    console.log("can't get pupil features ", err);
     return null;
   }
 }
@@ -333,6 +333,9 @@ async function loop() {
     requestAnimationFrame(loop);
   }
 }
+
+//is problematic to test
+//because latestEyeFeatures is not set in many cases
 
 /**
  * Records screen position data based on current pupil feature and passes it
