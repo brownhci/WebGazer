@@ -22,13 +22,13 @@ describe('webgazer function', async() => {
 		//ffmpeg -i 1491487691210_2_-study-dot_test_instructions.webm -pix_fmt yuv420p dot.y4m
 		//sed -i '0,/C420mpeg2/s//C420/' *.y4m (make accessible to chrome)
 		//give absolute path!
-		//(I'm sure there's a more efficient way of doing this but final file must be .y4m)
-		let my_y4m_video = '/home/robin/workspace/WebGazer/www/data/src/P_02/dot.y4m'
+		//(I'm sure there's a more efficient way of doing this but final file must be .y4m with header for chrome)
+		let my_y4m_video = '/home/robin/workspace/WebGazer/www/data/src/P_64/dot.y4m'
 		browser = await puppeteer.launch({args:['--use-file-for-fake-video-capture='+my_y4m_video,
 		'--allow-file-access', '--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream',
 		'--no-sandbox','--disable-setuid-sandbox',
 		]
-		// ,devtools:true //enable for debugging
+		,devtools:true //enable for debugging
 		});
 		page = await browser.newPage();
 		await page.goto('http://localhost:3000/calibration.html?');
@@ -54,11 +54,12 @@ describe('webgazer function', async() => {
 		await page.waitFor(1500)
   		await page.waitForSelector('#start_calibration')
   		//calibration button is not immediately clickable due to css transition
-  		await page.waitFor(1500)
+  		await page.waitFor(2500)
 
 		await page.evaluate(async() => {
 			document.querySelector("#start_calibration").click()
 		})
+		await page.waitFor(1500)
 		await page.evaluate(async() =>{
 			document.querySelector("body > div.swal-overlay.swal-overlay--show-modal > div > div.swal-footer > div > button").click()
 		})
