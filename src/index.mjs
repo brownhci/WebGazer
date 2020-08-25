@@ -630,9 +630,7 @@ webgazer.begin = function(onFail) {
     let stream;
     try {
       stream = await navigator.mediaDevices.getUserMedia( webgazer.params.camConstraints );
-      if (webgazer.params.showVideoPreview) {
-        init(stream);
-      }
+      init(stream);
       resolve(webgazer);
     } catch(err) {
       onFail();

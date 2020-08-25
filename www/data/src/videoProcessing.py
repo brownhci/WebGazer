@@ -5,8 +5,9 @@ import tornado.escape
 import csv
 import cv2
 import numpy as np
-import global_variables
 
+from participant import newParticipant
+import global_variables
 
 
 ##################################################################
@@ -165,9 +166,10 @@ def sendVideoEnd( wsh ):
     # Progress video if not at end of video list for global_variables.participant
     if global_variables.participant.videosPos+1 >= len(global_variables.participant.videos):
         # New global_variables.participant!
-        global_variables.participant( wsh )
+        newParticipant( wsh )
 
     else:
         # Regular 'video end' message; will trigger return of {'msgID': "1"}
         parcel = {'msgID': "4"}
         wsh.write_message( tornado.escape.json_encode(parcel) )
+

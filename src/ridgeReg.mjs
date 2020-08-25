@@ -5,8 +5,6 @@ import params from './params';
 
 const reg = {};
 var ridgeParameter = Math.pow(10,-5);
-var resizeWidth = 10;
-var resizeHeight = 6;
 var dataWindow = 700;
 var trailDataWindow = 10;
 
