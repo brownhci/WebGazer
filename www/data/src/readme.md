@@ -110,3 +110,5 @@ Potential improvements to WebGazer:
 - Initial black frames after video recording start cause problems with CLMTracker; WebGazer.js could check whether each frame is above a noise floor and not process otherwise.
 - CLMTracker does not run to convergence on every video frame (when in 'video mode'), which means that the WebGazer output is not optimal and jitters unnecessarily. WebGazer could use any space CPU cycles above framerate to have the CLM tracker run more iterations.
 - "a patchresponse was monotone, causing normalization to fail. Leaving it unchanged." error message should be fixable.
+- In code, rename everything that was 'screen' to be 'client', e.g., 'mouseClient', as the values in these variables don't refer to screen coordinates but client coordinates.
+- WebGazer does multiple identical image processing operations on the same pixels, which is wasteful.
