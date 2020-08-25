@@ -17,22 +17,18 @@ function startTimer() {
 describe('webgazer function', async() => {
 	let browser,page;
 	before(async () => {
-		//convert .webm to mp4 https://cloudconvert.com/webm-to-mp4
-		//convert mp4 to y4m with:
-		//ffmpeg -i 1491487691210_2_-study-dot_test_instructions.webm -pix_fmt yuv420p dot.y4m
-		//sed -i '0,/C420mpeg2/s//C420/' *.y4m (make accessible to chrome)
-		//give absolute path!
-		//(I'm sure there's a more efficient way of doing this but final file must be .y4m with header for chrome)
-		let my_y4m_video = '/home/robin/workspace/WebGazer/www/data/src/P_64/dot.y4m'
+		const parent_dir = __dirname.substring(0,__dirname.length-4)
+		let my_y4m_video = parent_dir + 'www/data/src/P_01/dot.y4m'
 		browser = await puppeteer.launch({args:['--use-file-for-fake-video-capture='+my_y4m_video,
 		'--allow-file-access', '--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream',
 		'--no-sandbox','--disable-setuid-sandbox',
 		]
-		,devtools:true //enable for debugging
+		//,devtools:true //enable for debugging
 		});
 		page = await browser.newPage();
 		await page.goto('http://localhost:3000/calibration.html?');
 		page.coverage.startJSCoverage();
+
 	})
 
 	after(async () => {

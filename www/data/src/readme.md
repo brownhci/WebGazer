@@ -8,7 +8,7 @@ james_tompkin@brown.edu - Any issues, email me.
 This software takes the ETRA2018 dataset and creates CSV files for each video, containing per-frame WebGazer and Tobii values in normalized screen coordinates.
 After extraction, this makes it simple and efficent to analyse the performance of WebGazer in your favourite _data science_ application.
 
-Works with webgazer.js commit 5a12c64db54b489cda9bad5a1b90fa9ccfdde4e8
+Works with webgazer.js commit 968817befd4855a219d1d4f2b9fbf52236779a05
 
 Requirements:
 =============
@@ -110,5 +110,3 @@ Potential improvements to WebGazer:
 - Initial black frames after video recording start cause problems with CLMTracker; WebGazer.js could check whether each frame is above a noise floor and not process otherwise.
 - CLMTracker does not run to convergence on every video frame (when in 'video mode'), which means that the WebGazer output is not optimal and jitters unnecessarily. WebGazer could use any space CPU cycles above framerate to have the CLM tracker run more iterations.
 - "a patchresponse was monotone, causing normalization to fail. Leaving it unchanged." error message should be fixable.
-- In code, rename everything that was 'screen' to be 'client', e.g., 'mouseClient', as the values in these variables don't refer to screen coordinates but client coordinates.
-- WebGazer does multiple identical image processing operations on the same pixels, which is wasteful.

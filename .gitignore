@@ -29,10 +29,6 @@
 *.cpuprofile
 node_modules/
 www/node_modules/
-build/webgazer.js
-build/webgazer.min.js
-.idea/
-dist2/
 www/data/src/WebGazerETRA2018Dataset_Release20180420/
 www/data/src/P*/
 www/data/FramesDataset/
@@ -41,4 +37,3 @@ www/data/FramesDataset/
 docs/
 dist/*.map
 dist/*.min.js
-.idea/

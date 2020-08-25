@@ -19,12 +19,18 @@
   "files": [
     "src"
   ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run build"
+    }
+  },
   "keywords": [
     "webgazer"
   ],
   "dependencies": {
     "@tensorflow-models/facemesh": "0.0.3",
     "@tensorflow/tfjs": "2.0.1",
+    "husky": "^4.2.5",
     "localforage": "1.7.3",
     "numeric": "1.2.6",
     "regression": "2.0.1"

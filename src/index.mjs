@@ -1,5 +1,4 @@
 import '@tensorflow/tfjs';
-import '@tensorflow/tfjs-converter';
 import 'regression';
 import params from './params';
 import './dom_util';
