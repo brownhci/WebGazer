@@ -353,7 +353,7 @@ async function runWebGazerSendResult()
 
         // Grab eye features
         
-        eyeFeatures = webgazer.getRegression()[0].getEyeFeats(gazeData.eyeFeatures)
+        eyeFeatures = webgazer.util.getEyeFeats(gazeData.eyeFeatures)
 
         // Update position of output visualizer
         //
