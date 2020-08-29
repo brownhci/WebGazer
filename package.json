@@ -30,14 +30,16 @@
   "dependencies": {
     "@tensorflow-models/facemesh": "0.0.3",
     "@tensorflow/tfjs": "2.0.1",
-    "husky": "^4.2.5",
     "localforage": "1.7.3",
     "numeric": "1.2.6",
     "regression": "2.0.1"
   },
   "devDependencies": {
+    "browser-sync": "^2.26.12",
     "chai": "^4.2.0",
+    "conflict-detector": "^1.4.7",
     "file-loader": "^6.0.0",
+    "husky": "^4.2.5",
     "jsdoc": "^3.6.5",
     "mocha": "^8.1.1",
     "ndb": "^1.1.5",
