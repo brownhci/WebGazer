@@ -36,6 +36,7 @@
     "regression": "2.0.1"
   },
   "devDependencies": {
+    "browser-sync": "^2.26.12",
     "chai": "^4.2.0",
     "file-loader": "^6.0.0",
     "jsdoc": "^3.6.5",
@@ -44,6 +45,7 @@
     "parallel-webpack": "2.6.0",
     "puppeteer": "^5.2.1",
     "rimraf": "2.6.3",
+    "shelljs": "^0.8.4",
     "webpack": "4.44.1",
     "webpack-cli": "3.3.12"
   }
