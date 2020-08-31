@@ -11,7 +11,9 @@
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "test": "./test/run_tests_and_server.sh",
+    "test": "run-script-os",
+    "test:linux:darwin": "./test/run_tests_and_server.sh",
+    "test:windows": "./test/run_tests_and_server.sh",
     "dev": "webpack --progress --colors --config webpack.config.js --mode=development",
     "build": "webpack --progress --colors --config webpack.config.js --mode=production",
     "gen_docs": "jsdoc -c jsdoc.conf.json src/*"
@@ -45,6 +47,7 @@
     "parallel-webpack": "2.6.0",
     "puppeteer": "^5.2.1",
     "rimraf": "2.6.3",
+    "run-script-os": "^1.1.1",
     "shelljs": "^0.8.4",
     "webpack": "4.44.1",
     "webpack-cli": "3.3.12"
