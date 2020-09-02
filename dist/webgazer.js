@@ -86088,11 +86088,9 @@ const params = {
   showFaceOverlay: true,
   showFaceFeedbackBox: true,
   showGazeDot: true,
-  // Params to clmtrackr and getUserMedia constraints
-  clmParams: {useWebGL : true},
   camConstraints: { video: { width: { min: 320, ideal: 640, max: 1920 }, height: { min: 240, ideal: 480, max: 1080 }, facingMode: "user" } },
-  smoothEyeBB: false,
   dataTimestep: 50,
+  showVideoPreview: false,
   // Whether or not to store accuracy eigenValues, used by the calibration example file
   storingPoints: false,
 };
@@ -87158,9 +87156,11 @@ ridgeReg_reg.RidgeReg.prototype.addData = function(eyes, screenPos, type) {
   if (!eyes) {
     return;
   }
-  if (eyes.left.blink || eyes.right.blink) {
-    return;
-  }
+  //not doing anything with blink at present
+  // if (eyes.left.blink || eyes.right.blink) {
+  //   return;
+  // }
+  //why are we pushing these as arrays rather than single elements?
   if (type === 'click') {
     this.screenXClicksArray.push([screenPos[0]]);
     this.screenYClicksArray.push([screenPos[1]]);
@@ -87432,9 +87432,10 @@ ridgeWeightedReg_reg.RidgeWeightedReg.prototype.addData = function(eyes, screenP
     if (!eyes) {
         return;
     }
-    if (eyes.left.blink || eyes.right.blink) {
-        return;
-    }
+    //not doing anything with blink at present
+    // if (eyes.left.blink || eyes.right.blink) {
+    //     return;
+    // }
     if (type === 'click') {
         this.screenXClicksArray.push([screenPos[0]]);
         this.screenYClicksArray.push([screenPos[1]]);
@@ -87666,9 +87667,10 @@ ridgeRegThreaded_reg.RidgeRegThreaded.prototype.addData = function(eyes, screenP
     if (!eyes) {
         return;
     }
-    if (eyes.left.blink || eyes.right.blink) {
-        return;
-    }
+    //not doing anything with blink at present
+    // if (eyes.left.blink || eyes.right.blink) {
+    //     return;
+    // }
     this.worker.postMessage({'eyes':src_util.getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
 };
 
@@ -87951,7 +87953,7 @@ function getPupilFeatures(canvas, width, height) {
   try {
     return curTracker.getEyePatches(canvas, width, height);
   } catch(err) {
-    console.log(err);
+    console.log("can't get pupil features ", err);
     return null;
   }
 }
@@ -88084,6 +88086,9 @@ async function loop() {
     requestAnimationFrame(loop);
   }
 }
+
+//is problematic to test
+//because latestEyeFeatures is not set in many cases
 
 /**
  * Records screen position data based on current pupil feature and passes it
@@ -88382,7 +88387,9 @@ src_webgazer.begin = function(onFail) {
     let stream;
     try {
       stream = await navigator.mediaDevices.getUserMedia( src_webgazer.params.camConstraints );
-      init(stream);
+      if (src_webgazer.params.showVideoPreview) {
+        init(stream);
+      }
       resolve(src_webgazer);
     } catch(err) {
       onFail();

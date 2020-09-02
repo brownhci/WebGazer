@@ -145,9 +145,11 @@ reg.RidgeReg.prototype.addData = function(eyes, screenPos, type) {
   if (!eyes) {
     return;
   }
-  if (eyes.left.blink || eyes.right.blink) {
-    return;
-  }
+  //not doing anything with blink at present
+  // if (eyes.left.blink || eyes.right.blink) {
+  //   return;
+  // }
+  //why are we pushing these as arrays rather than single elements?
   if (type === 'click') {
     this.screenXClicksArray.push([screenPos[0]]);
     this.screenYClicksArray.push([screenPos[1]]);
