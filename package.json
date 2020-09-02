@@ -37,7 +37,6 @@
   "devDependencies": {
     "browser-sync": "^2.26.12",
     "chai": "^4.2.0",
-    "conflict-detector": "^1.4.7",
     "file-loader": "^6.0.0",
     "husky": "^4.2.5",
     "jsdoc": "^3.6.5",
