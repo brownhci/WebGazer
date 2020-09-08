@@ -28,7 +28,7 @@ var ws;
 // CLM tracker
 var fm;
 // TODO magic numbers
-var clmPosFeaturesSize = 142;
+var fmPosFeaturesSize = 468;
 var eyeFeaturesSize = 120;
 // Screencap video
 var screencapVideo;
@@ -60,8 +60,6 @@ function onLoad()
 {
     // Init webgazer and set parameters
     webgazer.setRegression('ridge').setTracker('TFFacemesh');
-    webgazer.params.smoothEyeBB = false;
-    webgazer.params.blinkDetectionOn = true;
 
     // Drawing overlay
     var c = document.getElementById('wsCanvas')
@@ -83,7 +81,7 @@ function onLoad()
     screencapVideo.style.margin = '0px'
     screencapVideo.style.visibility="hidden"
 
-    // Overlay for clm tracker
+    // Overlay for fm tracker
     overlay = document.createElement('canvas');
     overlay.id = 'overlay';
     overlay.style.position = 'absolute';
@@ -96,14 +94,13 @@ function onLoad()
     document.body.appendChild(overlay);
 
     fm = webgazer.getTracker();
-
     // Start WebSocket
     ws = new WebSocket("ws://localhost:8000/websocket");
     ws.binaryType = "blob"
     ws.onopen = function(e) 
     {};
 
-    ws.onmessage = function(e) 
+    ws.onmessage = async function(e) 
     {
         // Received image data
         if( e.data instanceof Blob )
@@ -112,7 +109,7 @@ function onLoad()
             ctx = c.getContext('2d')
 
             var fr = new FileReader();
-            fr.onload = function (e) {
+            fr.onload = async function (e) {
                 var buffer = new Uint8ClampedArray(e.target.result);
                 var imageData = new ImageData(buffer, width, height);
                 ctx.putImageData( imageData, 0, 0 )
@@ -161,7 +158,7 @@ function onLoad()
                 // Reset logs count as new participant
                 logsCount = 0
                 
-                // Reset clm tracker as it's a new participant with new interactions/appearance
+                // Reset fm tracker as it's a new participant with new interactions/appearance
                 fm.reset();
 
                 var send = { msgID: "1" };
@@ -195,7 +192,7 @@ function onLoad()
     };
 }
 
-function sendMsg(msg) {
+async function sendMsg(msg) {
     ws.send(msg);
 }
 
@@ -378,7 +375,7 @@ async function runWebGazerSendResult()
     }
     else
     {   // Reproduce necessary structure
-        fmPos = Array(clmPosFeaturesSize/2).fill(Array(-1,-1))
+        fmPos = Array(fmPosFeaturesSize/2).fill(Array(-1,-1))
     }
 
     // Update display
@@ -411,7 +408,7 @@ async function runWebGazerSendResult()
     s.frameTimeEpoch = frameTimeEpoch;
     s.webGazerX = webGazerX;
     s.webGazerY = webGazerY;
-    s.clmPos = fmPos;
+    s.fmPos = fmPos;
     s.eyeFeatures = eyeFeatures;
     s.error = error;
     s.errorPix = errorPix;

@@ -85245,42 +85245,6 @@ class file_data_source_FileDataSource extends DataSource {
  *
  * =============================================================================
  */
-<<<<<<< HEAD
-TFFaceMesh.prototype.name = 'TFFaceMesh';
-
-/* harmony default export */ __webpack_exports__["default"] = (TFFaceMesh);
-
-
-/***/ }),
-
-/***/ "./src/index.mjs":
-/*!***********************!*\
-  !*** ./src/index.mjs ***!
-  \***********************/
-/*! exports provided: default */
-/***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _tensorflow_tfjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tensorflow/tfjs */ "./node_modules/@tensorflow/tfjs/dist/tf.node.js");
-/* harmony import */ var _tensorflow_tfjs_converter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @tensorflow/tfjs-converter */ "./node_modules/@tensorflow/tfjs-converter/dist/tf-converter.node.js");
-/* harmony import */ var regression__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! regression */ "./node_modules/regression/dist/regression.js");
-/* harmony import */ var _params__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./params */ "./src/params.mjs");
-/* harmony import */ var _dom_util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./dom_util */ "./src/dom_util.mjs");
-/* harmony import */ var _precision__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./precision */ "./src/precision.mjs");
-/* harmony import */ var localforage__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! localforage */ "./node_modules/localforage/dist/localforage.js");
-/* harmony import */ var _facemesh__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./facemesh */ "./src/facemesh.mjs");
-/* harmony import */ var _ridgeReg__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./ridgeReg */ "./src/ridgeReg.mjs");
-/* harmony import */ var _ridgeWeightedReg__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./ridgeWeightedReg */ "./src/ridgeWeightedReg.mjs");
-/* harmony import */ var _ridgeRegThreaded__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./ridgeRegThreaded */ "./src/ridgeRegThreaded.mjs");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./util */ "./src/util.mjs");
-
-
-
-
-
-=======
->>>>>>> 6ea9e3de4e163b2d25309efa3455364b8726fb24
 
 
 
@@ -86124,11 +86088,9 @@ const params = {
   showFaceOverlay: true,
   showFaceFeedbackBox: true,
   showGazeDot: true,
-  // Params to clmtrackr and getUserMedia constraints
-  clmParams: {useWebGL : true},
   camConstraints: { video: { width: { min: 320, ideal: 640, max: 1920 }, height: { min: 240, ideal: 480, max: 1080 }, facingMode: "user" } },
-  smoothEyeBB: false,
   dataTimestep: 50,
+  showVideoPreview: false,
   // Whether or not to store accuracy eigenValues, used by the calibration example file
   storingPoints: false,
 };
@@ -87103,35 +87065,6 @@ function ridge(y, X, k){
   return m_Coefficients;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-/**
- * Compute eyes size as gray histogram
- * @param {Object} eyes - The eyes where looking for gray histogram
- * @returns {Array.<T>} The eyes gray level histogram
- */
-function getEyeFeats(eyes) {
-  var resizedLeft = src_util.resizeEye(eyes.left, resizeWidth, resizeHeight);
-  var resizedright = src_util.resizeEye(eyes.right, resizeWidth, resizeHeight);
-
-  var leftGray = src_util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-  var rightGray = src_util.grayscale(resizedright.data, resizedright.width, resizedright.height);
-
-  var histLeft = [];
-  src_util.equalizeHistogram(leftGray, 5, histLeft);
-  var histRight = [];
-  src_util.equalizeHistogram(rightGray, 5, histRight);
-
-  var leftGrayArray = Array.prototype.slice.call(histLeft);
-  var rightGrayArray = Array.prototype.slice.call(histRight);
-
-  return leftGrayArray.concat(rightGrayArray);
-}
-
->>>>>>> 6ea9e3de4e163b2d25309efa3455364b8726fb24
-=======
->>>>>>> 5605493a14f40e37b998e01a0d9af976cd7f24e0
 //TODO: still usefull ???
 /**
  *
@@ -87223,28 +87156,22 @@ ridgeReg_reg.RidgeReg.prototype.addData = function(eyes, screenPos, type) {
   if (!eyes) {
     return;
   }
-  if (eyes.left.blink || eyes.right.blink) {
-    return;
-  }
+  //not doing anything with blink at present
+  // if (eyes.left.blink || eyes.right.blink) {
+  //   return;
+  // }
+  //why are we pushing these as arrays rather than single elements?
   if (type === 'click') {
     this.screenXClicksArray.push([screenPos[0]]);
     this.screenYClicksArray.push([screenPos[1]]);
 
-<<<<<<< HEAD
-    this.eyeFeaturesClicks.push(_util__WEBPACK_IMPORTED_MODULE_2__["default"].getEyeFeats(eyes));
-=======
     this.eyeFeaturesClicks.push(src_util.getEyeFeats(eyes));
->>>>>>> 5605493a14f40e37b998e01a0d9af976cd7f24e0
     this.dataClicks.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
   } else if (type === 'move') {
     this.screenXTrailArray.push([screenPos[0]]);
     this.screenYTrailArray.push([screenPos[1]]);
 
-<<<<<<< HEAD
-    this.eyeFeaturesTrail.push(_util__WEBPACK_IMPORTED_MODULE_2__["default"].getEyeFeats(eyes));
-=======
     this.eyeFeaturesTrail.push(src_util.getEyeFeats(eyes));
->>>>>>> 5605493a14f40e37b998e01a0d9af976cd7f24e0
     this.trailTimes.push(performance.now());
     this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
   }
@@ -87505,9 +87432,10 @@ ridgeWeightedReg_reg.RidgeWeightedReg.prototype.addData = function(eyes, screenP
     if (!eyes) {
         return;
     }
-    if (eyes.left.blink || eyes.right.blink) {
-        return;
-    }
+    //not doing anything with blink at present
+    // if (eyes.left.blink || eyes.right.blink) {
+    //     return;
+    // }
     if (type === 'click') {
         this.screenXClicksArray.push([screenPos[0]]);
         this.screenYClicksArray.push([screenPos[1]]);
@@ -87579,20 +87507,8 @@ ridgeWeightedReg_reg.RidgeWeightedReg.prototype.predict = function(eyesObj) {
     var screenYArray = weightedYArray.concat(trailY);
     var eyeFeatures = weightedEyeFeats.concat(trailFeat);
 
-<<<<<<< HEAD
-  var eyeFeats = _util__WEBPACK_IMPORTED_MODULE_2__["default"].getEyeFeats(eyesObj);
-  var predictedX = 0;
-  for(var i=0; i< eyeFeats.length; i++){
-    predictedX += eyeFeats[i] * coefficientsX[i];
-  }
-  var predictedY = 0;
-  for(var i=0; i< eyeFeats.length; i++){
-    predictedY += eyeFeats[i] * coefficientsY[i];
-  }
-=======
     var coefficientsX = ridgeWeightedReg_ridge(screenXArray, eyeFeatures, ridgeWeightedReg_ridgeParameter);
     var coefficientsY = ridgeWeightedReg_ridge(screenYArray, eyeFeatures, ridgeWeightedReg_ridgeParameter);
->>>>>>> 6ea9e3de4e163b2d25309efa3455364b8726fb24
 
     var eyeFeats = src_util.getEyeFeats(eyesObj);
     var predictedX = 0;
@@ -87658,27 +87574,9 @@ ridgeWeightedReg_reg.RidgeWeightedReg.prototype.getData = function() {
  */
 ridgeWeightedReg_reg.RidgeWeightedReg.prototype.name = 'ridge';
 
-<<<<<<< HEAD
-/***/ "./src/ridgeRegThreaded.mjs":
-/*!**********************************!*\
-  !*** ./src/ridgeRegThreaded.mjs ***!
-  \**********************************/
-/*! exports provided: default */
-/***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util */ "./src/util.mjs");
-/* harmony import */ var numeric__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! numeric */ "./node_modules/numeric/numeric-1.2.6.js");
-=======
 /* harmony default export */ var ridgeWeightedReg = (ridgeWeightedReg_reg);
 
-<<<<<<< HEAD
-// CONCATENATED MODULE: ./src/ridgeRegThreaded.js
->>>>>>> 6ea9e3de4e163b2d25309efa3455364b8726fb24
-=======
 // CONCATENATED MODULE: ./src/ridgeRegThreaded.mjs
->>>>>>> 5605493a14f40e37b998e01a0d9af976cd7f24e0
 
 
 
@@ -87689,34 +87587,6 @@ var ridgeRegThreaded_dataWindow = 700;
 var weights = {'X':[0],'Y':[0]};
 var ridgeRegThreaded_trailDataWindow = 10;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-/**
- * Compute eyes size as gray histogram
- * @param {Object} eyes - The eyes where looking for gray histogram
- * @returns {Array.<T>} The eyes gray level histogram
- */
-function ridgeRegThreaded_getEyeFeats(eyes) {
-    var resizedLeft = src_util.resizeEye(eyes.left, ridgeRegThreaded_resizeWidth, ridgeRegThreaded_resizeHeight);
-    var resizedright = src_util.resizeEye(eyes.right, ridgeRegThreaded_resizeWidth, ridgeRegThreaded_resizeHeight);
-
-    var leftGray = src_util.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-    var rightGray = src_util.grayscale(resizedright.data, resizedright.width, resizedright.height);
-
-    var histLeft = [];
-    src_util.equalizeHistogram(leftGray, 5, histLeft);
-    var histRight = [];
-    src_util.equalizeHistogram(rightGray, 5, histRight);
-
-    var leftGrayArray = Array.prototype.slice.call(histLeft);
-    var rightGrayArray = Array.prototype.slice.call(histRight);
-
-    return leftGrayArray.concat(rightGrayArray);
-}
->>>>>>> 6ea9e3de4e163b2d25309efa3455364b8726fb24
-=======
->>>>>>> 5605493a14f40e37b998e01a0d9af976cd7f24e0
 
 /**
  * Constructor of RidgeRegThreaded object,
@@ -87768,15 +87638,7 @@ ridgeRegThreaded_reg.RidgeRegThreaded.prototype.init = function() {
               [1/2, 0,    1,   0],
               [0,  1/2,  0,   1]];// * delta_t
     var delta_t = 1/10; // The amount of time between frames
-<<<<<<< HEAD
-<<<<<<< HEAD
-    Q = numeric__WEBPACK_IMPORTED_MODULE_1__.mul(Q, delta_t);
-=======
-    Q = numeric_1_2_6_default.a.mul(Q, delta_t);
->>>>>>> 6ea9e3de4e163b2d25309efa3455364b8726fb24
-=======
     Q = numeric_1_2_6.mul(Q, delta_t);
->>>>>>> 5605493a14f40e37b998e01a0d9af976cd7f24e0
 
     var H = [ [1, 0, 0, 0, 0, 0],
               [0, 1, 0, 0, 0, 0],
@@ -87787,21 +87649,9 @@ ridgeRegThreaded_reg.RidgeRegThreaded.prototype.init = function() {
     var pixel_error = 47; //We will need to fine tune this value [20200611 xk] I just put a random value here
 
     //This matrix represents the expected measurement error
-<<<<<<< HEAD
-<<<<<<< HEAD
-    var R = numeric__WEBPACK_IMPORTED_MODULE_1__.mul(numeric__WEBPACK_IMPORTED_MODULE_1__.identity(2), pixel_error);
-
-    var P_initial = numeric__WEBPACK_IMPORTED_MODULE_1__.mul(numeric__WEBPACK_IMPORTED_MODULE_1__.identity(4), 0.0001); //Initial covariance matrix
-=======
-    var R = numeric_1_2_6_default.a.mul(numeric_1_2_6_default.a.identity(2), pixel_error);
-
-    var P_initial = numeric_1_2_6_default.a.mul(numeric_1_2_6_default.a.identity(4), 0.0001); //Initial covariance matrix
->>>>>>> 6ea9e3de4e163b2d25309efa3455364b8726fb24
-=======
     var R = numeric_1_2_6.mul(numeric_1_2_6.identity(2), pixel_error);
 
     var P_initial = numeric_1_2_6.mul(numeric_1_2_6.identity(4), 0.0001); //Initial covariance matrix
->>>>>>> 5605493a14f40e37b998e01a0d9af976cd7f24e0
     var x_initial = [[500], [500], [0], [0]]; // Initial measurement matrix
 
     this.kalman = new src_util.KalmanFilter(F, H, Q, R, P_initial, x_initial);
@@ -87817,18 +87667,11 @@ ridgeRegThreaded_reg.RidgeRegThreaded.prototype.addData = function(eyes, screenP
     if (!eyes) {
         return;
     }
-    if (eyes.left.blink || eyes.right.blink) {
-        return;
-    }
-<<<<<<< HEAD
-<<<<<<< HEAD
-    this.worker.postMessage({'eyes':_util__WEBPACK_IMPORTED_MODULE_0__["default"].getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
-=======
-    this.worker.postMessage({'eyes':ridgeRegThreaded_getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
->>>>>>> 6ea9e3de4e163b2d25309efa3455364b8726fb24
-=======
+    //not doing anything with blink at present
+    // if (eyes.left.blink || eyes.right.blink) {
+    //     return;
+    // }
     this.worker.postMessage({'eyes':src_util.getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
->>>>>>> 5605493a14f40e37b998e01a0d9af976cd7f24e0
 };
 
 /**
@@ -87845,15 +87688,7 @@ ridgeRegThreaded_reg.RidgeRegThreaded.prototype.predict = function(eyesObj) {
     var coefficientsX = weights.X;
     var coefficientsY = weights.Y;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    var eyeFeats = _util__WEBPACK_IMPORTED_MODULE_0__["default"].getEyeFeats(eyesObj);
-=======
-    var eyeFeats = ridgeRegThreaded_getEyeFeats(eyesObj);
->>>>>>> 6ea9e3de4e163b2d25309efa3455364b8726fb24
-=======
     var eyeFeats = src_util.getEyeFeats(eyesObj);
->>>>>>> 5605493a14f40e37b998e01a0d9af976cd7f24e0
     var predictedX = 0, predictedY = 0;
     for(var i=0; i< eyeFeats.length; i++){
         predictedX += eyeFeats[i] * coefficientsX[i];
@@ -88118,7 +87953,7 @@ function getPupilFeatures(canvas, width, height) {
   try {
     return curTracker.getEyePatches(canvas, width, height);
   } catch(err) {
-    console.log(err);
+    console.log("can't get pupil features ", err);
     return null;
   }
 }
@@ -88252,6 +88087,9 @@ async function loop() {
   }
 }
 
+//is problematic to test
+//because latestEyeFeatures is not set in many cases
+
 /**
  * Records screen position data based on current pupil feature and passes it
  * to the regression model.
@@ -88383,9 +88221,6 @@ function clearData() {
  * Initializes all needed dom elements and begins the loop
  * @param {URL} stream - The video stream to use
  */
-<<<<<<< HEAD
-
-=======
 async function init(stream) {
   //////////////////////////
   // Video and video preview
@@ -88413,7 +88248,6 @@ async function init(stream) {
   videoElementCanvas = document.createElement('canvas');
   videoElementCanvas.id = src_webgazer.params.videoElementCanvasId;
   videoElementCanvas.style.display = 'none';
->>>>>>> 6ea9e3de4e163b2d25309efa3455364b8726fb24
 
   // Face overlay
   // Shows the CLM tracking result
@@ -88494,25 +88328,12 @@ async function init(stream) {
  */
 function setUserMediaVariable(){
 
-<<<<<<< HEAD
-        this.eyeFeaturesClicks.push(_util__WEBPACK_IMPORTED_MODULE_1__["default"].getEyeFeats(eyes));
-        this.dataClicks.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
-    } else if (type === 'move') {
-        this.screenXTrailArray.push([screenPos[0]]);
-        this.screenYTrailArray.push([screenPos[1]]);
-
-        this.eyeFeaturesTrail.push(_util__WEBPACK_IMPORTED_MODULE_1__["default"].getEyeFeats(eyes));
-        this.trailTimes.push(performance.now());
-        this.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
-    }
-=======
   if (navigator.mediaDevices === undefined) {
     navigator.mediaDevices = {};
   }
 
   if (navigator.mediaDevices.getUserMedia === undefined) {
     navigator.mediaDevices.getUserMedia = function(constraints) {
->>>>>>> 6ea9e3de4e163b2d25309efa3455364b8726fb24
 
       // gets the alternative old getUserMedia is possible
       var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
@@ -88543,22 +88364,10 @@ src_webgazer.begin = function(onFail) {
     alert("WebGazer works only over https. If you are doing local development you need to run a local server.");
   }
 
-<<<<<<< HEAD
-    var eyeFeats = _util__WEBPACK_IMPORTED_MODULE_1__["default"].getEyeFeats(eyesObj);
-    var predictedX = 0;
-    for(var i=0; i< eyeFeats.length; i++){
-        predictedX += eyeFeats[i] * coefficientsX[i];
-    }
-    var predictedY = 0;
-    for(var i=0; i< eyeFeats.length; i++){
-        predictedY += eyeFeats[i] * coefficientsY[i];
-    }
-=======
   // Load model data stored in localforage.
   if (window.saveDataAcrossSessions) {
     loadGlobalData();
   }
->>>>>>> 6ea9e3de4e163b2d25309efa3455364b8726fb24
 
   onFail = onFail || function() {console.log('No stream')};
 
@@ -88578,7 +88387,9 @@ src_webgazer.begin = function(onFail) {
     let stream;
     try {
       stream = await navigator.mediaDevices.getUserMedia( src_webgazer.params.camConstraints );
-      init(stream);
+      if (src_webgazer.params.showVideoPreview) {
+        init(stream);
+      }
       resolve(src_webgazer);
     } catch(err) {
       onFail();
@@ -88658,44 +88469,8 @@ src_webgazer.stopVideo = function() {
   return src_webgazer;
 }
 
-util.getEyeFeats = function(eyes) {
-    var resizedLeft = this.resizeEye(eyes.left, resizeWidth, resizeHeight);
-    var resizedright = this.resizeEye(eyes.right, resizeWidth, resizeHeight);
 
-    var leftGray = this.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-    var rightGray = this.grayscale(resizedright.data, resizedright.width, resizedright.height);
-
-    var histLeft = [];
-    this.equalizeHistogram(leftGray, 5, histLeft);
-    var histRight = [];
-    this.equalizeHistogram(rightGray, 5, histRight);
-
-    var leftGrayArray = Array.prototype.slice.call(histLeft);
-    var rightGrayArray = Array.prototype.slice.call(histRight);
-
-<<<<<<< HEAD
-    return leftGrayArray.concat(rightGrayArray);
-}
-//Data Window class
-//operates like an array but 'wraps' data around to keep the array at a fixed windowSize
-/**
- * DataWindow class - Operates like an array, but 'wraps' data around to keep the array at a fixed windowSize
- * @param {Number} windowSize - defines the maximum size of the window
- * @param {Array} data - optional data to seed the DataWindow with
- **/
-util.DataWindow = function(windowSize, data) {
-    this.data = [];
-    this.windowSize = windowSize;
-    this.index = 0;
-    this.length = 0;
-    if(data){
-        this.data = data.slice(data.length-windowSize,data.length);
-        this.length = this.data.length;
-    }
-};
-=======
 //PUBLIC FUNCTIONS - DEBUG
->>>>>>> 6ea9e3de4e163b2d25309efa3455364b8726fb24
 
 /**
  * Returns if the browser is compatible with webgazer

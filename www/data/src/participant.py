@@ -124,7 +124,10 @@ class ParticipantData:
                     self.screenHeightPixels = int(row[5])
                     self.pcOrLaptop = str(row[3])  # Equals either 'Laptop' or 'PC'
                     self.touchTypist = str(row[18])  # Equals either 'Yes' or 'No'
-                    self.screencapStartTime = int(row[9])  # 20180316 JT Note: the value in the .csv is currently inaccurate or incomplete
+                    if row[9] != '':
+                        self.screencapStartTime = int(row[9])  # 20180316 JT Note: the value in the .csv is currently inaccurate or incomplete
+                    else:
+                        self.screencapStartTime = 0
                     break
 
         ########################
@@ -132,7 +135,12 @@ class ParticipantData:
         # *dot_test_instructions.webm is the first video file.
         webMFile = glob.glob( self.directory + '/' + '*dot_test_instructions.webm' )
         # Split the video name into its pieces
-        f = os.path.split( webMFile[0] )[1]
+        try:
+            f = os.path.split( webMFile[0] )[1]
+        except IndexError:
+            raise OSError('Files are not in right location, see https://webgazer.cs.brown.edu/data/ for details'\
+            + 'on how to correct this')
+
         # Find the first part of the video filename, which is the timestamp as a string
         self.startTimestamp = int(f[0:f.find('_')])
         print( self.directory )

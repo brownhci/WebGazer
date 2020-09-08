@@ -138,19 +138,19 @@ def writeDataToCSV( p, msg ):
     out['error'] = wgError
     out['errorPix'] = wgErrorPix
 
-    # Turn clmPos and eyeFeatures into per-column values
-    clmPosDict = dict(zip( fmPosKeys, list(chain.from_iterable( out["clmPos"] )) ) )
+    # Turn fmPos and eyeFeatures into per-column values
+    fmPosDict = dict(zip( fmPosKeys, list(chain.from_iterable( out["fmPos"] )) ) )
     eyeFeaturesDict = dict(zip( eyeFeaturesKeys, out["eyeFeatures"] ))
-    out.update( clmPosDict )
+    out.update( fmPosDict )
     out.update( eyeFeaturesDict )
-    del out['clmPos']
+    del out['fmPos']
     del out['eyeFeatures']
 
     if writeCSV:
 
         # A reminder of what the desired field name outputs are.
         # fieldnames = (['participant','frameImageFile','frameTimeEpoch','frameNum','mouseMoveX','mouseMoveY','mouseClickX','mouseClickY','keyPressed','keyPressedX','keyPressedY',
-        #                'tobiiLeftScreenGazeX','tobiiLeftScreenGazeY','tobiiRightScreenGazeX','tobiiRightScreenGazeY','webGazerX','webGazerY','clmPos','eyeFeatures','wgError','wgErrorPix'])
+        #                'tobiiLeftScreenGazeX','tobiiLeftScreenGazeY','tobiiRightScreenGazeX','tobiiRightScreenGazeY','webGazerX','webGazerY','fmPos','eyeFeatures','wgError','wgErrorPix'])
 
         # Target dir for output
         outDir = outputPrefix + global_variables.participant.directory + '/' + \
@@ -160,8 +160,8 @@ def writeDataToCSV( p, msg ):
         gpCSV = outputPrefix + global_variables.participant.directory + '_'  + pv.filename + '_' + csvTempName 
 
         with open( gpCSV, 'a', newline='' ) as f:
-            # Note no quotes between clmTracker and eyeFeatures
-            # f.write( "\"" + participant.directory + "\",\"" + fname + "\",\"" + str(frameTimeEpoch) + "\",\"" + str(frameNum) + "\",\"" + str(mouseMoveX) + "\",\"" + str(mouseMoveY) + "\",\"" + str(mouseClickX) + "\",\"" + str(mouseClickY) + "\",\"" + keyPressed + "\",\"" + str(keyPressedX) + "\",\"" + str(keyPressedY) + "\",\"" + str(td.leftScreenGazeX) + "\",\"" + str(td.leftScreenGazeY) + "\",\"" + str(td.rightScreenGazeX) + "\",\"" + str(td.rightScreenGazeY) + "\",\"" + str(wgCurrentX) + "\",\"" + str(wgCurrentY) + "\"," + str(clmPos) + "," + str(eyeFeatures) + "\n")
+            # Note no quotes between fmTracker and eyeFeatures
+            # f.write( "\"" + participant.directory + "\",\"" + fname + "\",\"" + str(frameTimeEpoch) + "\",\"" + str(frameNum) + "\",\"" + str(mouseMoveX) + "\",\"" + str(mouseMoveY) + "\",\"" + str(mouseClickX) + "\",\"" + str(mouseClickY) + "\",\"" + keyPressed + "\",\"" + str(keyPressedX) + "\",\"" + str(keyPressedY) + "\",\"" + str(td.leftScreenGazeX) + "\",\"" + str(td.leftScreenGazeY) + "\",\"" + str(td.rightScreenGazeX) + "\",\"" + str(td.rightScreenGazeY) + "\",\"" + str(wgCurrentX) + "\",\"" + str(wgCurrentY) + "\"," + str(fmPos) + "," + str(eyeFeatures) + "\n")
             writer = csv.DictWriter(f, fieldnames=fieldnames,delimiter=',',quoting=csv.QUOTE_ALL)
             writer.writerow( out )
 

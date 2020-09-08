@@ -88,9 +88,10 @@ reg.RidgeRegThreaded.prototype.addData = function(eyes, screenPos, type) {
     if (!eyes) {
         return;
     }
-    if (eyes.left.blink || eyes.right.blink) {
-        return;
-    }
+    //not doing anything with blink at present
+    // if (eyes.left.blink || eyes.right.blink) {
+    //     return;
+    // }
     this.worker.postMessage({'eyes':util.getEyeFeats(eyes), 'screenPos':screenPos, 'type':type});
 };
 
