@@ -261,7 +261,7 @@ util.bound = function(prediction){
     return prediction;
 };
 
-//not used !? until the end of the file
+//not used !?
 /**
  * Write statistics in debug paragraph panel
  * @param {HTMLElement} para - The <p> tag where write data
@@ -275,6 +275,7 @@ function debugBoxWrite(para, stats) {
     para.innerText = str;
 }
 
+//not used !?
 /**
  * Constructor of DebugBox object,
  * it insert an paragraph inside a div to the body, in view to display debug data
@@ -298,6 +299,7 @@ util.DebugBox = function(interval) {
     }(this));
 };
 
+//not used !?
 /**
  * Add stat data for log
  * @param {String} key - The data key
@@ -307,6 +309,7 @@ util.DebugBox.prototype.set = function(key, value) {
     this.stats[key] = value;
 };
 
+//not used !?
 /**
  * Initialize stats in case where key does not exist, else
  * increment value for key
@@ -321,6 +324,7 @@ util.DebugBox.prototype.inc = function(key, incBy, init) {
     this.stats[key] += incBy || 1;
 };
 
+//not used !?
 /**
  * Create a button and register the given function to the button click event
  * @param {String} name - The button name to link
@@ -337,6 +341,7 @@ util.DebugBox.prototype.addButton = function(name, func) {
     button.innerText = name;
 };
 
+//not used !?
 /**
  * Search for a canvas elemenet with name, or create on if not exist.
  * Then send the canvas element as callback parameter.
