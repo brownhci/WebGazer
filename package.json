@@ -19,11 +19,6 @@
   "files": [
     "src"
   ],
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run build"
-    }
-  },
   "keywords": [
     "webgazer"
   ],

@@ -1,4 +1,4 @@
-from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+from http.server import BaseHTTPRequestHandler,HTTPServer
 from os import curdir, sep
 import cgi
 import base64
@@ -23,7 +23,7 @@ class myHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type',mimetype)
         self.end_headers()
         self.wfile.write(f.read())
-        print 'get operation'
+        print ('get operation')
         f.close()
 
     #Handler for the POST requests
@@ -37,7 +37,7 @@ class myHandler(BaseHTTPRequestHandler):
             }
         )
 
-        print "data: %s" % form["data"].value
+        print ("data: %s" % form["data"].value)
         values = json.loads(form['data'].value)
         positions = json.dumps(values['positions'])
         img_id = random.getrandbits(32)
@@ -56,13 +56,13 @@ try:
     #Create a web server and define the handler to manage the
     #incoming request
     server = HTTPServer(('', PORT_NUMBER), myHandler)
-    print 'Started httpserver on port ' , PORT_NUMBER
+    print ('Started httpserver on port ' , PORT_NUMBER)
 
-    #Wait forever for incoming htto requests
+    #Wait forever for incoming http requests
     server.serve_forever()
 
 except KeyboardInterrupt:
-    print '^C received, shutting down the web server'
+    print ('^C received, shutting down the web server')
     conn.close()
     server.socket.close()
 

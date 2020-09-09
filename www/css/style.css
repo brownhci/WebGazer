@@ -2,6 +2,9 @@ body {
     min-width:600px!important;
 }
 
+button {
+    border-radius: 4px;
+}
 /* Video Feed Styling */
 #overlay {
     z-index: 1;

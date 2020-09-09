@@ -2,7 +2,6 @@ const puppeteer = require('puppeteer');
 const { assert } = require('chai');
 const TFFaceMesh = require('@tensorflow-models/facemesh');
 
-
 describe('webgazerExtract functions', async () => {
   let browser,page;
 	before(async () => {
@@ -32,9 +31,9 @@ describe('webgazerExtract functions', async () => {
   	it('webgazer properties should be set correctly', async() =>{
   		await page.waitForSelector('#overlay');
 		  let model = await page.evaluate(async() => {
-			let tracker = webgazer.getTracker();
-			return tracker.name
-  			})
+			  let tracker = webgazer.getTracker();
+        return tracker.name
+  		})
 		assert.equal(model,'TFFaceMesh')
   	})
 });
