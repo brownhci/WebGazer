@@ -28,7 +28,6 @@ class myHandler(BaseHTTPRequestHandler):
 
     #Handler for the POST requests
     def do_POST(self):
-        print('got post', self.rfile)
         form = cgi.FieldStorage(
             fp=self.rfile,
             headers=self.headers,
@@ -42,10 +41,10 @@ class myHandler(BaseHTTPRequestHandler):
         values = json.loads(form['data'].value)
         positions = json.dumps(values['positions'])
         img_id = random.getrandbits(32)
-        f = open(curdir + sep + 'trainingData' + sep + 'imgs' + sep + 'img' + str(img_id) + '.png', 'w+')
-        f.write(base64.decodestring(form["img"].value.strip("data:image/png;base64")))
+        f = open(curdir + sep + 'trainingData' + sep + 'img' + str(img_id) + '.png', 'wb+')
+        img = form["img"].value.strip("data:image/png;base64")
+        f.write(base64.b64decode(img))
         f.close()
-
         c.execute('INSERT INTO examples VALUES (?,?,?,?,?,?,?,?)', (None, positions,values['width'], values['x'], values['y'], values['type'], img_id, values['timestamp']))
         conn.commit()
         self.send_response(200)
@@ -58,7 +57,9 @@ try:
     #incoming request
     server = HTTPServer(('', PORT_NUMBER), myHandler)
     print ('Started httpserver on port ' , PORT_NUMBER)
-
+    c.execute('''CREATE TABLE IF NOT EXISTS examples
+                    (exampleid INTEGER PRIMARY KEY, positions TEXT, width INTEGER, x REAL, y REAL, type TEXT, img INTEGER, timestamp INTEGER)''')
+    conn.commit()
     #Wait forever for incoming http requests
     server.serve_forever()
 

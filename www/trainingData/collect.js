@@ -79,15 +79,15 @@ paintCanvas.height = vid.height;
 paintCanvas.style.display = 'none';
 var paintCanvasCC = paintCanvas.getContext('2d');
 
-function listener(e, type) {
-    var positions = ctrack.getCurrentPrediction();
+async function listener(e, type) {
+    var positions = await ctrack.getCurrentPrediction();
     if (positions) {
         paintCanvasCC.drawImage(vid, 0, 0, vid.width, vid.height);
         var pixelData = paintCanvasCC.getImageData(0,0,vid.width,vid.height);
         var x = e.clientX;
         var y = e.clientY;
         var data = {
-            'positions' : positions,
+            'positions' : [positions.x,positions.y],
             'width': pixelData.width,
             'x' : x,
             'y' : y,
@@ -103,7 +103,7 @@ function sendToServer(canvas, data) {
     var formdata = new FormData();
     formdata.append('img', canvas.toDataURL());
     formdata.append('data', JSON.stringify(data));
-    xhttp.open('POST', '../', true);
+    xhttp.open('POST', 'http://localhost:8000', true);
     xhttp.onload = function(e) {
 	if (this.status == 200) {
 		console.log(e.target.response);
