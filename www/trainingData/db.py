@@ -21,7 +21,7 @@ class Examples:
             pr = ''
             for i, col in enumerate(row):
                 pr += ' ' + schema[i] + ': ' + str(col)
-            print pr
+            print (pr)
 
     def close(self):
         self.conn.close()

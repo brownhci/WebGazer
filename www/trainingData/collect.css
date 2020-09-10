@@ -1,0 +1,24 @@
+#overlay {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	-o-transform : scaleX(-1);
+	-webkit-transform : scaleX(-1);
+	transform : scaleX(-1);
+	-ms-filter : fliph; /*IE*/
+	filter : fliph; /*IE*/
+}
+
+#videoel {
+	-o-transform : scaleX(-1);
+	-webkit-transform : scaleX(-1);
+	transform : scaleX(-1);
+	-ms-filter : fliph; /*IE*/
+	filter : fliph; /*IE*/
+}
+
+#container {
+	position : relative;
+	width : 370px;
+	/*margin : 0px auto;*/
+}

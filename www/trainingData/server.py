@@ -28,6 +28,7 @@ class myHandler(BaseHTTPRequestHandler):
 
     #Handler for the POST requests
     def do_POST(self):
+        print('got post', self.rfile)
         form = cgi.FieldStorage(
             fp=self.rfile,
             headers=self.headers,
