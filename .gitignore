@@ -27,11 +27,13 @@
 *.mp4
 !/www/media/video/demo.mp4
 *.cpuprofile
+dist/
 node_modules/
 www/node_modules/
 www/data/src/WebGazerETRA2018Dataset_Release20180420/
 www/data/src/P*/
 www/data/FramesDataset/
+www/webgazer.js
 *__pycache__/
 .idea/
 docs/
