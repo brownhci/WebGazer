@@ -17,7 +17,8 @@
     "gen_docs": "jsdoc -c jsdoc.conf.json src/*"
   },
   "files": [
-    "/dist"
+    "/dist",
+    "/src"
   ],
   "husky": {
     "hooks": {
@@ -28,7 +29,9 @@
     }
   },
   "keywords": [
-    "webgazer"
+    "webgazer",
+    "eyetracking",
+    "webcam"
   ],
   "dependencies": {
     "@tensorflow-models/facemesh": "0.0.3",
