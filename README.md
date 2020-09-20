@@ -22,10 +22,8 @@ If you want to build the repository from source follow these instructions:
     # Ensure NodeJS is downloaded: https://nodejs.org/en/download/
     git clone https://github.com/brownhci/WebGazer.git
     cd WebGazer
-    #install the dependencies
+    #install the dependencies and triggers building the project
     npm install
-    #build the project
-    npm run build
 
 <!-- To use the webgazer script in the head of an HTML file add the `async` tag to ensure the clmtrackr does not collapse to a slower version -->
 
