@@ -33,6 +33,7 @@ www/node_modules/
 www/data/src/WebGazerETRA2018Dataset_Release20180420/
 www/data/src/P*/
 www/data/FramesDataset/
+www/data/src/webgazer.js
 www/webgazer.js
 *__pycache__/
 .idea/
