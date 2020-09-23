@@ -13,19 +13,25 @@
     "prebuild": "npm run clean",
     "test": "./test/run_tests_and_server.sh",
     "dev": "webpack --progress --colors --config webpack.config.js --mode=development",
-    "build": "webpack --progress --colors --config webpack.config.js --mode=production",
+    "build": "webpack --progress --colors --config webpack.config.js --mode=production && cp dist/webgazer.js www/. && cp dist/webgazer.js www/data/src/.",
     "gen_docs": "jsdoc -c jsdoc.conf.json src/*"
   },
   "files": [
-    "src"
+    "/dist",
+    "/src"
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "npm run build"
+      "pre-commit": "npm run build",
+      "post-checkout": "yarnhook && npm --prefix ./www install ./www/ && npm run build",
+      "post-merge": "yarnhook && npm --prefix ./www install ./www/ && npm run build",
+      "post-rewrite": "yarnhook && npm --prefix ./www install ./www/ && npm run build"
     }
   },
   "keywords": [
-    "webgazer"
+    "webgazer",
+    "eyetracking",
+    "webcam"
   ],
   "dependencies": {
     "@tensorflow-models/facemesh": "0.0.3",
@@ -46,6 +52,7 @@
     "puppeteer": "^5.2.1",
     "rimraf": "2.6.3",
     "webpack": "4.44.1",
-    "webpack-cli": "3.3.12"
+    "webpack-cli": "3.3.12",
+    "yarnhook": "^0.4.3"
   }
 }
