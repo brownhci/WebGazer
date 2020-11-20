@@ -571,6 +571,8 @@ async function init(stream) {
 /**
  * Initializes navigator.mediaDevices.getUserMedia
  * depending on the browser capabilities
+ * 
+ * @return Promise 
  */
 function setUserMediaVariable(){
 
@@ -607,7 +609,7 @@ function setUserMediaVariable(){
  */
 webgazer.begin = function(onFail) {
   if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.chrome){
-    alert("WebGazer works only over https. If you are doing local development you need to run a local server.");
+    alert("WebGazer works only over https. If you are doing local development, you need to run a local server.");
   }
 
   // Load model data stored in localforage.
@@ -633,9 +635,7 @@ webgazer.begin = function(onFail) {
     let stream;
     try {
       stream = await navigator.mediaDevices.getUserMedia( webgazer.params.camConstraints );
-      if (webgazer.params.showVideoPreview) {
-        init(stream);
-      }
+      init(stream);
       resolve(webgazer);
     } catch(err) {
       onFail();
@@ -733,20 +733,35 @@ webgazer.detectCompatibility = function() {
 };
 
 /**
- * Set whether the video preview is visible or not.
+ * Set whether to show any of the video previews (camera, face overlay, feedback box).
+ * If true: visibility depends on corresponding params (default all true).
+ * If false: camera, face overlay, feedback box are all hidden
+ * @param {bool} val
+ * @return {webgazer} this
+ */
+webgazer.showVideoPreview = function(val) {
+  webgazer.params.showVideoPreview = val;
+  webgazer.showVideo(val && webgazer.params.showVideo);
+  webgazer.showFaceOverlay(val && webgazer.params.showFaceOverlay);
+  webgazer.showFaceFeedbackBox(val && webgazer.params.showFaceFeedbackBox);
+  return webgazer;
+}
+
+/**
+ * Set whether the camera video preview is visible or not (default true).
  * @param {*} bool
  * @return {webgazer} this
  */
 webgazer.showVideo = function(val) {
   webgazer.params.showVideo = val;
-  if( videoElement) {
+  if(videoElement) {
     videoElement.style.display = val ? 'block' : 'none';
   }
   return webgazer;
 };
 
 /**
- * Set whether the face overlay is visible or not.
+ * Set whether the face overlay is visible or not (default true).
  * @param {*} bool
  * @return {webgazer} this
  */
@@ -759,7 +774,7 @@ webgazer.showFaceOverlay = function(val) {
 };
 
 /**
- * Set whether the face feedback box is visible or not.
+ * Set whether the face feedback box is visible or not (default true).
  * @param {*} bool
  * @return {webgazer} this
  */
@@ -773,7 +788,8 @@ webgazer.showFaceFeedbackBox = function(val) {
 };
 
 /**
- * Set whether the gaze prediction point(s) are visible or not. Multiple because of a trail of past dots.
+ * Set whether the gaze prediction point(s) are visible or not.
+ * Multiple because of a trail of past dots. Default true
  * @return {webgazer} this
  */
 webgazer.showPredictionPoints = function(val) {
@@ -783,6 +799,15 @@ webgazer.showPredictionPoints = function(val) {
   }
   return webgazer;
 };
+
+/**
+ * Set whether a Kalman filter will be applied to gaze predictions (default true);
+ * @return {webgazer} this
+ */
+webgazer.applyKalmanFilter = function(val) {
+  webgazer.params.applyKalmanFilter = val;
+  return webgazer;
+}
 
 /**
  * Define constraints on the video camera that is used. Useful for non-standard setups.
