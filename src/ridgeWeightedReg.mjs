@@ -1,6 +1,7 @@
 import mat from './mat';
 import util from './util';
 import numeric from 'numeric';
+import params from './params';
 
 const reg = {};
 
@@ -99,7 +100,7 @@ reg.RidgeWeightedReg.prototype.init = function() {
 
     //sets to one second worth of cursor trail
     this.trailTime = 1000;
-    this.trailDataWindow = this.trailTime / webgazer.params.moveTickSize;
+    this.trailDataWindow = this.trailTime / params.moveTickSize;
     this.screenXTrailArray = new util.DataWindow(trailDataWindow);
     this.screenYTrailArray = new util.DataWindow(trailDataWindow);
     this.eyeFeaturesTrail = new util.DataWindow(trailDataWindow);
@@ -242,7 +243,7 @@ reg.RidgeWeightedReg.prototype.predict = function(eyesObj) {
     predictedX = Math.floor(predictedX);
     predictedY = Math.floor(predictedY);
 
-    if (window.applyKalmanFilter) {
+    if (params.applyKalmanFilter) {
         // Update Kalman model, and get prediction
         var newGaze = [predictedX, predictedY]; // [20200607 xk] Should we use a 1x4 vector?
         newGaze = this.kalman.update(newGaze);

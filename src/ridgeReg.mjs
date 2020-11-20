@@ -215,7 +215,7 @@ reg.RidgeReg.prototype.predict = function(eyesObj) {
   predictedX = Math.floor(predictedX);
   predictedY = Math.floor(predictedY);
 
-  if (window.applyKalmanFilter) {
+  if (params.applyKalmanFilter) {
     // Update Kalman model, and get prediction
     var newGaze = [predictedX, predictedY]; // [20200607 xk] Should we use a 1x4 vector?
     newGaze = this.kalman.update(newGaze);
