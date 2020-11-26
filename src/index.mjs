@@ -365,7 +365,7 @@ var recordScreenPosition = function(x, y, eventType) {
 var clickListener = async function(event) {
   recordScreenPosition(event.clientX, event.clientY, eventTypes[0]); // eventType[0] === 'click'
 
-  if (window.saveDataAcrossSessions) {
+  if (webgazer.params.saveDataAcrossSessions) {
     // Each click stores the next data point into localforage.
     await setGlobalData();
 
@@ -613,7 +613,7 @@ webgazer.begin = function(onFail) {
   }
 
   // Load model data stored in localforage.
-  if (window.saveDataAcrossSessions) {
+  if (webgazer.params.saveDataAcrossSessions) {
     loadGlobalData();
   }
 
