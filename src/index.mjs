@@ -800,6 +800,11 @@ webgazer.showPredictionPoints = function(val) {
   return webgazer;
 };
 
+webgazer.saveDataAcrossSessions = function(val) {
+  webgazer.params.saveDataAcrossSessions = val;
+  return webgazer;
+}
+
 /**
  * Set whether a Kalman filter will be applied to gaze predictions (default true);
  * @return {webgazer} this
