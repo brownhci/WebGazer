@@ -478,6 +478,7 @@ async function init(stream) {
   videoStream = stream;
 
   videoElement = document.createElement('video');
+  videoElement.setAttribute('playsinline', '');
   videoElement.id = webgazer.params.videoElementId;
   videoElement.srcObject = stream;
   videoElement.autoplay = true;
