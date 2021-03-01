@@ -1,5 +1,6 @@
 const params = {
   moveTickSize: 50,
+  videoContainerId: 'webgazerVideoContainer',
   videoElementId: 'webgazerVideoFeed',
   videoElementCanvasId: 'webgazerVideoCanvas',
   faceOverlayId: 'webgazerFaceOverlay',
