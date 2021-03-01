@@ -22,6 +22,7 @@ webgazer.params = params;
 
 //video elements
 var videoStream = null;
+var videoContainerElement = null;
 var videoElement = null;
 var videoElementCanvas = null;
 var faceOverlay = null;
@@ -477,15 +478,23 @@ async function init(stream) {
   // used for webgazer.stopVideo() and webgazer.setCameraConstraints()
   videoStream = stream;
 
+  // create a video element container to enable customizable placement on the page
+  videoContainerElement = document.createElement('div');
+  videoContainerElement.id = webgazer.params.videoContainerId;
+  videoContainerElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
+  videoContainerElement.style.position = 'fixed';
+  videoContainerElement.style.top = topDist;
+  videoContainerElement.style.left = leftDist;
+  videoContainerElement.style.width = webgazer.params.videoViewerWidth + 'px';
+  videoContainerElement.style.height = webgazer.params.videoViewerHeight + 'px';
+  
   videoElement = document.createElement('video');
   videoElement.setAttribute('playsinline', '');
   videoElement.id = webgazer.params.videoElementId;
   videoElement.srcObject = stream;
   videoElement.autoplay = true;
   videoElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
-  videoElement.style.position = 'fixed';
-  videoElement.style.top = topDist;
-  videoElement.style.left = leftDist;
+  videoElement.style.position = 'absolute';
   // We set these to stop the video appearing too large when it is added for the very first time
   videoElement.style.width = webgazer.params.videoViewerWidth + 'px';
   videoElement.style.height = webgazer.params.videoViewerHeight + 'px';
@@ -501,9 +510,7 @@ async function init(stream) {
   faceOverlay = document.createElement('canvas');
   faceOverlay.id = webgazer.params.faceOverlayId;
   faceOverlay.style.display = webgazer.params.showFaceOverlay ? 'block' : 'none';
-  faceOverlay.style.position = 'fixed';
-  faceOverlay.style.top = topDist;
-  faceOverlay.style.left = leftDist;
+  faceOverlay.style.position = 'absolute';
 
   // Mirror video feed
   if (webgazer.params.mirrorVideo) {
@@ -524,8 +531,8 @@ async function init(stream) {
   faceFeedbackBox = document.createElement('canvas');
   faceFeedbackBox.id = webgazer.params.faceFeedbackBoxId;
   faceFeedbackBox.style.display = webgazer.params.showFaceFeedbackBox ? 'block' : 'none';
-  faceFeedbackBox.style.position = 'fixed';
   faceFeedbackBox.style.border = 'solid';
+  faceFeedbackBox.style.position = 'absolute';
 
   // Gaze dot
   // Starts offscreen
@@ -543,16 +550,17 @@ async function init(stream) {
   gazeDot.style.height = '10px';
 
   // Add other preview/feedback elements to the screen once the video has shown and its parameters are initialized
-  document.body.appendChild(videoElement);
+  videoContainerElement.appendChild(videoElement);
+  document.body.appendChild(videoContainerElement);
   function setupPreviewVideo(e) {
 
     // All video preview parts have now been added, so set the size both internally and in the preview window.
     setInternalVideoBufferSizes( videoElement.videoWidth, videoElement.videoHeight );
     webgazer.setVideoViewerSize( webgazer.params.videoViewerWidth, webgazer.params.videoViewerHeight );
 
-    document.body.appendChild(videoElementCanvas);
-    document.body.appendChild(faceOverlay);
-    document.body.appendChild(faceFeedbackBox);
+    videoContainerElement.appendChild(videoElementCanvas);
+    videoContainerElement.appendChild(faceOverlay);
+    videoContainerElement.appendChild(faceFeedbackBox);
     document.body.appendChild(gazeDot);
 
     // Run this only once, so remove the event listener
@@ -757,6 +765,9 @@ webgazer.showVideo = function(val) {
   webgazer.params.showVideo = val;
   if(videoElement) {
     videoElement.style.display = val ? 'block' : 'none';
+  }
+  if(videoContainerElement) {
+    videoContainerElement.style.display = val ? 'block' : 'none';
   }
   return webgazer;
 };
