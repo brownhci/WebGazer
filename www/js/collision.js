@@ -1,6 +1,3 @@
-  // Kalman Filter defaults to on.
-  window.applyKalmanFilter = true;
-
   // Set to true if you want to save the data even if you reload the page.
   window.saveDataAcrossSessions = false;
 
@@ -16,12 +13,13 @@
         var localstorageSettingsLabel = 'webgazerGlobalSettings';
         localforage.setItem(localstorageSettingsLabel, null);
     }
-    webgazer.params.showVideoPreview = true;
     const webgazerInstance = await webgazer.setRegression('ridge') /* currently must set regression and tracker */
-    .setTracker('TFFacemesh')
-    .begin();
-    webgazerInstance.showPredictionPoints(false); /* shows a square every 100 milliseconds where current prediction is */
-    // Add the SVG component on the top of everything.
+      .setTracker('TFFacemesh')
+      .begin();
+    webgazerInstance.showVideoPreview(true) /* shows all video previews */
+      .showPredictionPoints(false) /* shows a square every 100 milliseconds where current prediction is */
+      .applyKalmanFilter(true); // Kalman Filter defaults to on.
+      // Add the SVG component on the top of everything.
     setupCollisionSystem();
     webgazer.setGazeListener( collisionEyeListener );
   };

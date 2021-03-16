@@ -2,8 +2,18 @@ body {
     min-width:600px!important;
 }
 
-/* Video Feed Styling */
-#overlay {
+/* Video Feed Styling:
+ * Include the !important keyword to override default styles applied by JS.
+ * webgazer.js sets defaults for: display, position, top, left, width, height
+ */
+#webgazerVideoContainer{
+    display: block !important; 
+    position: fixed !important;
+    top: 0px !important;
+    left: 0px !important;
+    width: 320px !important;
+    height: 240px !important;
+
     z-index: 1;
 }
 
