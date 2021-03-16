@@ -1,0 +1,1 @@
+../dist/ridgeWorker.js

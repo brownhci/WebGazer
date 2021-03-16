@@ -25,6 +25,7 @@ webgazer.params = params;
 
 //video elements
 var videoStream = null;
+var videoContainerElement = null;
 var videoElement = null;
 var videoElementCanvas = null;
 var faceOverlay = null;
@@ -480,14 +481,23 @@ async function init(stream) {
   // used for webgazer.stopVideo() and webgazer.setCameraConstraints()
   videoStream = stream;
 
+  // create a video element container to enable customizable placement on the page
+  videoContainerElement = document.createElement('div');
+  videoContainerElement.id = webgazer.params.videoContainerId;
+  videoContainerElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
+  videoContainerElement.style.position = 'fixed';
+  videoContainerElement.style.top = topDist;
+  videoContainerElement.style.left = leftDist;
+  videoContainerElement.style.width = webgazer.params.videoViewerWidth + 'px';
+  videoContainerElement.style.height = webgazer.params.videoViewerHeight + 'px';
+  
   videoElement = document.createElement('video');
+  videoElement.setAttribute('playsinline', '');
   videoElement.id = webgazer.params.videoElementId;
   videoElement.srcObject = stream;
   videoElement.autoplay = true;
   videoElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
-  videoElement.style.position = 'fixed';
-  videoElement.style.top = topDist;
-  videoElement.style.left = leftDist;
+  videoElement.style.position = 'absolute';
   // We set these to stop the video appearing too large when it is added for the very first time
   videoElement.style.width = webgazer.params.videoViewerWidth + 'px';
   videoElement.style.height = webgazer.params.videoViewerHeight + 'px';
@@ -503,9 +513,7 @@ async function init(stream) {
   faceOverlay = document.createElement('canvas');
   faceOverlay.id = webgazer.params.faceOverlayId;
   faceOverlay.style.display = webgazer.params.showFaceOverlay ? 'block' : 'none';
-  faceOverlay.style.position = 'fixed';
-  faceOverlay.style.top = topDist;
-  faceOverlay.style.left = leftDist;
+  faceOverlay.style.position = 'absolute';
 
   // Mirror video feed
   if (webgazer.params.mirrorVideo) {
@@ -526,8 +534,8 @@ async function init(stream) {
   faceFeedbackBox = document.createElement('canvas');
   faceFeedbackBox.id = webgazer.params.faceFeedbackBoxId;
   faceFeedbackBox.style.display = webgazer.params.showFaceFeedbackBox ? 'block' : 'none';
-  faceFeedbackBox.style.position = 'fixed';
   faceFeedbackBox.style.border = 'solid';
+  faceFeedbackBox.style.position = 'absolute';
 
   // Gaze dot
   // Starts offscreen
@@ -545,16 +553,17 @@ async function init(stream) {
   gazeDot.style.height = '10px';
 
   // Add other preview/feedback elements to the screen once the video has shown and its parameters are initialized
-  document.body.appendChild(videoElement);
+  videoContainerElement.appendChild(videoElement);
+  document.body.appendChild(videoContainerElement);
   function setupPreviewVideo(e) {
 
     // All video preview parts have now been added, so set the size both internally and in the preview window.
     setInternalVideoBufferSizes( videoElement.videoWidth, videoElement.videoHeight );
     webgazer.setVideoViewerSize( webgazer.params.videoViewerWidth, webgazer.params.videoViewerHeight );
 
-    document.body.appendChild(videoElementCanvas);
-    document.body.appendChild(faceOverlay);
-    document.body.appendChild(faceFeedbackBox);
+    videoContainerElement.appendChild(videoElementCanvas);
+    videoContainerElement.appendChild(faceOverlay);
+    videoContainerElement.appendChild(faceFeedbackBox);
     document.body.appendChild(gazeDot);
 
     // Run this only once, so remove the event listener
@@ -574,6 +583,8 @@ async function init(stream) {
 /**
  * Initializes navigator.mediaDevices.getUserMedia
  * depending on the browser capabilities
+ * 
+ * @return Promise 
  */
 function setUserMediaVariable(){
 
@@ -610,7 +621,7 @@ function setUserMediaVariable(){
  */
 webgazer.begin = function(onFail) {
   if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.chrome){
-    alert("WebGazer works only over https. If you are doing local development you need to run a local server.");
+    alert("WebGazer works only over https. If you are doing local development, you need to run a local server.");
   }
 
   // Load model data stored in localforage.
@@ -636,9 +647,7 @@ webgazer.begin = function(onFail) {
     let stream;
     try {
       stream = await navigator.mediaDevices.getUserMedia( webgazer.params.camConstraints );
-      if (webgazer.params.showVideoPreview) {
-        init(stream);
-      }
+      init(stream);
       resolve(webgazer);
     } catch(err) {
       onFail();
@@ -736,20 +745,38 @@ webgazer.detectCompatibility = function() {
 };
 
 /**
- * Set whether the video preview is visible or not.
+ * Set whether to show any of the video previews (camera, face overlay, feedback box).
+ * If true: visibility depends on corresponding params (default all true).
+ * If false: camera, face overlay, feedback box are all hidden
+ * @param {bool} val
+ * @return {webgazer} this
+ */
+webgazer.showVideoPreview = function(val) {
+  webgazer.params.showVideoPreview = val;
+  webgazer.showVideo(val && webgazer.params.showVideo);
+  webgazer.showFaceOverlay(val && webgazer.params.showFaceOverlay);
+  webgazer.showFaceFeedbackBox(val && webgazer.params.showFaceFeedbackBox);
+  return webgazer;
+}
+
+/**
+ * Set whether the camera video preview is visible or not (default true).
  * @param {*} bool
  * @return {webgazer} this
  */
 webgazer.showVideo = function(val) {
   webgazer.params.showVideo = val;
-  if( videoElement) {
+  if(videoElement) {
     videoElement.style.display = val ? 'block' : 'none';
+  }
+  if(videoContainerElement) {
+    videoContainerElement.style.display = val ? 'block' : 'none';
   }
   return webgazer;
 };
 
 /**
- * Set whether the face overlay is visible or not.
+ * Set whether the face overlay is visible or not (default true).
  * @param {*} bool
  * @return {webgazer} this
  */
@@ -762,7 +789,7 @@ webgazer.showFaceOverlay = function(val) {
 };
 
 /**
- * Set whether the face feedback box is visible or not.
+ * Set whether the face feedback box is visible or not (default true).
  * @param {*} bool
  * @return {webgazer} this
  */
@@ -776,7 +803,8 @@ webgazer.showFaceFeedbackBox = function(val) {
 };
 
 /**
- * Set whether the gaze prediction point(s) are visible or not. Multiple because of a trail of past dots.
+ * Set whether the gaze prediction point(s) are visible or not.
+ * Multiple because of a trail of past dots. Default true
  * @return {webgazer} this
  */
 webgazer.showPredictionPoints = function(val) {
@@ -786,6 +814,15 @@ webgazer.showPredictionPoints = function(val) {
   }
   return webgazer;
 };
+
+/**
+ * Set whether a Kalman filter will be applied to gaze predictions (default true);
+ * @return {webgazer} this
+ */
+webgazer.applyKalmanFilter = function(val) {
+  webgazer.params.applyKalmanFilter = val;
+  return webgazer;
+}
 
 /**
  * Define constraints on the video camera that is used. Useful for non-standard setups.
