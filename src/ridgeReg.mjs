@@ -1,5 +1,6 @@
 import util from './util';
 import util_regression from './util_regression';
+import params from './params';
 
 const reg = {};
 

@@ -39,6 +39,9 @@ www/webgazer.js
 .idea/
 docs/
 dist/*.map
+www/webgazer.js
 dist/*.min.js
+dist/tensorflow.js
+dist/tensorflow.commonjs2.js
 www/trainingData/*.png
 www/trainingData/*.db
