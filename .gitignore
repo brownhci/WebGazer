@@ -36,6 +36,7 @@ www/data/FramesDataset/
 www/data/src/webgazer.js
 www/webgazer.js
 *__pycache__/
+*.pyc
 .idea/
 docs/
 dist/*.map
