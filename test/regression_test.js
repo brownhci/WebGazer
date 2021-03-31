@@ -106,9 +106,9 @@ describe('regression functions', async()=> {
 		})
 		it('Kalman filter should exist and have properties', async()=>{
 			const kalman_applied = await page.evaluate(async() => {
-				return window.applyKalmanFilter
+				return webgazer.applyKalmanFilter()
 			})
-			assert.equal(kalman_applied,true)
+			assert.isNotNull(kalman_applied)
 			const kalman_filter = await page.evaluate(async() => {
 				return webgazer.getRegression()[0].kalman
 			})
@@ -144,9 +144,9 @@ describe('regression functions', async()=> {
 		})
 		it('Kalman filter should exist and have properties', async()=>{
 			const kalman_applied = await page.evaluate(async() => {
-				return window.applyKalmanFilter
+				return webgazer.applyKalmanFilter()
 			})
-			assert.equal(kalman_applied,true)
+			assert.isNotNull(kalman_applied)
 			const kalman_filter = await page.evaluate(async() => {
 				return webgazer.getRegression()[1].kalman
 			})

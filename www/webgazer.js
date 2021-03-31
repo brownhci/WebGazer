@@ -156,49 +156,49 @@ var webgazer =
 /******/
 /******/
 /******/ 	// add entry module to deferred list
-/******/ 	deferredModules.push([90,1]);
+/******/ 	deferredModules.push([283,1]);
 /******/ 	// run deferred modules when ready
 /******/ 	return checkDeferredModules();
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 63:
+/***/ 259:
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
 
-/***/ 64:
+/***/ 260:
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
 
-/***/ 75:
+/***/ 268:
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
 
-/***/ 78:
+/***/ 271:
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
 
-/***/ 79:
+/***/ 272:
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
 
-/***/ 90:
+/***/ 283:
 /***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -206,13 +206,13 @@ var webgazer =
 __webpack_require__.r(__webpack_exports__);
 
 // EXTERNAL MODULE: ./node_modules/@tensorflow/tfjs/dist/tf.node.js
-var tf_node = __webpack_require__(60);
+var tf_node = __webpack_require__(254);
 
 // EXTERNAL MODULE: ./node_modules/regression/dist/regression.js
-var regression = __webpack_require__(80);
+var regression = __webpack_require__(273);
 
 // CONCATENATED MODULE: ./src/params.mjs
-const params_params = {
+const params = {
   moveTickSize: 50,
   videoContainerId: 'webgazerVideoContainer',
   videoElementId: 'webgazerVideoFeed',
@@ -237,7 +237,7 @@ const params_params = {
   storingPoints: false,
 };
 
-/* harmony default export */ var src_params = (params_params);
+/* harmony default export */ var src_params = (params);
 
 // CONCATENATED MODULE: ./src/dom_util.mjs
 // helper functions
@@ -269,10 +269,10 @@ window.cancelRequestAnimFrame = (function() {
 })();
 
 // EXTERNAL MODULE: ./node_modules/localforage/dist/localforage.js
-var localforage = __webpack_require__(32);
+var localforage = __webpack_require__(135);
 
 // EXTERNAL MODULE: ./node_modules/@tensorflow-models/facemesh/dist/index.js
-var dist = __webpack_require__(59);
+var dist = __webpack_require__(253);
 
 // CONCATENATED MODULE: ./src/facemesh.mjs
 
@@ -730,7 +730,7 @@ mat.QRDecomposition = function(A, B){
 /* harmony default export */ var src_mat = (mat);
 
 // EXTERNAL MODULE: ./node_modules/numeric/numeric-1.2.6.js
-var numeric_1_2_6 = __webpack_require__(14);
+var numeric_1_2_6 = __webpack_require__(42);
 
 // CONCATENATED MODULE: ./src/util.mjs
 
@@ -1340,6 +1340,7 @@ util_regression.addData = function(eyes, screenPos, type) {
 
 
 
+
 const ridgeReg_reg = {};
 
 /**
@@ -1406,7 +1407,7 @@ ridgeReg_reg.RidgeReg.prototype.predict = function(eyesObj) {
   predictedX = Math.floor(predictedX);
   predictedY = Math.floor(predictedY);
 
-  if (params.applyKalmanFilter) {
+  if (src_params.applyKalmanFilter) {
     // Update Kalman model, and get prediction
     var newGaze = [predictedX, predictedY]; // [20200607 xk] Should we use a 1x4 vector?
     newGaze = this.kalman.update(newGaze);
@@ -1572,6 +1573,7 @@ ridgeWeightedReg_reg.RidgeWeightedReg.prototype.name = 'ridgeWeighted';
 
 
 
+
 const ridgeRegThreaded_reg = {};
 
 var weights = {'X':[0],'Y':[0]};
@@ -1686,7 +1688,7 @@ ridgeRegThreaded_reg.RidgeRegThreaded.prototype.predict = function(eyesObj) {
     predictedX = Math.floor(predictedX);
     predictedY = Math.floor(predictedY);
 
-    if (window.applyKalmanFilter) {
+    if (src_params.applyKalmanFilter) {
         // Update Kalman model, and get prediction
         var newGaze = [predictedX, predictedY]; // [20200607 xk] Should we use a 1x4 vector?
         newGaze = this.kalman.update(newGaze);
