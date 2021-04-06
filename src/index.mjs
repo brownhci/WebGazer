@@ -1,4 +1,7 @@
 import '@tensorflow/tfjs';
+//import(/* webpackPreload: true */ '@tensorflow/tfjs');
+//import(/* webpackChunkName: 'pageA' */ './vendors~main.js')
+
 import 'regression';
 import params from './params';
 import './dom_util';
@@ -259,7 +262,7 @@ async function getPrediction(regModelIndex) {
 /**
  * Runs every available animation frame if webgazer is not paused
  */
-var smoothingVals = new webgazer.util.DataWindow(4);
+var smoothingVals = new util.DataWindow(4);
 var k = 0;
 
 async function loop() {
@@ -310,7 +313,7 @@ async function loop() {
         y += smoothingVals.get(d).y;
       }
 
-      var pred = webgazer.util.bound({'x':x/len, 'y':y/len});
+      var pred = util.bound({'x':x/len, 'y':y/len});
 
       if (webgazer.params.storingPoints) {
         drawCoordinates('blue',pred.x,pred.y); //draws the previous predictions
@@ -1099,8 +1102,8 @@ webgazer.getRegression = function() {
  * Requests an immediate prediction
  * @return {object} prediction data object
  */
-webgazer.getCurrentPrediction = function() {
-  return getPrediction();
+webgazer.getCurrentPrediction = function(regIndex) {
+  return getPrediction(regIndex);
 };
 
 /**

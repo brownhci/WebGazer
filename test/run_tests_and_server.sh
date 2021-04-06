@@ -6,12 +6,12 @@ if  ! [ -f www/data/src/P_01/dot.y4m ] ; then
 	mv dot.y4m www/data/src/P_01/
 	rm dot.y4m.bak
 fi
-if ! lsof -i:8000 ; then
+if ! lsof -i:8000 > /dev/null; then
 	cd www/data/src
 	python3 webgazerExtractServer.py > /dev/null &
 	cd ../../..
 fi
-if ! lsof -i:3000 ; then
+if ! lsof -i:3000 > /dev/null; then
 	cd www/
 	browser-sync start --server --no-open > /dev/null &
 	cd ..

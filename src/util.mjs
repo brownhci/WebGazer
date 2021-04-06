@@ -1,7 +1,14 @@
 import mat from './mat';
+import params from './params';
+import numeric from 'numeric';
 
 const util = {};
 
+
+var resizeWidth = 10;
+var resizeHeight = 6;
+
+//not used !?
 /**
  * Eye class, represents an eye patch detected in the video stream
  * @param {ImageData} patch - the image data corresponding to an eye
@@ -10,11 +17,6 @@ const util = {};
  * @param {Number} width  - width of the eye patch
  * @param {Number} height - height of the eye patch
  */
-
-
-var resizeWidth = 10;
-var resizeHeight = 6;
-
 util.Eye = function(patch, imagex, imagey, width, height) {
     this.patch = patch;
     this.imagex = imagex;
@@ -23,12 +25,17 @@ util.Eye = function(patch, imagex, imagey, width, height) {
     this.height = height;
 };
 
+/**
+ * Compute eyes size as gray histogram
+ * @param {Object} eyes - The eyes where looking for gray histogram
+ * @returns {Array.<T>} The eyes gray level histogram
+ */
 util.getEyeFeats = function(eyes) {
-    var resizedLeft = this.resizeEye(eyes.left, resizeHeight, resizeHeight);
-    var resizedright = this.resizeEye(eyes.right, resizeHeight, resizeHeight);
-
+    var resizedLeft = this.resizeEye(eyes.left, resizeWidth, resizeHeight);
+    var resizedRight = this.resizeEye(eyes.right, resizeWidth, resizeHeight);
+    
     var leftGray = this.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
-    var rightGray = this.grayscale(resizedright.data, resizedright.width, resizedright.height);
+    var rightGray = this.grayscale(resizedRight.data, resizedRight.width, resizedRight.height);
 
     var histLeft = [];
     this.equalizeHistogram(leftGray, 5, histLeft);
@@ -38,7 +45,7 @@ util.getEyeFeats = function(eyes) {
     var leftGrayArray = Array.prototype.slice.call(histLeft);
     var rightGrayArray = Array.prototype.slice.call(histRight);
 
-    return leftGrayArray.concat(rightGrayArray);
+    return histLeft.concat(histRight);
 }
 //Data Window class
 //operates like an array but 'wraps' data around to keep the array at a fixed windowSize
@@ -163,21 +170,7 @@ util.equalizeHistogram = function(src, step, dst) {
     if (!step) step = 5;
 
     // Compute histogram and histogram sum:
-    var hist = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0];
+    var hist = Array(256).fill(0);
 
     for (var i = 0; i < srcLength; i += step) {
         ++hist[src[i]];
@@ -199,6 +192,7 @@ util.equalizeHistogram = function(src, step, dst) {
     return dst;
 };
 
+//not used !?
 util.threshold = function(data, threshold) {
     for (let i = 0; i < data.length; i++) {
         data[i] = (data[i] > threshold) ? 255 : 0;
@@ -206,6 +200,7 @@ util.threshold = function(data, threshold) {
     return data;
 };
 
+//not used !?
 util.correlation = function(data1, data2) {
     const length = Math.min(data1.length, data2.length);
     let count = 0;
@@ -266,6 +261,7 @@ util.bound = function(prediction){
     return prediction;
 };
 
+//not used !?
 /**
  * Write statistics in debug paragraph panel
  * @param {HTMLElement} para - The <p> tag where write data
@@ -279,6 +275,7 @@ function debugBoxWrite(para, stats) {
     para.innerText = str;
 }
 
+//not used !?
 /**
  * Constructor of DebugBox object,
  * it insert an paragraph inside a div to the body, in view to display debug data
@@ -302,6 +299,7 @@ util.DebugBox = function(interval) {
     }(this));
 };
 
+//not used !?
 /**
  * Add stat data for log
  * @param {String} key - The data key
@@ -311,6 +309,7 @@ util.DebugBox.prototype.set = function(key, value) {
     this.stats[key] = value;
 };
 
+//not used !?
 /**
  * Initialize stats in case where key does not exist, else
  * increment value for key
@@ -325,6 +324,7 @@ util.DebugBox.prototype.inc = function(key, incBy, init) {
     this.stats[key] += incBy || 1;
 };
 
+//not used !?
 /**
  * Create a button and register the given function to the button click event
  * @param {String} name - The button name to link
@@ -341,6 +341,7 @@ util.DebugBox.prototype.addButton = function(name, func) {
     button.innerText = name;
 };
 
+//not used !?
 /**
  * Search for a canvas elemenet with name, or create on if not exist.
  * Then send the canvas element as callback parameter.
@@ -355,62 +356,6 @@ util.DebugBox.prototype.show = function(name, func) {
     var canvas = this.canvas[name];
     canvas.getContext('2d').clearRect(0,0, canvas.width, canvas.height);
     func(canvas);
-};
-
-/**
- * Kalman Filter constructor
- * Kalman filters work by reducing the amount of noise in a models.
- * https://blog.cordiner.net/2011/05/03/object-tracking-using-a-kalman-filter-matlab/
- *
- * @param {Array.<Array.<Number>>} F - transition matrix
- * @param {Array.<Array.<Number>>} Q - process noise matrix
- * @param {Array.<Array.<Number>>} H - maps between measurement vector and noise matrix
- * @param {Array.<Array.<Number>>} R - defines measurement error of the device
- * @param {Array} P_initial - the initial state
- * @param {Array} X_initial - the initial state of the device
- */
-util.KalmanFilter = function(F, H, Q, R, P_initial, X_initial) {
-    this.F = F; // State transition matrix
-    this.Q = Q; // Process noise matrix
-    this.H = H; // Transformation matrix
-    this.R = R; // Measurement Noise
-    this.P = P_initial; //Initial covariance matrix
-    this.X = X_initial; //Initial guess of measurement
-};
-
-/**
- * Get Kalman next filtered value and update the internal state
- * @param {Array} z - the new measurement
- * @return {Array}
- */
-util.KalmanFilter.prototype.update = function(z) {
-
-    // Here, we define all the different matrix operations we will need
-    var add = numeric.add, sub = numeric.sub, inv = numeric.inv, identity = numeric.identity;
-    var mult = mat.mult, transpose = mat.transpose;
-    //TODO cache variables like the transpose of H
-
-    // prediction: X = F * X  |  P = F * P * F' + Q
-    var X_p = mult(this.F, this.X); //Update state vector
-    var P_p = add(mult(mult(this.F,this.P), transpose(this.F)), this.Q); //Predicted covaraince
-
-    //Calculate the update values
-    var y = sub(z, mult(this.H, X_p)); // This is the measurement error (between what we expect and the actual value)
-    var S = add(mult(mult(this.H, P_p), transpose(this.H)), this.R); //This is the residual covariance (the error in the covariance)
-
-    // kalman multiplier: K = P * H' * (H * P * H' + R)^-1
-    var K = mult(P_p, mult(transpose(this.H), inv(S))); //This is the Optimal Kalman Gain
-
-    //We need to change Y into it's column vector form
-    for(var i = 0; i < y.length; i++){
-        y[i] = [y[i]];
-    }
-
-    //Now we correct the internal values of the model
-    // correction: X = X + K * (m - H * X)  |  P = (I - K * H) * P
-    this.X = add(X_p, mult(K, y));
-    this.P = mult(sub(identity(K.length), mult(K,this.H)), P_p);
-    return transpose(mult(this.H, this.X))[0]; //Transforms the predicted state back into it's measurement form
 };
 
 export default util;

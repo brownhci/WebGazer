@@ -36,7 +36,13 @@ www/data/FramesDataset/
 www/data/src/webgazer.js
 www/webgazer.js
 *__pycache__/
+*.pyc
 .idea/
 docs/
 dist/*.map
+www/webgazer.js
 dist/*.min.js
+dist/tensorflow.js
+dist/tensorflow.commonjs2.js
+www/trainingData/*.png
+www/trainingData/*.db
