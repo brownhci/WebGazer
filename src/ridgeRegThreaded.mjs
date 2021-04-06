@@ -5,7 +5,10 @@ import params from './params';
 
 const reg = {};
 
+var ridgeParameter = Math.pow(10,-5);
+var dataWindow = 700;
 var weights = {'X':[0],'Y':[0]};
+var trailDataWindow = 10;
 
 
 /**
@@ -74,7 +77,7 @@ reg.RidgeRegThreaded.prototype.init = function() {
     var P_initial = numeric.mul(numeric.identity(4), 0.0001); //Initial covariance matrix   
     var x_initial = [[500], [500], [0], [0]]; // Initial measurement matrix 
 
-    this.kalman = new util.KalmanFilter(F, H, Q, R, P_initial, x_initial);  
+    this.kalman = new util_regression.KalmanFilter(F, H, Q, R, P_initial, x_initial);  
 }
 /**
  * Add given data from eyes

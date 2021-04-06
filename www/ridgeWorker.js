@@ -1,1 +1,1 @@
-../dist/ridgeWorker.js
+../src/ridgeWorker.mjs

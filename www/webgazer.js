@@ -156,49 +156,49 @@ var webgazer =
 /******/
 /******/
 /******/ 	// add entry module to deferred list
-/******/ 	deferredModules.push([283,1]);
+/******/ 	deferredModules.push([90,1]);
 /******/ 	// run deferred modules when ready
 /******/ 	return checkDeferredModules();
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 259:
+/***/ 63:
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
 
-/***/ 260:
+/***/ 64:
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
 
-/***/ 268:
+/***/ 75:
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
 
-/***/ 271:
+/***/ 78:
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
 
-/***/ 272:
+/***/ 79:
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
 
-/***/ 283:
+/***/ 90:
 /***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -206,10 +206,10 @@ var webgazer =
 __webpack_require__.r(__webpack_exports__);
 
 // EXTERNAL MODULE: ./node_modules/@tensorflow/tfjs/dist/tf.node.js
-var tf_node = __webpack_require__(254);
+var tf_node = __webpack_require__(60);
 
 // EXTERNAL MODULE: ./node_modules/regression/dist/regression.js
-var regression = __webpack_require__(273);
+var regression = __webpack_require__(80);
 
 // CONCATENATED MODULE: ./src/params.mjs
 const params = {
@@ -269,10 +269,10 @@ window.cancelRequestAnimFrame = (function() {
 })();
 
 // EXTERNAL MODULE: ./node_modules/localforage/dist/localforage.js
-var localforage = __webpack_require__(135);
+var localforage = __webpack_require__(32);
 
 // EXTERNAL MODULE: ./node_modules/@tensorflow-models/facemesh/dist/index.js
-var dist = __webpack_require__(253);
+var dist = __webpack_require__(59);
 
 // CONCATENATED MODULE: ./src/facemesh.mjs
 
@@ -730,7 +730,7 @@ mat.QRDecomposition = function(A, B){
 /* harmony default export */ var src_mat = (mat);
 
 // EXTERNAL MODULE: ./node_modules/numeric/numeric-1.2.6.js
-var numeric_1_2_6 = __webpack_require__(42);
+var numeric_1_2_6 = __webpack_require__(14);
 
 // CONCATENATED MODULE: ./src/util.mjs
 
@@ -1446,6 +1446,7 @@ ridgeReg_reg.RidgeReg.prototype.name = 'ridge';
 
 
 
+
 const ridgeWeightedReg_reg = {};
 
 /**
@@ -1533,7 +1534,7 @@ ridgeWeightedReg_reg.RidgeWeightedReg.prototype.predict = function(eyesObj) {
     predictedX = Math.floor(predictedX);
     predictedY = Math.floor(predictedY);
 
-    if (window.applyKalmanFilter) {
+    if (src_params.applyKalmanFilter) {
         // Update Kalman model, and get prediction
         var newGaze = [predictedX, predictedY]; // [20200607 xk] Should we use a 1x4 vector?
         newGaze = this.kalman.update(newGaze);
@@ -1576,7 +1577,10 @@ ridgeWeightedReg_reg.RidgeWeightedReg.prototype.name = 'ridgeWeighted';
 
 const ridgeRegThreaded_reg = {};
 
+var ridgeParameter = Math.pow(10,-5);
+var ridgeRegThreaded_dataWindow = 700;
 var weights = {'X':[0],'Y':[0]};
+var ridgeRegThreaded_trailDataWindow = 10;
 
 
 /**
@@ -1593,16 +1597,16 @@ ridgeRegThreaded_reg.RidgeRegThreaded = function() {
  * Initialize new arrays and initialize Kalman filter.
  */
 ridgeRegThreaded_reg.RidgeRegThreaded.prototype.init = function() { 
-    this.screenXClicksArray = new src_util.DataWindow(dataWindow);  
-    this.screenYClicksArray = new src_util.DataWindow(dataWindow);  
-    this.eyeFeaturesClicks = new src_util.DataWindow(dataWindow);   
+    this.screenXClicksArray = new src_util.DataWindow(ridgeRegThreaded_dataWindow);  
+    this.screenYClicksArray = new src_util.DataWindow(ridgeRegThreaded_dataWindow);  
+    this.eyeFeaturesClicks = new src_util.DataWindow(ridgeRegThreaded_dataWindow);   
 
-    this.screenXTrailArray = new src_util.DataWindow(trailDataWindow);  
-    this.screenYTrailArray = new src_util.DataWindow(trailDataWindow);  
-    this.eyeFeaturesTrail = new src_util.DataWindow(trailDataWindow);   
+    this.screenXTrailArray = new src_util.DataWindow(ridgeRegThreaded_trailDataWindow);  
+    this.screenYTrailArray = new src_util.DataWindow(ridgeRegThreaded_trailDataWindow);  
+    this.eyeFeaturesTrail = new src_util.DataWindow(ridgeRegThreaded_trailDataWindow);   
 
-    this.dataClicks = new src_util.DataWindow(dataWindow);  
-    this.dataTrail = new src_util.DataWindow(dataWindow);   
+    this.dataClicks = new src_util.DataWindow(ridgeRegThreaded_dataWindow);  
+    this.dataTrail = new src_util.DataWindow(ridgeRegThreaded_dataWindow);   
 
     // Place the src/ridgeworker.js file into the same directory as your html file. 
     if (!this.worker) { 
@@ -1645,7 +1649,7 @@ ridgeRegThreaded_reg.RidgeRegThreaded.prototype.init = function() {
     var P_initial = numeric_1_2_6.mul(numeric_1_2_6.identity(4), 0.0001); //Initial covariance matrix   
     var x_initial = [[500], [500], [0], [0]]; // Initial measurement matrix 
 
-    this.kalman = new src_util.KalmanFilter(F, H, Q, R, P_initial, x_initial);  
+    this.kalman = new src_util_regression.KalmanFilter(F, H, Q, R, P_initial, x_initial);  
 }
 /**
  * Add given data from eyes
