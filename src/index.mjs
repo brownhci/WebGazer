@@ -815,6 +815,15 @@ webgazer.showPredictionPoints = function(val) {
   return webgazer;
 };
 
+/**
+ * Set whether localprevious calibration data (from localforage) should be loaded.
+ * Default true.
+ * 
+ * NOTE: Should be called before webgazer.begin() -- see www/js/main.js for example
+ * 
+ * @param val 
+ * @returns {webgazer} this
+ */
 webgazer.saveDataAcrossSessions = function(val) {
   webgazer.params.saveDataAcrossSessions = val;
   return webgazer;

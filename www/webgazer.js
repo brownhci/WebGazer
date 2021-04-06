@@ -233,6 +233,7 @@ const params = {
   dataTimestep: 50,
   showVideoPreview: true,
   applyKalmanFilter: true,
+  saveDataAcrossSessions: true,
   // Whether or not to store accuracy eigenValues, used by the calibration example file
   storingPoints: false,
 };
@@ -2104,7 +2105,7 @@ var recordScreenPosition = function(x, y, eventType) {
 var clickListener = async function(event) {
   recordScreenPosition(event.clientX, event.clientY, eventTypes[0]); // eventType[0] === 'click'
 
-  if (window.saveDataAcrossSessions) {
+  if (src_webgazer.params.saveDataAcrossSessions) {
     // Each click stores the next data point into localforage.
     await setGlobalData();
 
@@ -2360,7 +2361,7 @@ src_webgazer.begin = function(onFail) {
   }
 
   // Load model data stored in localforage.
-  if (window.saveDataAcrossSessions) {
+  if (src_webgazer.params.saveDataAcrossSessions) {
     loadGlobalData();
   }
 
@@ -2549,6 +2550,20 @@ src_webgazer.showPredictionPoints = function(val) {
   }
   return src_webgazer;
 };
+
+/**
+ * Set whether localprevious calibration data (from localforage) should be loaded.
+ * Default true.
+ * 
+ * NOTE: Should be called before webgazer.begin() -- see www/js/main.js for example
+ * 
+ * @param val 
+ * @returns {webgazer} this
+ */
+src_webgazer.saveDataAcrossSessions = function(val) {
+  src_webgazer.params.saveDataAcrossSessions = val;
+  return src_webgazer;
+}
 
 /**
  * Set whether a Kalman filter will be applied to gaze predictions (default true);
