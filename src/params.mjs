@@ -19,6 +19,7 @@ const params = {
   dataTimestep: 50,
   showVideoPreview: true,
   applyKalmanFilter: true,
+  saveDataAcrossSessions: true,
   // Whether or not to store accuracy eigenValues, used by the calibration example file
   storingPoints: false,
 };
