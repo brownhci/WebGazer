@@ -2,7 +2,7 @@ window.onload = async function() {
 
     webgazer.params.showVideoPreview = true;
     //start the webgazer tracker
-    await webgazer.setRegression('threadedRidge') /* currently must set regression and tracker */
+    await webgazer.setRegression('ridge') /* currently must set regression and tracker */
         //.setTracker('clmtrackr')
         .setGazeListener(function(data, clock) {
           //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
