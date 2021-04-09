@@ -98,11 +98,14 @@
             <h2 class="text-center">Usage</h2>
             <div class="row">
                 <div class="col-lg-12">
-                    To use WebGazer.js you need to add the webgazer.js file as a script in your website:
-                    <pre><code class="html hljs"> /* WebGazer.js library */
+                    To use WebGazer.js you need to add the tensorflow.js and webgazer.js files as scripts in your website:
+                    <pre><code class="html hljs">/* dependency */
+&lt;script src="tensorflow.js" type="text/javascript" &gt;
+
+/* WebGazer.js library */
 &lt;script src="webgazer.js" type="text/javascript" &gt;</code></pre>
                     <p>
-                        <i>Be aware that when you do local development and you might need to run locally a simple http server that supports the https protocol. </i>
+                        <i>Dependency can be downloaded <a href="https://webgazer.cs.brown.edu/tensorflow.js">here</a>.  Be aware that when you do local development and you might need to run locally a simple http server that supports the https protocol. </i>
                     </p>
                     <p>
                         Once the script is included, the <code class="javascript">webgazer</code> object is introduced into the global namespace. <code class="javascript">webgazer</code> has methods for controlling the operation of WebGazer.js allowing us to start and stop it, add callbacks, or change out modules. The two most important methods on <code class="javascript">webgazer</code> are <code class="javascript">webgazer.begin()</code> and <code class="javascript">webgazer.setGazeListener()</code>. <code class="javascript">webgazer.begin()</code> starts the data collection that enables the predictions, so it's important to call this early on. Once <code class="javascript">webgazer.begin()</code> has been called, WebGazer.js is ready to start giving predictions. <code class="javascript">webgazer.setGazeListener()</code> is a convenient way to access these predictions. This method invokes a callback you provide every few milliseconds to provide the current gaze location of a user. If you don't need constant access to this data stream, you may alternatively call <code class="javascript">webgazer.getCurrentPrediction()</code> which will give you a prediction at the moment when it is called.

@@ -36,6 +36,7 @@ Examples of how WebGazer.js works can be found [here](https://webgazer.cs.brown.
 ### to use on any website
 
 ```
+<script src="tensorflow.js" type="text/javascript" >
 <script src="webgazer.js" type="text/javascript" >
 ```
 
