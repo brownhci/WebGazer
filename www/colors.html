@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<!--
+This is an example HTML that shows how WebGazer can be used on a website.
+This file provides the additional features:
+  * An integrated, intuitive and sleek action bar with an informative "help" module accessible at all times
+  * Structured 9-point calibration system
+  * Accuracy measure of predictions based on calibration process
+  * Video feedback regarding face positioning
+  * Improved eye predictions visible to the user
+Instructions on use can be found in the README repository.
+-->
+<html>
+
+<head>
+  <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+  <TITLE>WebGazer Demo</TITLE>
+  <link rel="stylesheet" type="text/css" href="./css/style.css">
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <script src="./webgazer.js"></script>
+  <style>
+    html,
+    body,
+    #plotting_canvas {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body LANG="en-US" LINK="#0000ff" DIR="LTR">
+  <!-- viewBox="0 0 100 100" preserveAspectRatio="none" -->
+  <svg id="plotting_canvas" style="width:100%;height:100%">
+      <text x="50%" y="40%" style="font-size: 2em;" dominant-baseline="middle" text-anchor="middle">
+        <tspan x="50%" dy="0em">Пробел запускает калибровку по 9 синим точкам.</tspan>
+        <tspan x="50%" dy="2em">Перемещайте точку взглядом и удерживайте в центре круга в течении 1 секунды,</tspan>
+        <tspan x="50%" dy="2em">когда точка в круге изменит цвет на красный смотрите на неё.</tspan>
+      </text>
+      <text x="50%" y="60%" style="font-size: 2em;" dominant-baseline="middle" text-anchor="middle">
+        Press space to start calibration. Stare at 9 blue dots one by one.
+        Move pointer to a circle and try to hold it in area for 1 sec.
+        Press spate to recalibrate.
+      </text>
+  </svg>
+  <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+  <script src="./node_modules/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <script>
+    // Set to true if you want to save the data even if you reload the page.
+    // window.saveDataAcrossSessions = false;
+
+    window.onload = async function () {
+      webgazer.params.showVideoPreview = true;
+      //start the webgazer tracker
+      await webgazer.setRegression('ridge') /* currently must set regression and tracker */
+        // .setTracker('clmtrackr')
+        .setGazeListener(function (data, clock) {
+          // console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
+          // console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
+        }).begin();
+      webgazer.removeMouseEventListeners();
+      webgazer.showVideoPreview(true) /* shows all video previews */
+        .showPredictionPoints(true) /* shows a square every 100 milliseconds where current prediction is */
+        .applyKalmanFilter(true); /* Kalman Filter defaults to on. Can be toggled by user. */
+
+      //Set up the webgazer video feedback.
+      var setup = function () {
+
+        //Set up the main canvas. The main canvas is used to calibrate the webgazer.
+        var canvas = document.getElementById("plotting_canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        canvas.style.position = 'fixed';
+      };
+      setup();
+    };
+
+    let state = true;
+    document.addEventListener('keyup', event => {
+      if (event.code === 'Space') {
+        calibrate().then(() => drawZones());
+        //drawZones();
+      } else if (event.code === 'Enter') {
+        if (state == false) {
+          state = true;
+          console.log("resume")
+          webgazer.resume();
+        } else {
+          state = false;
+          console.log("pause")
+          webgazer.pause();
+        }
+      }
+
+    })
+
+    async function sleep(delayms) {
+      return new Promise(function (resolve, reject) {
+        setTimeout(resolve, delayms);
+      });
+    }
+
+    async function animateDot(svg, x, y, r1, r2, fill, duration) {
+      const circle = svg.append("circle")
+        .attr("cx", x).attr("cy", y)
+        .attr("r", r1)
+        .style("stroke-width", "10")
+        .style("stroke", fill)
+        .style("fill", "white");
+
+      const center = svg.append("circle")
+        .attr("cx", x).attr("cy", y)
+        .attr("r", 10)
+        .style("fill", "blue");
+
+      await circle
+        .transition()
+        .duration(duration)
+        .attr("r", r2)
+        .end();
+
+      circle.remove();
+      center.remove();
+    }
+
+    async function calibrate() {
+      const svg = d3.select("#plotting_canvas");
+
+      svg.selectAll("*").remove();
+
+      const box = svg.node().getBoundingClientRect();
+
+      const videoX = 320;
+      const videoY = 240;
+
+      const radius = 320;
+
+      const minx = box.x + radius;
+      const maxx = box.width - radius;
+
+      const miny = box.y + radius;
+      const maxy = box.height - radius;
+
+      const steps = 2;
+
+      const stepx = (maxx - minx) / steps
+      const stepy = (maxy - miny) / steps
+
+      for (y = miny; y <= maxy; y += stepy) {
+        for (x = minx; x <= maxx; x += stepx) {
+          if (x >= videoX && y >= videoY) {
+            for (r = radius; r > 20; r -= 20) {
+              await animateDot(svg, x, y, r, r - 20, "red", 100);
+              if (r <= 240 && r >= 80) {
+                webgazer.recordScreenPosition(x, y, 'click');
+              }
+            }
+            await sleep(500);
+          }
+        }
+      }
+    }
+
+    window.onbeforeunload = function () {
+      webgazer.end();
+    }
+
+    const lang = "ru-RU";
+    const ruVoice = window.speechSynthesis.getVoices().find(i => i.lang == lang);
+
+    function say(text) {
+      window.speechSynthesis.cancel();
+      var say = new SpeechSynthesisUtterance(text);
+      say.lang = lang;
+      say.voice = ruVoice;
+      window.speechSynthesis.speak(say);
+    }
+
+    function dist(x1, y1, x2, y2) {
+      return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
+    }
+
+    function drawDottedCircle(svg, x, y, r, color, colorRu){
+      const circle = svg.append("circle")
+        .attr("cx", x).attr("cy", y)
+        .attr("r", r)
+        .style("stroke-width", "10")
+        .style("stroke", color)
+        .style("fill", "white")
+        .style("opacity", 0.5);
+      
+      const center = svg.append("circle")
+        .attr("cx", x).attr("cy", y)
+        .attr("r", 10)
+        .style("fill", color)
+        .style("opacity", 0.5);
+
+      return [circle, center, color, colorRu];
+    }
+
+    function drawZones() {
+      const svg = d3.select("#plotting_canvas");
+      const box = svg.node().getBoundingClientRect();
+
+      const area = 400;
+
+      const points = [
+        drawDottedCircle(svg, 600, 400, area, "red", "красный"),
+        drawDottedCircle(svg, 1400, 400, area, "orange", "оранжевый"),
+        drawDottedCircle(svg, 2200, 400, area, "yellow", "желтый"),
+
+        drawDottedCircle(svg, 600, 1200, area, "green", "зеленый"),
+        drawDottedCircle(svg, 1400, 1200, area, "blue", "голубой"),
+        drawDottedCircle(svg, 2200, 1200, area, "violet", "фиолетовый"),
+      ];
+
+      const baseOp = 0.5;
+      const gaze = 2000 * baseOp;
+      let clicking = false;
+      webgazer.setGazeListener((data, clock) => {
+        if(data === null || clicking) return;
+
+        for (i of points) {
+          const [p,c,color,txt] = i;
+          const cx = parseFloat(p.attr("cx"));
+          const cy = parseFloat(p.attr("cy"));
+          const r = parseFloat(p.attr("r"));
+          const op = parseFloat(p.style("opacity"));
+          const pyth = dist(data.x, data.y, cx, cy)
+
+          if (pyth < r) {
+
+            // Visual Magnet
+            if(pyth < r/2){
+              webgazer.recordScreenPosition(cx, cy, 'click');
+              if(pyth < r/4){
+                webgazer.recordScreenPosition(cx, cy, 'click');
+              }
+            }
+
+            c.style("opacity",1);
+            p.style("fill", "silver");
+            p
+              .transition()
+              .style("opacity", 1)
+              .duration(gaze * (1.0 - op))
+              .end()
+              .then(() => {
+                clicking = true;
+                webgazer.recordScreenPosition(cx, cy, 'click');
+                p.style("opacity", baseOp);
+                const poi = svg.append("circle")
+                  .attr("cx", cx).attr("cy", cy)
+                  .attr("r", 20)
+                  .style("fill", "red")
+                  .style("opacity",0);
+
+                poi.transition()
+                  .style("opacity",1)
+                  .duration(gaze * 2)
+                  .end()
+                  .then(() => {
+                    say(txt);
+                    webgazer.recordScreenPosition(cx, cy, 'click');
+                    poi.remove();
+                    clicking = false;
+                  })
+                  .catch(()=> {});
+              })
+              .catch(()=> {});
+          } else {
+            c.style("opacity",baseOp);
+            p.style("fill", "white");
+            p
+              .transition()
+              .style("opacity", baseOp)
+              .duration(2 * gaze * (op - baseOp));
+          }
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>

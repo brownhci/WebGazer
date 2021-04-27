@@ -328,6 +328,7 @@ async function loop() {
       if (webgazer.params.showGazeDot) {
         gazeDot.style.display = 'block';
       }
+      gazeDot.style.transition = 'all 0.1s ease-in-out';
       gazeDot.style.transform = 'translate3d(' + pred.x + 'px,' + pred.y + 'px,0)';
     } else {
       gazeDot.style.display = 'none';
