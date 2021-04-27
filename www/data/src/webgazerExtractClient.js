@@ -11,6 +11,7 @@ var logsCount = 0;
 var videoFilename = "";
 var frameNum = -1;
 var frameTimeEpoch = -1;
+var frameTimeEpochCorrection = 0;
 var frameTimeIntoVideoMS = -1;
 var tobiiX, tobiiY;
 
@@ -174,10 +175,11 @@ function onLoad()
                 tobiiX = parseFloat( obj.tobiiX );
                 tobiiY = parseFloat( obj.tobiiY );
 
-                frameTimeEpoch = parseInt( obj.frameTimeEpoch )
+                frameTimeEpoch = parseInt( obj.frameTimeEpoch );
+                frameTimeEpochCorrection = parseInt( obj.frameTimeEpochCorrection );
                 frameTimeIntoVideoMS = parseInt( obj.frameTimeIntoVideoMS );
                 // Update screen cap video
-                seekTimeMS = frameTimeEpoch - screencapStartTime + screencapTimeOffsetMS;
+                seekTimeMS = frameTimeEpoch - screencapStartTime + screencapTimeOffsetMS; // TODO [20201229 xk]: check if this should use corrected frameTimeEpoch
                 if( showScreenCap )
                     screencapVideo.currentTime = seekTimeMS / 1000.0
             }
@@ -406,6 +408,7 @@ async function runWebGazerSendResult()
     s.msgID = "3"
     s.frameNum = frameNum; // Sanity
     s.frameTimeEpoch = frameTimeEpoch;
+    s.frameTimeEpochCorrection = frameTimeEpochCorrection;
     s.webGazerX = webGazerX;
     s.webGazerY = webGazerY;
     s.fmPos = fmPos;

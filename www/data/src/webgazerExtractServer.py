@@ -28,6 +28,7 @@ from videoProcessing import readImageRGBA,loadScreenCapVideo,writeScreenCapOutpu
     closeScreenCapOutVideo,sendVideoFrame,sendVideoEnd
 import global_variables
 from participant import ParticipantData,TobiiData,sendParticipantInfo,ParticipantVideo,newParticipant
+import load_tobii_webm_offsets as offsets
 
 # TODO
 # - Check Aaron's timestamps
@@ -56,7 +57,7 @@ writeCSV = True
 # CSV header object field names
 fmPosKeys = ['fmPos_%04d' % i for i in range(0, 468)]
 eyeFeaturesKeys = ['eyeFeatures_%04d' % i for i in range(0, 120)]
-fieldnames = (['participant','frameImageFile','frameTimeEpoch','frameNum','mouseMoveX','mouseMoveY',
+fieldnames = (['participant','frameImageFile','frameTimeEpoch','frameTimeEpochCorrection','frameNum','mouseMoveX','mouseMoveY',
                'mouseClickX','mouseClickY','keyPressed','keyPressedX','keyPressedY',
                'tobiiLeftScreenGazeX','tobiiLeftScreenGazeY','tobiiRightScreenGazeX','tobiiRightScreenGazeY',
                'webGazerX','webGazerY','error','errorPix'])
@@ -87,7 +88,9 @@ def writeDataToCSV( p, msg ):
     # As time only goes forwards, tobiiListPos is a counter which persists over GET requests.
     # The videos arrive in non-chronological order, however, so we have to reset tobiiListPos on each new video
     frameTimeEpoch = int( msg["frameTimeEpoch"] )
-    while p.tobiiListPos < len(p.tobiiList)-2 and frameTimeEpoch - p.tobiiList[p.tobiiListPos].timestamp > 0:
+    correctedFrameTimeEpoch = frameTimeEpoch + int (msg["frameTimeEpochCorrection"] ) # see load_tobii_webm_offsets.py
+
+    while p.tobiiListPos < len(p.tobiiList)-2 and correctedFrameTimeEpoch - p.tobiiList[p.tobiiListPos].timestamp > 0:
         p.tobiiListPos = p.tobiiListPos + 1
 
     if p.tobiiListPos == len(p.tobiiList):
@@ -97,8 +100,8 @@ def writeDataToCSV( p, msg ):
         global_variables.tobiiCurrentY = -1
     else:
         # TobiiList
-        diffCurr = frameTimeEpoch - p.tobiiList[p.tobiiListPos].timestamp
-        diffNext = frameTimeEpoch - p.tobiiList[p.tobiiListPos+1].timestamp
+        diffCurr = correctedFrameTimeEpoch - p.tobiiList[p.tobiiListPos].timestamp
+        diffNext = correctedFrameTimeEpoch - p.tobiiList[p.tobiiListPos+1].timestamp
 
         # Pick the one which is closest in time
         if abs(diffCurr) < abs(diffNext):
@@ -219,11 +222,14 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
             # If we're not done, we need to extract the video frames (using ffmpeg).
             # If this is already done, we write 'framesExtracted.txt'
-            #
+            
             framesDoneFile = outDir + '/' + "framesExtracted.txt"
             if not os.path.isfile( framesDoneFile ):
                 print( "    Extracting video frames (might take a few minutes)... " + str(video) )
-                completedProcess = subprocess.run('ffmpeg -i "./' + video + '" -vf showinfo "' + outDir + 'frame_%08d.png"'\
+                # TODO: figure out a way to get this to just write blank files with .png 
+                # completedProcess = subprocess.run('ffmpeg -i "./' + video + '" -vf showinfo "' + outDir + 'frame_%08d.png"'\
+                #     , stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)
+                completedProcess = subprocess.run('ffmpeg -i "./' + video + '" -vf scale=1:1 "' + outDir + 'frame_%08d.png"'\
                     , stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)
 
                 nFrames = len(glob.glob( outDir + '*.png' ))
@@ -352,6 +358,7 @@ class Application(tornado.web.Application):
 
 def main():
     global_variables.init()
+    offsets.load() # gets all correction offsets (see ./load_tobii_webm_offsets.py)
 
     ###########################################################################################################
     # Enumerate all P_ subdirectories if not yet done

@@ -7,6 +7,7 @@ from decimal import Decimal
 import tornado.escape
 
 import global_variables
+from load_tobii_webm_offsets import offsetDict
 
 pctFile = "participant_characteristics.csv"
 
@@ -65,12 +66,15 @@ class ParticipantVideo:
     frameFilesList = []
     frameFilesPos = -1
 
-    def __init__(self, filename, startTimestamp):
+    tobiiWebmOffset = 0 # offset in ms between the webm video recording timestamps and the tobii gaze prediction timestamps. can be adjusted for greater accuracy
+
+    def __init__(self, filename, startTimestamp, tobiiWebmOffset):
         self.filename = filename
         self.startTimestamp = startTimestamp
+        self.tobiiWebmOffset = tobiiWebmOffset
     
     def __str__(self):
-        return "[ParticipantVideo] Timestamp: " + str(self.startTimestamp) + " Filename: " + str(self.filename)
+        return "[ParticipantVideo] Timestamp: " + str(self.startTimestamp) + " Filename: " + str(self.filename) + " OffsetFromTobiiTimestamp (s): " + str(self.tobiiWebmOffset)
 
 class ParticipantData:
     directory = ""
@@ -164,12 +168,20 @@ class ParticipantData:
         self.videos = []
         self.videosPos = -1
 
+        # get dict of offsets for this participant
+        participantOffsets = offsetDict.get(self.directory)
+
         for l in inputLog:
             if l.get("type") == "recording start":
                 fn = l.get("sessionString")
                 fn = fn.replace('/', '-') + '.webm'
                 starttime = l.get("epoch")
-                pv = ParticipantVideo( fn, starttime )
+
+                # get the corresponding offset based on the filename fn
+                offset = participantOffsets.get(fn)
+                offset = 0 if offset is None else offset # offset defaults to 0
+
+                pv = ParticipantVideo( fn, starttime, offset) # takes the "epoch" at "recording start" and passes it to a new ParticipantVideo obj
                 self.videos.append( pv )
 
 
@@ -182,6 +194,9 @@ class ParticipantData:
         # E.G., if we only wanted video files to do with _writing and the dot tests, then
         if global_variables.onlyWritingVideos:
             self.videos = [x for x in self.videos if (x.filename.find('_writing') >= 0 or x.filename.find('dot_test.') >= 0 or x.filename.find( 'dot_test_final.' ) >= 0)]
+        
+        # isolate just the dot_test video. now we need to see where self is passed into
+        self.videos = [x for x in self.videos if (x.filename.find('dot_test.') >= 0)]
         
         ################################
         # Read in JSON output from Tobii

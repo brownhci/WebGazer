@@ -146,13 +146,14 @@ def sendVideoFrame( wsh, fn, pv ):
     # Send the video frame, with the timestamp first
     # Reminder: "frame_{:08d}_{:08d}.png"
     frameNum = fn[len(fn)-21:len(fn)-13]
-    timestamp = fn[len(fn)-12:len(fn)-4]
+    timestamp = fn[len(fn)-12:len(fn)-4] # using the range of [len-12 : len-4] to get the timestamp
 
     parcel = ({'msgID': "2",
                'videoFilename': pv.filename,
                'frameNum': str(frameNum),
                'frameNumTotal': str(len(pv.frameFilesList)),
                'frameTimeEpoch': str(int(timestamp) + pv.startTimestamp),
+               'frameTimeEpochCorrection': str(pv.tobiiWebmOffset), # correction offset (ms), see load_tobii_webm_offsets.py
                'frameTimeIntoVideoMS': str(timestamp), 
                'tobiiX': "{:+.4f}".format(global_variables.tobiiCurrentX),
                'tobiiY': "{:+.4f}".format(global_variables.tobiiCurrentY)})
