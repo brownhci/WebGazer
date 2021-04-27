@@ -956,24 +956,12 @@ webgazer.removeMouseEventListeners = function() {
  *  Records current screen position for current pupil features.
  *  @param {String} x - position on screen in the x axis
  *  @param {String} y - position on screen in the y axis
- *  @return {webgazer} this
- */
-webgazer.recordScreenPosition = function(x, y) {
-  // give this the same weight that a click gets.
-  recordScreenPosition(x, y, eventTypes[0]);
-  return webgazer;
-};
-
-/**
- *  Records current screen position for current pupil features.
- *  @param {String} x - position on screen in the x axis
- *  @param {String} y - position on screen in the y axis
  *  @param {String} eventType - "click" or "move", as per eventTypes
  *  @return {webgazer} this
  */
 webgazer.recordScreenPosition = function(x, y, eventType) {
   // give this the same weight that a click gets.
-  recordScreenPosition(x, y, eventType);
+  recordScreenPosition(x, y, eventType || eventTypes[0]);
   return webgazer;
 };
 
