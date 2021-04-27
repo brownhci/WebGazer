@@ -16,10 +16,6 @@ function createConfig(options) {
 		(options.target == 'var' ? '' : '.' + options.target) + 
 		(options.minified ? '.min' : '') + 
 		'.js',
-      chunkFilename: 'tensorflow' + 
-    (options.target == 'var' ? '' : '.' + options.target) + 
-    (options.minified ? '.min' : '') + 
-    '.js',
       library: 'webgazer',
       libraryTarget: options.target,
       libraryExport: 'default',
@@ -35,11 +31,10 @@ function createConfig(options) {
       ]
     },
     optimization: {
-    	minimize: options.minified,
-      splitChunks: { name: 'vendor', chunks: 'all' }
+    	minimize: options.minified
     },
     resolve: {
-        extensions: [".mjs", ".webpack.js", ".web.js", ".js", ".json"],
+      extensions: [".mjs", ".webpack.js", ".web.js", ".js", ".json"]
     },
     plugins: [
       new webpack.BannerPlugin(bannerString),

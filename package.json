@@ -20,6 +20,14 @@
     "/dist",
     "/src"
   ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run build",
+      "post-checkout": "yarnhook && npm --prefix ./www install ./www/ && npm run build",
+      "post-merge": "yarnhook && npm --prefix ./www install ./www/ && npm run build",
+      "post-rewrite": "yarnhook && npm --prefix ./www install ./www/ && npm run build"
+    }
+  },
   "keywords": [
     "webgazer",
     "eyetracking",
