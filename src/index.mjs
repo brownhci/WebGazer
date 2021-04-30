@@ -49,6 +49,7 @@ var paused = false;
 //registered callback for loop
 var nopCallback = function(data, time) {};
 var callback = nopCallback;
+var clickHandler = null;
 
 //Types that regression systems should handle
 //Describes the source of data so that regression systems may ignore or handle differently the various generating events
@@ -376,6 +377,11 @@ var clickListener = async function(event) {
     // // Debug line
     // console.log('Model size: ' + JSON.stringify(await localforage.getItem(localstorageDataLabel)).length / 1000000 + 'MB');
   }
+
+  // if defined, call user supplied handler passing in the event object, data and settings
+  if (typeof clickHandler === 'function') {
+    clickHandler(event, {data: getStoreData(), settings})
+  }
 };
 
 /**
@@ -441,17 +447,24 @@ async function loadGlobalData() {
 }
 
 /**
+ * Gets data for storage
+ */
+function getStoreData() {
+  return regs[0].getData() || data; // Array
+  //TODO data should probably be stored in webgazer object instead of each regression model
+  //     -> requires duplication of data, but is likely easier on regression model implementors
+}
+
+/**
  * Adds data to localforage
  */
 async function setGlobalData() {
   // Grab data from regression model
-  var storeData = regs[0].getData() || data; // Array
+  var storeData = getStoreData();
 
   // Store data into localforage
   localforage.setItem(localstorageSettingsLabel, settings) // [20200605 XK] is 'settings' ever being used?
   localforage.setItem(localstorageDataLabel, storeData);
-  //TODO data should probably be stored in webgazer object instead of each regression model
-  //     -> requires duplication of data, but is likely easier on regression model implementors
 }
 
 /**
@@ -1049,6 +1062,20 @@ webgazer.addRegression = function(name) {
 };
 
 /**
+ * Load data from an external storage
+ * @param {String} data - Data to load into regression model(s)
+ * @return {webgazer} this
+ */
+webgazer.loadData = function(data) {
+  data = data;
+
+  // Load data into regression model(s)
+  for (var reg in regs) {
+    regs[reg].setData(loadData);
+  }
+};
+
+/**
  * Sets a callback to be executed on every gaze event (currently all time steps)
  * @param {function} listener - The callback function to call (it must be like function(data, elapsedTime))
  * @return {webgazer} this
@@ -1059,11 +1086,31 @@ webgazer.setGazeListener = function(listener) {
 };
 
 /**
+ * Sets a callback to be executed on every click, in addition to the default handler
+ * @param {function} listener - The callback function to call (passed click event obj) 
+ * @return {webgazer} this
+ */
+webgazer.setClickListener = function(listener) {
+  clickHandler = listener;
+  return webgazer;
+};
+
+/**
  * Removes the callback set by setGazeListener
  * @return {webgazer} this
  */
 webgazer.clearGazeListener = function() {
   callback = nopCallback;
+  return webgazer;
+};
+
+/**
+ * Removes the callback set by setClickListener
+ * @param {function} listener - The callback function to call (passed click event obj) 
+ * @return {webgazer} this
+ */
+ webgazer.clearClickListener = function(listener) {
+  clickHandler = null;
   return webgazer;
 };
 
