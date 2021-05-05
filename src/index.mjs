@@ -1071,7 +1071,7 @@ webgazer.loadData = function(data) {
 
   // Load data into regression model(s)
   for (var reg in regs) {
-    regs[reg].setData(loadData);
+    regs[reg].setData(data);
   }
 };
 
