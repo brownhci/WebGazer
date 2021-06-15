@@ -102,7 +102,8 @@ util_regression.KalmanFilter.prototype.update = function(z) {
     var P_p = add(mult(mult(this.F,this.P), transpose(this.F)), this.Q); //Predicted covaraince
 
     //Calculate the update values
-    var y = sub(z, mult(this.H, X_p)); // This is the measurement error (between what we expect and the actual value)
+    // Use `squeeze` to transform the multiplied value to match the measurement's form, i.e. column vector => row vector
+    var y = sub(z, mathjs.squeeze(mult(this.H, X_p))); // This is the measurement error (between what we expect and the actual value)
     var S = add(mult(mult(this.H, P_p), transpose(this.H)), this.R); //This is the residual covariance (the error in the covariance)
 
     // kalman multiplier: K = P * H' * (H * P * H' + R)^-1
@@ -117,7 +118,7 @@ util_regression.KalmanFilter.prototype.update = function(z) {
     // correction: X = X + K * (m - H * X)  |  P = (I - K * H) * P
     this.X = add(X_p, mult(K, y));
     this.P = mult(sub(identity(K.length), mult(K,this.H)), P_p);
-    return transpose(mult(this.H, this.X))[0]; //Transforms the predicted state back into it's measurement form
+    return mathjs.squeeze(mult(this.H, this.X)); //Transforms the predicted state back into it's measurement form
 };
 
 /**
