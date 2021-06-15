@@ -103,17 +103,13 @@ util_regression.KalmanFilter.prototype.update = function(z) {
     var P_p = add(multiply(multiply(this.F,this.P), transpose(this.F)), this.Q); //Predicted covaraince
 
     //Calculate the update values
-    // Use `squeeze` to transform the multiplied value to match the measurement's form, i.e. column vector => row vector
-    var y = subtract(z, mathjs.squeeze(multiply(this.H, X_p))); // This is the measurement error (between what we expect and the actual value)
+    // reshape measurement into a column vector form
+    z = mathjs.reshape(z, [-1, 1])
+    var y = subtract(z, multiply(this.H, X_p)); // This is the measurement error (between what we expect and the actual value)
     var S = add(multiply(multiply(this.H, P_p), transpose(this.H)), this.R); //This is the residual covariance (the error in the covariance)
 
     // kalman multiplier: K = P * H' * (H * P * H' + R)^-1
     var K = multiply(P_p, multiply(transpose(this.H), inv(S))); //This is the Optimal Kalman Gain
-
-    //We need to change Y into it's column vector form
-    for(var i = 0; i < y.length; i++){
-        y[i] = [y[i]];
-    }
 
     //Now we correct the internal values of the model
     // correction: X = X + K * (m - H * X)  |  P = (I - K * H) * P
