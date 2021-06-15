@@ -1,5 +1,5 @@
 import util from './util';
-import mathjs from 'mathjs';
+import mathjs from './mathjs';
 import util_regression from './util_regression';
 import params from './params';
 

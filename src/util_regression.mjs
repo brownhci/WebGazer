@@ -1,5 +1,5 @@
 import util from './util';
-import mathjs from 'mathjs';
+import mathjs from './mathjs';
 import mat from './mat';
 import params from './params';
 

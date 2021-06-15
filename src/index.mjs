@@ -3,7 +3,6 @@ import '@tensorflow/tfjs';
 //import(/* webpackChunkName: 'pageA' */ './vendors~main.js')
 
 import 'regression';
-import mathjs from 'mathjs';
 import params from './params';
 import './dom_util';
 import localforage from 'localforage';
@@ -12,12 +11,6 @@ import Reg from './ridgeReg';
 import ridgeRegWeighted from './ridgeWeightedReg';
 import ridgeRegThreaded from './ridgeRegThreaded';
 import util from './util';
-
-// Sets mathjs matrix outputs to arrays
-// @see: https://mathjs.org/docs/core/configuration.html
-mathjs.config({
-  matrix: 'Array',
-});
 
 const webgazer = {};
 webgazer.tracker = {};
