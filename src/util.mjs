@@ -1,6 +1,5 @@
 import mat from './mat';
 import params from './params';
-import numeric from 'numeric';
 
 const util = {};
 

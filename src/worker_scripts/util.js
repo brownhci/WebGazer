@@ -368,7 +368,8 @@
     self.webgazer.util.KalmanFilter.prototype.update = function(z) {
 
       // Here, we define all the different matrix operations we will need
-      var add = numeric.add, sub = numeric.sub, inv = numeric.inv, identity = numeric.identity;
+      // FIXME: mathjs is not exported to worker global scope  
+      var add = mathjs.add, sub = mathjs.subtract, inv = mathjs.inv, identity = mathjs.identity;
       var mult = webgazer.mat.mult, transpose = webgazer.mat.transpose;
       //TODO cache variables like the transpose of H
 

@@ -3,6 +3,7 @@ import '@tensorflow/tfjs';
 //import(/* webpackChunkName: 'pageA' */ './vendors~main.js')
 
 import 'regression';
+import mathjs from 'mathjs';
 import params from './params';
 import './dom_util';
 import localforage from 'localforage';
@@ -11,6 +12,12 @@ import Reg from './ridgeReg';
 import ridgeRegWeighted from './ridgeWeightedReg';
 import ridgeRegThreaded from './ridgeRegThreaded';
 import util from './util';
+
+// Sets mathjs matrix outputs to arrays
+// @see: https://mathjs.org/docs/core/configuration.html
+mathjs.config({
+  matrix: 'Array',
+});
 
 const webgazer = {};
 webgazer.tracker = {};
@@ -490,7 +497,7 @@ async function init(stream) {
   videoContainerElement.style.left = leftDist;
   videoContainerElement.style.width = webgazer.params.videoViewerWidth + 'px';
   videoContainerElement.style.height = webgazer.params.videoViewerHeight + 'px';
-  
+
   videoElement = document.createElement('video');
   videoElement.setAttribute('playsinline', '');
   videoElement.id = webgazer.params.videoElementId;
@@ -583,8 +590,8 @@ async function init(stream) {
 /**
  * Initializes navigator.mediaDevices.getUserMedia
  * depending on the browser capabilities
- * 
- * @return Promise 
+ *
+ * @return Promise
  */
 function setUserMediaVariable(){
 
@@ -818,10 +825,10 @@ webgazer.showPredictionPoints = function(val) {
 /**
  * Set whether localprevious calibration data (from localforage) should be loaded.
  * Default true.
- * 
+ *
  * NOTE: Should be called before webgazer.begin() -- see www/js/main.js for example
- * 
- * @param val 
+ *
+ * @param val
  * @returns {webgazer} this
  */
 webgazer.saveDataAcrossSessions = function(val) {
