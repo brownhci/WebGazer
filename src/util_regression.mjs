@@ -111,11 +111,6 @@ util_regression.KalmanFilter.prototype.update = function(z) {
     // kalman multiplier: K = P * H' * (H * P * H' + R)^-1
     var K = mult(P_p, mult(transpose(this.H), inv(S))); //This is the Optimal Kalman Gain
 
-    //We need to change Y into it's column vector form
-    for(var i = 0; i < y.length; i++){
-        y[i] = [y[i]];
-    }
-
     //Now we correct the internal values of the model
     // correction: X = X + K * (m - H * X)  |  P = (I - K * H) * P
     this.X = add(X_p, mult(K, y));
