@@ -175,7 +175,7 @@ const mat = {
     },
 
     /**
-     * Linear algebraic matrix addition, X = A * B
+     * Linear algebraic matrix addition, X = A + B
      * @param {Array.<Array.<Number>>} A
      * @param {Array.<Array.<Number>>} B
      * @return {Array.<Array.<Number>>} A + B
