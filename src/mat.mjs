@@ -230,7 +230,7 @@ const mat = {
      * @return {Array.<Array.<Number>>}  solution if A is square, least squares solution otherwiseis
      */
     solve(A, B) {
-        if (A.length === A[0].lenth) {
+        if (A.length === A[0].length) {
             // A is square
             return mat.LUDecomposition(A, B);
         }
