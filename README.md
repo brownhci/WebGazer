@@ -137,6 +137,6 @@ This research is supported by NSF grants IIS-1464061, IIS-1552663, and the Brown
 
 ## License
 
-Copyright (C) 2020 [Brown HCI Group](http://hci.cs.brown.edu)
+Copyright (C) 2021 [Brown HCI Group](http://hci.cs.brown.edu)
 
 Licensed under GPLv3. Companies have the option to license WebGazer.js under LGPLv3 while their valuation is under $1,000,000.
