@@ -25,7 +25,7 @@ function createConfig(options) {
       rules: [
         {
           test: /\.mjs$/,
-          type: 'javascript/esm',
+          type: 'javascript/auto',
           exclude: /node_modules/
         }
       ]

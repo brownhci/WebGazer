@@ -1,4 +1,4 @@
-import FacemeshModel from '@tensorflow-models/facemesh';
+import * as FacemeshModel from '@tensorflow-models/facemesh';
 /**
  * Constructor of TFFaceMesh object
  * @constructor
