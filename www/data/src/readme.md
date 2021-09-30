@@ -1,9 +1,6 @@
 WebGazer ETRA2018 Dataset Extractor
 ===================================
 2018-07-30
-James Tompkin
-james_tompkin@brown.edu - Any issues, email me.
-
 
 This software takes the ETRA2018 dataset and creates CSV files for each video, containing per-frame WebGazer and Tobii values in normalized screen coordinates.
 After extraction, this makes it simple and efficent to analyse the performance of WebGazer in your favourite _data science_ application.
@@ -19,15 +16,15 @@ Requirements:
     - opencv-python
 - ffmpeg on PATH
 - Chrome
-- WebGazer ETRA2018 Dataset (James' version)
+- WebGazer ETRA2018 Dataset
 - A lot of disk space: 50GB+ for running on every video on every participant
 
 
 Instructions:
 =============
-1. Download the dataset from 
->https://webgazer.cs.brown.edu/data/WebGazerETRA2018Dataset_Release20180420.zip
-    Place the unzipped files in www/data/src/
+1. Download the dataset and unzip into www/data/src/
+> https://webgazer.cs.brown.edu/data/WebGazerETRA2018Dataset_Release20180420.zip
+
 2. Execute the Python webserver
 > python webgazerExtractServer.py
 
