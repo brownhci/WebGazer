@@ -16,11 +16,11 @@ Requirements:
     - tornado
     - pytz
     - numpy
-    - opencV
+    - opencv-python
 - ffmpeg on PATH
 - Chrome
 - WebGazer ETRA2018 Dataset (James' version)
-- A lot of disk space - 50GB+ for running on every video on every participant
+- A lot of disk space: 50GB+ for running on every video on every participant
 
 
 Instructions:
