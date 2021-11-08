@@ -1133,7 +1133,7 @@ webgazer.getVideoPreviewToCameraResolutionRatio = function() {
 }
 
 /*
- * Gets the fifty most recent tracker preditions
+ * Gets the fifty most recent tracker predictions
  */
 webgazer.getStoredPoints = function() {
   return [xPast50, yPast50];
