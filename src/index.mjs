@@ -920,6 +920,10 @@ webgazer.setVideoViewerSize = function(w, h) {
   videoElement.style.width = w + 'px';
   videoElement.style.height = h + 'px';
 
+  // Change video container
+  videoContainerElement.style.width = w + 'px';
+  videoContainerElement.style.height = h + 'px';
+
   // Change the face overlay
   faceOverlay.style.width = w + 'px';
   faceOverlay.style.height = h + 'px';
