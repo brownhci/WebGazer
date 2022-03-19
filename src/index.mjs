@@ -713,8 +713,7 @@ webgazer.end = function() {
   //webgazer.stopVideo(); // uncomment if you want to stop the video from streaming
 
   //remove video element and canvas
-  document.body.removeChild(videoElement);
-  document.body.removeChild(videoElementCanvas);
+  videoContainerElement.remove();
 
   return webgazer;
 };
@@ -728,10 +727,10 @@ webgazer.stopVideo = function() {
   videoStream.getTracks()[0].stop();
 
   // Removes the outline of the face
-  document.body.removeChild( faceOverlay );
+  videoContainerElement.removeChild( faceOverlay );
 
   // Removes the box around the face
-  document.body.removeChild( faceFeedbackBox );
+  videoContainerElement.removeChild( faceFeedbackBox );
 
   return webgazer;
 }
