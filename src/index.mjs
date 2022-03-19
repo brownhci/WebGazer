@@ -117,7 +117,6 @@ webgazer.computeValidationBoxSize = function() {
 
 /**
  * Checks if the pupils are in the position box on the video
- * // TODO These are all wrong. The latestEyeFeatures will be in 'video' space not 'preview' space, and so need to be converted.
  */
 function checkEyesInValidationBox() {
 
@@ -484,7 +483,12 @@ async function init(stream) {
   // create a video element container to enable customizable placement on the page
   videoContainerElement = document.createElement('div');
   videoContainerElement.id = webgazer.params.videoContainerId;
-  videoContainerElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
+  if (navigator.userAgent.indexOf("Safari") > -1) {
+    videoContainerElement.style.opacity = webgazer.params.showVideo ? '1': '0';
+    videoContainerElement.style.display = 'block';
+  } else {
+    videoContainerElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
+  }
   videoContainerElement.style.position = 'fixed';
   videoContainerElement.style.top = topDist;
   videoContainerElement.style.left = leftDist;
@@ -496,7 +500,12 @@ async function init(stream) {
   videoElement.id = webgazer.params.videoElementId;
   videoElement.srcObject = stream;
   videoElement.autoplay = true;
-  videoElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
+  if (navigator.userAgent.indexOf("Safari") > -1) {
+    videoElement.style.opacity = webgazer.params.showVideo ? '1': '0';
+    videoElement.style.display = 'block';
+  } else {
+    videoElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
+  }
   videoElement.style.position = 'absolute';
   // We set these to stop the video appearing too large when it is added for the very first time
   videoElement.style.width = webgazer.params.videoViewerWidth + 'px';
@@ -766,11 +775,17 @@ webgazer.showVideoPreview = function(val) {
  */
 webgazer.showVideo = function(val) {
   webgazer.params.showVideo = val;
-  if(videoElement) {
-    videoElement.style.display = val ? 'block' : 'none';
+  if (navigator.userAgent.indexOf("Safari") > -1) {
+    videoElement.style.opacity = webgazer.params.showVideo ? '1': '0';
+    videoElement.style.display = 'block';
+  } else {
+    videoElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
   }
-  if(videoContainerElement) {
-    videoContainerElement.style.display = val ? 'block' : 'none';
+  if (navigator.userAgent.indexOf("Safari") > -1) {
+    videoContainerElement.style.opacity = webgazer.params.showVideo ? '1': '0';
+    videoContainerElement.style.display = 'block';
+  } else {
+    videoContainerElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
   }
   return webgazer;
 };
