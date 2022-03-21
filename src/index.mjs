@@ -281,7 +281,6 @@ async function loop() {
     // Count time
     var elapsedTime = performance.now() - clockStart;
 
-
     // Draw face overlay
     if( webgazer.params.showFaceOverlay )
     {
@@ -483,33 +482,24 @@ async function init(stream) {
   // create a video element container to enable customizable placement on the page
   videoContainerElement = document.createElement('div');
   videoContainerElement.id = webgazer.params.videoContainerId;
-  if (navigator.userAgent.indexOf("Safari") > -1) {
-    videoContainerElement.style.opacity = webgazer.params.showVideo ? '1': '0';
-    videoContainerElement.style.display = 'block';
-  } else {
-    videoContainerElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
-  }
+
   videoContainerElement.style.position = 'fixed';
   videoContainerElement.style.top = topDist;
   videoContainerElement.style.left = leftDist;
   videoContainerElement.style.width = webgazer.params.videoViewerWidth + 'px';
   videoContainerElement.style.height = webgazer.params.videoViewerHeight + 'px';
-  
+  hideVideoElement(videoContainerElement);
+
   videoElement = document.createElement('video');
   videoElement.setAttribute('playsinline', '');
   videoElement.id = webgazer.params.videoElementId;
   videoElement.srcObject = stream;
   videoElement.autoplay = true;
-  if (navigator.userAgent.indexOf("Safari") > -1) {
-    videoElement.style.opacity = webgazer.params.showVideo ? '1': '0';
-    videoElement.style.display = 'block';
-  } else {
-    videoElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
-  }
   videoElement.style.position = 'absolute';
   // We set these to stop the video appearing too large when it is added for the very first time
   videoElement.style.width = webgazer.params.videoViewerWidth + 'px';
   videoElement.style.height = webgazer.params.videoViewerHeight + 'px';
+  hideVideoElement(videoElement);
   // videoElement.style.zIndex="-1";
 
   // Canvas for drawing video to pass to clm tracker
@@ -592,8 +582,8 @@ async function init(stream) {
 /**
  * Initializes navigator.mediaDevices.getUserMedia
  * depending on the browser capabilities
- * 
- * @return Promise 
+ *
+ * @return Promise
  */
 function setUserMediaVariable(){
 
@@ -768,23 +758,33 @@ webgazer.showVideoPreview = function(val) {
 }
 
 /**
+ * hides a video element (videoElement or videoContainerElement)
+ * uses display = 'none' for all browsers except Safari, which uses opacity = '1'
+ * because Safari optimizes out video element if display = 'none'
+ * @param {Object} element
+ * @return {null}
+ */
+function hideVideoElement(val) {
+  if (navigator.vendor && navigator.vendor.indexOf('Apple') > -1) {
+    val.style.opacity = webgazer.params.showVideo ? '1': '0';
+    val.style.display = 'block';
+  } else {
+    val.style.display = webgazer.params.showVideo ? 'block' : 'none';
+  }
+}
+
+/**
  * Set whether the camera video preview is visible or not (default true).
  * @param {*} bool
  * @return {webgazer} this
  */
 webgazer.showVideo = function(val) {
   webgazer.params.showVideo = val;
-  if (navigator.userAgent.indexOf("Safari") > -1) {
-    videoElement.style.opacity = webgazer.params.showVideo ? '1': '0';
-    videoElement.style.display = 'block';
-  } else {
-    videoElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
+  if (videoElement) {
+    hideVideoElement(videoElement);
   }
-  if (navigator.userAgent.indexOf("Safari") > -1) {
-    videoContainerElement.style.opacity = webgazer.params.showVideo ? '1': '0';
-    videoContainerElement.style.display = 'block';
-  } else {
-    videoContainerElement.style.display = webgazer.params.showVideo ? 'block' : 'none';
+  if (videoContainerElement) {
+    hideVideoElement(videoContainerElement);
   }
   return webgazer;
 };
@@ -832,10 +832,10 @@ webgazer.showPredictionPoints = function(val) {
 /**
  * Set whether previous calibration data (from localforage) should be loaded.
  * Default true.
- * 
+ *
  * NOTE: Should be called before webgazer.begin() -- see www/js/main.js for example
- * 
- * @param val 
+ *
+ * @param val
  * @returns {webgazer} this
  */
 webgazer.saveDataAcrossSessions = function(val) {
