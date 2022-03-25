@@ -145,18 +145,19 @@ function checkEyesInValidationBox() {
     var xPositions = false;
     var yPositions = false;
 
-    //check if the x values for the left and right eye are within the
-    //validation box
-    if (eyeLX > leftBound && eyeLX < rightBound) {
-      if (eyeRX > leftBound && eyeRX < rightBound) {
+    // check if the x values for the left and right eye are within the
+    // validation box
+    // add the width when comparing against the rightBound (which is the left edge on the preview)
+    if (eyeLX > leftBound && eyeLX + latestEyeFeatures.left.width < rightBound) {
+      if (eyeRX > leftBound && eyeRX + latestEyeFeatures.right.width < rightBound) {
         xPositions = true;
       }
     }
 
     //check if the y values for the left and right eye are within the
     //validation box
-    if (eyeLY > topBound && eyeLY < bottomBound) {
-      if (eyeRY > topBound && eyeRY < bottomBound) {
+    if (eyeLY > topBound && eyeLY + latestEyeFeatures.left.height < bottomBound) {
+      if (eyeRY > topBound && eyeRY + latestEyeFeatures.right.height < bottomBound) {
         yPositions = true;
       }
     }

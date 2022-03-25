@@ -151,7 +151,7 @@ TFFaceMesh.prototype.reset = function(){
 /**
  * Draw TF_FaceMesh_Overlay
  */
-TFFaceMesh.prototype.drawFaceOverlay= function(ctx, keypoints){
+TFFaceMesh.prototype.drawFaceOverlay = function(ctx, keypoints){
   // If keypoints is falsy, don't do anything
   if (keypoints) {
     ctx.fillStyle = '#32EEDB';
