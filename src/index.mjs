@@ -191,16 +191,17 @@ function drawCoordinates(colour,x,y){
 /**
  * Gets the pupil features by following the pipeline which threads an eyes object through each call:
  * curTracker gets eye patches -> blink detector -> pupil detection
+ * @param {Object} video - the video element itself
  * @param {Canvas} canvas - a canvas which will have the video drawn onto it
  * @param {Number} width - the width of canvas
  * @param {Number} height - the height of canvas
  */
-function getPupilFeatures(canvas, width, height) {
+function getPupilFeatures(video, canvas, width, height) {
   if (!canvas) {
     return;
   }
   try {
-    return curTracker.getEyePatches(canvas, width, height);
+    return curTracker.getEyePatches(video, canvas, width, height);
   } catch(err) {
     console.log("can't get pupil features ", err);
     return null;
@@ -233,7 +234,7 @@ function paintCurrentFrame(canvas, width, height) {
 async function getPrediction(regModelIndex) {
   var predictions = [];
   // [20200617 xk] TODO: this call should be made async somehow. will take some work.
-  latestEyeFeatures = await getPupilFeatures(videoElementCanvas, videoElementCanvas.width, videoElementCanvas.height);
+  latestEyeFeatures = await getPupilFeatures(videoElement, videoElementCanvas, videoElementCanvas.width, videoElementCanvas.height);
 
   if (regs.length === 0) {
     console.log('regression not set, call setRegression()');
@@ -543,7 +544,7 @@ async function init(stream) {
   gazeDot.style.display = webgazer.params.showGazeDot ? 'block' : 'none';
   gazeDot.style.position = 'fixed';
   gazeDot.style.zIndex = 99999;
-  gazeDot.style.left = '-5px'; //'-999em';
+  gazeDot.style.left = '-5px';
   gazeDot.style.top  = '-5px';
   gazeDot.style.background = 'red';
   gazeDot.style.borderRadius = '100%';
@@ -554,21 +555,24 @@ async function init(stream) {
   // Add other preview/feedback elements to the screen once the video has shown and its parameters are initialized
   videoContainerElement.appendChild(videoElement);
   document.body.appendChild(videoContainerElement);
-  function setupPreviewVideo(e) {
+  const videoPreviewSetup = new Promise((res) => {
+    function setupPreviewVideo(e) {
 
-    // All video preview parts have now been added, so set the size both internally and in the preview window.
-    setInternalVideoBufferSizes( videoElement.videoWidth, videoElement.videoHeight );
-    webgazer.setVideoViewerSize( webgazer.params.videoViewerWidth, webgazer.params.videoViewerHeight );
+      // All video preview parts have now been added, so set the size both internally and in the preview window.
+      setInternalVideoBufferSizes( videoElement.videoWidth, videoElement.videoHeight );
+      webgazer.setVideoViewerSize( webgazer.params.videoViewerWidth, webgazer.params.videoViewerHeight );
 
-    videoContainerElement.appendChild(videoElementCanvas);
-    videoContainerElement.appendChild(faceOverlay);
-    videoContainerElement.appendChild(faceFeedbackBox);
-    document.body.appendChild(gazeDot);
+      videoContainerElement.appendChild(videoElementCanvas);
+      videoContainerElement.appendChild(faceOverlay);
+      videoContainerElement.appendChild(faceFeedbackBox);
+      document.body.appendChild(gazeDot);
 
-    // Run this only once, so remove the event listener
-    e.target.removeEventListener(e.type, setupPreviewVideo);
-  };
-  videoElement.addEventListener('timeupdate', setupPreviewVideo);
+      // Run this only once, so remove the event listener
+      e.target.removeEventListener(e.type, setupPreviewVideo);
+      res();
+    };
+    videoElement.addEventListener('loadeddata', setupPreviewVideo);
+  });
 
   addMouseEventListeners();
 
@@ -576,6 +580,7 @@ async function init(stream) {
   paused = false;
   clockStart = performance.now();
 
+  await videoPreviewSetup;
   await loop();
 }
 
@@ -646,7 +651,7 @@ webgazer.begin = function(onFail) {
     let stream;
     try {
       stream = await navigator.mediaDevices.getUserMedia( webgazer.params.camConstraints );
-      init(stream);
+      await init(stream);
       resolve(webgazer);
     } catch(err) {
       onFail();
