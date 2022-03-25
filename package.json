@@ -13,7 +13,7 @@
     "prebuild": "npm run clean",
     "test": "./test/run_tests_and_server.sh",
     "dev": "webpack --progress --colors --config webpack.config.js --mode=development",
-    "build": "webpack --progress --colors --config webpack.config.js --mode=production && cp dist/webgazer.js www/. && cp dist/webgazer.js www/data/src/.",
+    "build": "webpack --progress --colors --config webpack.config.js --mode=production && cp dist/webgazer.js www/. && cp dist/webgazer.js www/data/src/. && cp dist/webgazer.js.map www/. && cp dist/webgazer.js.map www/data/src/.",
     "gen_docs": "jsdoc -c jsdoc.conf.json src/*"
   },
   "files": [
