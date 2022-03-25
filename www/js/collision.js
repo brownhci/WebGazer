@@ -151,7 +151,6 @@
       webgazerCanvas = webgazer.getVideoElementCanvas();
     }
 
-    await webgazer.getTracker().getEyePatches(webgazerCanvas, webgazerCanvas.width, webgazerCanvas.height);
     var fmPositions = await webgazer.getTracker().getPositions();
 
     var whr = webgazer.getVideoPreviewToCameraResolutionRatio();

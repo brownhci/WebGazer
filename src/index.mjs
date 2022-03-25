@@ -192,17 +192,16 @@ function drawCoordinates(colour,x,y){
 /**
  * Gets the pupil features by following the pipeline which threads an eyes object through each call:
  * curTracker gets eye patches -> blink detector -> pupil detection
- * @param {Object} video - the video element itself
  * @param {Canvas} canvas - a canvas which will have the video drawn onto it
  * @param {Number} width - the width of canvas
  * @param {Number} height - the height of canvas
  */
-function getPupilFeatures(video, canvas, width, height) {
+function getPupilFeatures(canvas, width, height) {
   if (!canvas) {
     return;
   }
   try {
-    return curTracker.getEyePatches(video, canvas, width, height);
+    return curTracker.getEyePatches(videoElement, canvas, width, height);
   } catch(err) {
     console.log("can't get pupil features ", err);
     return null;
@@ -235,7 +234,7 @@ function paintCurrentFrame(canvas, width, height) {
 async function getPrediction(regModelIndex) {
   var predictions = [];
   // [20200617 xk] TODO: this call should be made async somehow. will take some work.
-  latestEyeFeatures = await getPupilFeatures(videoElement, videoElementCanvas, videoElementCanvas.width, videoElementCanvas.height);
+  latestEyeFeatures = await getPupilFeatures(videoElementCanvas, videoElementCanvas.width, videoElementCanvas.height);
 
   if (regs.length === 0) {
     console.log('regression not set, call setRegression()');

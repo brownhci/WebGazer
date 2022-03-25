@@ -19,6 +19,7 @@ TFFaceMesh.prototype.positionsArray = null;
 
 /**
  * Isolates the two patches that correspond to the user's eyes
+ * @param  {Object} video - the video element itself
  * @param  {Canvas} imageCanvas - canvas corresponding to the webcam stream
  * @param  {Number} width - of imageCanvas
  * @param  {Number} height - of imageCanvas
