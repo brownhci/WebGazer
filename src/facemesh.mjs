@@ -7,8 +7,6 @@ import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detec
 const TFFaceMesh = function() {
   //Backend options are webgl, wasm, and CPU.
   //For recent laptops WASM is better than WebGL.
-  //TODO: This hack makes loading the model block the UI. We should fix that
-  // this.model = (async () => { return await facemesh.load({"maxFaces":1}) })();
   this.model = faceLandmarksDetection.load(
     faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
     { maxFaces: 1 }
