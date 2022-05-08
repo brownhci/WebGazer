@@ -709,6 +709,7 @@ webgazer.end = function() {
 
   //remove video element and canvas
   videoContainerElement.remove();
+  gazeDot.remove();
 
   return webgazer;
 };
