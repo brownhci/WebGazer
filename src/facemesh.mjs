@@ -1,4 +1,4 @@
-import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
+import faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
 
 /**
  * Constructor of TFFaceMesh object
@@ -8,8 +8,8 @@ const TFFaceMesh = function() {
   //Backend options are webgl, wasm, and CPU.
   //For recent laptops WASM is better than WebGL.
   this.model = faceLandmarksDetection.load(
-    faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
-    { maxFaces: 1 }
+      faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
+      { maxFaces: 1 }
   );
   this.predictionReady = false;
 };
@@ -40,7 +40,7 @@ TFFaceMesh.prototype.getEyePatches = async function(video, imageCanvas, width, h
     input: video,
     returnTensors: false,
     flipHorizontal: false,
-    predictIrises: false,
+    predictIrises: true,
   });
 
   if (predictions.length == 0){

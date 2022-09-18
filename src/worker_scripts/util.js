@@ -95,10 +95,10 @@
     //Helper functions
     /**
      * Grayscales an image patch. Can be used for the whole canvas, detected face, detected eye, etc.
-     * 
+     *
      * Code from tracking.js by Eduardo Lundgren, et al.
      * https://github.com/eduardolundgren/tracking.js/blob/master/src/tracking.js
-     * 
+     *
      * Software License Agreement (BSD License) Copyright (c) 2014, Eduardo A. Lundgren Melo. All rights reserved.
      * Redistribution and use of this software in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
      * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -108,7 +108,7 @@
      * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
      * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
      * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-     * 
+     *
      * @param  {Array} pixels - image data to be grayscaled
      * @param  {Number} width  - width of image data to be grayscaled
      * @param  {Number} height - height of image data to be grayscaled
@@ -122,7 +122,7 @@
             for (var j = 0; j < width; j++) {
                 var value = pixels[w] * 0.299 + pixels[w + 1] * 0.587 + pixels[w + 2] * 0.114;
                 gray[p++] = value;
-        
+
                 w += 4;
             }
         }
@@ -131,10 +131,10 @@
 
     /**
      * Increase contrast of an image.
-     * 
+     *
      * Code from Martin Tschirsich, Copyright (c) 2012.
      * https://github.com/mtschirs/js-objectdetect/blob/gh-pages/js/objectdetect.js
-     * 
+     *
      * @param {Array} src - grayscale integer array
      * @param {Number} step - sampling rate, control performance
      * @param {Array} dst - array to hold the resulting image
@@ -143,28 +143,28 @@
         var srcLength = src.length;
         if (!dst) dst = src;
         if (!step) step = 5;
-        
+
         // Compute histogram and histogram sum:
         var hist = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0];
-        
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0];
+
         for (var i = 0; i < srcLength; i += step) {
             ++hist[src[i]];
         }
-        
+
         // Compute integral histogram:
         var norm = 255 * step / srcLength,
             prev = 0;
@@ -173,7 +173,7 @@
             prev = h += prev;
             hist[i] = h * norm; // For non-integer src: ~~(h * norm + 0.5);
         }
-        
+
         // Equalize image:
         for (var i = 0; i < srcLength; ++i) {
             dst[i] = hist[src[i]];
@@ -182,21 +182,21 @@
     };
 
     self.webgazer.util.threshold = function(data, threshold) {
-      for (let i = 0; i < data.length; i++) {
-        data[i] = (data[i] > threshold) ? 255 : 0;
-      }
-      return data;
+        for (let i = 0; i < data.length; i++) {
+            data[i] = (data[i] > threshold) ? 255 : 0;
+        }
+        return data;
     };
 
     self.webgazer.util.correlation = function(data1, data2) {
-      const length = Math.min(data1.length, data2.length);
-      let count = 0;
-      for (let i = 0; i < length; i++) {
-        if (data1[i] === data2[i]) {
-          count++;
+        const length = Math.min(data1.length, data2.length);
+        let count = 0;
+        for (let i = 0; i < length; i++) {
+            if (data1[i] === data2[i]) {
+                count++;
+            }
         }
-      }
-      return count / Math.max(data1.length, data2.length);
+        return count / Math.max(data1.length, data2.length);
     };
 
     /**
@@ -367,32 +367,33 @@
      */
     self.webgazer.util.KalmanFilter.prototype.update = function(z) {
 
-      // Here, we define all the different matrix operations we will need
-      var add = numeric.add, sub = numeric.sub, inv = numeric.inv, identity = numeric.identity;
-      var mult = webgazer.mat.mult, transpose = webgazer.mat.transpose;
-      //TODO cache variables like the transpose of H
+        // Here, we define all the different matrix operations we will need
+        const {
+            add, sub, mult, inv, identity, transpose,
+        } = mat;
+        //TODO cache variables like the transpose of H
 
-      // prediction: X = F * X  |  P = F * P * F' + Q
-      var X_p = mult(this.F, this.X); //Update state vector
-      var P_p = add(mult(mult(this.F,this.P), transpose(this.F)), this.Q); //Predicted covaraince
+        // prediction: X = F * X  |  P = F * P * F' + Q
+        var X_p = mult(this.F, this.X); //Update state vector
+        var P_p = add(mult(mult(this.F,this.P), transpose(this.F)), this.Q); //Predicted covaraince
 
-      //Calculate the update values
-      var y = sub(z, mult(this.H, X_p)); // This is the measurement error (between what we expect and the actual value)
-      var S = add(mult(mult(this.H, P_p), transpose(this.H)), this.R); //This is the residual covariance (the error in the covariance)
+        //Calculate the update values
+        var y = sub(z, mult(this.H, X_p)); // This is the measurement error (between what we expect and the actual value)
+        var S = add(mult(mult(this.H, P_p), transpose(this.H)), this.R); //This is the residual covariance (the error in the covariance)
 
-      // kalman multiplier: K = P * H' * (H * P * H' + R)^-1
-      var K = mult(P_p, mult(transpose(this.H), inv(S))); //This is the Optimal Kalman Gain
+        // kalman multiplier: K = P * H' * (H * P * H' + R)^-1
+        var K = mult(P_p, mult(transpose(this.H), inv(S))); //This is the Optimal Kalman Gain
 
-      //We need to change Y into it's column vector form
-      for(var i = 0; i < y.length; i++){
-        y[i] = [y[i]];
-      }
+        //We need to change Y into it's column vector form
+        for(var i = 0; i < y.length; i++){
+            y[i] = [y[i]];
+        }
 
-      //Now we correct the internal values of the model
-      // correction: X = X + K * (m - H * X)  |  P = (I - K * H) * P
-      this.X = add(X_p, mult(K, y));
-      this.P = mult(sub(identity(K.length), mult(K,this.H)), P_p);
-      return transpose(mult(this.H, this.X))[0]; //Transforms the predicted state back into it's measurement form
+        //Now we correct the internal values of the model
+        // correction: X = X + K * (m - H * X)  |  P = (I - K * H) * P
+        this.X = add(X_p, mult(K, y));
+        this.P = mult(sub(identity(K.length), mult(K,this.H)), P_p);
+        return transpose(mult(this.H, this.X))[0]; //Transforms the predicted state back into it's measurement form
     };
 
 }());

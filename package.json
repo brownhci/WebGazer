@@ -37,7 +37,6 @@
     "@tensorflow-models/face-landmarks-detection": "0.0.3",
     "@tensorflow/tfjs": "^3.15.0",
     "localforage": "1.7.3",
-    "numeric": "1.2.6",
     "regression": "2.0.1"
   },
   "devDependencies": {

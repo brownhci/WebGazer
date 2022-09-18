@@ -12,10 +12,10 @@ function createConfig(options) {
   return {
     entry: './src/index.mjs',
     output: {
-      filename: 'webgazer' + 
-		(options.target == 'var' ? '' : '.' + options.target) + 
-		(options.minified ? '.min' : '') + 
-		'.js',
+      filename: 'webgazer' +
+          (options.target == 'var' ? '' : '.' + options.target) +
+          (options.minified ? '.min' : '') +
+          '.js',
       library: 'webgazer',
       libraryTarget: options.target,
       libraryExport: 'default',
@@ -25,13 +25,13 @@ function createConfig(options) {
       rules: [
         {
           test: /\.mjs$/,
-          type: 'javascript/auto',
+          type: 'javascript/esm',
           exclude: /node_modules/
         }
       ]
     },
     optimization: {
-    	minimize: options.minified
+      minimize: true
     },
     resolve: {
       extensions: [".mjs", ".webpack.js", ".web.js", ".js", ".json"]

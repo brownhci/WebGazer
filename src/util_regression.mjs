@@ -1,5 +1,4 @@
 import util from './util';
-import numeric from 'numeric';
 import mat from './mat';
 import params from './params';
 
@@ -10,59 +9,59 @@ const util_regression = {};
  * Initialize new arrays and initialize Kalman filter for regressions.
  */
 util_regression.InitRegression = function() {
-  var dataWindow = 700;
-  var trailDataWindow = 10;
-  this.ridgeParameter = Math.pow(10,-5);
-  this.errorXArray = new util.DataWindow(dataWindow);
-  this.errorYArray = new util.DataWindow(dataWindow);
+    var dataWindow = 700;
+    var trailDataWindow = 10;
+    this.ridgeParameter = Math.pow(10,-5);
+    this.errorXArray = new util.DataWindow(dataWindow);
+    this.errorYArray = new util.DataWindow(dataWindow);
 
 
-  this.screenXClicksArray = new util.DataWindow(dataWindow);
-  this.screenYClicksArray = new util.DataWindow(dataWindow);
-  this.eyeFeaturesClicks = new util.DataWindow(dataWindow);
+    this.screenXClicksArray = new util.DataWindow(dataWindow);
+    this.screenYClicksArray = new util.DataWindow(dataWindow);
+    this.eyeFeaturesClicks = new util.DataWindow(dataWindow);
 
-  //sets to one second worth of cursor trail
-  this.trailTime = 1000;
-  this.trailDataWindow = this.trailTime / params.moveTickSize;
-  this.screenXTrailArray = new util.DataWindow(trailDataWindow);
-  this.screenYTrailArray = new util.DataWindow(trailDataWindow);
-  this.eyeFeaturesTrail = new util.DataWindow(trailDataWindow);
-  this.trailTimes = new util.DataWindow(trailDataWindow);
+    //sets to one second worth of cursor trail
+    this.trailTime = 1000;
+    this.trailDataWindow = this.trailTime / params.moveTickSize;
+    this.screenXTrailArray = new util.DataWindow(trailDataWindow);
+    this.screenYTrailArray = new util.DataWindow(trailDataWindow);
+    this.eyeFeaturesTrail = new util.DataWindow(trailDataWindow);
+    this.trailTimes = new util.DataWindow(trailDataWindow);
 
-  this.dataClicks = new util.DataWindow(dataWindow);
-  this.dataTrail = new util.DataWindow(trailDataWindow);
+    this.dataClicks = new util.DataWindow(dataWindow);
+    this.dataTrail = new util.DataWindow(trailDataWindow);
 
-  // Initialize Kalman filter [20200608 xk] what do we do about parameters?
-  // [20200611 xk] unsure what to do w.r.t. dimensionality of these matrices. So far at least
-  //               by my own anecdotal observation a 4x1 x vector seems to work alright
-  var F = [ [1, 0, 1, 0],
-    [0, 1, 0, 1],
-    [0, 0, 1, 0],
-    [0, 0, 0, 1]];
+    // Initialize Kalman filter [20200608 xk] what do we do about parameters?
+    // [20200611 xk] unsure what to do w.r.t. dimensionality of these matrices. So far at least
+    //               by my own anecdotal observation a 4x1 x vector seems to work alright
+    var F = [ [1, 0, 1, 0],
+        [0, 1, 0, 1],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]];
 
-  //Parameters Q and R may require some fine tuning
-  var Q = [ [1/4, 0,    1/2, 0],
-    [0,   1/4,  0,   1/2],
-    [1/2, 0,    1,   0],
-    [0,  1/2,  0,   1]];// * delta_t
-  var delta_t = 1/10; // The amount of time between frames
-  Q = numeric.mul(Q, delta_t);
+    //Parameters Q and R may require some fine tuning
+    var Q = [ [1/4, 0,    1/2, 0],
+        [0,   1/4,  0,   1/2],
+        [1/2, 0,    1,   0],
+        [0,  1/2,  0,   1]];// * delta_t
+    var delta_t = 1/10; // The amount of time between frames
+    Q = mat.multScalar(Q, delta_t);
 
-  var H = [ [1, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0]];
-  var H = [ [1, 0, 0, 0],
-    [0, 1, 0, 0]];
-  var pixel_error = 47; //We will need to fine tune this value [20200611 xk] I just put a random value here
+    var H = [ [1, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0]];
+    var H = [ [1, 0, 0, 0],
+        [0, 1, 0, 0]];
+    var pixel_error = 47; //We will need to fine tune this value [20200611 xk] I just put a random value here
 
-  //This matrix represents the expected measurement error
-  var R = numeric.mul(numeric.identity(2), pixel_error);
+    //This matrix represents the expected measurement error
+    var R = mat.multScalar(mat.identity(2), pixel_error);
 
-  var P_initial = numeric.mul(numeric.identity(4), 0.0001); //Initial covariance matrix
-  var x_initial = [[500], [500], [0], [0]]; // Initial measurement matrix
+    var P_initial = mat.multScalar(mat.identity(4), 0.0001); //Initial covariance matrix
+    var x_initial = [[500], [500], [0], [0]]; // Initial measurement matrix
 
-  this.kalman = new util_regression.KalmanFilter(F, H, Q, R, P_initial, x_initial);
+    this.kalman = new util_regression.KalmanFilter(F, H, Q, R, P_initial, x_initial);
 }
 
 /**
@@ -93,8 +92,9 @@ util_regression.KalmanFilter = function(F, H, Q, R, P_initial, X_initial) {
  */
 util_regression.KalmanFilter.prototype.update = function(z) {
     // Here, we define all the different matrix operations we will need
-    var add = numeric.add, sub = numeric.sub, inv = numeric.inv, identity = numeric.identity;
-    var mult = mat.mult, transpose = mat.transpose;
+    var {
+        add, sub, mult, inv, identity, transpose,
+    } = mat;
     //TODO cache variables like the transpose of H
 
     // prediction: X = F * X  |  P = F * P * F' + Q
@@ -102,6 +102,7 @@ util_regression.KalmanFilter.prototype.update = function(z) {
     var P_p = add(mult(mult(this.F,this.P), transpose(this.F)), this.Q); //Predicted covaraince
 
     //Calculate the update values
+    z = transpose([z])
     var y = sub(z, mult(this.H, X_p)); // This is the measurement error (between what we expect and the actual value)
     var S = add(mult(mult(this.H, P_p), transpose(this.H)), this.R); //This is the residual covariance (the error in the covariance)
 
@@ -150,7 +151,7 @@ util_regression.ridge = function(y, X, k){
             if (m_Coefficients.length*n !== m_Coefficients.length){
                 console.log('Array length must be a multiple of m')
             }
-            solution = (ss.length === ss[0].length ? (numeric.LUsolve(numeric.LU(ss,true),bb)) : (webgazer.mat.QRDecomposition(ss,bb)));
+            solution = mat.solve(ss, bb);
 
             for (var i = 0; i < nc; i++){
                 m_Coefficients[i] = solution[i];
@@ -172,17 +173,17 @@ util_regression.ridge = function(y, X, k){
  * @param {Array.<Object>} data - The data to set
  */
 util_regression.setData = function(data) {
-  for (var i = 0; i < data.length; i++) {
-    // Clone data array
-    var leftData = new Uint8ClampedArray(data[i].eyes.left.patch.data);
-    var rightData = new Uint8ClampedArray(data[i].eyes.right.patch.data);
-    // Duplicate ImageData object
-    data[i].eyes.left.patch = new ImageData(leftData, data[i].eyes.left.width, data[i].eyes.left.height);
-    data[i].eyes.right.patch = new ImageData(rightData, data[i].eyes.right.width, data[i].eyes.right.height);
+    for (var i = 0; i < data.length; i++) {
+        // Clone data array
+        var leftData = new Uint8ClampedArray(data[i].eyes.left.patch.data);
+        var rightData = new Uint8ClampedArray(data[i].eyes.right.patch.data);
+        // Duplicate ImageData object
+        data[i].eyes.left.patch = new ImageData(leftData, data[i].eyes.left.width, data[i].eyes.left.height);
+        data[i].eyes.right.patch = new ImageData(rightData, data[i].eyes.right.width, data[i].eyes.right.height);
 
-    // Add those data objects to model
-    this.addData(data[i].eyes, data[i].screenPos, data[i].type);
-  }
+        // Add those data objects to model
+        this.addData(data[i].eyes, data[i].screenPos, data[i].type);
+    }
 };
 
 
@@ -193,18 +194,18 @@ util_regression.setData = function(data) {
  * @returns {Number}
  */
 util_regression.getCurrentFixationIndex = function() {
-  var index = 0;
-  var recentX = this.screenXTrailArray.get(0);
-  var recentY = this.screenYTrailArray.get(0);
-  for (var i = this.screenXTrailArray.length - 1; i >= 0; i--) {
-    var currX = this.screenXTrailArray.get(i);
-    var currY = this.screenYTrailArray.get(i);
-    var euclideanDistance = Math.sqrt(Math.pow((currX-recentX),2)+Math.pow((currY-recentY),2));
-    if (euclideanDistance > 72){
-      return i+1;
+    var index = 0;
+    var recentX = this.screenXTrailArray.get(0);
+    var recentY = this.screenYTrailArray.get(0);
+    for (var i = this.screenXTrailArray.length - 1; i >= 0; i--) {
+        var currX = this.screenXTrailArray.get(i);
+        var currY = this.screenYTrailArray.get(i);
+        var euclideanDistance = Math.sqrt(Math.pow((currX-recentX),2)+Math.pow((currY-recentY),2));
+        if (euclideanDistance > 72){
+            return i+1;
+        }
     }
-  }
-  return i;
+    return i;
 }
 
 util_regression.addData = function(eyes, screenPos, type) {
