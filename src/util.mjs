@@ -32,7 +32,7 @@ util.Eye = function(patch, imagex, imagey, width, height) {
 util.getEyeFeats = function(eyes) {
     var resizedLeft = this.resizeEye(eyes.left, resizeWidth, resizeHeight);
     var resizedRight = this.resizeEye(eyes.right, resizeWidth, resizeHeight);
-
+    
     var leftGray = this.grayscale(resizedLeft.data, resizedLeft.width, resizedLeft.height);
     var rightGray = this.grayscale(resizedRight.data, resizedRight.width, resizedRight.height);
 

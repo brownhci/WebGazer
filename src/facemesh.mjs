@@ -8,8 +8,8 @@ const TFFaceMesh = function() {
   //Backend options are webgl, wasm, and CPU.
   //For recent laptops WASM is better than WebGL.
   this.model = faceLandmarksDetection.load(
-      faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
-      { maxFaces: 1 }
+    faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
+    { maxFaces: 1 }
   );
   this.predictionReady = false;
 };
