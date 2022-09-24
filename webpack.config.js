@@ -31,7 +31,8 @@ function createConfig(options) {
       ]
     },
     optimization: {
-      minimize: true
+      // if using google extension manifest v3 set to true
+      minimize: options.minified
     },
     resolve: {
       extensions: [".mjs", ".webpack.js", ".web.js", ".js", ".json"]

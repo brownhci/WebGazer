@@ -40,7 +40,7 @@ TFFaceMesh.prototype.getEyePatches = async function(video, imageCanvas, width, h
     input: video,
     returnTensors: false,
     flipHorizontal: false,
-    predictIrises: true,
+    predictIrises: false,
   });
 
   if (predictions.length == 0){
@@ -49,38 +49,32 @@ TFFaceMesh.prototype.getEyePatches = async function(video, imageCanvas, width, h
 
   // Save positions to global variable
   this.positionsArray = predictions[0].scaledMesh;
+  const prediction = predictions[0]
   const positions = this.positionsArray;
 
   const { scaledMesh } = predictions[0];
   // Keypoints indexes are documented at
   // https://github.com/tensorflow/tfjs-models/blob/118d4727197d4a21e2d4691e134a7bc30d90deee/face-landmarks-detection/mesh_map.jpg
+  // https://stackoverflow.com/questions/66649492/how-to-get-specific-landmark-of-face-like-lips-or-eyes-using-tensorflow-js-face
   const [leftBBox, rightBBox] = [
     // left
     {
-      eyeTopArcKeypoints: [
-        25, 33, 246, 161, 160, 159, 158, 157, 173, 243,
-      ],
-      eyeBottomArcKeypoints: [
-        25, 110, 24, 23, 22, 26, 112, 243,
-      ],
+      eyeTopArc: prediction.annotations.leftEyeUpper0,
+      eyeBottomArc: prediction.annotations.leftEyeLower0
     },
     // right
     {
-      eyeTopArcKeypoints: [
-        463, 398, 384, 385, 386, 387, 388, 466, 263, 255,
-      ],
-      eyeBottomArcKeypoints: [
-        463, 341, 256, 252, 253, 254, 339, 255,
-      ],
+      eyeTopArc: prediction.annotations.rightEyeUpper0,
+      eyeBottomArc: prediction.annotations.rightEyeLower0
     },
-  ].map(({ eyeTopArcKeypoints, eyeBottomArcKeypoints }) => {
+  ].map(({ eyeTopArc, eyeBottomArc }) => {
     const topLeftOrigin = {
-      x: Math.round(Math.min(...eyeTopArcKeypoints.map(k => scaledMesh[k][0]))),
-      y: Math.round(Math.min(...eyeTopArcKeypoints.map(k => scaledMesh[k][1]))),
+      x: Math.round(Math.min(...eyeTopArc.map(v => v[0]))),
+      y: Math.round(Math.min(...eyeTopArc.map(v => v[1]))),
     };
     const bottomRightOrigin = {
-      x: Math.round(Math.max(...eyeBottomArcKeypoints.map(k => scaledMesh[k][0]))),
-      y: Math.round(Math.max(...eyeBottomArcKeypoints.map(k => scaledMesh[k][1]))),
+      x: Math.round(Math.max(...eyeBottomArc.map(v => v[0]))),
+      y: Math.round(Math.max(...eyeBottomArc.map(v => v[1]))),
     };
 
     return {
