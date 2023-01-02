@@ -51,8 +51,8 @@
     "parallel-webpack": "2.6.0",
     "puppeteer": "^13.0.0",
     "rimraf": "2.6.3",
-    "webpack": "4.44.1",
-    "webpack-cli": "3.3.12",
+    "webpack": "5.75.0",
+    "webpack-cli": "5.0.1",
     "yarnhook": "^0.4.3"
   }
 }
