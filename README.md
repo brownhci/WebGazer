@@ -19,7 +19,7 @@ WebGazer.js is an eye tracking library that uses common webcams to infer the eye
 
 If you want to build the repository from source follow these instructions:
 
-    # Ensure NodeJS is downloaded: https://nodejs.org/en/download/
+    # Ensure Node v16 is downloaded: https://nodejs.org/en/download/
     git clone https://github.com/brownhci/WebGazer.git
     cd WebGazer
     #install the dependencies
@@ -131,12 +131,12 @@ The following browsers support WebGazer.js:
 
 ### Acknowledgements
 
-Webgazer is developed based on the research that is done by Brown University, with recent work at Pomona College. The work of the calibration example file was developed in the context of a course project with the aim to improve the feedback of WebGazer. It was proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
+Webgazer is developed based on the research that is done by Brown University, with recent work at Pomona College as well. The work of the calibration example file was developed in the context of a course project with the aim to improve the feedback of WebGazer, proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
 
 This research is supported by NSF grants IIS-1464061, IIS-1552663, and the Brown University Salomon Award.
 
 ## License
 
-Copyright (C) 2021 [Brown HCI Group](http://hci.cs.brown.edu)
+Copyright (C) 2016 [Brown HCI Group](https://hci.brown.edu)
 
 Licensed under GPLv3. Companies have the option to license WebGazer.js under LGPLv3 while their valuation is under $1,000,000.
