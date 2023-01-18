@@ -1,6 +1,6 @@
 {
   "name": "webgazer",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/brownhci/WebGazer.git"
@@ -11,8 +11,8 @@
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "dev": "webpack --progress --colors --config webpack.config.js --mode=development",
-    "build": "webpack --progress --colors --config webpack.config.js --mode=production && cp dist/webgazer.js www/. && cp dist/webgazer.js www/data/src/. && cp dist/webgazer.js.map www/. && cp dist/webgazer.js.map www/data/src/.",
+    "dev": "webpack --progress --config webpack.config.js --mode development",
+    "build": "webpack --progress --config webpack.config.js --mode production && cp dist/webgazer.js www/. && cp dist/webgazer.js www/data/src/. && cp dist/webgazer.js.map www/. && cp dist/webgazer.js.map www/data/src/.",
     "gen_docs": "jsdoc -c jsdoc.conf.json src/*"
   },
   "files": [
@@ -37,9 +37,8 @@
     "file-loader": "^6.0.0",
     "jsdoc": "^3.6.5",
     "rimraf": "2.6.3",
-    "parallel-webpack": "2.6.0",
-    "webpack": "4.44.1",
-    "webpack-cli": "3.3.12",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
     "yarnhook": "^0.4.3"
   }
 }
