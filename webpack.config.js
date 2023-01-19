@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 const bannerString =`
  WebGazer.js: Scalable Webcam EyeTracking Using User Interactions
@@ -41,6 +42,18 @@ const varConfig = {
 	},
 	plugins: [
 		new webpack.BannerPlugin(bannerString),
+		new	FileManagerPlugin({
+			events: {
+				onEnd: {
+					copy: [
+			            { source: './dist/webgazer.js', destination: './www/' },
+			            { source: './dist/webgazer.js.map', destination: './www/' },
+			            { source: './dist/webgazer.js', destination: './www/data/src/' },
+			            { source: './dist/webgazer.js.map', destination: './www/data/src/' },
+			        ],
+				},
+			},
+		}),
 	],
 	devtool: "source-map"
 };

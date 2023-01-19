@@ -1,6 +1,6 @@
 {
   "name": "webgazer",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/brownhci/WebGazer.git"
@@ -12,7 +12,7 @@
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "dev": "webpack --progress --config webpack.config.js --mode development",
-    "build": "webpack --progress --config webpack.config.js --mode production && cp dist/webgazer.js www/. && cp dist/webgazer.js www/data/src/. && cp dist/webgazer.js.map www/. && cp dist/webgazer.js.map www/data/src/.",
+    "build": "webpack --progress --config webpack.config.js --mode production",
     "gen_docs": "jsdoc -c jsdoc.conf.json src/*"
   },
   "files": [
@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "browser-sync": "^2.26.14",
-    "file-loader": "^6.0.0",
+    "filemanager-webpack-plugin": "^8.0.0",
     "jsdoc": "^3.6.5",
     "rimraf": "2.6.3",
     "webpack": "^5.75.0",
