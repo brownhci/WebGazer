@@ -4,7 +4,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 const bannerString =`
- WebGazer.js: Scalable Webcam EyeTracking Using User Interactions
+ WebGazer.js: Democratizing Webcam Eye Tracking on the Browser
  Copyright (c) 2016, Brown HCI Group
  Licensed under GPLv3. Companies with a valuation of less than $1M can use WebGazer.js under LGPLv3.
  `;
