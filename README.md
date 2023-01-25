@@ -67,6 +67,15 @@ To run the example files as a server:
 	# Run the webpage index.html as a server
 	npm run serve
 
+## Build and run the Example with Docker
+
+The WebGazer can be deployed locally using the provided Docker configuration:
+
+1. Build WebGazer in a Docker container: `docker build -t webgazer . -f docker/Dockerfile`
+2. Start the docker container as a service: `cd docker && docker-compose up -d`
+3. Visit the WebGazer example application at http://localhost:8080/calibration.html
+4. Stop the docker service, when you don't need it anymore: `cd docker && docker-compose down`
+
 ## Browser Support
 
 The following browsers support WebGazer.js:
