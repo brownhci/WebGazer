@@ -25,6 +25,7 @@ button {
 /* Navbar styling */
 #webgazerNavbar {
     left: 320px;
+    width: calc(100% - 320px);
     z-index: 0;
     box-shadow: 0px 3px 5px #ddd;
     border:0px;
