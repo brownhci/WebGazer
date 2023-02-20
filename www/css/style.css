@@ -52,16 +52,13 @@ li {
 }
 
 .helpBtn {
+    display: inline-block;
     padding: 15px;
     border: none;
     background: none;
     color: #777;
 }
-.helpBtn a {
-    background: none;
-    color: #777;
-}
-.helpBtn a:hover {
+.helpBtn:hover {
     color: black!important;
     text-decoration: none;
 }
