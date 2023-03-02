@@ -12,6 +12,7 @@
     "bootstrap": "^4.5.0",
     "browser-sync": "^2.26.12",
     "d3": "^5.16.0",
+    "heatmap.js": "^2.0.5",
     "jquery": "^3.5.0",
     "popper.js": "^1.16.1",
     "sweetalert": "^2.1.2"
