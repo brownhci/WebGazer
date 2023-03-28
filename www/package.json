@@ -16,6 +16,6 @@
     "sweetalert": "^2.1.2"
   },
   "overrides": {
-  	 "d3-color": "3.1.0"
+    "d3-color": "3.1.0"
   }
 }
