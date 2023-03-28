@@ -13,5 +13,8 @@
     "browser-sync": "^2.26.12",
     "d3": "^5.16.0",
     "sweetalert": "^2.1.2"
+  },
+  "overrides": {
+  	 "d3-color": "3.1.0"
   }
 }
