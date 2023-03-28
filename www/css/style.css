@@ -25,6 +25,7 @@ button {
 /* Navbar styling */
 #webgazerNavbar {
     left: 320px;
+    width: calc(100% - 320px);
     z-index: 0;
     box-shadow: 0px 3px 5px #ddd;
     border:0px;
@@ -51,16 +52,13 @@ li {
 }
 
 .helpBtn {
+    display: inline-block;
     padding: 15px;
     border: none;
     background: none;
     color: #777;
 }
-.helpBtn a {
-    background: none;
-    color: #777;
-}
-.helpBtn a:hover {
+.helpBtn:hover {
     color: black!important;
     text-decoration: none;
 }

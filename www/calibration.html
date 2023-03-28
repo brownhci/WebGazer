@@ -21,7 +21,6 @@ Instructions on use can be found in the README repository.
     <body LANG="en-US" LINK="#0000ff" DIR="LTR">
       <canvas id="plotting_canvas" width="500" height="500" style="cursor:crosshair;"></canvas>
 
-        <script src="./node_modules/jquery/dist/jquery.min.js"></script>
         <script src="./node_modules/sweetalert/dist/sweetalert.min.js"></script>
 
         <script src="./js/main.js"></script>
@@ -29,12 +28,12 @@ Instructions on use can be found in the README repository.
         <script src="./js/precision_calculation.js"></script>
         <script src="./js/precision_store_points.js"></script>
 
-        <nav id="webgazerNavbar" class="navbar navbar-default navbar-fixed-top">
+        <nav id="webgazerNavbar" class="navbar navbar-expand-lg navbar-default navbar-fixed-top">
           <div class="container-fluid">
             <div class="navbar-header">
               <!-- The hamburger menu button -->
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                <span class="icon-bar">Menu</span>
+              <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#myNavbar">
+                <span class="navbar-toggler-icon">Menu</span>
               </button>
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
@@ -45,7 +44,7 @@ Instructions on use can be found in the README repository.
                 <li><a onclick="webgazer.applyKalmanFilter(!webgazer.params.applyKalmanFilter)" href="#">Toggle Kalman Filter</a></li>
               </ul>
               <ul class="nav navbar-nav navbar-right">
-                <li><button class="helpBtn" data-toggle="modal" data-target="#helpModal"><a data-toggle="modal"><span class="glyphicon glyphicon-cog"></span> Help</a></li>
+                <li><a class="helpBtn" onclick="helpModalShow()" href="#"><span class="glyphicon glyphicon-cog"></span> Help</a></li>
               </ul>
             </div>
           </div>
@@ -73,8 +72,8 @@ Instructions on use can be found in the README repository.
                 <img src="media/example/calibration.png" width="100%" height="100%" alt="webgazer demo instructions"></img>
               </div>
               <div class="modal-footer">
-                <button id="closeBtn" type="button" class="btn btn-default" data-dismiss="modal">Close & load saved model </button>
-                <button type="button" id='start_calibration' class="btn btn-primary" data-dismiss="modal" onclick="Restart()">Calibrate</button>
+                <button id="closeBtn" type="button" class="btn btn-default" data-bs-dismiss="modal">Close & load saved model </button>
+                <button type="button" id='start_calibration' class="btn btn-primary" data-bs-dismiss="modal" onclick="Restart()">Calibrate</button>
               </div>
             </div>
 
@@ -83,7 +82,7 @@ Instructions on use can be found in the README repository.
 
         <!-- Latest compiled JavaScript -->
         <script src="./js/resize_canvas.js"></script>
-        <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     </body>
 </html>
