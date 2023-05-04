@@ -1,0 +1,71 @@
+<html>
+    <head>
+        <title>Webgazer.js Assignment 3</title>
+
+        <script src="./webgazer.js"></script>
+    </head>
+
+    <body>
+        <div style="text-align: right;" id="gazeData"></div>
+        <script>
+            var csvFileData = "Time,X,Y\n";  
+
+            function update_results(elapsedTime, x, y) {
+                csvFileData += `${elapsedTime},${x},${y}\n`;
+            }   
+                   
+            function downloadCSV() {  
+                
+                var csvFile;  
+                var downloadLink;  
+
+                //define the file type to text/csv  
+                csvFile = new Blob([csvFileData], {type: 'text/csv'});  
+                downloadLink = document.createElement("a");  
+                downloadLink.download = 'results.csv';  
+                downloadLink.href = window.URL.createObjectURL(csvFile);  
+                downloadLink.style.display = "none";  
+            
+                document.body.appendChild(downloadLink);  
+                downloadLink.click();  
+            }  
+            
+            webgazer.resume();
+            webgazer.setGazeListener(function(data, elapsedTime) {
+                if (data != null) {
+                    var x = data.x
+                    var y = data.y
+                    document.getElementById("gazeData").innerHTML = "Time: " + elapsedTime + ", Gaze coordinates: x=" + x + ", y=" + y;
+                    update_results(elapsedTime, x, y);
+                }
+            }).begin()
+        </script>
+
+        <style>
+            html, body {height: 100%; margin: 0; padding: 0; }
+            table {width: 100%; height: 100%; border-collapse: collapse;}
+            td {border: 1px solid black;}
+        </style>
+
+        <table>
+            <tr>
+                <td bgcolor="black"></td>
+                <td bgcolor="Orange"></td>
+                <td bgcolor="Magenta"></td>
+            </tr>
+            <tr>
+                <td bgcolor="brown"></td>
+                <td bgcolor="Tomato"></td>
+                <td bgcolor="Violet"></td>
+            </tr>
+            <tr>
+                <td bgcolor="SlateBlue"></td>
+                <td bgcolor="MediumSeaGreen"></td>
+                <td bgcolor="LightGray"></td>
+            </tr>
+        </table>
+
+        <button onclick="downloadCSV()">Save and Download results</button>
+
+    </body>
+</html>
