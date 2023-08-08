@@ -110,7 +110,7 @@ function calPointClick(node) {
     }
 
     if (PointCalibrate >= 9){ // last point is calibrated
-        //using jquery to grab every element in Calibration class and hide them except the middle point.
+        // grab every element in Calibration class and hide them except the middle point.
         document.querySelectorAll('.Calibration').forEach((i) => {
             i.style.setProperty('display', 'none');
         });
