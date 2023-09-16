@@ -1,6 +1,7 @@
 import mat from './mat';
 import params from './params';
 import numeric from 'numeric';
+import webgazer from 'webgazer';
 
 const util = {};
 
