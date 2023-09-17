@@ -5,7 +5,7 @@ const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 const bannerString =`
  WebGazer.js: Democratizing Webcam Eye Tracking on the Browser
- Copyright (c) 2016, Brown HCI Group
+ Copyright (c) 2016, Brown WebGazer Team
  Licensed under GPLv3. Companies with a valuation of less than $1M can use WebGazer.js under LGPLv3.
  `;
 

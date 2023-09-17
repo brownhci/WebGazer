@@ -131,12 +131,12 @@ The following browsers support WebGazer.js:
 
 ### Acknowledgements
 
-Webgazer is developed based on the research that is done by Brown University, with recent work at Pomona College as well. The work of the calibration example file was developed in the context of a course project with the aim to improve the feedback of WebGazer, proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
+Webgazer is developed based on the research that is done by Brown University, with recent work at Pomona College as well. The current maintainer is [Jeff Huang](https://jeffhuang.com/). The calibration example file was developed in the context of a course project with the aim to improve the feedback of WebGazer, proposed by Dr. Gerald Weber and his team Dr. Clemens Zeidler and Kai-Cheung Leung.
 
 This research is supported by NSF grants IIS-1464061, IIS-1552663, and the Brown University Salomon Award.
 
 ## License
 
-Copyright (C) 2016 [Brown HCI Group](https://hci.brown.edu)
+Copyright (C) 2016 [Brown WebGazer Team](https://webgazer.cs.brown.edu)
 
-Licensed under GPLv3. Companies have the option to license WebGazer.js under LGPLv3 while their valuation is under $1,000,000.
+Licensed under GPLv3. Companies have the option to license WebGazer.js under LGPLv3 while their valuation is under $1,000,000. For other licensing options, please contact webgazer@lists.cs.brown.edu
