@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <title>Webgazer.js + heatmap.js demo</title>
+  <style>
+    /* Make sure everything in body can go to the edge of the page */
+    /* Particularly, Chrome's default styles have an 8px margin for the body */
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    /* Make body take up entire page */
+    body, #content {
+      width: 100vw;
+      height: 100vh;
+    }
+    /* Make the image autoscale to the page */
+    #content {
+      object-fit: contain;
+    }
+    /* Put the heatmap on top of the image */
+    #heatmapContainer {
+      /* The heatmap will set its own size to the window's via JS */
+      z-index: 10;
+      position: fixed !important;
+      top: 0;
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+  <img id="content" src="media/example/starrynight.jpg" />
+  <div id="heatmapContainer"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.8.1/localforage.js"></script>
+  <script src="./webgazer.js"></script>
+  <script src="./node_modules/heatmap.js/build/heatmap.min.js"></script>
+  <script src="js/heatmap-demo.js"></script>
+</body>

@@ -1,4 +1,4 @@
-import faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
+import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
 
 /**
  * Constructor of TFFaceMesh object

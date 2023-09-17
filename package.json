@@ -1,6 +1,6 @@
 {
   "name": "webgazer",
-  "version": "3.0.0",
+  "version": "3.1.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/brownhci/WebGazer.git"
@@ -11,27 +11,19 @@
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "test": "./test/run_tests_and_server.sh",
-    "dev": "webpack --progress --colors --config webpack.config.js --mode=development",
-    "build": "webpack --progress --colors --config webpack.config.js --mode=production && cp dist/webgazer.js www/. && cp dist/webgazer.js www/data/src/. && cp dist/webgazer.js.map www/. && cp dist/webgazer.js.map www/data/src/.",
+    "dev": "webpack --progress --config webpack.config.js --mode development",
+    "build": "webpack --progress --config webpack.config.js --mode production",
     "gen_docs": "jsdoc -c jsdoc.conf.json src/*"
   },
   "files": [
     "/dist",
     "/src"
   ],
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run build",
-      "post-checkout": "yarnhook && npm --prefix ./www install ./www/ && npm run build",
-      "post-merge": "yarnhook && npm --prefix ./www install ./www/ && npm run build",
-      "post-rewrite": "yarnhook && npm --prefix ./www install ./www/ && npm run build"
-    }
-  },
   "keywords": [
     "webgazer",
     "eyetracking",
-    "webcam"
+    "webcam",
+    "online"
   ],
   "dependencies": {
     "@tensorflow-models/face-landmarks-detection": "0.0.3",
@@ -41,17 +33,11 @@
   },
   "devDependencies": {
     "browser-sync": "^2.26.14",
-    "chai": "^4.2.0",
-    "file-loader": "^6.0.0",
-    "husky": "^4.2.5",
-    "jsdoc": "^3.6.5",
-    "mocha": "^8.1.1",
-    "ndb": "^1.1.5",
-    "parallel-webpack": "2.6.0",
-    "puppeteer": "^13.0.0",
+    "filemanager-webpack-plugin": "^8.0.0",
+    "jsdoc": "^4.0.2",
     "rimraf": "2.6.3",
-    "webpack": "4.44.1",
-    "webpack-cli": "3.3.12",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
     "yarnhook": "^0.4.3"
   }
 }

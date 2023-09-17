@@ -1,6 +1,6 @@
 {
   "name": "webgazer-www",
-  "version": "3.0.0",
+  "version": "3.1.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/brownhci/WebGazer.git"
@@ -9,11 +9,13 @@
     "serve": "browser-sync start --server --files *"
   },
   "dependencies": {
-    "bootstrap": "^4.5.0",
+    "bootstrap": "^5.2.3",
     "browser-sync": "^2.26.12",
     "d3": "^5.16.0",
-    "jquery": "^3.5.0",
-    "popper.js": "^1.16.1",
+    "heatmap.js": "^2.0.5",
     "sweetalert": "^2.1.2"
+  },
+  "overrides": {
+    "d3-color": "3.1.0"
   }
 }

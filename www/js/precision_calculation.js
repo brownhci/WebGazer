@@ -3,8 +3,8 @@
  * the eye tracker currently is which is displayed to the user
  */
 function calculatePrecision(past50Array) {
-  var windowHeight = $(window).height();
-  var windowWidth = $(window).width();
+  var windowHeight = window.innerHeight;
+  var windowWidth = window.innerWidth;
 
   // Retrieve the last 50 gaze prediction points
   var x50 = past50Array[0];
