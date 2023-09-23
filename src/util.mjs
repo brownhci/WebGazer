@@ -38,10 +38,10 @@ util.getEyeFeats = function (eyes) {
         return hist;
     };
 
-    if (webgazer.params.trackEye == 'left') {
+    if (params.trackEye == 'left') {
         return process(eyes.left);
     }
-    else if (webgazer.params.trackEye == 'right') {
+    else if (params.trackEye == 'right') {
         return process(eyes.right);
     }
     else {
