@@ -3,14 +3,14 @@ import '@tensorflow/tfjs';
 //import(/* webpackChunkName: 'pageA' */ './vendors~main.js')
 
 import 'regression';
-import params from './params';
-import './dom_util';
-import localforage from 'localforage';
-import TFFaceMesh from './facemesh';
-import Reg from './ridgeReg';
-import ridgeRegWeighted from './ridgeWeightedReg';
-import ridgeRegThreaded from './ridgeRegThreaded';
-import util from './util';
+import params from './params.mjs';
+import './dom_util.mjs';
+import localforage from 'localforage.mjs';
+import TFFaceMesh from './facemesh.mjs';
+import Reg from './ridgeReg.mjs';
+import ridgeRegWeighted from './ridgeWeightedReg.mjs';
+import ridgeRegThreaded from './ridgeRegThreaded.mjs';
+import util from './util.mjs';
 
 const webgazer = {};
 webgazer.tracker = {};
