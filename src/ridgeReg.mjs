@@ -1,6 +1,6 @@
-import util from './util';
-import util_regression from './util_regression';
-import params from './params';
+import util from './util.mjs';
+import util_regression from './util_regression.mjs';
+import params from './params.mjs';
 
 const reg = {};
 
@@ -9,7 +9,7 @@ const reg = {};
  * this object allow to perform ridge regression
  * @constructor
  */
-reg.RidgeReg = function() {
+reg.RidgeReg = function () {
   this.init();
 };
 
@@ -32,7 +32,7 @@ reg.RidgeReg.prototype.addData = util_regression.addData
  * @param {Object} eyesObj - The current user eyes object
  * @returns {Object}
  */
-reg.RidgeReg.prototype.predict = function(eyesObj) {
+reg.RidgeReg.prototype.predict = function (eyesObj) {
   if (!eyesObj || this.eyeFeaturesClicks.length === 0) {
     return null;
   }
@@ -57,11 +57,11 @@ reg.RidgeReg.prototype.predict = function(eyesObj) {
 
   var eyeFeats = util.getEyeFeats(eyesObj);
   var predictedX = 0;
-  for(var i=0; i< eyeFeats.length; i++){
+  for (var i = 0; i < eyeFeats.length; i++) {
     predictedX += eyeFeats[i] * coefficientsX[i];
   }
   var predictedY = 0;
-  for(var i=0; i< eyeFeats.length; i++){
+  for (var i = 0; i < eyeFeats.length; i++) {
     predictedY += eyeFeats[i] * coefficientsY[i];
   }
 
@@ -91,7 +91,7 @@ reg.RidgeReg.prototype.setData = util_regression.setData;
  * Return the data
  * @returns {Array.<Object>|*}
  */
-reg.RidgeReg.prototype.getData = function() {
+reg.RidgeReg.prototype.getData = function () {
   return this.dataClicks.data;
 }
 

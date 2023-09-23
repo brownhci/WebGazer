@@ -1,5 +1,5 @@
-import mat from './mat';
-import params from './params';
+import mat from './mat.mjs';
+import params from './params.mjs';
 
 const util = {};
 
@@ -16,7 +16,7 @@ var resizeHeight = 6;
  * @param {Number} width  - width of the eye patch
  * @param {Number} height - height of the eye patch
  */
-util.Eye = function(patch, imagex, imagey, width, height) {
+util.Eye = function (patch, imagex, imagey, width, height) {
     this.patch = patch;
     this.imagex = imagex;
     this.imagey = imagey;
@@ -29,7 +29,7 @@ util.Eye = function(patch, imagex, imagey, width, height) {
  * @param {Object} eyes - The eyes where looking for gray histogram
  * @returns {Array.<T>} The eyes gray level histogram
  */
-util.getEyeFeats = function(eyes) {
+util.getEyeFeats = function (eyes) {
     let process = (eye) => {
         let resized = this.resizeEye(eye, resizeWidth, resizeHeight);
         let gray = this.grayscale(resized.data, resized.width, resized.height);
@@ -56,13 +56,13 @@ util.getEyeFeats = function(eyes) {
  * @param {Number} windowSize - defines the maximum size of the window
  * @param {Array} data - optional data to seed the DataWindow with
  **/
-util.DataWindow = function(windowSize, data) {
+util.DataWindow = function (windowSize, data) {
     this.data = [];
     this.windowSize = windowSize;
     this.index = 0;
     this.length = 0;
-    if(data){
-        this.data = data.slice(data.length-windowSize,data.length);
+    if (data) {
+        this.data = data.slice(data.length - windowSize, data.length);
         this.length = this.data.length;
     }
 };
@@ -72,7 +72,7 @@ util.DataWindow = function(windowSize, data) {
  * @param  {*} entry - item to be inserted. It either grows the DataWindow or replaces the oldest item
  * @return {DataWindow} this
  */
-util.DataWindow.prototype.push = function(entry) {
+util.DataWindow.prototype.push = function (entry) {
     if (this.data.length < this.windowSize) {
         this.data.push(entry);
         this.length = this.data.length;
@@ -90,7 +90,7 @@ util.DataWindow.prototype.push = function(entry) {
  * @param  {Number} ind index of desired entry
  * @return {*}
  */
-util.DataWindow.prototype.get = function(ind) {
+util.DataWindow.prototype.get = function (ind) {
     return this.data[this.getTrueIndex(ind)];
 };
 
@@ -99,7 +99,7 @@ util.DataWindow.prototype.get = function(ind) {
  * @param {Number} ind - index of desired entry
  * @return {Number} index of desired entry in this.data
  */
-util.DataWindow.prototype.getTrueIndex = function(ind) {
+util.DataWindow.prototype.getTrueIndex = function (ind) {
     if (this.data.length < this.windowSize) {
         return ind;
     } else {
@@ -112,7 +112,7 @@ util.DataWindow.prototype.getTrueIndex = function(ind) {
  * Append all the contents of data
  * @param {Array} data - to be inserted
  */
-util.DataWindow.prototype.addAll = function(data) {
+util.DataWindow.prototype.addAll = function (data) {
     for (var i = 0; i < data.length; i++) {
         this.push(data[i]);
     }
@@ -141,7 +141,7 @@ util.DataWindow.prototype.addAll = function(data) {
  * @param  {Number} height - height of image data to be grayscaled
  * @return {Array} grayscaledImage
  */
-util.grayscale = function(pixels, width, height){
+util.grayscale = function (pixels, width, height) {
     var gray = new Uint8ClampedArray(pixels.length >> 2);
     var p = 0;
     var w = 0;
@@ -166,7 +166,7 @@ util.grayscale = function(pixels, width, height){
  * @param {Number} step - sampling rate, control performance
  * @param {Array} dst - array to hold the resulting image
  */
-util.equalizeHistogram = function(src, step, dst) {
+util.equalizeHistogram = function (src, step, dst) {
     var srcLength = src.length;
     if (!dst) dst = src;
     if (!step) step = 5;
@@ -195,7 +195,7 @@ util.equalizeHistogram = function(src, step, dst) {
 };
 
 //not used !?
-util.threshold = function(data, threshold) {
+util.threshold = function (data, threshold) {
     for (let i = 0; i < data.length; i++) {
         data[i] = (data[i] > threshold) ? 255 : 0;
     }
@@ -203,7 +203,7 @@ util.threshold = function(data, threshold) {
 };
 
 //not used !?
-util.correlation = function(data1, data2) {
+util.correlation = function (data1, data2) {
     const length = Math.min(data1.length, data2.length);
     let count = 0;
     for (let i = 0; i < length; i++) {
@@ -221,13 +221,13 @@ util.correlation = function(data1, data2) {
  * @param  {Number} resizeHeight - desired height
  * @return {webgazer.util.Eye} resized eye patch
  */
-util.resizeEye = function(eye, resizeWidth, resizeHeight) {
+util.resizeEye = function (eye, resizeWidth, resizeHeight) {
 
     var canvas = document.createElement('canvas');
     canvas.width = eye.width;
     canvas.height = eye.height;
 
-    canvas.getContext('2d').putImageData(eye.patch,0,0);
+    canvas.getContext('2d').putImageData(eye.patch, 0, 0);
 
     var tempCanvas = document.createElement('canvas');
 
@@ -245,19 +245,18 @@ util.resizeEye = function(eye, resizeWidth, resizeHeight) {
  * @param  {Array} prediction [x,y] - predicted gaze coordinates
  * @return {Array} constrained coordinates
  */
-util.bound = function(prediction){
-    if(prediction.x < 0)
+util.bound = function (prediction) {
+    if (prediction.x < 0)
         prediction.x = 0;
-    if(prediction.y < 0)
+    if (prediction.y < 0)
         prediction.y = 0;
     var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    if(prediction.x > w){
+    if (prediction.x > w) {
         prediction.x = w;
     }
 
-    if(prediction.y > h)
-    {
+    if (prediction.y > h) {
         prediction.y = h;
     }
     return prediction;
@@ -284,7 +283,7 @@ function debugBoxWrite(para, stats) {
  * @param {Number} interval - The log interval
  * @constructor
  */
-util.DebugBox = function(interval) {
+util.DebugBox = function (interval) {
     this.para = document.createElement('p');
     this.div = document.createElement('div');
     this.div.appendChild(this.para);
@@ -294,8 +293,8 @@ util.DebugBox = function(interval) {
     this.canvas = {};
     this.stats = {};
     var updateInterval = interval || 300;
-    (function(localThis) {
-        setInterval(function() {
+    (function (localThis) {
+        setInterval(function () {
             debugBoxWrite(localThis.para, localThis.stats);
         }, updateInterval);
     }(this));
@@ -307,7 +306,7 @@ util.DebugBox = function(interval) {
  * @param {String} key - The data key
  * @param {*} value - The value
  */
-util.DebugBox.prototype.set = function(key, value) {
+util.DebugBox.prototype.set = function (key, value) {
     this.stats[key] = value;
 };
 
@@ -319,7 +318,7 @@ util.DebugBox.prototype.set = function(key, value) {
  * @param {Number} incBy - Value to increment for given key (default: 1)
  * @param {Number} init - Initial value in case where key does not exist (default: 0)
  */
-util.DebugBox.prototype.inc = function(key, incBy, init) {
+util.DebugBox.prototype.inc = function (key, incBy, init) {
     if (!this.stats[key]) {
         this.stats[key] = init || 0;
     }
@@ -332,7 +331,7 @@ util.DebugBox.prototype.inc = function(key, incBy, init) {
  * @param {String} name - The button name to link
  * @param {Function} func - The onClick callback
  */
-util.DebugBox.prototype.addButton = function(name, func) {
+util.DebugBox.prototype.addButton = function (name, func) {
     if (!this.buttons[name]) {
         this.buttons[name] = document.createElement('button');
         this.div.appendChild(this.buttons[name]);
@@ -350,13 +349,13 @@ util.DebugBox.prototype.addButton = function(name, func) {
  * @param {String} name - The canvas name to send/create
  * @param {Function} func - The callback function where send canvas
  */
-util.DebugBox.prototype.show = function(name, func) {
+util.DebugBox.prototype.show = function (name, func) {
     if (!this.canvas[name]) {
         this.canvas[name] = document.createElement('canvas');
         this.div.appendChild(this.canvas[name]);
     }
     var canvas = this.canvas[name];
-    canvas.getContext('2d').clearRect(0,0, canvas.width, canvas.height);
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
     func(canvas);
 };
 
