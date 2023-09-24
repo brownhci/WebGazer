@@ -173,6 +173,8 @@ function checkEyesInValidationBox() {
   }
   else
     faceFeedbackBox.style.border = 'solid black';
+
+  return (xPositions && yPositions);
 }
 
 /**
@@ -293,7 +295,7 @@ async function loop() {
     // Feedback box
     // Check that the eyes are inside of the validation box
     if (webgazer.params.showFaceFeedbackBox)
-      checkEyesInValidationBox();
+      params.faceInFrame = checkEyesInValidationBox();
 
     latestGazeData = await latestGazeData;
 
