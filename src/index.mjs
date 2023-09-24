@@ -5,7 +5,7 @@ import '@tensorflow/tfjs';
 import 'regression';
 import params from './params.mjs';
 import './dom_util.mjs';
-import localforage from 'localforage.mjs';
+import localforage from 'localforage';
 import TFFaceMesh from './facemesh.mjs';
 import Reg from './ridgeReg.mjs';
 import ridgeRegWeighted from './ridgeWeightedReg.mjs';
