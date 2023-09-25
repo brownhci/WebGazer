@@ -177,8 +177,6 @@ function checkEyesInValidationBox() {
     faceFeedbackBox.style.border = 'solid black';
     return false;
   }
-
-  return (xPositions && yPositions);
 }
 
 /**
