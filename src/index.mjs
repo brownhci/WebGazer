@@ -167,12 +167,16 @@ function checkEyesInValidationBox() {
     //the eyes are outside of the box the colour is red
     if (xPositions && yPositions) {
       faceFeedbackBox.style.border = 'solid green';
+      return true;
     } else {
       faceFeedbackBox.style.border = 'solid red';
+      return false;
     }
   }
-  else
+  else {
     faceFeedbackBox.style.border = 'solid black';
+    return false;
+  }
 
   return (xPositions && yPositions);
 }
