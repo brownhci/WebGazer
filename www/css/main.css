@@ -39,3 +39,7 @@ h4 {
 }
 
 p > code.hljs { display: inline; }
+
+.bib {
+	line-height: 1.1;
+}
