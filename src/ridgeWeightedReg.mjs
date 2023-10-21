@@ -8,7 +8,7 @@ const reg = {};
  * Constructor of RidgeWeightedReg object
  * @constructor
  */
-reg.RidgeWeightedReg = function() {
+reg.RidgeWeightedReg = function () {
     this.init();
 };
 
@@ -31,7 +31,7 @@ reg.RidgeWeightedReg.prototype.addData = util_regression.addData
  * @param {Object} eyesObj - The current user eyes object
  * @returns {Object}
  */
-reg.RidgeWeightedReg.prototype.predict = function(eyesObj) {
+reg.RidgeWeightedReg.prototype.predict = function (eyesObj) {
     if (!eyesObj || this.eyeFeaturesClicks.length === 0) {
         return null;
     }
@@ -52,12 +52,12 @@ reg.RidgeWeightedReg.prototype.predict = function(eyesObj) {
     var weightedXArray = Array(len);
     var weightedYArray = Array(len);
     for (var i = 0; i < len; i++) {
-        var weight = Math.sqrt( 1 / (len - i) ); // access from oldest to newest so should start with low weight and increase steadily
+        var weight = Math.sqrt(1 / (len - i)); // access from oldest to newest so should start with low weight and increase steadily
         //abstraction is leaking...
         var trueIndex = this.eyeFeaturesClicks.getTrueIndex(i);
         for (var j = 0; j < this.eyeFeaturesClicks.data[trueIndex].length; j++) {
             var val = this.eyeFeaturesClicks.data[trueIndex][j] * weight;
-            if (weightedEyeFeats[trueIndex] !== undefined){
+            if (weightedEyeFeats[trueIndex] !== undefined) {
                 weightedEyeFeats[trueIndex].push(val);
             } else {
                 weightedEyeFeats[trueIndex] = [val];
@@ -78,11 +78,11 @@ reg.RidgeWeightedReg.prototype.predict = function(eyesObj) {
 
     var eyeFeats = util.getEyeFeats(eyesObj);
     var predictedX = 0;
-    for(var i=0; i< eyeFeats.length; i++){
+    for (var i = 0; i < eyeFeats.length; i++) {
         predictedX += eyeFeats[i] * coefficientsX[i];
     }
     var predictedY = 0;
-    for(var i=0; i< eyeFeats.length; i++){
+    for (var i = 0; i < eyeFeats.length; i++) {
         predictedY += eyeFeats[i] * coefficientsY[i];
     }
 
@@ -112,7 +112,7 @@ reg.RidgeWeightedReg.prototype.setData = util_regression.setData;
  * Return the data
  * @returns {Array.<Object>|*}
  */
-reg.RidgeWeightedReg.prototype.getData = function() {
+reg.RidgeWeightedReg.prototype.getData = function () {
     return this.dataClicks.data;
 };
 
