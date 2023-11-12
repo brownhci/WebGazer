@@ -1,0 +1,10 @@
+button {
+    color: black;
+}
+
+#helpModal {
+    display: none;
+}
+#plotting_canvas {
+    display: none;
+}

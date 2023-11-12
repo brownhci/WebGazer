@@ -13,16 +13,14 @@ Instructions on use can be found in the README repository.
 
 <head>
 	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
-	<TITLE>Eye tracker computer control</TITLE>
+	<TITLE>WebGazer Demo</TITLE>
 	<link rel="stylesheet" type="text/css" href="./css/style.css">
-	<link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
 	<!-- <script src="./tensorflow.js"></script> -->
 	<script src="./webgazer.js"></script>
-	<script src="./js/main.js"></script>
 </head>
 
 <body LANG="en-US" LINK="#0000ff" DIR="LTR">
-	<canvas id="plotting_canvas" width="500" height="500"></canvas>
+	<canvas id="plotting_canvas" width="500" height="500" style="cursor:crosshair;"></canvas>
 
 	<script src="./node_modules/sweetalert/dist/sweetalert.min.js"></script>
 
@@ -43,7 +41,7 @@ Instructions on use can be found in the README repository.
 				<ul class="nav navbar-nav">
 					<!-- Accuracy -->
 					<li id="Accuracy"><a>Not yet Calibrated</a></li>
-					<li><a onclick="Restart();openFullScreen()" href="#">Recalibrate</a></li>
+					<li><a onclick="Restart()" href="#">Recalibrate</a></li>
 					<li><a onclick="webgazer.applyKalmanFilter(!webgazer.params.applyKalmanFilter)" href="#">Toggle
 							Kalman Filter</a></li>
 				</ul>
@@ -74,6 +72,8 @@ Instructions on use can be found in the README repository.
 			<!-- Modal content-->
 			<div class="modal-content">
 				<div class="modal-body">
+					<img src="media/example/calibration.png" width="100%" height="100%"
+						alt="webgazer demo instructions"></img>
 				</div>
 				<div class="modal-footer">
 					<button id="closeBtn" type="button" class="btn btn-default" data-bs-dismiss="modal">Close & load
