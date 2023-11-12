@@ -18,7 +18,6 @@ Instructions on use can be found in the README repository.
 	<link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
 	<!-- <script src="./tensorflow.js"></script> -->
 	<script src="./webgazer.js"></script>
-	<script src="./js/main.js"></script>
 </head>
 
 <body LANG="en-US" LINK="#0000ff" DIR="LTR">
@@ -43,7 +42,7 @@ Instructions on use can be found in the README repository.
 				<ul class="nav navbar-nav">
 					<!-- Accuracy -->
 					<li id="Accuracy"><a>Not yet Calibrated</a></li>
-					<li><a onclick="Restart();openFullScreen()" href="#">Recalibrate</a></li>
+					<li><a id="CalibrateBtn" onclick="CalibrateBtnOnclick()" href="#">Start</a></li>
 					<li><a onclick="webgazer.applyKalmanFilter(!webgazer.params.applyKalmanFilter)" href="#">Toggle
 							Kalman Filter</a></li>
 				</ul>

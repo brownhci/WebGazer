@@ -1,10 +1,24 @@
-function openFullScreen() {
-	document.documentElement.requestFullscreen()
-	document.documentElement.webkitRequestFullscreen()
-	document.documentElement.msRequestFullscreen()
+addEventListener('fullscreenchange', (event) => {
+	const element = document.getElementById('CalibrateBtn')
+	if (!document.fullscreenElement) {
+		element.innerHTML = 'full'
+	} else {
+		element.innerHTML = 'Calibrate'
+	}
+})
+function CalibrateBtnOnclick() {
+	console.log(document.fullscreenElement)
+	if (!document.fullscreenElement) {
+		console.log('run full')
+		const element = document.getElementById('CalibrateBtn')
+		element.innerHTML = 'Calibrate'
+		document.documentElement.requestFullscreen()
+	} else {
+		Restart()
+		console.log('run cal')
+	}
 }
 window.onload = async function () {
-	openFullScreen()
 	//start the webgazer tracker
 	await webgazer
 		.setRegression('ridge') /* currently must set regression and tracker */
