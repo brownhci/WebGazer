@@ -1,23 +1,28 @@
-addEventListener('fullscreenchange', (event) => {
-	const element = document.getElementById('CalibrateBtn')
-	if (!document.fullscreenElement) {
-		element.innerHTML = 'full'
-	} else {
-		element.innerHTML = 'Calibrate'
-	}
+$(document).ready(() => {
+	console.log('hello')
+	addEventListener('fullscreenchange', (event) => {
+		const element = $('#CalibrateBtn')
+		if (!document.fullscreenElement) {
+			element.innerHTML = 'full'
+		} else {
+			element.innerHTML = 'Calibrate'
+		}
+	})
+	// jQuery methods go here...
+	$('#CalibrateBtn').click(() => {
+		console.log('eh')
+		if (!document.fullscreenElement) {
+			console.log('run full')
+			const element = document.getElementById('CalibrateBtn')
+			element.innerHTML = 'Calibrate'
+			document.documentElement.requestFullscreen()
+		} else {
+			Restart()
+			console.log('run cal')
+		}
+	})
 })
-function CalibrateBtnOnclick() {
-	console.log(document.fullscreenElement)
-	if (!document.fullscreenElement) {
-		console.log('run full')
-		const element = document.getElementById('CalibrateBtn')
-		element.innerHTML = 'Calibrate'
-		document.documentElement.requestFullscreen()
-	} else {
-		Restart()
-		console.log('run cal')
-	}
-}
+
 window.onload = async function () {
 	//start the webgazer tracker
 	await webgazer
