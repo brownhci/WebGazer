@@ -17,7 +17,7 @@ Instructions on use can be found in the README repository.
 	<link rel="stylesheet" type="text/css" href="./css/style.css">
 	<link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
 	<!-- <script src="./tensorflow.js"></script> -->
-	<script src="./jquery.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<script src="./webgazer.js"></script>
 </head>
 
@@ -65,6 +65,25 @@ Instructions on use can be found in the README repository.
 		<input type="button" class="Calibration" id="Pt7"></input>
 		<input type="button" class="Calibration" id="Pt8"></input>
 		<input type="button" class="Calibration" id="Pt9"></input>
+	</div>
+
+	<!-- Modal -->
+	<div id="helpModal" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-body">
+				</div>
+				<div class="modal-footer">
+					<button id="closeBtn" type="button" class="btn btn-default" data-bs-dismiss="modal">Close & load
+						saved model </button>
+					<button type="button" id='start_calibration' class="btn btn-primary" data-bs-dismiss="modal"
+						onclick="Restart()">Calibrate</button>
+				</div>
+			</div>
+
+		</div>
 	</div>
 
 	<!-- Latest compiled JavaScript -->
