@@ -48,6 +48,10 @@ window.onload = async function () {
 		canvas.width = window.innerWidth
 		canvas.height = window.innerHeight
 		canvas.style.position = 'fixed'
+		canvas.style.pointerEvents = 'none'
+		canvas.style.top = '50vh'
+		canvas.style.left = '50vw'
+		canvas.style.transform = 'translate(-50%, -50%)'
 	}
 	setup()
 }
