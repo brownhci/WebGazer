@@ -21,6 +21,9 @@ window.onload = async function() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         canvas.style.position = 'fixed';
+        canvas.style.pointerEvents = 'none'
+        canvas.style.top = '0px'
+        canvas.style.left = '0px'
     };
     setup();
 
