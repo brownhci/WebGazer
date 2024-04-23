@@ -32,7 +32,7 @@
     "regression": "2.0.1"
   },
   "devDependencies": {
-    "browser-sync": "^2.26.14",
+    "browser-sync": "^3.0.2",
     "filemanager-webpack-plugin": "^8.0.0",
     "jsdoc": "^4.0.2",
     "rimraf": "2.6.3",

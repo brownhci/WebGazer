@@ -40,6 +40,10 @@ const varConfig = {
 			extractComments: false,
 		})],
 	},
+	performance: {
+		hints: false,
+		maxEntrypointSize: 512000,
+	},
 	plugins: [
 		new webpack.BannerPlugin(bannerString),
 		new	FileManagerPlugin({
@@ -88,6 +92,10 @@ const commonjs2Config = {
 		minimizer: [new TerserPlugin({
 			extractComments: false,
 		})],
+	},
+	performance: {
+		hints: false,
+		maxEntrypointSize: 512000,
 	},
 	plugins: [
 		new webpack.BannerPlugin(bannerString),
