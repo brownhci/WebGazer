@@ -765,13 +765,14 @@ webgazer.showVideoPreview = function(val) {
 
 /**
  * hides a video element (videoElement or videoContainerElement)
- * uses display = 'none' for all browsers except Safari, which uses opacity = '1'
- * because Safari optimizes out video element if display = 'none'
+ * uses display = 'none' for all browsers except Safari and Firefox, which
+ * use opacity = '1' because they optimize out video element if display = 'none'
  * @param {Object} element
  * @return {null}
  */
 function hideVideoElement(val) {
-  if (navigator.vendor && navigator.vendor.indexOf('Apple') > -1) {
+  if ((navigator.vendor && navigator.vendor.indexOf('Apple') > -1) ||
+      (navigator.userAgent && navigator.userAgent.search("Firefox") > -1)) {
     val.style.opacity = webgazer.params.showVideo ? '1': '0';
     val.style.display = 'block';
   } else {
