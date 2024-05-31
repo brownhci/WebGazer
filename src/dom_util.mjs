@@ -1,27 +1,34 @@
+// @ts-check
 // helper functions
 
 /**
  * Provides requestAnimationFrame in a cross browser way.
  */
-window.requestAnimFrame = (function() {
-  return window.requestAnimationFrame ||
+window.requestAnimationFrame = window.requestAnimationFrame ||
+    // @ts-ignore
     window.webkitRequestAnimationFrame ||
+    // @ts-ignore
     window.mozRequestAnimationFrame ||
+    // @ts-ignore
     window.oRequestAnimationFrame ||
+    // @ts-ignore
     window.msRequestAnimationFrame ||
-    function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
-      return window.setTimeout(callback, 1000/60);
-    };
-})();
+    /**
+     * @callback
+     * @param {FrameRequestCallback} callback
+     */
+    (callback => window.setTimeout(callback, 1000 / 60))
 
 /**
  * Provides cancelRequestAnimationFrame in a cross browser way.
  */
-window.cancelRequestAnimFrame = (function() {
-  return window.cancelCancelRequestAnimationFrame ||
+window.cancelAnimationFrame = window.cancelAnimationFrame ||
+    // @ts-ignore
     window.webkitCancelRequestAnimationFrame ||
+    // @ts-ignore
     window.mozCancelRequestAnimationFrame ||
+    // @ts-ignore
     window.oCancelRequestAnimationFrame ||
+    // @ts-ignore
     window.msCancelRequestAnimationFrame ||
-    window.clearTimeout;
-})();
+    window.clearTimeout

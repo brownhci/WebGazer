@@ -33,6 +33,11 @@
   },
   "devDependencies": {
     "browser-sync": "^3.0.2",
+    "eslint": "^8.57.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.1.1",
     "filemanager-webpack-plugin": "^8.0.0",
     "jsdoc": "^4.0.2",
     "rimraf": "2.6.3",
