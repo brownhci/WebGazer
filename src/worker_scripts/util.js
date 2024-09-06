@@ -102,13 +102,18 @@ export class DataWindow {
 /**
  * Compute eyes size as gray histogram
  * @param {import('../facemesh.mjs').TwoEyes} eyes - The eyes where looking for gray histogram
- * @returns {Uint8ClampedArray} The eyes gray level histogram
+ * @returns {number[]} The eyes gray level histogram
  */
 export const getEyeFeats = eyes => {
+  /**
+   * Process an eye and return its gray level histogram
+   * @param {Eye} eye - The eye to be processed
+   * @returns {number[]} The gray level histogram of the eye
+   */
   const process = (eye) => {
     const resized = resizeEye(eye, resizeWidth, resizeHeight)
     const gray = grayscale(resized.data, resized.width, resized.height)
-    const hist = new Uint8ClampedArray()
+    const hist = /** @type {number[]} */[]
     equalizeHistogram(gray, 5, hist)
     return hist
   }
@@ -118,7 +123,9 @@ export const getEyeFeats = eyes => {
   } else if (params.trackEye === 'right') {
     return process(eyes.right)
   } else {
-    return Uint8ClampedArray.from([...process(eyes.left), ...process(eyes.right)])
+    let ret = /** @type {number[]} */[]
+    ret = ret.concat(process(eyes.left), process(eyes.right))
+    return ret
   }
 }
 
@@ -167,11 +174,11 @@ export const grayscale = (pixels, width, height) => {
  *
  * @param {Uint8ClampedArray} src - grayscale integer array
  * @param {number} step - sampling rate, control performance
- * @param {Uint8ClampedArray} dst - array to hold the resulting image
+ * @param {number[]} dst - array to hold the resulting image
  */
 const equalizeHistogram = (src, step, dst) => {
   const srcLength = src.length
-  if (!dst) dst = src
+  if (!dst) dst = Array.from(src)
   if (!step) step = 5
 
   // Compute histogram and histogram sum:
@@ -400,6 +407,7 @@ export class KalmanFilter {
     // prediction: X = F * X  |  P = F * P * F' + Q
     const xP = mult(this.F, this.X) // Update state vector
     const pP = add(mult(mult(this.F, this.P), transpose(this.F)), this.Q) // Predicted covaraince
+    const yColumnVector = []
 
     // Calculate the update values
     const transposedZ = transpose([z])
@@ -410,9 +418,9 @@ export class KalmanFilter {
     const K = mult(pP, mult(transpose(this.H), inv(S))) // This is the Optimal Kalman Gain
 
     // We need to change Y into it's column vector form
-    const line = y[0]
+    // const line = y[0]
     for (let i = 0; i < y.length; i++) {
-      y[i] = [line[i]]
+      yColumnVector[i] = [y[i]]
     }
 
     // Now we correct the internal values of the model

@@ -5,12 +5,11 @@ import 'regression'
 import './dom_util.mjs'
 import localforage from 'localforage'
 import { TFFaceMesh } from './facemesh.mjs'
-import { Ridge } from './util_regression.mjs'
+import { RidgeReg } from './ridgeReg.mjs'
 import { RidgeWeightedReg } from './ridgeWeightedReg.mjs'
 import { RidgeRegThreaded } from './ridgeRegThreaded.mjs'
 import params from './params.mjs'
 import { DataWindow, bound } from './worker_scripts/util'
-import { RidgeReg } from './ridgeReg.mjs'
 
 // PRIVATE VARIABLES
 
@@ -58,7 +57,7 @@ let latestEyeFeatures
 let latestGazeData
 let paused = false
 // registered callback for loop
-const nopCallback = () => {}
+const nopCallback = () => { }
 /** @type {(data: PredictionResult | undefined, elapsedTime: number) => void} */
 let gazeListener = nopCallback
 
@@ -82,9 +81,9 @@ const curTrackerMap = {
   TFFacemesh: function () { return new TFFaceMesh() }
 }
 const regressionMap = {
-  ridge: function () { return new Ridge() },
-  weightedRidge: function () { return new RidgeWeightedReg() },
-  threadedRidge: function () { return new RidgeRegThreaded() }
+  ridge: function () { return new RidgeReg() },
+  ridgeWeighted: function () { return new RidgeWeightedReg() },
+  ridgeThreaded: function () { return new RidgeRegThreaded() }
 }
 
 // localstorage name
@@ -304,7 +303,6 @@ const loop = async () => {
       if (!ctx) return
       ctx.clearRect(0, 0, videoElement.videoWidth, videoElement.videoHeight)
       const positions = tracker.getPositions()
-      if (!positions) return
 
       tracker.drawFaceOverlay(ctx, /** @type {import('@tensorflow-models/face-landmarks-detection/dist/mediapipe-facemesh/util').Coords3D} */(positions))
     }
@@ -1052,7 +1050,7 @@ export const getTracker = () => {
 
 /**
  * Returns the regression currently in use
- * @return {Ridge[]} an array of regression objects following the regression interface
+ * @return {(RidgeReg | RidgeWeightedReg | RidgeRegThreaded)[]} an array of regression objects following the regression interface
  */
 export const getRegression = () => {
   return regs
