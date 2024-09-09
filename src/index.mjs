@@ -1092,3 +1092,5 @@ export const getVideoPreviewToCameraResolutionRatio = function () {
 export const getStoredPoints = () => {
   return [xPast50, yPast50]
 }
+
+export { params }
