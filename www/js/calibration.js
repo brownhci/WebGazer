@@ -1,7 +1,5 @@
 // @ts-check
-// import * as webgazer from '../../src/index.mjs'
-import * as webgazer from '../../src/index.mjs'
-import params from '../../src/params.mjs'
+import * as webgazer from '../webgazer.js'
 import swal from 'sweetalert'
 import * as bootstrap from 'bootstrap'
 
@@ -12,7 +10,7 @@ window.onload = async function () {
   ) /* currently must set regression and tracker */
   // webgazer.setTracker('TFFacemesh')
   webgazer.setGazeListener(function (data, clock) {
-    console.log(data) /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
+    // console.log(data) /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
     // console.log(clock) /* elapsed time in milliseconds since webgazer.begin() was called */
   })
   webgazer.saveDataAcrossSessions(false)
@@ -51,7 +49,7 @@ window.onbeforeunload = function () {
 /**
  * Restart the calibration process by clearing the local storage and reseting the calibration point
  */
-function Restart () {
+function Restart() {
   const accuracyLabel = document.getElementById('Accuracy')
   if (accuracyLabel) {
     accuracyLabel.innerHTML = '<a>Not yet Calibrated</a>'
@@ -218,7 +216,7 @@ function calPointClick (node) {
  * checks that all buttons have been clicked 5 times each, and then goes on to measuring the precision
  */
 // $(document).ready(function(){
-function docLoad () {
+function docLoad() {
   ClearCanvas()
   helpModalShow()
 
@@ -347,7 +345,7 @@ function calculateAverage (precisionPercentages) {
  * points are stored
  */
 function storePointsVariable () {
-  params.storingPoints = true
+  webgazer.params.storingPoints = true
 }
 
 /*
@@ -355,14 +353,14 @@ function storePointsVariable () {
  * stored any more
  */
 function stopStoringPointsVariable () {
-  params.storingPoints = false
+  webgazer.params.storingPoints = false
 }
 
 /**
  * This function occurs on resizing the frame
  * clears the canvas & then resizes it (as plots have moved position, can't resize without clear)
  */
-function resize() {
+function resize () {
   const canvas = /** @type {HTMLCanvasElement | null} */ (
     document.getElementById('plotting_canvas')
   )
