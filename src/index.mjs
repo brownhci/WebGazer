@@ -363,7 +363,7 @@ const loop = async () => {
  * @param {'click' | 'move'} eventType - The event type to store
  * @returns {void}
  */
-const recordScreenPosition = (x, y, eventType = eventTypes[0]) => {
+export const recordScreenPosition = (x, y, eventType = eventTypes[0]) => {
   if (paused) return
   if (regs.length === 0) {
     console.log('regression not set, call setRegression()')
@@ -421,7 +421,7 @@ const addMouseEventListeners = () => {
 /**
  * Remove event listeners for mouse click and move.
  */
-const removeMouseEventListeners = () => {
+export const removeMouseEventListeners = () => {
   // must set third argument to same value used in addMouseEventListeners
   // for this to work.
   document.removeEventListener('click', clickListener, true)

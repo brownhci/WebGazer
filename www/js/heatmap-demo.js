@@ -1,4 +1,5 @@
 // @ts-check
+import * as webgazer from '../../src/index.mjs'
 // Set to true if you want to save the data even if you reload the page.
 export const saveDataAcrossSessions = false
 
@@ -15,22 +16,18 @@ let heatmapInstance
 
 window.addEventListener('load', async function () {
   // Init webgazer
-  if (!saveDataAcrossSessions) {
-    const localstorageDataLabel = 'webgazerGlobalData'
-    localforage.setItem(localstorageDataLabel, null)
-    const localstorageSettingsLabel = 'webgazerGlobalSettings'
-    localforage.setItem(localstorageSettingsLabel, null)
-  }
-  const webgazerInstance = await webgazer.setRegression('ridge') /* currently must set regression and tracker */
-    .setTracker('TFFacemesh')
-    .begin()
+  webgazer.setRegression('ridge') /* currently must set regression and tracker */
+  webgazer.setTracker('TFFacemesh')
+  await webgazer.begin(()=>{
+    console.log('fail webgazer')
+  })
 
   // Turn off video
-  webgazerInstance.showVideoPreview(false) /* shows all video previews */
-    .showPredictionPoints(false) /* shows a square every 100 milliseconds where current prediction is */
+  webgazer.showVideoPreview(false) /* shows all video previews */
+  webgazer.showPredictionPoints(false) /* shows a square every 100 milliseconds where current prediction is */
 
   // Enable smoothing
-  webgazerInstance.applyKalmanFilter(true) // Kalman Filter defaults to on.
+  webgazer.applyKalmanFilter(true) // Kalman Filter defaults to on.
 
   // Set up heatmap parts
   setupHeatmap()
@@ -38,11 +35,7 @@ window.addEventListener('load', async function () {
 })
 
 window.addEventListener('beforeunload', function () {
-  if (saveDataAcrossSessions) {
-    webgazer.end()
-  } else {
-    localforage.clear()
-  }
+  webgazer.end()
 })
 
 // Trimmed down version of webgazer's click listener since the built-in one isn't exported
@@ -69,6 +62,8 @@ function setupHeatmap () {
   config.container = container
 
   // create heatmap
+  // TODO better type, or switch heatmap to a new library
+  // @ts-expect-error using global variable for heatmap
   heatmapInstance = h337.create(config)
 }
 
