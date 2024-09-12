@@ -1,5 +1,5 @@
 // @ts-check
-import * as webgazer from '../webgazer.js'
+import * as webgazer from '../../src/index.mjs'
 import swal from 'sweetalert'
 import * as bootstrap from 'bootstrap'
 
@@ -39,8 +39,20 @@ window.onload = async function () {
   setup()
 }
 
+{
+/**
+ * @typedef {object} CustomWindowObject
+ * @property {boolean} [saveDataAcrossSessions]
+ */
+
+/**
+ * @typedef {Window & CustomWindowObject} CustomWindow
+ */
+
 // Set to true if you want to save the data even if you reload the page.
-window.saveDataAcrossSessions = true
+// TODO consolidate it with params from webgazer
+/** @type {CustomWindow} */(window).saveDataAcrossSessions = true
+}
 
 window.onbeforeunload = function () {
   webgazer.end()
@@ -137,9 +149,12 @@ function calcAccuracy () {
       accuracyNode.innerHTML = accuracyLabel // Show the accuracy in the nav bar.
       swal({
         title: 'Your accuracy measure is ' + precisionMeasurement + '%',
-        allowOutsideClick: false,
+        closeOnClickOutside: false,
         buttons: {
-          cancel: 'Recalibrate',
+          cancel: {
+            text:'Recalibrate',
+            value:false
+          },
           confirm: true
         }
       }).then((isConfirm) => {
@@ -190,9 +205,11 @@ function calPointClick (node) {
   if (PointCalibrate >= 9) {
     // last point is calibrated
     // grab every element in Calibration class and hide them except the middle point.
-    document.querySelectorAll('.Calibration').forEach((i) => {
+    const points =/** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll('.Calibration'))
+    points.forEach((i) => {
       i.style.setProperty('display', 'none')
     })
+
     const pt5Element = document.getElementById('Pt5')
     if (pt5Element) {
       pt5Element.style.removeProperty('display')
@@ -233,7 +250,8 @@ window.addEventListener('load', docLoad)
  * Show the Calibration Points
  */
 function ShowCalibrationPoint () {
-  document.querySelectorAll('.Calibration').forEach((i) => {
+  const points = /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll('.Calibration'))
+  points.forEach((i) => {
     i.style.removeProperty('display')
   })
   // initially hides the middle button
@@ -249,7 +267,8 @@ function ShowCalibrationPoint () {
 function ClearCalibration () {
   // Clear data from WebGazer
 
-  document.querySelectorAll('.Calibration').forEach((i) => {
+  const points = /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll('.Calibration'))
+  points.forEach((i) => {
     i.style.setProperty('background-color', 'red')
     i.style.setProperty('opacity', '0.2')
     i.removeAttribute('disabled')
