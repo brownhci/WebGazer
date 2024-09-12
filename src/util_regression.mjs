@@ -6,9 +6,9 @@ import { DataWindow, KalmanFilter, getEyeFeats } from './worker_scripts/util'
 /**
  * Performs ridge regression, according to the Weka code.
  * @param {number[][]} y - corresponds to screen coordinates (either x or y) for each of n click events
- * @param {Uint8ClampedArray[]} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
+ * @param {number[][]} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
  * @param {number} k - ridge parameter
- * @return {number[][]} regression coefficients
+ * @return {number[]} regression coefficients
  */
 export const ridge = (y, X, k) => {
   const nc = X[0].length
@@ -38,7 +38,7 @@ export const ridge = (y, X, k) => {
 
       for (let i = 0; i < nc; i++) {
         // Should it be solution[i][i] or solution[i][0]
-        result[i] = solution[i]
+        result[i] = solution[i][0]
       }
       success = true
     } catch (ex) {

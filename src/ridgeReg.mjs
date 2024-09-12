@@ -17,7 +17,7 @@ export class RidgeReg extends Ridge {
     const trailX = []
     /** @type {number[][]} */
     const trailY = []
-    /** @type {Uint8ClampedArray[]} */
+    /** @type {number[][]} */
     const trailFeat = []
     for (let i = 0; i < this.trailDataWindow; i++) {
       if (this.trailTimes.get(i) > acceptTime) {

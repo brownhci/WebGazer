@@ -22,8 +22,8 @@ const eyeFeaturesTrail = new DataWindow(trailDataWindow)
 const dataTrail = new DataWindow(trailDataWindow)
 
 /**
- * @typedef {Omit<import("./util_regression.mjs").DataSet, 'eyes'> & {eyes: Uint8ClampedArray}} EyeData
- * @property {Uint8ClampedArray} eyes
+ * @typedef {Omit<import("./util_regression.mjs").DataSet, 'eyes'> & {eyes: number[]}} EyeData
+ * @property {number[]} eyes
  */
 
 /**
