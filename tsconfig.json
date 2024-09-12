@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "allowUmdGlobalAccess": true,
+    "allowJs": true,
+    "noEmit": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*", "www/**/*.js"],
+  "exclude": ["node_modules"]
+}

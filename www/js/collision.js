@@ -1,6 +1,8 @@
 // @ts-check
 import * as webgazer from '../../src/index.mjs'
-// import * as d3 from 'd3'
+/**
+ * @typedef {import('d3')} d3
+ */
 
 const collisionSVG = 'collisionSVG'
 let force
@@ -31,7 +33,7 @@ function setupCollisionSystem () {
 
   const numberOfNodes = 200
 
-  nodes = d3.range(numberOfNodes).map(function () { return { radius: Math.random() * 12 + 4 } }),
+  nodes = d3.range(numberOfNodes).map(function () { return { radius: Math.random() * 12 + 4, fixed: false } }),
   nodes[0].radius = 0
   nodes[0].fixed = true
 
@@ -55,8 +57,7 @@ function setupCollisionSystem () {
   const color = d3.scale.category10()
   const colors = []
   for (let i = 0; i < numberOfNodes - 2; i++) {
-    // colors[i] = color(i%3);
-    colors[i] = color(0)
+    colors[i] = color("0")
   }
   colors.push('orange')
 
