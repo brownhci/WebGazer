@@ -13,12 +13,11 @@ window.onload = async function () {
     // console.log(data) /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
     // console.log(clock) /* elapsed time in milliseconds since webgazer.begin() was called */
   })
-  webgazer.saveDataAcrossSessions(false)
+  webgazer.saveDataAcrossSessions(true)
   console.log('begin webgazer')
   await webgazer.begin(() => {
     console.log('fail webgazer')
   })
-  webgazer.showFaceOverlay(true)
   webgazer.showVideoPreview(true) /* shows all video previews */
   webgazer.showPredictionPoints(
     true
@@ -37,21 +36,6 @@ window.onload = async function () {
     canvas.style.position = 'fixed'
   }
   setup()
-}
-
-{
-/**
- * @typedef {object} CustomWindowObject
- * @property {boolean} [saveDataAcrossSessions]
- */
-
-/**
- * @typedef {Window & CustomWindowObject} CustomWindow
- */
-
-// Set to true if you want to save the data even if you reload the page.
-// TODO consolidate it with params from webgazer
-/** @type {CustomWindow} */(window).saveDataAcrossSessions = true
 }
 
 window.onbeforeunload = function () {
