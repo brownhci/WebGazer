@@ -29,7 +29,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.mjs'),
-      name: 'WebGazer',
+      name: 'webgazer',
       fileName: 'webgazer'
     },
     sourcemap: true

@@ -1,35 +1,27 @@
 // @ts-check
+import * as webgazer from '../../src/index.mjs'
 // Set to true if you want to save the data even if you reload the page.
-window.saveDataAcrossSessions = false
-
 const collisionSVG = 'collisionSVG'
 let force = []
 let nodes = []
 
 window.onload = async function () {
-  if (!window.saveDataAcrossSessions) {
-    const localstorageDataLabel = 'webgazerGlobalData'
-    localforage.setItem(localstorageDataLabel, null)
-    const localstorageSettingsLabel = 'webgazerGlobalSettings'
-    localforage.setItem(localstorageSettingsLabel, null)
-  }
-  const webgazerInstance = await webgazer.setRegression('ridge') /* currently must set regression and tracker */
-    .setTracker('TFFacemesh')
-    .begin()
-  webgazerInstance.showVideoPreview(true) /* shows all video previews */
-    .showPredictionPoints(false) /* shows a square every 100 milliseconds where current prediction is */
-    .applyKalmanFilter(true) // Kalman Filter defaults to on.
+  webgazer.setRegression('ridge') /* currently must set regression and tracker */
+  webgazer.setTracker('TFFacemesh')
+  webgazer.saveDataAcrossSessions(true)
+  await webgazer.begin(() => {
+    console.log('fail webgazer')
+  })
+  webgazer.showVideoPreview(true) /* shows all video previews */
+  webgazer.showPredictionPoints(false) /* shows a square every 100 milliseconds where current prediction is */
+  webgazer.applyKalmanFilter(true) // Kalman Filter defaults to on.
   // Add the SVG component on the top of everything.
   setupCollisionSystem()
   webgazer.setGazeListener(collisionEyeListener)
 }
 
 window.onbeforeunload = function () {
-  if (window.saveDataAcrossSessions) {
     webgazer.end()
-  } else {
-    localforage.clear()
-  }
 }
 
 function setupCollisionSystem () {
