@@ -1,9 +1,10 @@
 // @ts-check
 import * as webgazer from '../../src/index.mjs'
-// Set to true if you want to save the data even if you reload the page.
+// import * as d3 from 'd3'
+
 const collisionSVG = 'collisionSVG'
-let force = []
-let nodes = []
+let force
+let nodes
 
 window.onload = async function () {
   webgazer.setRegression('ridge') /* currently must set regression and tracker */
@@ -142,21 +143,23 @@ var collisionEyeListener = async function (data, clock) {
 
   const fmPositions = await webgazer.getTracker().getPositions()
 
+  if (!fmPositions) return
+
   const whr = webgazer.getVideoPreviewToCameraResolutionRatio()
 
-  var line = d3.select('#eyeline1')
+  d3.select('#eyeline1')
     .attr('x1', data.x)
     .attr('y1', data.y)
     .attr('x2', previewWidth - fmPositions[145][0] * whr[0])
     .attr('y2', fmPositions[145][1] * whr[1])
 
-  var line = d3.select('#eyeline2')
+  d3.select('#eyeline2')
     .attr('x1', data.x)
     .attr('y1', data.y)
     .attr('x2', previewWidth - fmPositions[374][0] * whr[0])
     .attr('y2', fmPositions[374][1] * whr[1])
 
-  const dot = d3.select('#predictionSquare')
+  d3.select('#predictionSquare')
     .attr('x', data.x)
     .attr('y', data.y)
 }
