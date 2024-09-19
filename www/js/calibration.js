@@ -45,7 +45,7 @@ window.onbeforeunload = function () {
 /**
  * Restart the calibration process by clearing the local storage and reseting the calibration point
  */
-function Restart() {
+export function Restart() {
   const accuracyLabel = document.getElementById('Accuracy')
   if (accuracyLabel) {
     accuracyLabel.innerHTML = '<a>Not yet Calibrated</a>'

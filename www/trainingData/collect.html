@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>Face tracker</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="./collect.css">
+	</head>
+	<body>
+		<script src="../tensorflow.js"></script>
+		<script src="../webgazer.js"></script>
+		<div id="content">
+			<h2>Facetracking example</h2>
+			<div id="container">
+				<video id="videoel" width="400" height="300" preload="auto" loop>
+					<!--<video id="videoel" width="320" height="240" preload="auto">-->
+					<!--<source src="./media/franck.ogv" type="video/ogg"/>-->
+				</video>
+				<canvas id="overlay" width="400" height="300"></canvas>
+				<!--<canvas id="sketch" width="400" height="300"></canvas>-->
+			</div>
+			<br/>
+		</div>
+		<script src="./collect.js"></script>
+	</body>
+</html>
