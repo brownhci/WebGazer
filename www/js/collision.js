@@ -10,7 +10,7 @@ let nodes
 
 window.onload = async function () {
   webgazer.setRegression('ridge') /* currently must set regression and tracker */
-  webgazer.setTracker('TFFacemesh')
+  webgazer.setTracker('TFFaceMesh')
   webgazer.saveDataAcrossSessions(true)
   await webgazer.begin(() => {
     console.log('fail webgazer')

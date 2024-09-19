@@ -8,7 +8,7 @@ window.onload = async function () {
   webgazer.setRegression(
     'ridge'
   ) /* currently must set regression and tracker */
-  // webgazer.setTracker('TFFacemesh')
+  // webgazer.setTracker('TFFaceMesh')
   webgazer.setGazeListener(function (data, clock) {
     // console.log(data) /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
     // console.log(clock) /* elapsed time in milliseconds since webgazer.begin() was called */

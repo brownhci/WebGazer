@@ -17,7 +17,7 @@ let heatmapInstance
 window.addEventListener('load', async function () {
   // Init webgazer
   webgazer.setRegression('ridge') /* currently must set regression and tracker */
-  webgazer.setTracker('TFFacemesh')
+  webgazer.setTracker('TFFaceMesh')
   await webgazer.begin(()=>{
     console.log('fail webgazer')
   })

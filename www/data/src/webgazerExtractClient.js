@@ -59,7 +59,7 @@ function setScreenCapTimeOffset()
 function onLoad() 
 {
     // Init webgazer and set parameters
-    webgazer.setRegression('ridge').setTracker('TFFacemesh');
+    webgazer.setRegression('ridge').setTracker('TFFaceMesh');
 
     // Drawing overlay
     var c = document.getElementById('wsCanvas')

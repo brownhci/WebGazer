@@ -78,12 +78,12 @@ let regs = [new RidgeReg()]
 
 // lookup tables
 const curTrackerMap = {
-  TFFacemesh: function () { return new TFFaceMesh() }
+  TFFaceMesh: () => new TFFaceMesh()
 }
 const regressionMap = {
-  ridge: function () { return new RidgeReg() },
-  ridgeWeighted: function () { return new RidgeWeightedReg() },
-  ridgeThreaded: function () { return new RidgeRegThreaded() }
+  ridge: () => new RidgeReg(),
+  ridgeWeighted: () => new RidgeWeightedReg(),
+  ridgeThreaded: () => new RidgeRegThreaded()
 }
 
 // localstorage name
@@ -302,9 +302,9 @@ const loop = async () => {
       const ctx = faceOverlay.getContext('2d')
       if (!ctx) return
       ctx.clearRect(0, 0, videoElement.videoWidth, videoElement.videoHeight)
-      const positions = tracker.getPositions()
+      const positions = /** @type {import('@tensorflow-models/face-landmarks-detection/dist/mediapipe-facemesh/util').Coords3D} */(tracker.getPositions())
 
-      tracker.drawFaceOverlay(ctx, /** @type {import('@tensorflow-models/face-landmarks-detection/dist/mediapipe-facemesh/util').Coords3D} */(positions))
+      tracker.drawFaceOverlay(ctx, positions)
     }
 
     // Feedback box
@@ -320,14 +320,12 @@ const loop = async () => {
     if (latestGazeData) {
       // [20200608 XK] Smoothing across the most recent 4 predictions, do we need this with Kalman filter?
       smoothingVals.push(latestGazeData)
-      let x = 0
-      let y = 0
-      const len = smoothingVals.length
-      smoothingVals.data.map((_, i) => smoothingVals.get(i)).forEach(val => {
-        x += val.x
-        y += val.y
-      })
+      const { x, y } = smoothingVals.data.map((_, i) => smoothingVals.get(i)).reduce((result, val) => ({
+        x: result.x + val.x,
+        y: result.y + val.y
+      }), { x: 0, y: 0 })
 
+      const len = smoothingVals.length
       const pred = bound({ x: x / len, y: y / len })
 
       if (params.storingPoints) {
@@ -370,7 +368,7 @@ export const recordScreenPosition = (x, y, eventType = eventTypes[0]) => {
     return
   }
   for (const reg in regs) {
-    if (latestEyeFeatures) { regs[reg].addData({ eyes: latestEyeFeatures, screenPos: [x, y], type: eventType }) }
+    if (latestEyeFeatures) regs[reg].addData({ eyes: latestEyeFeatures, screenPos: [x, y], type: eventType })
   }
 }
 
@@ -654,14 +652,13 @@ export const begin = (onFail) => {
 
   // Request webcam access under specific constraints
   // WAIT for access
-  return new Promise((resolve, reject) => {
-    navigator.mediaDevices.getUserMedia(params.camConstraints).then(init)
-      .then(() => resolve(undefined))
-      .catch(err => {
-        onFail()
-        reject(err)
-      })
-  })
+  return navigator.mediaDevices.getUserMedia(params.camConstraints)
+    .then(init)
+    .catch(err => {
+      onFail()
+      videoElement = null;
+      throw err
+    })
 }
 
 /**
