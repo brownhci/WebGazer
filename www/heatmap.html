@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <head>
   <meta charset="utf-8" />
   <title>Webgazer.js + heatmap.js demo</title>
@@ -10,16 +11,19 @@
       margin: 0;
       padding: 0;
     }
+
     /* Make body take up entire page */
     body,
     #content {
       width: 100vw;
       height: 100vh;
     }
+
     /* Make the image autoscale to the page */
     #content {
       object-fit: contain;
     }
+
     /* Put the heatmap on top of the image */
     #heatmapContainer {
       /* The heatmap will set its own size to the window's via JS */
@@ -27,12 +31,14 @@
       position: fixed !important;
       top: 0;
       left: 0;
+      width: 100vw;
+      height: 100vh;
     }
   </style>
 </head>
+
 <body>
   <img id="content" src="media/example/starrynight.jpg" />
   <div id="heatmapContainer"></div>
-  <script src="./node_modules/heatmap.js/build/heatmap.min.js"></script>
   <script type="module" src="js/heatmap-demo.js"></script>
 </body>

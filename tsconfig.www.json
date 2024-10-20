@@ -1,20 +1,17 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./www",
     "outDir": "./dist",
     "target": "ES2020",
     "useDefineForClassFields": true,
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": false,
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "declarationDir": "./dist/types",
+    "noEmit": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -22,7 +19,6 @@
     "allowJs": true,
     "esModuleInterop": true
   },
-  "lib": ["webworker", "es2015"],
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", ".eslintrc.cjs", "www", "dist"]
+  "include": ["www/js/**/*"],
+  "exclude": ["src", "www/lib", "dist", "node_modules"]
 }

@@ -5,21 +5,31 @@ body {
 button {
     border-radius: 4px;
 }
+
+#plotting_canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    cursor: crosshair;
+}
+
+#webgazerVideo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 320px;
+    height: 240px;
+    z-index: 1000;
+}
+
 /* Video Feed Styling */
 #overlay {
 /* Video Feed Styling:
  * Include the !important keyword to override default styles applied by JS.
  * webgazer.js sets defaults for: display, position, top, left, width, height
  */
-}
-#webgazerVideoContainer {
-    display: block !important; 
-    position: fixed !important;
-    top: 0px !important;
-    left: 0px !important;
-    width: 320px !important;
-    height: 240px !important;
-    z-index: 1;
 }
 
 /* Navbar styling */
@@ -72,9 +82,9 @@ li {
     height: 20px;
     -webkit-border-radius: 25px;
     -moz-border-radius: 25px;
+    display: none;
     border-radius: 25px;
     background-color: red;
-    opacity: 0.2;
     border-color: black;
     border-style: solid;
     position:fixed;

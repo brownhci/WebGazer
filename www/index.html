@@ -10,12 +10,12 @@
 	<title>WebGazer.js: Democratizing Webcam Eye Tracking on the Browser</title>
 
 	<!-- Bootstrap core CSS -->
-	<link href="./node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="./lib/bootstrap.min.css" rel="stylesheet">
 
 	<link rel="stylesheet" href="css/highlight/styles/default.css">
 	<script src="css/highlight/highlight.pack.js"></script>
 	<script>hljs.initHighlightingOnLoad();</script>
-	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="./css/main.css">
 </head>
 
 
@@ -38,7 +38,8 @@
 					<li class="nav-item"><a class="nav-link" href="#usage">Usage</a></li>
 					<li class="nav-item"><a class="nav-link" href="#compatibility">Compatibility</a></li>
 					<li class="nav-item"><a class="nav-link" href="#download">Download</a></li>
-					<li class="nav-item"><a class="nav-link" href="https://github.com/brownhci/WebGazer">GitHub</a></li>
+					<li class="nav-item"><a class="nav-link" href="https://github.com/brownhci/WebGazer"
+							target="_blank">GitHub</a></li>
 					<li class="nav-item"><a class="nav-link" href="#examples">Examples</a></li>
 					<li class="nav-item"><a class="nav-link" href="#publication">Publications</a></li>
 					<li class="nav-item"><a class="nav-link" href="#press">Press</a></li>
@@ -126,14 +127,14 @@
 				</p>
 
 				<pre><code class="javascript hljs">
-						webgazer.setGazeListener(function(data, elapsedTime) {
-						if (data == null) {
-						return;
-						}
+						const webgazer = new WebGazer();
+						webgazer.addGazeListener((data, elapsedTime) => {
+						if (data == null) return;
 						var xprediction = data.x; //these x coordinates are relative to the viewport
 						var yprediction = data.y; //these y coordinates are relative to the viewport
 						console.log(elapsedTime); //elapsed time is based on time since begin was called
-						}).begin();
+						});
+						webgazer.start();
 					</code></pre>
 				<p> Here is the alternate method of getting predictions where you can request a gaze prediction as needed. </p>
 				<pre><code class="javascript hljs">
@@ -269,9 +270,10 @@
 		<div class="row">
 			<div class="col-lg-6">
 				<h4 class="pad">Download</h4>
-				<form method="get" action="./webgazer.js">
-					<button class="btn btn-primary btn-lg" type="submit"><span class="glyphicon glyphicon-cloud-download"
-							aria-hidden="true"></span> Download WebGazer.js</button>
+				<form method="get" action="js/webgazer.js">
+					<button class="btn btn-primary btn-lg" type="submit">
+						<span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span> Download WebGazer.js
+					</button>
 				</form>
 				<br>
 				<h4 class="pad">Dataset</h4>
@@ -346,8 +348,7 @@
 			</div>
 			<div class="col-lg-11">
 				<p>If you use WebGazer.js please cite:</p>
-				<p class="bib">
-					<code>
+				<pre class="bib"><code>
 						@inproceedings{papoutsaki2016webgazer,<br>
 						&nbsp; author = {Alexandra Papoutsaki and Patsorn Sangkloy and James Laskey and Nediyana Daskalova and Jeff
 						Huang and James Hays},<br>
@@ -358,8 +359,7 @@
 						&nbsp; year = {2016},<br>
 						&nbsp; organization={AAAI}<br>
 						}
-					</code>
-				</p>
+					</code></pre>
 			</div>
 		</div>
 		<div class="row">
@@ -369,8 +369,7 @@
 			</div>
 			<div class="col-lg-11">
 				<p>If you use <a href="./search">SearchGazer.js</a> please cite the following paper:</p>
-				<p class="bib">
-					<code>
+				<pre class="bib"><code>
 						@inproceedings{papoutsaki2017searchgazer,<br>
 						&nbsp; author = {Alexandra Papoutsaki and James Laskey and Jeff Huang},<br>
 						&nbsp; title = {SearchGazer: Webcam Eye Tracking for Remote Studies of Web Search},<br>
@@ -379,8 +378,7 @@
 						&nbsp; year = {2017},<br>
 						&nbsp; organization={ACM}<br>
 						}
-					</code>
-				</p>
+					</code></pre>
 			</div>
 		</div>
 		<div class="row">
@@ -390,8 +388,7 @@
 			</div>
 			<div class="col-lg-11">
 				<p>For the <a href="./data">WebGazer webcam dataset</a> and findings about gaze behavior during typing:</p>
-				<p class="bib">
-					<code>
+				<pre class="bib"><code>
 						@inproceedings{papoutsaki2018eye,<br>
 						&nbsp; title={The eye of the typer: a benchmark and analysis of gaze behavior during typing},<br>
 						&nbsp; author={Papoutsaki, Alexandra and Gokaslan, Aaron and Tompkin, James and He, Yuze and Huang,
@@ -401,8 +398,7 @@
 						&nbsp; year={2018},<br>
 						&nbsp; organization={ACM}<br>
 						}
-					</code>
-				</p>
+					</code></pre>
 			</div>
 		</div>
 	</div>
@@ -522,7 +518,7 @@
 		</p>
 	</div>
 
-	<script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="./lib/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

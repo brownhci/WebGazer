@@ -1,0 +1,1 @@
+/home/victus/Projects/WebGazer/dist/types/index.d.ts

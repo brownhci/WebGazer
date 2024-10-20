@@ -3,6 +3,10 @@ body {
     min-height: 2000px;
 }
 
+code {
+    white-space: pre-line;
+}
+
 h3 {
 	font-size: 1.5rem;
 }
@@ -40,6 +44,12 @@ h4 {
 
 p > code.hljs { display: inline; }
 
+nav.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
 .bib {
-	line-height: 1.1;
+	line-height: 1;
 }
