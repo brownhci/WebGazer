@@ -1,24 +1,41 @@
 {
   "name": "webgazer",
   "version": "3.3.0",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/brownhci/WebGazer.git"
   },
   "license": "GPL-3.0-or-later",
-  "main": "dist/webgazer.js",
-  "module": "src/index.mjs",
+  "main": "dist/webgazer.cjs.js",
+  "module": "dist/webgazer.es.js",
+  "types": "dist/types/index.d.ts",
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "dev": "webpack --progress --config webpack.config.js --mode development",
-    "build": "webpack --progress --config webpack.config.js --mode production",
-    "gen_docs": "jsdoc -c jsdoc.conf.json src/*"
+    "dev:main": "vite build --watch --mode development",
+    "dev:worker": "vite build --config vite.worker.config.js --watch --mode development",
+    "dev:server": "vite",
+    "dev": "concurrently \"npm run dev:main\" \"npm run dev:worker\" \"npm run dev:server\"",
+    "typecheck:src": "tsc",
+    "typecheck:www": "tsc -p tsconfig.www.json",
+    "build": "npm run typecheck:src && vite build --config vite.worker.config.js && vite build",
+    "postbuild": "node scripts/create-symlink.mjs && npm run typecheck:www",
+    "gen_docs": "jsdoc -c jsdoc.conf.json src/*",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.js,.cjs",
+    "lint:fix": "eslint . --ext .ts,.js,.cjs --fix"
   },
   "files": [
-    "/dist",
-    "/src"
+    "dist"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/webgazer.es.js",
+      "require": "./dist/webgazer.cjs.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
   "keywords": [
     "webgazer",
     "eyetracking",
@@ -32,12 +49,28 @@
     "regression": "2.0.1"
   },
   "devDependencies": {
-    "browser-sync": "^3.0.2",
+    "@types/d3": "^3.5.53",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "bootstrap": "^5.2.3",
+    "concurrently": "^9.0.1",
+    "eslint": "^8.57.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.1.1",
     "filemanager-webpack-plugin": "^8.0.0",
+    "heatmap.js": "^2.0.5",
     "jsdoc": "^4.0.2",
     "rimraf": "2.6.3",
-    "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1",
+    "sweetalert": "^2.1.2",
+    "typescript": "^5.0.0",
+    "vite": "^5.4.3",
+    "vite-plugin-banner": "^0.8.0",
     "yarnhook": "^0.4.3"
+  },
+  "overrides": {
+    "d3-color": "3.1.0"
   }
 }

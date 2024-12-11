@@ -1,11 +1,21 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
+
 <head>
+  <meta charset="utf-8" />
   <title>Webgazer.js + D3.js collision demo</title>
+  <script src="./lib/d3.v3.min.js"></script>
+  <style>
+    #webgazerVideo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 640px;
+      height: 480px;
+    }
+  </style>
 </head>
+
 <body>
-  <script src="https://d3js.org/d3.v3.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.8.1/localforage.js"></script>
-  <script src="./webgazer.js"></script>
-  <script src="js/collision.js"></script>
+  <script type="module" src="js/collision.js"></script>
+  <video width="640" height="480" id="webgazerVideo" autoplay muted></video>
 </body>
