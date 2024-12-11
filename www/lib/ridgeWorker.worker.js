@@ -1,1 +1,0 @@
-/home/victus/Projects/WebGazer/dist/ridgeWorker.worker.js
