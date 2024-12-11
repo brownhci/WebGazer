@@ -106,6 +106,8 @@ const setupCollisionSystem = () => {
     .attr('fill', 'red');
 
   svg.on('mousemove', function () {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    /* @ts-ignore - "this" is not typed */
     const p1 = d3.mouse(this);
     nodes[0].px = p1[0];
     nodes[0].py = p1[1];

@@ -7,7 +7,7 @@ import { RidgeReg } from './ridgeReg';
 import { RidgeWeightedReg } from './ridgeWeightedReg';
 import { RidgeRegThreaded } from './ridgeRegThreaded';
 import { DataWindow, bound, Point } from './worker_scripts/util';
-import { TFFaceMesh, TwoEyes } from './facemesh';
+import { TFFaceMesh, EyesData } from './facemesh';
 import { GazeDot } from './GazeDot';
 import { FaceFeedback } from './FaceFeedback';
 import { GazeTrail } from './GazeTrail';
@@ -20,7 +20,7 @@ export { isBrowserCompatible } from './dom_util';
 export type PredictionResult = {
   x: number;
   y: number;
-  eyeFeatures?: TwoEyes;
+  eyeFeatures?: EyesData;
   all?: (Point | undefined)[];
 };
 
@@ -34,8 +34,6 @@ export type RegressionOptions = {
   useKalmanFilter: boolean;
   /** Size of move ticks */
   moveTickSize: number;
-  /** Which eye to track */
-  trackEye: 'left' | 'right' | 'both';
 };
 
 /**
@@ -70,6 +68,8 @@ export type WebGazerStartOptions = {
   gazeTrail: boolean;
   /** Constraints for the camera video */
   videoConstraints: MediaTrackConstraints;
+  /** Which eye to track */
+  trackEye: 'left' | 'right' | 'both';
 };
 
 export type WebgazerVideoOptions = {
@@ -79,7 +79,7 @@ export type WebgazerVideoOptions = {
   faceFeedback: boolean;
 }
 
-const SMOOTHING_PRECISION = 15;
+const SMOOTHING_PRECISION = 4;
 
 /**
  * Main WebGazer class for eye-tracking functionality.
@@ -106,10 +106,11 @@ export class WebGazer {
     dotSize: 10,
     videoConstraints: { width: { min: 320, ideal: 640, max: 1920 }, height: { min: 240, ideal: 480, max: 1080 }, facingMode: 'user' },
     saveDataAcrossSessions: true,
-    useCalibration: true
+    useCalibration: true,
+    trackEye: 'both'
   };
 
-  lastEyePatches: TwoEyes | undefined = undefined;
+  lastEyePatches: EyesData | undefined = undefined;
 
   private mouseMoveClock = performance.now();
 
@@ -121,10 +122,10 @@ export class WebGazer {
     // We duplicate the options object to avoid mutating the original object
     const optionsObject = options ? JSON.parse(JSON.stringify(options)) : {};
     const allParams = { ...this.params, ...optionsObject };
-    const { regression = 'ridgeReg', trackEye = 'both', useKalmanFilter = true, moveTickSize = 50, saveInterval = 1000, ...otherParams } = allParams;
+    const { regression = 'ridgeReg', useKalmanFilter = true, moveTickSize = 50, saveInterval = 1000, ...otherParams } = allParams;
     this.params = { ...this.params, ...otherParams };
     const RegressionClass = regression === 'ridgeThreaded' ? RidgeRegThreaded : regression === 'ridgeWeighted' ? RidgeWeightedReg : RidgeReg;
-    this.regression = new RegressionClass({ trackEye, useKalmanFilter, moveTickSize });
+    this.regression = new RegressionClass({ useKalmanFilter, moveTickSize });
 
     // Save the data across sessions
     this.saveManager = new SaveManager(this.regression, saveInterval);
@@ -148,7 +149,7 @@ export class WebGazer {
     this.params = { ...this.params, ...options };
     this.regression.dispose();
     const RegressionClass = regression === 'ridgeThreaded' ? RidgeRegThreaded : regression === 'ridgeWeighted' ? RidgeWeightedReg : RidgeReg;
-    this.regression = new RegressionClass({ useKalmanFilter: this.regression.useKalmanFilter, moveTickSize: this.regression.moveTickSize, trackEye: this.regression.trackEye });
+    this.regression = new RegressionClass({ useKalmanFilter: this.regression.useKalmanFilter, moveTickSize: this.regression.moveTickSize });
     this.saveManager = new SaveManager(this.regression, this.saveManager.saveDelay);
   }
 
@@ -266,7 +267,7 @@ export class WebGazer {
     }
 
     // Get the video track to determine actual size
-    this.tracker = new TFFaceMesh(this.videoElement, this.stream);
+    this.tracker = new TFFaceMesh(this.videoElement, this.stream, this.params.trackEye);
 
     this.videoElement.srcObject = this.stream;
     await this.videoElement.play();
@@ -296,6 +297,7 @@ export class WebGazer {
     // Make a prediction
     const eyeFeatures = await this.tracker?.getEyePatches();
     this.lastEyePatches = eyeFeatures;
+    if (this.faceFeedback && eyeFeatures) this.faceFeedback.update(eyeFeatures);
     const prediction = eyeFeatures && this.regression.predict(eyeFeatures);
     if (prediction) {
       // Smooth prediction
@@ -313,7 +315,6 @@ export class WebGazer {
       // Update gaze dot position
       if (this.gazeDot) this.gazeDot.update(boundedPrediction.x, boundedPrediction.y);
       if (this.gazeTrail) this.gazeTrail.addPoint(boundedPrediction.x, boundedPrediction.y);
-      if (this.faceFeedback) this.faceFeedback.update(eyeFeatures);
 
       // Send the prediction to the listeners
       const predictionEvent = { ...boundedPrediction, eyeFeatures, all: [boundedPrediction] };
@@ -355,11 +356,11 @@ export class WebGazer {
   /**
    * Starts the calibration process.
    */
-  startCalibration (): void {
+  startCalibration (calibration: true | 'click' | 'move' = true): void {
     if (this.params.useCalibration) this.stopCalibration();
-    this.params.useCalibration = true;
-    document.addEventListener('click', this.clickListener, true);
-    document.addEventListener('mousemove', this.moveListener, true);
+    this.params.useCalibration = calibration;
+    if (calibration === true || calibration === 'click') document.addEventListener('click', this.clickListener, true);
+    if (calibration === true || calibration === 'move') document.addEventListener('mousemove', this.moveListener, true);
   }
 
   /**

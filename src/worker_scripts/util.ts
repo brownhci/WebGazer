@@ -213,19 +213,6 @@ const equalizeHistogram = (src: Uint8ClampedArray, step: number, dst: number[]):
 };
 
 /**
- * Set all values above the provided threshold to 255, set the other values to 0
- * @param data The list of numbers to split
- * @param threshold The threshold value
- * @returns the list of 255/0 values
- */
-export const threshold = (data: number[], threshold: number): (255 | 0)[] => {
-  for (let i = 0; i < data.length; i++) {
-    data[i] = (data[i] > threshold) ? 255 : 0;
-  }
-  return data as (255 | 0)[];
-};
-
-/**
  * Evaluate the similarities between 2 list of data
  * (should we use levenstein algorithme for more accurate results?)
  * @param data1 The first list
@@ -256,7 +243,7 @@ let tempContext: OffscreenCanvasRenderingContext2D | null;
  * @param resizeHeight - desired height
  * @return resized eye patch
  */
-export const resizeEye = (eye: Eye, resizeWidth: number, resizeHeight: number): ImageData => {
+const resizeEye = (eye: Eye, resizeWidth: number, resizeHeight: number): ImageData => {
   // Create canvas only once and reuse
   if (!resizeCanvas) {
     resizeCanvas = new OffscreenCanvas(resizeWidth, resizeHeight);

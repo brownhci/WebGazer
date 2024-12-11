@@ -1,4 +1,4 @@
-import type { TwoEyes } from './facemesh';
+import type { EyesData } from './facemesh';
 
 const overlayStyle: Partial<CSSStyleDeclaration> = {
   position: 'absolute',
@@ -56,9 +56,9 @@ export class FaceFeedback {
   /**
    * Updates the face feedback visualization
    * @param {DOMRect} facePosition - The position of the face
-   * @param {TwoEyes} eyePatches - The positions of the eyes
+   * @param {EyesData} eyePatches - The positions of the eyes
    */
-  update (eyePatches: TwoEyes): void {
+  update (eyePatches: EyesData): void {
     const { width, height } = this.faceFeedbackCanvas;
     const ctx = this.faceFeedbackCanvas.getContext('2d');
     if (ctx) {
@@ -82,7 +82,7 @@ export class FaceFeedback {
         eye.y >= validationBox.y &&
         eye.y + eye.h <= validationBox.y + validationBox.h);
 
-      ctx.strokeStyle = eyesInBox ? '#00a000' : '#b00000';
+      ctx.strokeStyle = eyesInBox ? '#000080' : '#b00000';
       ctx.lineWidth = 2;
       ctx.strokeRect(validationBox.x, validationBox.y, validationBox.w, validationBox.h);
 

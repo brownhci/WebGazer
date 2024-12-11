@@ -1,7 +1,7 @@
 // @ts-check
 import { Ridge, RidgeOptions } from './worker_scripts/regression';
-import { getEyeFeats, Point } from './worker_scripts/util';
-import type { TwoEyes } from './facemesh';
+import type { Point } from './worker_scripts/util';
+import type { EyesData } from './facemesh';
 import type { EyeData } from './ridgeWorker.worker';
 
 export interface Weights {
@@ -42,7 +42,7 @@ export class RidgeRegThreaded extends Ridge {
     const { eyes, screenPos, type } = data;
     if (!eyes) return;
     if (type === 'click') this.dataClicks.push(data);
-    this.worker.postMessage({ eyes: getEyeFeats(eyes, this.trackEye), screenPos, type } as EyeData);
+    this.worker.postMessage({ eyes: eyes.grayscale, screenPos, type } as EyeData);
   };
 
   /**
@@ -55,12 +55,12 @@ export class RidgeRegThreaded extends Ridge {
    * after apply linear regression on data set
    * @param eyesObj - The current user eyes object
    */
-  predict = (eyesObj: TwoEyes | undefined): Point | undefined => {
+  predict = (eyesObj: EyesData | undefined): Point | undefined => {
     if (!eyesObj) return;
     const coefficientsX = this.weights.X;
     const coefficientsY = this.weights.Y;
 
-    const eyeFeats = getEyeFeats(eyesObj, this.trackEye);
+    const eyeFeats = eyesObj.grayscale;
     let predictedX = 0;
     let predictedY = 0;
     for (let i = 0; i < Math.min(eyeFeats.length, coefficientsX.length, coefficientsY.length); i++) {

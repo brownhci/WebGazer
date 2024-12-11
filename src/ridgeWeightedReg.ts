@@ -1,7 +1,7 @@
 import { Ridge, ridge } from './worker_scripts/regression';
-import { getEyeFeats, Point } from './worker_scripts/util';
-import type { TwoEyes } from './facemesh';
+import type { Point } from './worker_scripts/util';
 import type { Matrix } from './worker_scripts/mat';
+import type { EyesData } from './facemesh';
 
 export class RidgeWeightedReg extends Ridge {
   /**
@@ -15,7 +15,7 @@ export class RidgeWeightedReg extends Ridge {
    * @param eyesObj - The current user eyes object
    * @returns The predicted point or undefined
    */
-  predict = (eyesObj: TwoEyes | undefined): Point | undefined => {
+  predict = (eyesObj: EyesData | undefined): Point | undefined => {
     if (!eyesObj || this.eyeFeaturesClicks.length === 0) return;
     const acceptTime = performance.now() - this.trailTime;
     const trailX: Matrix = [];
@@ -53,7 +53,7 @@ export class RidgeWeightedReg extends Ridge {
     const coefficientsX = ridge(screenXArray, eyeFeatures, this.ridgeParameter);
     const coefficientsY = ridge(screenYArray, eyeFeatures, this.ridgeParameter);
 
-    const eyeFeats = getEyeFeats(eyesObj, this.trackEye);
+    const eyeFeats = eyesObj.grayscale;
     let predictedX = 0;
     for (let i = 0; i < eyeFeats.length; i++) {
       predictedX += eyeFeats[i] * coefficientsX[i];

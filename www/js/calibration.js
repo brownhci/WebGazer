@@ -40,7 +40,7 @@ export const restart = () => {
   const accuracyLabel = document.getElementById('Accuracy');
   if (accuracyLabel) accuracyLabel.innerHTML = '<a>Not yet Calibrated</a>';
   webgazer.clearData();
-  webgazer.startCalibration();
+  webgazer.startCalibration('click');
   clearCalibration();
   clearCanvas();
 };
@@ -234,7 +234,7 @@ class CalibrationPoint {
     if (this.clickCount > CalibrationPoint.CALIBRATION_THRESHOLD) return false;
     else if (this.clickCount === CalibrationPoint.CALIBRATION_THRESHOLD) {
       this.isCalibrated = true;
-      this.node.style.setProperty('background-color', 'green');
+      this.node.style.setProperty('background-color', 'yellow');
       this.node.style.setProperty('opacity', '1');
       this.node.setAttribute('disabled', 'disabled');
       this.onCalibrated();

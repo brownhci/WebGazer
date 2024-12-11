@@ -1,9 +1,16 @@
 import { FaceLandmarksDetector, load, SupportedPackages } from '@tensorflow-models/face-landmarks-detection';
-import type { Eye } from './worker_scripts/util';
+import { getEyeFeats, type Eye } from './worker_scripts/util';
 
 export type TwoEyes = {
   left: Eye;
   right: Eye;
+};
+
+export type EyesData = {
+  left: Eye;
+  right: Eye;
+  grayscale: number[];
+  facemesh: [number, number, number][];
   /**
    * The scale factor for the x-axis between the stream and the videoElement
    */
@@ -34,6 +41,7 @@ export class TFFaceMesh {
   private videoElement: HTMLVideoElement;
   private offscreenContext2D: OffscreenCanvasRenderingContext2D;
   private resizeObserver: ResizeObserver;
+  trackEye: 'left' | 'right' | 'both';
 
   /**
    * Constructor of TFFaceMesh object
@@ -41,7 +49,7 @@ export class TFFaceMesh {
    * @param {MediaStream} stream - The stream to track
    * @constructor
    * */
-  constructor (videoElement: HTMLVideoElement, stream: MediaStream) {
+  constructor (videoElement: HTMLVideoElement, stream: MediaStream, trackEye: 'left' | 'right' | 'both' = 'both') {
     // Backend options are webgl, wasm, and CPU.
     // For recent laptops WASM is better than WebGL.
     this.model = load(
@@ -49,7 +57,7 @@ export class TFFaceMesh {
       { maxFaces: 1 }
     );
     this.videoElement = videoElement;
-
+    this.trackEye = trackEye;
     // Create OffscreenCanvas with the actual video size
     this.resizeObserver = new ResizeObserver(() => this.updateCanvasSize());
     this.resizeObserver.observe(this.videoElement);
@@ -69,9 +77,9 @@ export class TFFaceMesh {
 
   /**
    * Isolates the two patches that correspond to the user's eyes
-   * @return {Promise<TwoEyes | undefined>} the two eye-patches, first left, then right eye
+   * @return {Promise<EyesData | undefined>} the data representing the eye patches
    */
-  getEyePatches = async (): Promise<TwoEyes | undefined> => {
+  getEyePatches = async (): Promise<EyesData | undefined> => {
     const context2D = this.offscreenContext2D;
     if (!context2D || !this.videoElement.width || !this.videoElement.height) return;
 
@@ -116,8 +124,10 @@ export class TFFaceMesh {
           // Organize the data on x and y
           .map(points => ({ x: points.map(point => point[0]), y: points.map(point => point[1]) }));
         // Get the bounding box of the eye
-        const topLeft = { x: Math.round(Math.max(Math.min(...upperX), Math.min(...lowerX))), y: Math.round(Math.max(Math.min(...upperY), Math.min(...lowerY))) };
-        const bottomRight = { x: Math.round(Math.min(Math.max(...upperX), Math.max(...lowerX))), y: Math.round(Math.min(Math.max(...upperY), Math.max(...lowerY))) };
+        const [minUpperX, minUpperY, minLowerX, minLowerY] = [upperX, upperY, lowerX, lowerY].map(values => Math.min(...values));
+        const [maxUpperX, maxUpperY, maxLowerX, maxLowerY] = [upperX, upperY, lowerX, lowerY].map(values => Math.max(...values));
+        const topLeft = { x: Math.round(Math.min(minUpperX, minLowerX)), y: Math.round(Math.min(minUpperY, minLowerY)) };
+        const bottomRight = { x: Math.round(Math.max(maxUpperX, maxLowerX)), y: Math.round(Math.max(maxUpperY, maxLowerY)) };
         // Get the patch of the eye
         const patch = context2D.getImageData(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
         return {
@@ -139,10 +149,18 @@ export class TFFaceMesh {
       return;
     }
 
+    // Get the grayscale values for the eyes
+    const grayscale = getEyeFeats({
+      left: leftEye,
+      right: rightEye
+    }, this.trackEye);
+
     // Start building object to be returned
     return {
+      grayscale,
       left: leftEye,
       right: rightEye,
+      facemesh: positions,
       scaleX,
       scaleY
     };

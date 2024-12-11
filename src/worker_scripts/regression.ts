@@ -1,6 +1,6 @@
 import { identity, Matrix, mult, multScalar, solve, transpose } from './mat';
-import { DataWindow, KalmanFilter, getEyeFeats, Point } from './util';
-import type { TwoEyes } from '../facemesh';
+import { DataWindow, KalmanFilter, Point } from './util';
+import type { EyesData } from '../facemesh';
 
 const DATA_WINDOW_SIZE = 700;
 const TRAIL_DATA_WINDOW_SIZE = 10;
@@ -10,7 +10,7 @@ const KALMAN_PIXEL_ERROR = 47;
 const KALMAN_INITIAL_COVARIANCE = 0.0001;
 const KALMAN_INITIAL_X = 500;
 const KALMAN_INITIAL_Y = 500;
-const KALMAN_DELTA_T = 1 / 10;
+const KALMAN_DELTA_T = 1 / 100;
 
 /**
  * Performs ridge regression, according to the Weka code.
@@ -65,7 +65,7 @@ export const ridge = (y: Matrix, X: Matrix, k: number): number[] => {
 };
 
 export interface DataSet {
-  eyes: TwoEyes;
+  eyes: EyesData;
   screenPos: [number, number];
   type: 'click' | 'move' | 'blink';
 }
@@ -73,7 +73,6 @@ export interface DataSet {
 export interface RidgeOptions {
   useKalmanFilter?: boolean;
   moveTickSize?: number;
-  trackEye?: 'left' | 'right' | 'both';
 }
 
 export class Ridge {
@@ -99,7 +98,6 @@ export class Ridge {
 
   kalman: KalmanFilter;
   useKalmanFilter: boolean;
-  trackEye: 'left' | 'right' | 'both';
 
   /**
    * Constructor of RidgeReg object,
@@ -107,10 +105,9 @@ export class Ridge {
    * @constructor
    * @param {RidgeOptions} options
    */
-  constructor ({ useKalmanFilter = true, moveTickSize = 10, trackEye = 'both' }: RidgeOptions = {}) {
+  constructor ({ useKalmanFilter = true, moveTickSize = 10 }: RidgeOptions = {}) {
     this.useKalmanFilter = useKalmanFilter;
     this.moveTickSize = moveTickSize;
-    this.trackEye = trackEye;
     this.trailDataWindow = this.trailTime / moveTickSize;
 
     // Initialize Kalman filter [20200608 xk] what do we do about parameters?
@@ -161,17 +158,7 @@ export class Ridge {
     this.screenXTrailArray.clear();
     this.screenYTrailArray.clear();
     this.eyeFeaturesTrail.clear();
-    for (let i = 0; i < data.length; i++) {
-      // Clone data array
-      const leftData = new Uint8ClampedArray(data[i].eyes.left.patch.data);
-      const rightData = new Uint8ClampedArray(data[i].eyes.right.patch.data);
-      // Duplicate ImageData object
-      data[i].eyes.left.patch = new ImageData(leftData, data[i].eyes.left.width, data[i].eyes.left.height);
-      data[i].eyes.right.patch = new ImageData(rightData, data[i].eyes.right.width, data[i].eyes.right.height);
-
-      // Add those data objects to model
-      this.addData(data[i]);
-    }
+    data.forEach(d => this.addData(d));
   };
 
   /**
@@ -186,13 +173,13 @@ export class Ridge {
     if (type === 'click') {
       this.screenXClicksArray.push([screenPos[0]]);
       this.screenYClicksArray.push([screenPos[1]]);
-      this.eyeFeaturesClicks.push(getEyeFeats(eyes, this.trackEye));
+      this.eyeFeaturesClicks.push(eyes.grayscale);
       this.dataClicks.push({ eyes, screenPos, type });
     } else if (type === 'move') {
       this.screenXTrailArray.push([screenPos[0]]);
       this.screenYTrailArray.push([screenPos[1]]);
 
-      this.eyeFeaturesTrail.push(getEyeFeats(eyes, this.trackEye));
+      this.eyeFeaturesTrail.push(eyes.grayscale);
       this.trailTimes.push(performance.now());
       this.dataTrail.push({ eyes, screenPos, type });
     }
@@ -209,8 +196,8 @@ export class Ridge {
   /**
    * Try to predict coordinates from pupil data
    * after apply linear regression on data set
-   * @param {TwoEyes | undefined} _eyesObj - The current user eyes object
+   * @param {EyesData | undefined} _eyesObj - The current user eyes object
    * @returns {Point | undefined}
    */
-  predict = (_eyesObj: TwoEyes | undefined): Point | undefined => undefined;
+  predict = (_eyesObj: EyesData | undefined): Point | undefined => undefined;
 }
