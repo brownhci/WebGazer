@@ -143,6 +143,7 @@ util_regression.ridge = function(y, X, k){
             m_Coefficients[i] = bb[i][0];
         }
         try{
+        	// look into this more, maybe it should be comparing against nc? but these lines are sus
             var n = (m_Coefficients.length !== 0 ? m_Coefficients.length/m_Coefficients.length: 0);
             if (m_Coefficients.length*n !== m_Coefficients.length){
                 console.log('Array length must be a multiple of m')
