@@ -1,5 +1,19 @@
 # [WebGazer.js](https://webgazer.cs.brown.edu)
 
+## Menu documents
+
+1. [Introduce](#Introduce)
+2. [Features](#Features)
+3. [Build-the-repository](#Build-the-repository)
+4. [Examples](#Examples)
+5. [Browser Support](#Browser-Support)
+6. [Publications](#Publications)
+7. [Who We Are](#Who-We-Are)
+8. [Other Collaborators](#Other-Collaborators)
+9. [License](#License)
+
+## Introduce
+
 WebGazer.js is an eye tracking library that uses common webcams to infer the eye-gaze locations of web visitors on a page in real time. The eye tracking model it contains self-calibrates by watching web visitors interact with the web page and trains a mapping between the features of the eye and positions on the screen. WebGazer.js is written entirely in JavaScript and with only a few lines of code can be integrated in any website that wishes to better understand their visitors and transform their user experience. WebGazer.js runs entirely in the client browser, so no video data needs to be sent to a server. WebGazer.js can run only if the user consents in giving access to their webcam.
 
 * [Official website](https://webgazer.cs.brown.edu)
@@ -15,7 +29,7 @@ WebGazer.js is an eye tracking library that uses common webcams to infer the eye
 * Multiple gaze prediction models
 * Useful video feedback to user
 
-## Build the repository
+## Build-the-repository
 
 If you want to build the repository from source follow these instructions:
 
@@ -67,15 +81,15 @@ To run the example files as a server:
 	# Run the webpage index.html as a server
 	npm run serve
 
-## Browser Support
+## Browser-Support
 
 The following browsers support WebGazer.js:
 
-  * Google Chrome
-  * Microsoft Edge
-  * Mozilla Firefox
-  * Opera
-  * Safari
+  * Google Chrome (version >= 53)
+  * Microsoft Edge (version >= 79)
+  * Mozilla Firefox (version >= 36)
+  * Opera (version >= 40)
+  * Safari (version >= 15)
 
 ## Publications
 
@@ -109,7 +123,7 @@ The following browsers support WebGazer.js:
 
 
 
-## Who We Are
+## Who-We-Are
 
   * Alexandra Papoutsaki
   * Aaron Gokaslan
@@ -118,7 +132,7 @@ The following browsers support WebGazer.js:
   * James Tompkin
   * Jeff Huang
 
-## Other Collaborators
+## Other-Collaborators
 
   * Nediyana Daskalova
   * James Hays
