@@ -6,7 +6,7 @@ import mat from './mat.mjs';
 const reg = {};
 
 var ridgeParameter = Math.pow(10,-5);
-var dataWindow = 700;
+var dataWindow = 50;
 var weights = {'X':[0],'Y':[0]};
 var trailDataWindow = 10;
 

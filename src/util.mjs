@@ -226,7 +226,7 @@ util.resizeEye = function(eye, resizeWidth, resizeHeight) {
     canvas.width = eye.width;
     canvas.height = eye.height;
 
-    canvas.getContext('2d').putImageData(eye.patch,0,0);
+    canvas.getContext('2d', { willReadFrequently: true }).putImageData(eye.patch,0,0);
 
     var tempCanvas = document.createElement('canvas');
 

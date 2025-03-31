@@ -182,7 +182,7 @@ function checkEyesInValidationBox() {
  * @param {y} y - The y co-ordinate of the desired point to plot
  */
 function drawCoordinates(colour,x,y){
-  var ctx = document.getElementById("plotting_canvas").getContext('2d');
+  var ctx = document.getElementById("plotting_canvas").getContext('2d', { willReadFrequently: true });
   ctx.fillStyle = colour; // Red color
   ctx.beginPath();
   ctx.arc(x, y, 5, 0, Math.PI * 2, true);
@@ -222,7 +222,7 @@ function paintCurrentFrame(canvas, width, height) {
     canvas.height = height;
   }
 
-  var ctx = canvas.getContext('2d');
+  var ctx = canvas.getContext('2d', { willReadFrequently: true });
   ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 }
 
@@ -287,8 +287,8 @@ async function loop() {
     {
       // Get tracker object
       var tracker = webgazer.getTracker();
-      faceOverlay.getContext('2d').clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
-      tracker.drawFaceOverlay(faceOverlay.getContext('2d'), tracker.getPositions());
+      faceOverlay.getContext('2d', { willReadFrequently: true }).clearRect( 0, 0, videoElement.videoWidth, videoElement.videoHeight);
+      tracker.drawFaceOverlay(faceOverlay.getContext('2d', { willReadFrequently: true }), tracker.getPositions());
     }
 
     // Feedback box
