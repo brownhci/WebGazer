@@ -105,7 +105,7 @@ TFFaceMesh.prototype.getEyePatches = async function(video, imageCanvas, width, h
   // Start building object to be returned
   var eyeObjs = {};
 
-  var leftImageData = imageCanvas.getContext('2d').getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);
+  var leftImageData = imageCanvas.getContext('2d', { willReadFrequently: true }).getImageData(leftOriginX, leftOriginY, leftWidth, leftHeight);
   eyeObjs.left = {
     patch: leftImageData,
     imagex: leftOriginX,
@@ -114,7 +114,7 @@ TFFaceMesh.prototype.getEyePatches = async function(video, imageCanvas, width, h
     height: leftHeight
   };
 
-  var rightImageData = imageCanvas.getContext('2d').getImageData(rightOriginX, rightOriginY, rightWidth, rightHeight);
+  var rightImageData = imageCanvas.getContext('2d', { willReadFrequently: true }).getImageData(rightOriginX, rightOriginY, rightWidth, rightHeight);
   eyeObjs.right = {
     patch: rightImageData,
     imagex: rightOriginX,

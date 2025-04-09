@@ -7,7 +7,7 @@ importScripts('./worker_scripts/util.js', './worker_scripts/mat.js'); // [202007
 var ridgeParameter = Math.pow(10,-5);
 var resizeWidth = 10;
 var resizeHeight = 6;
-var dataWindow = 700;
+var dataWindow = 50;
 var trailDataWindow = 10;
 var trainInterval = 500;
 

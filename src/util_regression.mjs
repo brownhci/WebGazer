@@ -9,7 +9,7 @@ const util_regression = {};
  * Initialize new arrays and initialize Kalman filter for regressions.
  */
 util_regression.InitRegression = function() {
-  var dataWindow = 700;
+  var dataWindow = 50;
   var trailDataWindow = 10;
   this.ridgeParameter = Math.pow(10,-5);
   this.errorXArray = new util.DataWindow(dataWindow);
