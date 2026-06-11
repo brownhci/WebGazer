@@ -262,7 +262,7 @@ async function getPrediction(regModelIndex) {
 /**
  * Runs every available animation frame if webgazer is not paused
  */
-var smoothingVals = new util.DataWindow(4);
+var smoothingVals = new util.DataWindow(webgazer.params.gazeSmoothingWindowSize);
 var k = 0;
 
 async function loop() {

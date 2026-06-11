@@ -21,6 +21,12 @@ const params = {
   dataTimestep: 50,
   showVideoPreview: true,
   applyKalmanFilter: true,
+  // Higher values reduce gaze-dot jitter but increase visual latency.
+  gazeSmoothingWindowSize: 8, // Previous value: 4
+  // Kalman tuning: higher measurement noise trusts raw gaze less; lower
+  // process noise makes movement smoother but slower to follow fast changes.
+  kalmanMeasurementNoise: 120, // Previous value: 47
+  kalmanProcessNoiseScale: 0.08, // Previous value: 1 / 10
   saveDataAcrossSessions: true,
   // Whether or not to store accuracy eigenValues, used by the calibration example file
   storingPoints: false,

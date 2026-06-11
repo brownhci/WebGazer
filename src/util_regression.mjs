@@ -44,12 +44,11 @@ util_regression.InitRegression = function() {
     [0,   1/4,  0,   1/2],
     [1/2, 0,    1,   0],
     [0,  1/2,  0,   1]];// * delta_t
-  var delta_t = 1/10; // The amount of time between frames
-  Q = mat.multScalar(Q, delta_t);
+  Q = mat.multScalar(Q, params.kalmanProcessNoiseScale);
 
   var H = [ [1, 0, 0, 0],
     [0, 1, 0, 0]];
-  var pixel_error = 47; //We will need to fine tune this value [20200611 xk] I just put a random value here
+  var pixel_error = params.kalmanMeasurementNoise;
 
   //This matrix represents the expected measurement error
   var R = mat.multScalar(mat.identity(2), pixel_error);
