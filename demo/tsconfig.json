@@ -1,24 +1,23 @@
 {
   "compilerOptions": {
-    "baseUrl": "./www",
-    "outDir": "./dist",
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
     "skipLibCheck": true,
-    "moduleResolution": "Bundler",
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
     "isolatedModules": true,
+    "moduleDetection": "force",
     "noEmit": true,
+    "jsx": "react-jsx",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "allowJs": true,
-    "esModuleInterop": true
+    "paths": {
+      "webgazer": ["../src/index.ts"]
+    }
   },
-  "include": ["www/js/**/*"],
-  "exclude": ["src", "www/lib", "dist", "node_modules"]
+  "include": ["src"]
 }

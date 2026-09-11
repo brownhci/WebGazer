@@ -6,6 +6,7 @@ import './dom_util';
 import { RidgeReg } from './ridgeReg';
 import { RidgeWeightedReg } from './ridgeWeightedReg';
 import { RidgeRegThreaded } from './ridgeRegThreaded';
+import { MlpReg } from './mlpReg';
 import { DataWindow, bound, Point } from './worker_scripts/util';
 import { TFFaceMesh, EyesData } from './facemesh';
 import { GazeDot } from './GazeDot';
@@ -29,7 +30,7 @@ export type PredictionResult = {
  */
 export type RegressionOptions = {
   /** The regression method to use */
-  regression: 'ridgeReg' | 'ridgeWeighted' | 'ridgeThreaded';
+  regression: 'ridgeReg' | 'ridgeWeighted' | 'ridgeThreaded' | 'mlpReg';
   /** Whether to use Kalman filter */
   useKalmanFilter: boolean;
   /** Size of move ticks */
@@ -86,7 +87,7 @@ const SMOOTHING_PRECISION = 4;
  */
 export class WebGazer {
   tracker: TFFaceMesh| null = null;
-  regression: RidgeRegThreaded | RidgeWeightedReg | RidgeReg;
+  regression: RidgeRegThreaded | RidgeWeightedReg | RidgeReg | MlpReg;
   videoElement: HTMLVideoElement = document.createElement('video');
   stream: MediaStream | null = null;
   gazeDot: GazeDot | null = null;
@@ -124,8 +125,11 @@ export class WebGazer {
     const allParams = { ...this.params, ...optionsObject };
     const { regression = 'ridgeReg', useKalmanFilter = true, moveTickSize = 50, saveInterval = 1000, ...otherParams } = allParams;
     this.params = { ...this.params, ...otherParams };
-    const RegressionClass = regression === 'ridgeThreaded' ? RidgeRegThreaded : regression === 'ridgeWeighted' ? RidgeWeightedReg : RidgeReg;
-    this.regression = new RegressionClass({ useKalmanFilter, moveTickSize });
+    this.regression = regression === 'mlpReg'
+      ? new MlpReg({ useKalmanFilter, moveTickSize })
+      : new (regression === 'ridgeThreaded' ? RidgeRegThreaded
+        : regression === 'ridgeWeighted' ? RidgeWeightedReg
+          : RidgeReg)({ useKalmanFilter, moveTickSize });
 
     // Save the data across sessions
     this.saveManager = new SaveManager(this.regression, saveInterval);
@@ -148,9 +152,26 @@ export class WebGazer {
   setRegression (regression: RegressionOptions['regression'], options?: Partial<Omit<RegressionOptions, 'regresssion'>>): void {
     this.params = { ...this.params, ...options };
     this.regression.dispose();
-    const RegressionClass = regression === 'ridgeThreaded' ? RidgeRegThreaded : regression === 'ridgeWeighted' ? RidgeWeightedReg : RidgeReg;
-    this.regression = new RegressionClass({ useKalmanFilter: this.regression.useKalmanFilter, moveTickSize: this.regression.moveTickSize });
+    const { useKalmanFilter, moveTickSize } = {
+      useKalmanFilter: this.regression.useKalmanFilter,
+      moveTickSize: this.regression.moveTickSize
+    };
+    this.regression = regression === 'mlpReg'
+      ? new MlpReg({ useKalmanFilter, moveTickSize })
+      : new (regression === 'ridgeThreaded' ? RidgeRegThreaded
+        : regression === 'ridgeWeighted' ? RidgeWeightedReg
+          : RidgeReg)({ useKalmanFilter, moveTickSize });
     this.saveManager = new SaveManager(this.regression, this.saveManager.saveDelay);
+  }
+
+  /**
+   * Resolves when the pre-trained MLP weights are loaded (only when regression is mlpReg).
+   */
+  async loadMlpModel (): Promise<void> {
+    if (!(this.regression instanceof MlpReg)) {
+      throw new Error('loadMlpModel requires regression: "mlpReg"');
+    }
+    await this.regression.whenReady();
   }
 
   /**
@@ -176,7 +197,6 @@ export class WebGazer {
   showFaceFeedback (mirrorVideo = false): void {
     if (!this.faceFeedback) {
       this.faceFeedback = new FaceFeedback(this.videoElement, mirrorVideo);
-      this.tracker?.showFaceOverlay(mirrorVideo);
     }
   }
 
@@ -204,6 +224,35 @@ export class WebGazer {
     this.params.gazeTrail = false;
     if (this.gazeTrail) this.gazeTrail.dispose();
     this.gazeTrail = null;
+  }
+
+  /**
+   * Shows the MediaPipe facemesh landmark overlay on the video feed.
+   */
+  showFaceMeshOverlay (mirrorVideo = this.mirrorVideo): void {
+    this.mirrorVideo = mirrorVideo;
+    this.tracker?.showFaceOverlay(mirrorVideo);
+  }
+
+  /**
+   * Hides the MediaPipe facemesh landmark overlay.
+   */
+  hideFaceMeshOverlay (): void {
+    this.tracker?.hideFaceOverlay();
+  }
+
+  /**
+   * Shows or hides the iris center markers on the video feed overlay.
+   */
+  setIrisOverlayVisible (visible: boolean): void {
+    if (this.faceFeedback) this.faceFeedback.showIris = visible;
+  }
+
+  /**
+   * Shows or hides the eye-region positioning guides on the video feed overlay.
+   */
+  setEyeRegionsVisible (visible: boolean): void {
+    if (this.faceFeedback) this.faceFeedback.showEyeRegions = visible;
   }
 
   /**
@@ -440,13 +489,18 @@ export class WebGazer {
       this.videoElement.style.removeProperty('filter');
     }
 
-    // Restart the face feedback on the new video element
-    if (faceFeedback) this.showFaceFeedback(mirrorVideo);
+    // Restart face feedback on the new video element
+    if (this.faceFeedback) this.hideFaceFeedback();
+    if (faceFeedback) this.showFaceFeedback(mirrorVideo ?? false);
 
     // Restart the video feed
     if (this.stream) {
       this.videoElement.srcObject = this.stream;
-      return this.videoElement.play();
+      await this.videoElement.play();
+      await new Promise<void>((resolve) => {
+        if (this.videoElement.videoWidth > 0) resolve();
+        else this.videoElement.addEventListener('loadedmetadata', () => resolve(), { once: true });
+      });
     }
   }
 

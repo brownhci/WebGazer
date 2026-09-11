@@ -16,7 +16,7 @@ export class SaveManager {
   }
 
   private getStorageKey (): string {
-    return `webgazerGlobalData-${this.regression.name}`;
+    return `webgazerGlobalData-${this.regression.name}-iris-v2`;
   }
 
   async saveData (): Promise<void> {

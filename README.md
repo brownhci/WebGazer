@@ -51,21 +51,26 @@ or you can you do
 import webgazer from 'webgazer'
 ````
 
-### How to run the Example HTML files
+### Run the demo
 
-Within the /www directory there are two example HTML files:
+A Vite + React demo lives in the `demo/` directory. It exercises the library with webcam feedback, MediaPipe iris landmarks, and toggleable overlays.
 
-  * `calibration.html`: This example includes additional user feedback, such as a 9-point calibration sequence, accuracy measurements and an informative help module.
-  * `collision.html`: This example contains a game where the user can move an orange ball with their eyes, which in turn collides with blue balls.
+```bash
+npm install
+npm run demo
+```
 
-To run the example files as a server:
+To build the library only:
 
-	# Clone the repository and download NodeJS using the steps listed above
-	# Move into the www directory and download the additional dependencies
-	cd www
-	npm install
-	# Run the webpage index.html as a server
-	npm run serve
+```bash
+npm run build
+```
+
+To watch library sources during development:
+
+```bash
+npm run dev
+```
 
 ## Browser Support
 

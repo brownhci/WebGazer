@@ -19,10 +19,12 @@ export class FaceFeedback {
   private videoElement: HTMLVideoElement;
   private mirrorVideo: boolean;
   private resizeObserver: ResizeObserver;
+  showEyeRegions = true;
+  showIris = true;
 
   /**
-   * @param {HTMLVideoElement} videoElement - The video element to use for face feedback
-   * @param {boolean=} mirrorVideo - Whether to mirror the video feed
+   * @param videoElement - The video element to use for face feedback
+   * @param mirrorVideo - Whether to mirror the video feed
    */
   constructor (videoElement: HTMLVideoElement, mirrorVideo = false) {
     this.videoElement = videoElement;
@@ -82,14 +84,32 @@ export class FaceFeedback {
         eye.y >= validationBox.y &&
         eye.y + eye.h <= validationBox.y + validationBox.h);
 
-      ctx.strokeStyle = eyesInBox ? '#000080' : '#b00000';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(validationBox.x, validationBox.y, validationBox.w, validationBox.h);
+      if (this.showEyeRegions) {
+        ctx.strokeStyle = eyesInBox ? '#000080' : '#b00000';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(validationBox.x, validationBox.y, validationBox.w, validationBox.h);
 
-      ctx.fillStyle = eyesInBox ? '#00a000' : '#b00000';
-      ctx.globalAlpha = 0.5; // Semi-transparent
-      eyesBoxes.forEach(eye => ctx.fillRect(eye.x, eye.y, eye.w, eye.h));
-      ctx.globalAlpha = 1.0; // Reset alpha
+        ctx.fillStyle = eyesInBox ? '#00a000' : '#b00000';
+        ctx.globalAlpha = 0.5;
+        eyesBoxes.forEach(eye => ctx.fillRect(eye.x, eye.y, eye.w, eye.h));
+        ctx.globalAlpha = 1.0;
+      }
+
+      if (this.showIris) {
+        const irisRadius = 4;
+        ([
+          { eye: eyePatches.left, offset: eyePatches.iris.left },
+          { eye: eyePatches.right, offset: eyePatches.iris.right }
+        ]).forEach(({ eye, offset }) => {
+          const cx = (eye.imagex + eye.width / 2 + offset[0] * (eye.width / 2)) * scaleX;
+          const cy = (eye.imagey + eye.height / 2 + offset[1] * (eye.height / 2)) * scaleY;
+          const x = this.mirrorVideo ? width - cx : cx;
+          ctx.fillStyle = '#ffff00';
+          ctx.beginPath();
+          ctx.arc(x, cy, irisRadius, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
     }
   }
 

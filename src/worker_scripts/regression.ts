@@ -15,7 +15,7 @@ const KALMAN_DELTA_T = 1 / 100;
 /**
  * Performs ridge regression, according to the Weka code.
  * @param {Matrix} y - corresponds to screen coordinates (either x or y) for each of n click events
- * @param {Matrix} X - corresponds to gray pixel features (120 pixels for both eyes) for each of n clicks
+ * @param {Matrix} X - corresponds to iris feature vectors for each of n click events
  * @param {number} k - ridge parameter
  * @return {number[]} regression coefficients
  */
@@ -76,7 +76,7 @@ export interface RidgeOptions {
 }
 
 export class Ridge {
-  name: 'ridgeReg' | 'ridgeWeighted' | 'ridgeThreaded' = 'ridgeReg';
+  name: 'ridgeReg' | 'ridgeWeighted' | 'ridgeThreaded' | 'mlpReg' = 'ridgeReg';
 
   ridgeParameter: number = RIDGE_PARAMETER;
   trailTime: number = TRAIL_TIME;
@@ -173,13 +173,13 @@ export class Ridge {
     if (type === 'click') {
       this.screenXClicksArray.push([screenPos[0]]);
       this.screenYClicksArray.push([screenPos[1]]);
-      this.eyeFeaturesClicks.push(eyes.grayscale);
+      this.eyeFeaturesClicks.push(eyes.features);
       this.dataClicks.push({ eyes, screenPos, type });
     } else if (type === 'move') {
       this.screenXTrailArray.push([screenPos[0]]);
       this.screenYTrailArray.push([screenPos[1]]);
 
-      this.eyeFeaturesTrail.push(eyes.grayscale);
+      this.eyeFeaturesTrail.push(eyes.features);
       this.trailTimes.push(performance.now());
       this.dataTrail.push({ eyes, screenPos, type });
     }
@@ -194,7 +194,7 @@ export class Ridge {
   dispose = (): void => {};
 
   /**
-   * Try to predict coordinates from pupil data
+   * Try to predict coordinates from iris features
    * after apply linear regression on data set
    * @param {EyesData | undefined} _eyesObj - The current user eyes object
    * @returns {Point | undefined}

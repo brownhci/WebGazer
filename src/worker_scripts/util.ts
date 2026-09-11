@@ -2,29 +2,16 @@
 
 import { add, identity, inv, Matrix, mult, sub, transpose } from './mat';
 
-// Replace magic numbers with named constants
-const RESIZE_WIDTH = 10;
-const RESIZE_HEIGHT = 6;
-const EQUALIZE_STEP = 5;
-const GRAYSCALE_RED_FACTOR = 0.299;
-const GRAYSCALE_GREEN_FACTOR = 0.587;
-const GRAYSCALE_BLUE_FACTOR = 0.114;
-
 export interface Point {
   x: number;
   y: number;
 }
 
-export type Pupil = [[number, number], number];
-
 export interface Eye {
-  patch: ImageData;
   imagex: number;
   imagey: number;
   width: number;
   height: number;
-  blink?: boolean;
-  pupil?: Pupil;
 }
 
 // Data Window class
@@ -100,180 +87,41 @@ export class DataWindow<T> {
   }
 }
 
-interface TwoEyes {
-  left: Eye;
-  right: Eye;
-}
-
-/**
- * Compute eyes size as gray histogram
- * @param eyes - The eyes where looking for gray histogram
- * @returns The eyes gray level histogram
- */
-export const getEyeFeats = (eyes: TwoEyes, trackEye: 'left' | 'right' | 'both'): number[] => {
-  /**
-   * Process an eye and return its gray level histogram
-   * @param eye - The eye to be processed
-   * @returns The gray level histogram of the eye
-   */
-  const process = (eye: Eye): number[] => {
-    const resized = resizeEye(eye, RESIZE_WIDTH, RESIZE_HEIGHT);
-    const gray = grayscale(resized.data, resized.width, resized.height);
-    const hist: number[] = [];
-    equalizeHistogram(gray, EQUALIZE_STEP, hist);
-    return hist;
-  };
-
-  if (trackEye === 'left') {
-    return process(eyes.left);
-  } else if (trackEye === 'right') {
-    return process(eyes.right);
-  } else {
-    let ret: number[] = [];
-    ret = ret.concat(process(eyes.left), process(eyes.right));
-    return ret;
-  }
-};
-
-// Helper functions
-/**
-   * Grayscales an image patch. Can be used for the whole canvas, detected face, detected eye, etc.
-   *
-   * Code from tracking.js by Eduardo Lundgren, et al.
-   * https://github.com/eduardolundgren/tracking.js/blob/master/src/tracking.js
-   *
-   * Software License Agreement (BSD License) Copyright (c) 2014, Eduardo A. Lundgren Melo. All rights reserved.
-   * Redistribution and use of this software in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-   * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-   * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-   * The name of Eduardo A. Lundgren Melo may not be used to endorse or promote products derived from this software without specific prior written permission of Eduardo A. Lundgren Melo.
-   * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-   * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-   * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-   * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-   *
-   * @param pixels - image data to be grayscaled
-   * @param width  - width of image data to be grayscaled
-   * @param height - height of image data to be grayscaled
-   * @return grayscaledImage
-   */
-export const grayscale = (pixels: Uint8ClampedArray, width: number, height: number): Uint8ClampedArray => {
-  const gray = new Uint8ClampedArray(pixels.length >> 2);
-  let p = 0;
-  let w = 0;
-  for (let i = 0; i < height; i++) {
-    for (let j = 0; j < width; j++) {
-      const value = pixels[w] * GRAYSCALE_RED_FACTOR +
-                    pixels[w + 1] * GRAYSCALE_GREEN_FACTOR +
-                    pixels[w + 2] * GRAYSCALE_BLUE_FACTOR;
-      gray[p++] = value;
-
-      w += 4;
-    }
-  }
-  return gray;
+/** Normalized iris offset from the eye bounds center, in [-1, 1] per axis. */
+export type EyeIrisOffsets = {
+  left: [number, number];
+  right: [number, number];
 };
 
 /**
- * Increase contrast of an image.
- *
- * Code from Martin Tschirsich, Copyright (c) 2012.
- * https://github.com/mtschirs/js-objectdetect/blob/gh-pages/js/objectdetect.js
- *
- * @param src - grayscale integer array
- * @param step - sampling rate, control performance
- * @param dst - array to hold the resulting image
+ * Normalizes an iris landmark relative to the eye bounds center.
+ * @param irisCenter - MediaPipe iris center in mesh coordinates
+ * @param eye - Detected eye bounds
  */
-const equalizeHistogram = (src: Uint8ClampedArray, step: number, dst: number[]): number[] => {
-  const srcLength = src.length;
-  if (!dst) dst = Array.from(src);
-  if (!step) step = 5;
-
-  // Compute histogram and histogram sum:
-  const hist: number[] = Array(256).fill(0);
-
-  for (let i = 0; i < srcLength; i += step) {
-    ++hist[src[i]];
-  }
-
-  // Compute integral histogram:
-  const norm = 255 * step / srcLength;
-  let prev = 0;
-  for (let i = 0; i < 256; ++i) {
-    let h = hist[i];
-    prev = h += prev;
-    hist[i] = h * norm;
-  }
-
-  // Equalize image:
-  for (let i = 0; i < srcLength; ++i) {
-    dst[i] = hist[src[i]];
-  }
-  return dst;
+export const getNormalizedIrisOffset = (
+  irisCenter: [number, number, number],
+  eye: Pick<Eye, 'imagex' | 'imagey' | 'width' | 'height'>
+): [number, number] => {
+  const centerX = eye.imagex + eye.width / 2;
+  const centerY = eye.imagey + eye.height / 2;
+  const halfW = eye.width / 2;
+  const halfH = eye.height / 2;
+  if (halfW === 0 || halfH === 0) return [0, 0];
+  return [
+    (irisCenter[0] - centerX) / halfW,
+    (irisCenter[1] - centerY) / halfH
+  ];
 };
 
 /**
- * Evaluate the similarities between 2 list of data
- * (should we use levenstein algorithme for more accurate results?)
- * @param data1 The first list
- * @param data2 The second list
- * @returns The ratio of similarities (between 0 and 1)
+ * Builds the regression feature vector from normalized iris offsets.
+ * @param iris - Normalized iris offsets for both eyes
+ * @param trackEye - Which eye(s) to include
  */
-export const correlation = (data1: number[], data2: number[]): number => {
-  const length = Math.min(data1.length, data2.length);
-  let count = 0;
-  for (let i = 0; i < length; i++) {
-    if (data1[i] === data2[i]) {
-      count++;
-    }
-  }
-  return count / Math.max(data1.length, data2.length);
-};
-
-let resizeCanvas: OffscreenCanvas;
-let resizeContext: OffscreenCanvasRenderingContext2D | null;
-
-let tempCanvas: OffscreenCanvas;
-let tempContext: OffscreenCanvasRenderingContext2D | null;
-
-/**
- * Gets an Eye object and resizes it to the desired resolution
- * @param eye - patch to be resized
- * @param resizeWidth - desired width
- * @param resizeHeight - desired height
- * @return resized eye patch
- */
-const resizeEye = (eye: Eye, resizeWidth: number, resizeHeight: number): ImageData => {
-  // Create canvas only once and reuse
-  if (!resizeCanvas) {
-    resizeCanvas = new OffscreenCanvas(resizeWidth, resizeHeight);
-    resizeContext = resizeCanvas.getContext('2d');
-  }
-  if (!tempCanvas) {
-    tempCanvas = new OffscreenCanvas(eye.width, eye.height);
-    tempContext = tempCanvas.getContext('2d');
-  }
-
-  // Ensure canvas is correct size
-  if (resizeCanvas.width !== resizeWidth || resizeCanvas.height !== resizeHeight) {
-    resizeCanvas.width = resizeWidth;
-    resizeCanvas.height = resizeHeight;
-  }
-  if (tempCanvas.width !== eye.width || tempCanvas.height !== eye.height) {
-    tempCanvas.width = eye.width;
-    tempCanvas.height = eye.height;
-  }
-
-  if (!resizeContext || !tempContext) return eye.patch; // Theoretically impossible
-
-  // Put the eye patch data onto the temporary canvas
-  tempContext.putImageData(eye.patch, 0, 0);
-
-  // Clear the resize canvas and draw the resized image
-  resizeContext.clearRect(0, 0, resizeWidth, resizeHeight);
-  resizeContext.drawImage(tempCanvas, 0, 0, eye.width, eye.height, 0, 0, resizeWidth, resizeHeight);
-
-  return resizeContext.getImageData(0, 0, resizeWidth, resizeHeight);
+export const getIrisFeatures = (iris: EyeIrisOffsets, trackEye: 'left' | 'right' | 'both'): number[] => {
+  if (trackEye === 'left') return [...iris.left];
+  if (trackEye === 'right') return [...iris.right];
+  return [...iris.left, ...iris.right];
 };
 
 /**

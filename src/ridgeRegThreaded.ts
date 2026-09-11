@@ -42,7 +42,7 @@ export class RidgeRegThreaded extends Ridge {
     const { eyes, screenPos, type } = data;
     if (!eyes) return;
     if (type === 'click') this.dataClicks.push(data);
-    this.worker.postMessage({ eyes: eyes.grayscale, screenPos, type } as EyeData);
+    this.worker.postMessage({ eyes: eyes.features, screenPos, type } as EyeData);
   };
 
   /**
@@ -51,7 +51,7 @@ export class RidgeRegThreaded extends Ridge {
   getData = (): import('./worker_scripts/regression.js').DataSet[] => this.dataClicks.data;
 
   /**
-   * Try to predict coordinates from pupil data
+   * Try to predict coordinates from iris features
    * after apply linear regression on data set
    * @param eyesObj - The current user eyes object
    */
@@ -60,7 +60,7 @@ export class RidgeRegThreaded extends Ridge {
     const coefficientsX = this.weights.X;
     const coefficientsY = this.weights.Y;
 
-    const eyeFeats = eyesObj.grayscale;
+    const eyeFeats = eyesObj.features;
     let predictedX = 0;
     let predictedY = 0;
     for (let i = 0; i < Math.min(eyeFeats.length, coefficientsX.length, coefficientsY.length); i++) {

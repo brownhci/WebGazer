@@ -38,6 +38,9 @@ www/webgazer.js
 *__pycache__/
 *.pyc
 .idea/
+training/data/
+training/checkpoints/
+training/.venv/
 docs/
 dist/*.map
 www/webgazer.js

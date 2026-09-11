@@ -13,7 +13,6 @@ const bannerString = `
  `;
 
 export default defineConfig({
-  root: 'www',
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
@@ -22,7 +21,7 @@ export default defineConfig({
       fileName: (format) => `webgazer.${format}.js`
     },
     sourcemap: true,
-    outDir: '../dist',
+    outDir: 'dist',
     emptyOutDir: false,
     rollupOptions: {
       output: {
@@ -39,23 +38,14 @@ export default defineConfig({
   plugins: [
     banner(bannerString),
     {
-      name: 'create-symlinks',
+      name: 'emit-types',
       async closeBundle () {
         try {
-          // Run tsc to generate type declarations
           await execAsync('tsc --emitDeclarationOnly --declaration --outDir dist/types');
-          await execAsync('node scripts/create-symlink.mjs');
         } catch (error) {
           console.error('Error in closeBundle:', error);
         }
       }
     }
-  ],
-  server: {
-    port: 8080,
-    open: true,
-    watch: {
-      include: ['src/**', 'www/**']
-    }
-  }
+  ]
 });

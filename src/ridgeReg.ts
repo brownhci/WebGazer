@@ -4,7 +4,7 @@ import type { Matrix } from './worker_scripts/mat';
 
 export class RidgeReg extends Ridge {
   /**
-   * Try to predict coordinates from pupil data
+   * Try to predict coordinates from iris features
    * after apply linear regression on data set
    * @param {TwoEyes | undefined} eyesObj - The current user eyes object
    * @returns {{ x: number; y: number } | undefined}
@@ -30,7 +30,7 @@ export class RidgeReg extends Ridge {
     const coefficientsX = ridge(screenXArray, eyeFeatures, this.ridgeParameter);
     const coefficientsY = ridge(screenYArray, eyeFeatures, this.ridgeParameter);
 
-    const eyeFeats = eyesObj.grayscale;
+    const eyeFeats = eyesObj.features;
     let predictedX = 0;
     for (let i = 0; i < eyeFeats.length; i++) {
       predictedX += eyeFeats[i] * coefficientsX[i];

@@ -1,0 +1,56 @@
+# WebGazer offline training (GazeT + EOTT)
+
+paths:
+  data_root: data
+  gazet_raw: data/gazet/raw
+  gazet_manifest: data/gazet/manifest.parquet
+  eott_raw: data/eott/raw
+  eott_manifest: data/eott/manifest.parquet
+  processed: data/processed
+  extracted: data/processed/extracted.parquet
+  checkpoints: checkpoints
+
+download:
+  eott_url: https://webgazer.cs.brown.edu/data/WebGazerETRA2018Dataset_Release20180420.zip
+
+datasets:
+  gazet:
+    enabled: true
+    label_source: click
+    split: train
+  eott:
+    enabled: true
+    label_source: tobii
+    split: train
+    tasks:
+      - dot_test
+      - dot_test_final
+      - fitts_law
+
+features:
+  track_eye: both
+  include_head_pose: true
+  include_scale_proxies: true
+
+training:
+  random_seed: 42
+  test_size: 0.1
+  # pooled: GazeT + EOTT mélangés, 90 % train / 10 % val
+  split_mode: pooled
+
+# MLP: 4 hidden layers to compose non-linear geometric interactions
+# (head pose × iris offset × viewport) without explicit trigonometry.
+# Deeper/shallower stacks are configurable here.
+mlp:
+  hidden_dims: [256, 128, 64, 32]
+  dropout: 0.25
+  lr: 0.001
+  weight_decay: 0.0001
+  batch_size: 512
+  max_epochs: 100
+  patience: 12
+
+extraction:
+  eott_frame_stride: 1
+  # Pas de flip — aligné sur l'inférence webcam (facemesh.ts, pas de miroir).
+  flip_horizontal: false
