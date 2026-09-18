@@ -62,6 +62,7 @@ class FaceMeshExtractor:
 
         features = build_feature_vector(
             landmarks,
+            image_bgr,
             track_eye=track_eye,
             include_head_pose=include_head_pose,
             include_scale_proxies=include_scale_proxies,

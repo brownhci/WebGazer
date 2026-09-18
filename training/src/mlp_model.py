@@ -34,4 +34,6 @@ class GazeMLP(nn.Module):
         self.head = nn.Linear(prev, 2)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return torch.sigmoid(self.head(self.backbone(x)))
+        # Linear head: allows targets slightly outside [0, 1] during training.
+        # Browser inference clamps to the viewport for display.
+        return self.head(self.backbone(x))

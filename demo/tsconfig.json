@@ -19,5 +19,5 @@
       "webgazer": ["../src/index.ts"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "vite.config.ts"]
 }

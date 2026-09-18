@@ -1,8 +1,7 @@
 import type { EyesData } from './facemesh';
+import { estimateHeadPose } from './headPose';
 
-/** MediaPipe Face Mesh indices (478 landmarks, refine_landmarks=true). */
 const NOSE_TIP = 1;
-const CHIN = 152;
 const LEFT_EYE_OUTER = 33;
 const RIGHT_EYE_OUTER = 263;
 const LEFT_EYE_INNER = 133;
@@ -17,21 +16,27 @@ const FACE_RIGHT = 454;
 const REFERENCE_WIDTH = 1920;
 const REFERENCE_HEIGHT = 1080;
 
+/** 19 face + 2 viewport = 21 dims (solvePnP + 2D proxies). */
 export const MLP_FACE_FEATURE_NAMES = [
   'left_iris_x',
   'left_iris_y',
   'right_iris_x',
   'right_iris_y',
+  'head_yaw',
+  'head_pitch',
+  'head_roll',
+  'head_tx',
+  'head_ty',
+  'head_tz',
   'head_yaw_proxy',
   'head_pitch_proxy',
-  'head_roll',
+  'head_roll_proxy',
   'head_tx_norm',
   'head_ty_norm',
   'ear_left',
   'ear_right',
   'ipd_px',
-  'face_width_px',
-  'z_depth_proxy'
+  'face_width_px'
 ] as const;
 
 export const MLP_SCREEN_FEATURE_NAMES = ['screen_w_norm', 'screen_h_norm'] as const;
@@ -41,26 +46,27 @@ export const MLP_FEATURE_NAMES = [
   ...MLP_SCREEN_FEATURE_NAMES
 ] as const;
 
-function lm (mesh: [number, number, number][], idx: number): [number, number, number] {
-  return mesh[idx] ?? [0, 0, 0];
-}
+const lm = (mesh: [number, number, number][], idx: number): [number, number, number] =>
+  mesh[idx] ?? [0, 0, 0];
 
-function dist2d (a: [number, number, number], b: [number, number, number]): number {
+const dist2d = (a: [number, number, number], b: [number, number, number]): number => {
   const dx = a[0] - b[0];
   const dy = a[1] - b[1];
   return Math.hypot(dx, dy);
-}
+};
 
-function eyeAspectRatio (mesh: [number, number, number][], side: 'left' | 'right'): number {
+const eyeAspectRatio = (mesh: [number, number, number][], side: 'left' | 'right'): number => {
   const [p1, p4, p2, p6] = side === 'left'
     ? [LEFT_EYE_OUTER, LEFT_EYE_INNER, LEFT_EYE_TOP, LEFT_EYE_BOTTOM]
     : [RIGHT_EYE_OUTER, RIGHT_EYE_INNER, RIGHT_EYE_TOP, RIGHT_EYE_BOTTOM];
   const horiz = dist2d(lm(mesh, p1), lm(mesh, p4));
   if (horiz === 0) return 0;
   return (dist2d(lm(mesh, p2), lm(mesh, p6)) + dist2d(lm(mesh, p2), lm(mesh, p6))) / (2 * horiz);
-}
+};
 
-function headPoseProxies (mesh: [number, number, number][]): [number, number, number, number, number] {
+const headPoseProxies = (
+  mesh: [number, number, number][]
+): [number, number, number, number, number] => {
   const nose = lm(mesh, NOSE_TIP);
   const le = lm(mesh, LEFT_EYE_OUTER);
   const re = lm(mesh, RIGHT_EYE_OUTER);
@@ -78,31 +84,33 @@ function headPoseProxies (mesh: [number, number, number][]): [number, number, nu
   const tyNorm = (nose[1] - faceCy) / ipd;
 
   return [yawProxy, pitchProxy, roll, txNorm, tyNorm];
-}
+};
 
-function scaleProxies (mesh: [number, number, number][]): [number, number, number] {
-  const le = lm(mesh, LEFT_EYE_OUTER);
-  const re = lm(mesh, RIGHT_EYE_OUTER);
-  const ipd = dist2d(le, re);
+const scaleProxies = (mesh: [number, number, number][]): [number, number] => {
+  const ipd = dist2d(lm(mesh, LEFT_EYE_OUTER), lm(mesh, RIGHT_EYE_OUTER));
   const faceW = dist2d(lm(mesh, FACE_LEFT), lm(mesh, FACE_RIGHT));
-  const zDepth = lm(mesh, CHIN)[2] - lm(mesh, NOSE_TIP)[2];
-  return [ipd, faceW, zDepth];
-}
+  return [ipd, faceW];
+};
 
-function screenFeatures (): [number, number] {
+const screenFeatures = (): [number, number] => {
   const w = Math.max(window.innerWidth || document.documentElement.clientWidth, 1);
   const h = Math.max(window.innerHeight || document.documentElement.clientHeight, 1);
   return [w / REFERENCE_WIDTH, h / REFERENCE_HEIGHT];
-}
+};
 
 /**
- * Builds the 16-dim MLP input vector (14 face + 2 viewport) matching the offline trainer.
+ * Builds the 21-dim MLP input (19 face + 2 viewport): patch pupils, solvePnP, 2D proxies.
  */
-export function buildMlpFeatureVector (eyes: EyesData): number[] | null {
+export const buildMlpFeatureVector = (eyes: EyesData): number[] | null => {
   if (!eyes.facemesh.length || eyes.left.width <= 0 || eyes.right.width <= 0) return null;
 
-  const [yaw, pitch, roll, tx, ty] = headPoseProxies(eyes.facemesh);
-  const [ipd, faceW, zDepth] = scaleProxies(eyes.facemesh);
+  const imageW = eyes.videoWidth || 1;
+  const imageH = eyes.videoHeight || 1;
+  const pose = estimateHeadPose(eyes.facemesh, imageW, imageH);
+  if (!pose) return null;
+
+  const [yawP, pitchP, rollP, txN, tyN] = headPoseProxies(eyes.facemesh);
+  const [ipd, faceW] = scaleProxies(eyes.facemesh);
   const [screenW, screenH] = screenFeatures();
 
   return [
@@ -110,17 +118,22 @@ export function buildMlpFeatureVector (eyes: EyesData): number[] | null {
     eyes.iris.left[1],
     eyes.iris.right[0],
     eyes.iris.right[1],
-    yaw,
-    pitch,
-    roll,
-    tx,
-    ty,
+    pose.yaw,
+    pose.pitch,
+    pose.roll,
+    pose.tx,
+    pose.ty,
+    pose.tz,
+    yawP,
+    pitchP,
+    rollP,
+    txN,
+    tyN,
     eyeAspectRatio(eyes.facemesh, 'left'),
     eyeAspectRatio(eyes.facemesh, 'right'),
     ipd,
     faceW,
-    zDepth,
     screenW,
     screenH
   ];
-}
+};

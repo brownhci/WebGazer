@@ -1,4 +1,6 @@
 import type { EyesData } from './facemesh';
+import { mapVideoPointToElement, type VideoContentMapping } from './videoLayout';
+import { pupilCenterInPatch } from './pupil';
 
 const overlayStyle: Partial<CSSStyleDeclaration> = {
   position: 'absolute',
@@ -55,61 +57,79 @@ export class FaceFeedback {
     this.faceFeedbackCanvas.height = offsetHeight;
   }
 
+  private mappingFor (eyePatches: EyesData): VideoContentMapping {
+    return eyePatches.videoToElement ?? {
+      scaleX: eyePatches.scaleX,
+      scaleY: eyePatches.scaleY,
+      offsetX: 0,
+      offsetY: 0
+    };
+  }
+
   /**
    * Updates the face feedback visualization
-   * @param {DOMRect} facePosition - The position of the face
    * @param {EyesData} eyePatches - The positions of the eyes
    */
   update (eyePatches: EyesData): void {
     const { width, height } = this.faceFeedbackCanvas;
     const ctx = this.faceFeedbackCanvas.getContext('2d');
-    if (ctx) {
-      ctx.clearRect(0, 0, width, height);
+    if (!ctx) return;
 
-      const { scaleX, scaleY } = eyePatches;
-      const validationBox = {
-        x: width * (1 - FEEDBACK_BOX_RATIO.width) / 2,
-        y: height * (1 - FEEDBACK_BOX_RATIO.height) / 2,
-        w: width * FEEDBACK_BOX_RATIO.width,
-        h: height * FEEDBACK_BOX_RATIO.height
+    ctx.clearRect(0, 0, width, height);
+    const mapping = this.mappingFor(eyePatches);
+    const mapBox = (x: number, y: number, w: number, h: number) => {
+      const tl = mapVideoPointToElement(x, y, mapping, this.mirrorVideo, width);
+      const br = mapVideoPointToElement(x + w, y + h, mapping, this.mirrorVideo, width);
+      return {
+        x: Math.min(tl.x, br.x),
+        y: Math.min(tl.y, br.y),
+        w: Math.abs(br.x - tl.x),
+        h: Math.abs(br.y - tl.y)
       };
-      const eyesBoxes = [eyePatches.left, eyePatches.right].map(eye => ({
-        x: this.mirrorVideo ? width - eye.imagex * scaleX - eye.width * scaleX : eye.imagex * scaleX,
-        y: eye.imagey * scaleY,
-        w: eye.width * scaleX,
-        h: eye.height * scaleY
-      }));
-      const eyesInBox = eyesBoxes.every(eye => eye.x >= validationBox.x &&
-        eye.x + eye.w <= validationBox.x + validationBox.w &&
-        eye.y >= validationBox.y &&
-        eye.y + eye.h <= validationBox.y + validationBox.h);
+    };
 
-      if (this.showEyeRegions) {
-        ctx.strokeStyle = eyesInBox ? '#000080' : '#b00000';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(validationBox.x, validationBox.y, validationBox.w, validationBox.h);
+    const validationBox = {
+      x: width * (1 - FEEDBACK_BOX_RATIO.width) / 2,
+      y: height * (1 - FEEDBACK_BOX_RATIO.height) / 2,
+      w: width * FEEDBACK_BOX_RATIO.width,
+      h: height * FEEDBACK_BOX_RATIO.height
+    };
+    const eyesBoxes = [eyePatches.left, eyePatches.right].map(eye =>
+      mapBox(eye.imagex, eye.imagey, eye.width, eye.height)
+    );
+    const eyesInBox = eyesBoxes.every(eye => eye.x >= validationBox.x &&
+      eye.x + eye.w <= validationBox.x + validationBox.w &&
+      eye.y >= validationBox.y &&
+      eye.y + eye.h <= validationBox.y + validationBox.h);
 
-        ctx.fillStyle = eyesInBox ? '#00a000' : '#b00000';
-        ctx.globalAlpha = 0.5;
-        eyesBoxes.forEach(eye => ctx.fillRect(eye.x, eye.y, eye.w, eye.h));
-        ctx.globalAlpha = 1.0;
-      }
+    if (this.showEyeRegions) {
+      ctx.strokeStyle = eyesInBox ? '#000080' : '#b00000';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(validationBox.x, validationBox.y, validationBox.w, validationBox.h);
 
-      if (this.showIris) {
-        const irisRadius = 4;
-        ([
-          { eye: eyePatches.left, offset: eyePatches.iris.left },
-          { eye: eyePatches.right, offset: eyePatches.iris.right }
-        ]).forEach(({ eye, offset }) => {
-          const cx = (eye.imagex + eye.width / 2 + offset[0] * (eye.width / 2)) * scaleX;
-          const cy = (eye.imagey + eye.height / 2 + offset[1] * (eye.height / 2)) * scaleY;
-          const x = this.mirrorVideo ? width - cx : cx;
-          ctx.fillStyle = '#ffff00';
-          ctx.beginPath();
-          ctx.arc(x, cy, irisRadius, 0, Math.PI * 2);
-          ctx.fill();
-        });
-      }
+      ctx.fillStyle = eyesInBox ? '#00a000' : '#b00000';
+      ctx.globalAlpha = 0.5;
+      eyesBoxes.forEach(eye => ctx.fillRect(eye.x, eye.y, eye.w, eye.h));
+      ctx.globalAlpha = 1.0;
+    }
+
+    if (this.showIris) {
+      const irisRadius = 4;
+      ([eyePatches.left, eyePatches.right]).forEach(eye => {
+        if (!eye.pupil) return;
+        const [px, py] = pupilCenterInPatch(eye.pupil);
+        const pt = mapVideoPointToElement(
+          eye.imagex + px,
+          eye.imagey + py,
+          mapping,
+          this.mirrorVideo,
+          width
+        );
+        ctx.fillStyle = '#ffff00';
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, irisRadius, 0, Math.PI * 2);
+        ctx.fill();
+      });
     }
   }
 

@@ -55,6 +55,7 @@ def export_checkpoint(pt_path: Path, out_path: Path) -> None:
         "feature_names": ckpt["feature_names"],
         "scaler_mean": ckpt["scaler_mean"],
         "scaler_scale": ckpt["scaler_scale"],
+        "output_activation": ckpt.get("output_activation", "linear"),
         "layers": layers,
     }
     out_path.parent.mkdir(parents=True, exist_ok=True)

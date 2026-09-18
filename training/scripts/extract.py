@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 For each sample in GazeT (images) and EOTT (video frames):
-  - run MediaPipe Face Mesh (478 landmarks + iris)
-  - compute the retained key points and regression feature vector
+  - run MediaPipe Face Mesh (478 landmarks)
+  - locate pupils in eyelid eye patches (dark-pixel COM)
   - write training/data/processed/extracted.parquet (gitignored)
 """
 
@@ -148,15 +148,19 @@ def build_manifest(config: dict) -> pd.DataFrame:
 
     if config["datasets"]["gazet"]["enabled"]:
         gazet_raw = resolve_path(config, "gazet_raw")
-        if gazet_raw.exists():
-            manifest_path = resolve_path(config, "gazet_manifest")
+        manifest_path = resolve_path(config, "gazet_manifest")
+        if manifest_path.is_file():
+            parts.append(pd.read_parquet(manifest_path))
+        elif gazet_raw.exists():
             parts.append(build_gazet_manifest(gazet_raw, manifest_path))
 
     if config["datasets"]["eott"]["enabled"]:
         eott_raw = resolve_path(config, "eott_raw")
-        if eott_raw.exists():
+        manifest_path = resolve_path(config, "eott_manifest")
+        if manifest_path.is_file():
+            parts.append(pd.read_parquet(manifest_path))
+        elif eott_raw.exists():
             tasks = config["datasets"]["eott"].get("tasks") or None
-            manifest_path = resolve_path(config, "eott_manifest")
             parts.append(build_eott_manifest(eott_raw, manifest_path, tasks=tasks))
 
     if not parts:

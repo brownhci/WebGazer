@@ -43,11 +43,14 @@ export class MlpReg extends Ridge {
     const features = buildMlpFeatureVector(eyesObj);
     if (!features) return;
 
-    const [nx, ny] = mlpPredict(this.model, features);
+    const [nxRaw, nyRaw] = mlpPredict(this.model, features);
+    // Clamp to viewport at display time; training may use labels slightly outside [0, 1].
+    const nx = Math.min(1, Math.max(0, nxRaw));
+    const ny = Math.min(1, Math.max(0, nyRaw));
     const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    let predictedX = Math.round(nx * w);
-    let predictedY = Math.round(ny * h);
+    const predictedX = Math.round(nx * w);
+    const predictedY = Math.round(ny * h);
 
     if (this.useKalmanFilter) {
       const [x, y] = this.kalman.update([predictedX, predictedY]);

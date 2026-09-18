@@ -49,6 +49,8 @@ export type WebGazerOptions = {
   saveDataAcrossSessions: boolean;
   /** Whether to listen to the mouse click and move events to calibrate the model */
   useCalibration: boolean | 'move' | 'click';
+  /** Vertical crop of eyelid bbox before pupil search (0–1). Default 1.0 */
+  eyePatchHeightRatio?: number;
 };
 
 /**
@@ -100,6 +102,7 @@ export class WebGazer {
   destroyed = false;
   clockStart = 0;
   mirrorVideo = false;
+  private loopStarted = false;
 
   params: WebGazerOptions & WebGazerStartOptions = {
     gazeDot: true,
@@ -127,9 +130,13 @@ export class WebGazer {
     this.params = { ...this.params, ...otherParams };
     this.regression = regression === 'mlpReg'
       ? new MlpReg({ useKalmanFilter, moveTickSize })
-      : new (regression === 'ridgeThreaded' ? RidgeRegThreaded
-        : regression === 'ridgeWeighted' ? RidgeWeightedReg
-          : RidgeReg)({ useKalmanFilter, moveTickSize });
+      : new (
+        regression === 'ridgeThreaded'
+          ? RidgeRegThreaded
+          : regression === 'ridgeWeighted'
+            ? RidgeWeightedReg
+            : RidgeReg
+      )({ useKalmanFilter, moveTickSize });
 
     // Save the data across sessions
     this.saveManager = new SaveManager(this.regression, saveInterval);
@@ -158,9 +165,13 @@ export class WebGazer {
     };
     this.regression = regression === 'mlpReg'
       ? new MlpReg({ useKalmanFilter, moveTickSize })
-      : new (regression === 'ridgeThreaded' ? RidgeRegThreaded
-        : regression === 'ridgeWeighted' ? RidgeWeightedReg
-          : RidgeReg)({ useKalmanFilter, moveTickSize });
+      : new (
+        regression === 'ridgeThreaded'
+          ? RidgeRegThreaded
+          : regression === 'ridgeWeighted'
+            ? RidgeWeightedReg
+            : RidgeReg
+      )({ useKalmanFilter, moveTickSize });
     this.saveManager = new SaveManager(this.regression, this.saveManager.saveDelay);
   }
 
@@ -280,11 +291,14 @@ export class WebGazer {
       this.stream = null;
     }
 
+    this.tracker?.dispose();
+    this.tracker = null;
     this.videoElement.srcObject = null;
     this.hideGazeDot();
     this.hideGazeTrail();
     this.hideFaceFeedback();
     this.saveManager.stopAutoSave();
+    this.loopStarted = false;
     // We don't use stopCalibration() because we don't want to set useCalibration to false. This way, the calibration will restart when start() is called again.
     document.removeEventListener('click', this.clickListener, true);
     document.removeEventListener('mousemove', this.moveListener, true);
@@ -315,11 +329,19 @@ export class WebGazer {
       }
     }
 
-    // Get the video track to determine actual size
-    this.tracker = new TFFaceMesh(this.videoElement, this.stream, this.params.trackEye);
+    this.tracker = new TFFaceMesh(this.videoElement, this.stream, this.params.trackEye, {
+      eyePatchHeightRatio: this.params.eyePatchHeightRatio
+    });
 
     this.videoElement.srcObject = this.stream;
     await this.videoElement.play();
+
+    try {
+      await this.tracker.whenReady();
+    } catch (err) {
+      console.error('Failed to load face landmark detector', err);
+      throw err;
+    }
 
     if (this.params.gazeDot) this.showGazeDot();
     if (this.params.gazeTrail) this.showGazeTrail();
@@ -327,7 +349,8 @@ export class WebGazer {
     if (this.params.useCalibration === true || this.params.useCalibration === 'click') document.addEventListener('click', this.clickListener, true);
     if (this.params.useCalibration === true || this.params.useCalibration === 'move') document.addEventListener('mousemove', this.moveListener, true);
 
-    this.loop();
+    // Loop starts in showVideoFeedback once the visible <video> is attached
+    // (off-DOM videos often don't produce frames, which kills tracking).
   }
 
   /**
@@ -343,34 +366,32 @@ export class WebGazer {
   async loop (): Promise<void> {
     if (this.paused || !this.stream) return;
 
-    // Make a prediction
-    const eyeFeatures = await this.tracker?.getEyePatches();
-    this.lastEyePatches = eyeFeatures;
-    if (this.faceFeedback && eyeFeatures) this.faceFeedback.update(eyeFeatures);
-    const prediction = eyeFeatures && this.regression.predict(eyeFeatures);
-    if (prediction) {
-      // Smooth prediction
-      this.smoothingVals.push(prediction);
-      const { x, y } = this.smoothingVals.data.reduce((acc, val) => ({
-        x: acc.x + val.x,
-        y: acc.y + val.y
-      }), { x: 0, y: 0 });
-      const len = this.smoothingVals.data.length;
-      const smoothedPrediction = { x: x / len, y: y / len };
+    try {
+      const eyeFeatures = await this.tracker?.getEyePatches();
+      this.lastEyePatches = eyeFeatures;
+      if (this.faceFeedback && eyeFeatures) this.faceFeedback.update(eyeFeatures);
+      const prediction = eyeFeatures && this.regression.predict(eyeFeatures);
+      if (prediction) {
+        this.smoothingVals.push(prediction);
+        const { x, y } = this.smoothingVals.data.reduce((acc, val) => ({
+          x: acc.x + val.x,
+          y: acc.y + val.y
+        }), { x: 0, y: 0 });
+        const len = this.smoothingVals.data.length;
+        const smoothedPrediction = { x: x / len, y: y / len };
+        const boundedPrediction = bound(smoothedPrediction);
 
-      // Apply bounds to the smoothed prediction
-      const boundedPrediction = bound(smoothedPrediction);
+        if (this.gazeDot) this.gazeDot.update(boundedPrediction.x, boundedPrediction.y);
+        if (this.gazeTrail) this.gazeTrail.addPoint(boundedPrediction.x, boundedPrediction.y);
 
-      // Update gaze dot position
-      if (this.gazeDot) this.gazeDot.update(boundedPrediction.x, boundedPrediction.y);
-      if (this.gazeTrail) this.gazeTrail.addPoint(boundedPrediction.x, boundedPrediction.y);
-
-      // Send the prediction to the listeners
-      const predictionEvent = { ...boundedPrediction, eyeFeatures, all: [boundedPrediction] };
-      this.listeners.forEach(listener => listener(predictionEvent, performance.now() - this.clockStart));
+        const predictionEvent = { ...boundedPrediction, eyeFeatures, all: [boundedPrediction] };
+        this.listeners.forEach(listener => listener(predictionEvent, performance.now() - this.clockStart));
+      }
+    } catch (err) {
+      // Keep the rAF loop alive — a single failed frame must not stop tracking.
+      console.warn('WebGazer loop frame failed', err);
     }
 
-    // Continue the loop
     requestAnimationFrame(() => this.loop());
   }
 
@@ -501,6 +522,11 @@ export class WebGazer {
         if (this.videoElement.videoWidth > 0) resolve();
         else this.videoElement.addEventListener('loadedmetadata', () => resolve(), { once: true });
       });
+    }
+
+    if (!this.loopStarted && this.stream && !this.paused) {
+      this.loopStarted = true;
+      this.loop();
     }
   }
 

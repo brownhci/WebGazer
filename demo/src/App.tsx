@@ -29,7 +29,7 @@ const DISPLAY_LABELS: { key: keyof DisplayOptions; label: string }[] = [
   { key: 'gazeTrail', label: 'Gaze trail' }
 ];
 
-function applyDisplayOptions (wg: WebGazer, display: DisplayOptions, mirrorVideo: boolean): void {
+const applyDisplayOptions = (wg: WebGazer, display: DisplayOptions, mirrorVideo: boolean): void => {
   if (display.facemesh) wg.showFaceMeshOverlay(mirrorVideo);
   else wg.hideFaceMeshOverlay();
 
@@ -41,9 +41,9 @@ function applyDisplayOptions (wg: WebGazer, display: DisplayOptions, mirrorVideo
 
   if (display.gazeTrail) wg.showGazeTrail();
   else wg.hideGazeTrail();
-}
+};
 
-export function App (): JSX.Element {
+export const App = (): JSX.Element => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const webgazerRef = useRef<WebGazer | null>(null);
   const [status, setStatus] = useState<Status>('idle');
@@ -59,11 +59,9 @@ export function App (): JSX.Element {
 
   const usesCalibration = regressionMode === 'ridgeReg';
 
-  useEffect(() => {
-    return () => {
-      webgazerRef.current?.destroy();
-      webgazerRef.current = null;
-    };
+  useEffect(() => () => {
+    webgazerRef.current?.destroy();
+    webgazerRef.current = null;
   }, []);
 
   useEffect(() => {
@@ -100,7 +98,7 @@ export function App (): JSX.Element {
       webgazerRef.current = wg;
 
       if (regressionMode === 'mlpReg') {
-        void wg.loadMlpModel()
+        wg.loadMlpModel()
           .then(() => setModelReady(true))
           .catch(err => setError(err instanceof Error ? err.message : String(err)));
       }
@@ -270,4 +268,4 @@ export function App (): JSX.Element {
       )}
     </div>
   );
-}
+};

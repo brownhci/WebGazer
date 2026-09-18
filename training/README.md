@@ -2,22 +2,33 @@
 
 Pipeline en 3 scripts. Modèle : **MLP** (sans calibration utilisateur visée).
 
-## Entrées du modèle (16 dimensions)
+## Entrées du modèle (21 dimensions)
 
 | Groupe | Features |
 |--------|----------|
-| FaceMesh | 14 features (iris, pose tête, EAR, échelle) |
+| FaceMesh | 19 features (iris patch, solvePnP pose, proxys 2D, EAR, échelle) |
 | Viewport | `screen_w_norm`, `screen_h_norm` (= pixels / 1920, / 1080) |
+
+Pose tête : `solvePnP` (yaw/pitch/roll + tx/ty/tz) **et** proxys 2D (nez/yeux) — les deux sont fournis au MLP.
+Même géométrie côté Python et navigateur.
 
 À l'inférence : `window.innerWidth`, `window.innerHeight` — **pas de diagonale physique**.
 
 ## Architecture MLP (configurable dans `config.yaml`)
 
 ```
-16 → 256 → 128 → 64 → 32 → 2 (sigmoid)
+21 → 256 → 128 → 64 → 32 → 2 (linear)
 ```
 
-4 couches cachées pour approximer les interactions géométriques non-linéaires (pose × iris × viewport). Early stopping sur la validation EOTT (Tobii).
+Tête **linéaire** (plus de sigmoid) : les labels peuvent être légèrement hors `[0,1]` à l'entraînement ; l'UI clampe à l'affichage. Early stopping sur la validation EOTT (Tobii).
+
+Après `train.py`, réexporterer pour le navigateur :
+
+```bash
+python scripts/export_mlp_json.py
+```
+
+Le JSON inclut `"output_activation": "linear"`. Les anciens bundles sans ce champ restent traités en `sigmoid`.
 
 ## Workflow
 
@@ -45,3 +56,5 @@ Les échantillons sans `screen_w/h` sont exclus.
 ## Sans calibration : attentes réalistes
 
 Le MLP + GazeT (6,7k personnes) vise la généralisation cross-user, mais un eye-tracker **sans aucune calibration** reste difficile. Surveille `metrics.json` → `val.mae_norm` sur EOTT ; objectif typique < 0.05–0.08 en coords normalisées (~100 px sur 1920).
+
+**Note runtime :** pupille localisée dans les eye patches, pose tête via solvePnP — à l’extraction **et** à l’inférence. Après un changement de features, ré-extraire + réentraîner.

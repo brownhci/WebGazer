@@ -160,6 +160,7 @@ def save_checkpoint(result: TrainResult, ckpt_dir: Path, config: dict) -> None:
             "feature_names": result.feature_names,
             "scaler_mean": result.scaler.mean_.tolist(),
             "scaler_scale": result.scaler.scale_.tolist(),
+            "output_activation": "linear",
         },
         ckpt_dir / "gaze_mlp.pt",
     )

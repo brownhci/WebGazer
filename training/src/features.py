@@ -1,8 +1,8 @@
 """
-Feature extraction from MediaPipe Face Mesh landmarks.
+Feature extraction from MediaPipe Face Mesh + patch pupil + solvePnP head pose.
 
-Mirrors the logic in src/worker_scripts/util.ts and extends it with head-pose
-proxies for the offline training pipeline.
+Iris/pupil offsets match the browser (src/facemesh.ts + src/pupil.ts).
+Head pose matches src/headPose.ts (solvePnP on 6 landmarks).
 """
 
 from __future__ import annotations
@@ -13,33 +13,47 @@ from typing import Literal
 
 import numpy as np
 
+from pupil import detect_pupil_center
+from head_pose import estimate_head_pose
+
 TrackEye = Literal["left", "right", "both"]
+
+# Must match src/facemesh.ts EYE_PATCH_HEIGHT_RATIO
+EYE_PATCH_HEIGHT_RATIO = 1.0
+
+# Subject's left/right eye arcs (MediaPipe Face Mesh) — same as src/facemesh.ts
+EYE_ARCS = {
+    "left": {
+        "upper": [466, 388, 387, 386, 385, 384, 398],
+        "lower": [263, 249, 390, 373, 374, 380, 381, 382, 362],
+    },
+    "right": {
+        "upper": [246, 161, 160, 159, 158, 157, 173],
+        "lower": [33, 7, 163, 144, 145, 153, 154, 155, 133],
+    },
+}
 
 # MediaPipe Face Mesh indices (478 landmarks with refine_landmarks=True)
 NOSE_TIP = 1
 CHIN = 152
 LEFT_EYE_OUTER = 33
 RIGHT_EYE_OUTER = 263
-LEFT_MOUTH = 61
-RIGHT_MOUTH = 291
 LEFT_EYE_INNER = 133
 RIGHT_EYE_INNER = 362
 LEFT_EYE_TOP = 159
 LEFT_EYE_BOTTOM = 145
 RIGHT_EYE_TOP = 386
 RIGHT_EYE_BOTTOM = 374
-LEFT_IRIS_CENTER = 468
-RIGHT_IRIS_CENTER = 473
 FACE_LEFT = 234
 FACE_RIGHT = 454
 
 
 @dataclass(frozen=True)
 class EyeBounds:
-    x: float
-    y: float
-    width: float
-    height: float
+    x: int
+    y: int
+    width: int
+    height: int
 
     @property
     def center_x(self) -> float:
@@ -54,19 +68,44 @@ def _lm(landmarks: np.ndarray, idx: int) -> np.ndarray:
     return landmarks[idx]
 
 
-def eye_bounds_from_landmarks(landmarks: np.ndarray, side: Literal["left", "right"]) -> EyeBounds:
-    if side == "left":
-        outer, inner = LEFT_EYE_OUTER, LEFT_EYE_INNER
-        top, bottom = LEFT_EYE_TOP, LEFT_EYE_BOTTOM
-    else:
-        outer, inner = RIGHT_EYE_OUTER, RIGHT_EYE_INNER
-        top, bottom = RIGHT_EYE_TOP, RIGHT_EYE_BOTTOM
+def shrink_eye_bounds_vertically(
+    origin_x: int,
+    origin_y: int,
+    width: int,
+    height: int,
+    ratio: float,
+) -> EyeBounds:
+    new_h = max(1, int(round(height * ratio)))
+    y = origin_y + (height - new_h) // 2
+    return EyeBounds(x=origin_x, y=y, width=width, height=new_h)
 
-    xs = [landmarks[i, 0] for i in (outer, inner, top, bottom)]
-    ys = [landmarks[i, 1] for i in (outer, inner, top, bottom)]
-    x_min, x_max = min(xs), max(xs)
-    y_min, y_max = min(ys), max(ys)
-    return EyeBounds(x=x_min, y=y_min, width=x_max - x_min, height=y_max - y_min)
+
+def eye_patch_bounds_from_landmarks(
+    landmarks: np.ndarray,
+    side: Literal["left", "right"],
+    image_w: int,
+    image_h: int,
+    height_ratio: float = EYE_PATCH_HEIGHT_RATIO,
+) -> EyeBounds | None:
+    """Eyelid-arc bbox, vertically shrunk — mirrors TFFaceMesh.makeEye."""
+    arcs = EYE_ARCS[side]
+    top = [_lm(landmarks, i) for i in arcs["upper"]]
+    bottom = [_lm(landmarks, i) for i in arcs["lower"]]
+    min_x = int(round(min(p[0] for p in top + bottom)))
+    max_x = int(round(max(p[0] for p in top + bottom)))
+    min_y = int(round(min(p[1] for p in top)))
+    max_y = int(round(max(p[1] for p in bottom)))
+    width = max_x - min_x
+    height = max_y - min_y
+    if width <= 0 or height <= 0:
+        return None
+
+    shrunk = shrink_eye_bounds_vertically(min_x, min_y, width, height, height_ratio)
+    x = max(0, min(shrunk.x, image_w - 1))
+    y = max(0, min(shrunk.y, image_h - 1))
+    w = max(1, min(shrunk.width, image_w - x))
+    h = max(1, min(shrunk.height, image_h - y))
+    return EyeBounds(x=x, y=y, width=w, height=h)
 
 
 def normalized_iris_offset(iris_center: np.ndarray, eye: EyeBounds) -> tuple[float, float]:
@@ -78,6 +117,24 @@ def normalized_iris_offset(iris_center: np.ndarray, eye: EyeBounds) -> tuple[flo
         float((iris_center[0] - eye.center_x) / half_w),
         float((iris_center[1] - eye.center_y) / half_h),
     )
+
+
+def pupil_offset_from_image(
+    image_bgr: np.ndarray,
+    landmarks: np.ndarray,
+    side: Literal["left", "right"],
+) -> tuple[float, float] | None:
+    h, w = image_bgr.shape[:2]
+    eye = eye_patch_bounds_from_landmarks(landmarks, side, w, h)
+    if eye is None:
+        return None
+    patch = image_bgr[eye.y : eye.y + eye.height, eye.x : eye.x + eye.width]
+    center_local = detect_pupil_center(patch)
+    if center_local is None:
+        return None
+    abs_x = eye.x + center_local[0]
+    abs_y = eye.y + center_local[1]
+    return normalized_iris_offset(np.array([abs_x, abs_y], dtype=np.float64), eye)
 
 
 def eye_aspect_ratio(landmarks: np.ndarray, side: Literal["left", "right"]) -> float:
@@ -100,7 +157,7 @@ def eye_aspect_ratio(landmarks: np.ndarray, side: Literal["left", "right"]) -> f
 
 
 def head_pose_proxies(landmarks: np.ndarray) -> tuple[float, float, float, float, float]:
-    """Returns (yaw_proxy, pitch_proxy, roll_rad, tx_norm, ty_norm)."""
+    """2D geometry proxies (nose/eyes/face). Complementary to solvePnP angles."""
     nose = landmarks[NOSE_TIP, :2]
     le = landmarks[LEFT_EYE_OUTER, :2]
     re = landmarks[RIGHT_EYE_OUTER, :2]
@@ -122,30 +179,29 @@ def head_pose_proxies(landmarks: np.ndarray) -> tuple[float, float, float, float
     return yaw_proxy, pitch_proxy, roll, tx_norm, ty_norm
 
 
-def scale_proxies(landmarks: np.ndarray) -> tuple[float, float, float]:
+def scale_proxies(landmarks: np.ndarray) -> tuple[float, float]:
     le = landmarks[LEFT_EYE_OUTER, :2]
     re = landmarks[RIGHT_EYE_OUTER, :2]
     ipd = float(np.linalg.norm(re - le))
     face_w = float(np.linalg.norm(landmarks[FACE_RIGHT, :2] - landmarks[FACE_LEFT, :2]))
-    z_depth = float(landmarks[CHIN, 2] - landmarks[NOSE_TIP, 2])
-    return ipd, face_w, z_depth
+    return ipd, face_w
 
 
 def build_feature_vector(
     landmarks: np.ndarray,
+    image_bgr: np.ndarray,
     track_eye: TrackEye = "both",
     include_head_pose: bool = True,
     include_scale_proxies: bool = True,
 ) -> np.ndarray | None:
-    left_eye = eye_bounds_from_landmarks(landmarks, "left")
-    right_eye = eye_bounds_from_landmarks(landmarks, "right")
-    if left_eye.width <= 0 or right_eye.width <= 0:
+    """
+    Build face feature vector. Pupil offsets from eye-patch search.
+    Head pose: solvePnP angles/translation + 2D proxies (both kept for the MLP).
+    """
+    left_off = pupil_offset_from_image(image_bgr, landmarks, "left")
+    right_off = pupil_offset_from_image(image_bgr, landmarks, "right")
+    if left_off is None or right_off is None:
         return None
-
-    left_iris = _lm(landmarks, LEFT_IRIS_CENTER)
-    right_iris = _lm(landmarks, RIGHT_IRIS_CENTER)
-    left_off = normalized_iris_offset(left_iris, left_eye)
-    right_off = normalized_iris_offset(right_iris, right_eye)
 
     parts: list[float] = []
     if track_eye == "left":
@@ -157,13 +213,18 @@ def build_feature_vector(
         parts.extend(right_off)
 
     if include_head_pose:
+        h, w = image_bgr.shape[:2]
+        pose = estimate_head_pose(landmarks, w, h)
+        if pose is None:
+            return None
+        parts.extend(pose)
         parts.extend(head_pose_proxies(landmarks))
         parts.append(eye_aspect_ratio(landmarks, "left"))
         parts.append(eye_aspect_ratio(landmarks, "right"))
 
     if include_scale_proxies:
-        ipd, face_w, z_depth = scale_proxies(landmarks)
-        parts.extend([ipd, face_w, z_depth])
+        ipd, face_w = scale_proxies(landmarks)
+        parts.extend([ipd, face_w])
 
     return np.asarray(parts, dtype=np.float32)
 
@@ -173,14 +234,19 @@ FEATURE_NAMES_BOTH: list[str] = [
     "left_iris_y",
     "right_iris_x",
     "right_iris_y",
+    "head_yaw",
+    "head_pitch",
+    "head_roll",
+    "head_tx",
+    "head_ty",
+    "head_tz",
     "head_yaw_proxy",
     "head_pitch_proxy",
-    "head_roll",
+    "head_roll_proxy",
     "head_tx_norm",
     "head_ty_norm",
     "ear_left",
     "ear_right",
     "ipd_px",
     "face_width_px",
-    "z_depth_proxy",
 ]

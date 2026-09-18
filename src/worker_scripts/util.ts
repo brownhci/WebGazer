@@ -12,7 +12,16 @@ export interface Eye {
   imagey: number;
   width: number;
   height: number;
+  /** Raw eye region pixels (video-frame coordinates). */
+  patch?: ImageData;
+  /** Pupil center in patch-local coordinates [cx, cy]. */
+  pupil?: [number, number];
 }
+
+/** Histogram feature size after resize (matches classic WebGazer). */
+export const EYE_FEAT_WIDTH = 10;
+/** Slightly shorter than classic 6 to emphasize vertical pupil motion. */
+export const EYE_FEAT_HEIGHT = 5;
 
 // Data Window class
 export class DataWindow<T> {
@@ -87,19 +96,19 @@ export class DataWindow<T> {
   }
 }
 
-/** Normalized iris offset from the eye bounds center, in [-1, 1] per axis. */
+/** Normalized pupil/iris offset from the eye bounds center, in ~[-1, 1] per axis. */
 export type EyeIrisOffsets = {
   left: [number, number];
   right: [number, number];
 };
 
 /**
- * Normalizes an iris landmark relative to the eye bounds center.
- * @param irisCenter - MediaPipe iris center in mesh coordinates
+ * Normalizes a point relative to the eye bounds center.
+ * @param point - Absolute coordinates in the same space as eye.imagex/y
  * @param eye - Detected eye bounds
  */
 export const getNormalizedIrisOffset = (
-  irisCenter: [number, number, number],
+  point: [number, number] | [number, number, number],
   eye: Pick<Eye, 'imagex' | 'imagey' | 'width' | 'height'>
 ): [number, number] => {
   const centerX = eye.imagex + eye.width / 2;
@@ -108,20 +117,103 @@ export const getNormalizedIrisOffset = (
   const halfH = eye.height / 2;
   if (halfW === 0 || halfH === 0) return [0, 0];
   return [
-    (irisCenter[0] - centerX) / halfW,
-    (irisCenter[1] - centerY) / halfH
+    (point[0] - centerX) / halfW,
+    (point[1] - centerY) / halfH
   ];
 };
 
 /**
- * Builds the regression feature vector from normalized iris offsets.
- * @param iris - Normalized iris offsets for both eyes
- * @param trackEye - Which eye(s) to include
+ * Builds a short feature vector from normalized pupil offsets (MLP / overlays).
  */
 export const getIrisFeatures = (iris: EyeIrisOffsets, trackEye: 'left' | 'right' | 'both'): number[] => {
   if (trackEye === 'left') return [...iris.left];
   if (trackEye === 'right') return [...iris.right];
   return [...iris.left, ...iris.right];
+};
+
+/**
+ * Grayscale an RGBA ImageData buffer.
+ */
+export const grayscale = (pixels: Uint8ClampedArray, width: number, height: number): Uint8ClampedArray => {
+  const gray = new Uint8ClampedArray(width * height);
+  let p = 0;
+  let w = 0;
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      gray[p++] = pixels[w] * 0.299 + pixels[w + 1] * 0.587 + pixels[w + 2] * 0.114;
+      w += 4;
+    }
+  }
+  return gray;
+};
+
+/**
+ * Histogram equalization (in-place or into dst).
+ */
+export const equalizeHistogram = (
+  src: Uint8ClampedArray | number[],
+  step = 5,
+  dst?: number[]
+): number[] => {
+  const srcLength = src.length;
+  const out = dst ?? new Array(srcLength);
+  const hist = Array(256).fill(0);
+
+  for (let i = 0; i < srcLength; i += step) {
+    ++hist[src[i]];
+  }
+
+  const norm = (255 * step) / srcLength;
+  let prev = 0;
+  for (let i = 0; i < 256; ++i) {
+    let h = hist[i];
+    prev = h += prev;
+    hist[i] = h * norm;
+  }
+
+  for (let i = 0; i < srcLength; ++i) {
+    out[i] = hist[src[i]];
+  }
+  return out;
+};
+
+/**
+ * Resize an eye patch to a fixed resolution for ridge features.
+ */
+export const resizeEye = (eye: Eye, resizeWidth: number, resizeHeight: number): ImageData => {
+  if (!eye.patch) throw new Error('Eye patch is required for resizeEye');
+  const canvas = document.createElement('canvas');
+  canvas.width = eye.width;
+  canvas.height = eye.height;
+  canvas.getContext('2d', { willReadFrequently: true })!.putImageData(eye.patch, 0, 0);
+
+  const tempCanvas = document.createElement('canvas');
+  tempCanvas.width = resizeWidth;
+  tempCanvas.height = resizeHeight;
+  tempCanvas.getContext('2d')!.drawImage(
+    canvas, 0, 0, canvas.width, canvas.height, 0, 0, resizeWidth, resizeHeight
+  );
+  return tempCanvas.getContext('2d')!.getImageData(0, 0, resizeWidth, resizeHeight);
+};
+
+/**
+ * Classic WebGazer ridge features: equalized grayscale histogram of resized eye patches.
+ */
+export const getEyeFeats = (
+  eyes: { left: Eye; right: Eye },
+  trackEye: 'left' | 'right' | 'both' = 'both'
+): number[] => {
+  const process = (eye: Eye): number[] => {
+    const resized = resizeEye(eye, EYE_FEAT_WIDTH, EYE_FEAT_HEIGHT);
+    const gray = grayscale(resized.data, resized.width, resized.height);
+    const hist: number[] = [];
+    equalizeHistogram(gray, 5, hist);
+    return hist;
+  };
+
+  if (trackEye === 'left') return process(eyes.left);
+  if (trackEye === 'right') return process(eyes.right);
+  return process(eyes.left).concat(process(eyes.right));
 };
 
 /**

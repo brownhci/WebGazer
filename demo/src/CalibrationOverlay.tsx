@@ -20,7 +20,7 @@ type CalibrationOverlayProps = {
   onComplete: () => void;
 };
 
-export function CalibrationOverlay ({ visible, onComplete }: CalibrationOverlayProps): JSX.Element | null {
+export const CalibrationOverlay = ({ visible, onComplete }: CalibrationOverlayProps): JSX.Element | null => {
   const [clickCounts, setClickCounts] = useState<Record<string, number>>({});
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
 
@@ -73,4 +73,4 @@ export function CalibrationOverlay ({ visible, onComplete }: CalibrationOverlayP
       })}
     </div>
   );
-}
+};
