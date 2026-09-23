@@ -14,6 +14,8 @@ export interface Eye {
   height: number;
   /** Raw eye region pixels (video-frame coordinates). */
   patch?: ImageData;
+  /** Binary mask of the eyelid opening (1 = inside), same size as patch. */
+  eyelidMask?: Uint8Array;
   /** Pupil center in patch-local coordinates [cx, cy]. */
   pupil?: [number, number];
 }

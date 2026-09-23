@@ -1,50 +1,26 @@
 """
-Head pose via solvePnP on Face Mesh landmarks (mirrors src/headPose.ts).
+Head pose from MediaPipe Face Mesh 3D (mirrors src/headPose.ts).
 
-Canonical 3D face (mm) + approximate pinhole camera (f = image width).
-Returns yaw/pitch/roll (rad) and translation normalized by focal length.
+No generic mm face template / solvePnP. Builds an orthonormal face frame
+from landmark 3D coords (eye line × nose–chin), then Euler angles + nose
+offset / IPD in that mesh's native 3D space.
 """
 
 from __future__ import annotations
 
 import math
 
-import cv2
 import numpy as np
 
-# MediaPipe indices — left/right = left/right of the *image* when facing the camera
-# (idx 33 ≈ person's right eye outer, 263 ≈ person's left eye outer).
-POSE_LANDMARK_INDICES = (1, 152, 33, 263, 61, 291)
-
-# Generic adult face model in millimetres (OpenCV / learnopencv convention).
-FACE_3D_MODEL_MM = np.array(
-    [
-        [0.0, 0.0, 0.0],  # nose tip
-        [0.0, -63.6, -12.5],  # chin
-        [-43.3, 32.7, -26.0],  # left eye outer (image left)
-        [43.3, 32.7, -26.0],  # right eye outer (image right)
-        [-28.9, -28.9, -24.1],  # left mouth
-        [28.9, -28.9, -24.1],  # right mouth
-    ],
-    dtype=np.float64,
-)
-
-
-def _camera_matrix(image_w: float, image_h: float) -> np.ndarray:
-    focal = float(max(image_w, 1.0))
-    cx = float(image_w) * 0.5
-    cy = float(image_h) * 0.5
-    return np.array(
-        [[focal, 0.0, cx], [0.0, focal, cy], [0.0, 0.0, 1.0]],
-        dtype=np.float64,
-    )
+# Image-left / image-right when facing the camera.
+NOSE_TIP = 1
+CHIN = 152
+EYE_OUTER_L = 33  # image left
+EYE_OUTER_R = 263  # image right
 
 
 def rotation_matrix_to_euler(R: np.ndarray) -> tuple[float, float, float]:
-    """
-    Extract (yaw, pitch, roll) in radians from a rotation matrix.
-    Convention: yaw=Y, pitch=X, roll=Z (same as src/headPose.ts).
-    """
+    """yaw=Y, pitch=X, roll=Z (same as src/headPose.ts)."""
     sy = math.sqrt(float(R[0, 0]) ** 2 + float(R[1, 0]) ** 2)
     if sy > 1e-6:
         pitch = math.atan2(-float(R[2, 0]), sy)
@@ -57,45 +33,65 @@ def rotation_matrix_to_euler(R: np.ndarray) -> tuple[float, float, float]:
     return yaw, pitch, roll
 
 
+def _face_rotation_from_landmarks(landmarks: np.ndarray) -> np.ndarray | None:
+    """
+    Columns of R are the face axes (X right, Y up, Z forward) in camera/mesh coords.
+    """
+    le = landmarks[EYE_OUTER_L, :3].astype(np.float64)
+    re = landmarks[EYE_OUTER_R, :3].astype(np.float64)
+    nose = landmarks[NOSE_TIP, :3].astype(np.float64)
+    chin = landmarks[CHIN, :3].astype(np.float64)
+
+    ipd = float(np.linalg.norm(re - le))
+    if ipd < 1e-6:
+        return None
+
+    x_axis = (re - le) / ipd
+    # Up ≈ nose → away from chin, then Gram–Schmidt against X
+    y_raw = nose - chin
+    y_raw = y_raw - np.dot(y_raw, x_axis) * x_axis
+    y_n = float(np.linalg.norm(y_raw))
+    if y_n < 1e-6:
+        return None
+    y_axis = y_raw / y_n
+    z_axis = np.cross(x_axis, y_axis)
+    z_n = float(np.linalg.norm(z_axis))
+    if z_n < 1e-6:
+        return None
+    z_axis = z_axis / z_n
+    y_axis = np.cross(z_axis, x_axis)
+    return np.column_stack([x_axis, y_axis, z_axis])
+
+
 def estimate_head_pose(
     landmarks: np.ndarray,
-    image_w: int | float,
-    image_h: int | float,
+    image_w: int | float = 1,
+    image_h: int | float = 1,
 ) -> tuple[float, float, float, float, float, float] | None:
     """
-    Returns (yaw, pitch, roll, tx, ty, tz) or None on failure.
-    tx/ty/tz = tvec / focal (dimensionless).
+    Returns (yaw, pitch, roll, tx, ty, tz) or None.
+    tx/ty/tz = (nose - eye_mid) / IPD in MediaPipe 3D (dimensionless).
+    image_w/h kept for API parity with the old solvePnP path (unused).
     """
-    if landmarks.shape[0] < 292:
-        return None
-    image_w = float(max(image_w, 1.0))
-    image_h = float(max(image_h, 1.0))
-    image_points = np.array(
-        [landmarks[i, :2] for i in POSE_LANDMARK_INDICES],
-        dtype=np.float64,
-    )
-    if not np.isfinite(image_points).all():
+    del image_w, image_h
+    if landmarks.shape[0] < 264:
         return None
 
-    cam = _camera_matrix(image_w, image_h)
-    dist = np.zeros((4, 1), dtype=np.float64)
-    ok, rvec, tvec = cv2.solvePnP(
-        FACE_3D_MODEL_MM,
-        image_points,
-        cam,
-        dist,
-        flags=cv2.SOLVEPNP_ITERATIVE,
-    )
-    if not ok:
+    R = _face_rotation_from_landmarks(landmarks)
+    if R is None:
         return None
 
-    R, _ = cv2.Rodrigues(rvec)
+    le = landmarks[EYE_OUTER_L, :3].astype(np.float64)
+    re = landmarks[EYE_OUTER_R, :3].astype(np.float64)
+    nose = landmarks[NOSE_TIP, :3].astype(np.float64)
+    ipd = float(np.linalg.norm(re - le))
+    if ipd < 1e-6:
+        return None
+
+    eye_mid = (le + re) * 0.5
+    offset = (nose - eye_mid) / ipd
     yaw, pitch, roll = rotation_matrix_to_euler(R)
-    focal = image_w
-    t = tvec.reshape(3)
-    if abs(float(t[2])) < 1e-6:
-        return None
-    tx, ty, tz = float(t[0] / focal), float(t[1] / focal), float(t[2] / focal)
+    tx, ty, tz = float(offset[0]), float(offset[1]), float(offset[2])
     if not all(math.isfinite(v) for v in (yaw, pitch, roll, tx, ty, tz)):
         return None
     return yaw, pitch, roll, tx, ty, tz

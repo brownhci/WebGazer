@@ -99,7 +99,8 @@ const screenFeatures = (): [number, number] => {
 };
 
 /**
- * Builds the 21-dim MLP input (19 face + 2 viewport): patch pupils, solvePnP, 2D proxies.
+ * Builds the 21-dim MLP input (19 face + 2 viewport): patch pupils,
+ * MediaPipe 3D head frame + 2D proxies.
  */
 export const buildMlpFeatureVector = (eyes: EyesData): number[] | null => {
   if (!eyes.facemesh.length || eyes.left.width <= 0 || eyes.right.width <= 0) return null;

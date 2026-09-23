@@ -8,9 +8,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import torch
-import torch.nn as nn
 from sklearn.preprocessing import StandardScaler
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader, TensorDataset, WeightedRandomSampler
 
 from features import FEATURE_NAMES_BOTH
 from mlp_model import GazeMLP
@@ -56,6 +55,43 @@ def mae_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> dict:
     return {"mae_x": mae_x, "mae_y": mae_y, "mae_norm": mae_norm, "n_samples": len(y_true)}
 
 
+def edge_sample_weights(y: np.ndarray, power: float = 1.5) -> torch.Tensor:
+    """
+    Upsample labels far from screen center so peripheral gaze is not drowned
+    out by the mass of near-center samples.
+    """
+    center = np.array([0.5, 0.5], dtype=np.float64)
+    dist = np.linalg.norm(y - center, axis=1) / 0.70710678
+    # Small floor so center samples still appear; power > 1 boosts corners.
+    w = np.power(0.08 + np.clip(dist, 0.0, 1.0), power)
+    return torch.as_tensor(w, dtype=torch.double)
+
+
+def gaze_regression_loss(
+    pred: torch.Tensor,
+    target: torch.Tensor,
+    *,
+    power: float = 2.5,
+    edge_weight: float = 2.0,
+    error_cap: float = 0.35,
+) -> torch.Tensor:
+    """
+    Euclidean error with:
+    - edge_weight: labels far from center count more
+    - error_cap: once ||pred-target|| >= cap, penalty saturates — predicting
+      the screen center is no longer cheaper than the wrong corner when the
+      true gaze is peripheral (both get max loss if beyond the cap).
+    """
+    err = torch.linalg.vector_norm(pred - target, dim=-1)
+    # Saturate credit: all misses beyond `error_cap` are equally bad.
+    capped = (err / max(error_cap, 1e-6)).clamp(max=1.0)
+
+    center = target.new_tensor([0.5, 0.5])
+    edge = torch.linalg.vector_norm(target - center, dim=-1) / 0.70710678
+    weight = 1.0 + edge_weight * edge.clamp(0.0, 1.0)
+    return (weight * capped.pow(power)).mean()
+
+
 def train_mlp(
     train_df: pd.DataFrame,
     val_df: pd.DataFrame,
@@ -68,6 +104,10 @@ def train_mlp(
     max_epochs: int,
     patience: int,
     seed: int,
+    loss_power: float = 2.5,
+    loss_edge_weight: float = 2.0,
+    loss_error_cap: float = 0.35,
+    rebalance_edge_power: float = 1.5,
     device: str | None = None,
 ) -> TrainResult:
     feature_names = all_feature_names()
@@ -78,7 +118,14 @@ def train_mlp(
 
     x_t = torch.tensor(x_train, dtype=torch.float32)
     y_t = torch.tensor(y_train, dtype=torch.float32)
-    loader = DataLoader(TensorDataset(x_t, y_t), batch_size=batch_size, shuffle=True)
+    dataset = TensorDataset(x_t, y_t)
+
+    if rebalance_edge_power > 0:
+        weights = edge_sample_weights(y_train, power=rebalance_edge_power)
+        sampler = WeightedRandomSampler(weights, num_samples=len(weights), replacement=True)
+        loader = DataLoader(dataset, batch_size=batch_size, sampler=sampler)
+    else:
+        loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     if len(val_df):
         x_val, y_val, _ = prepare_xy(val_df, feature_names, scaler=scaler)
@@ -90,7 +137,6 @@ def train_mlp(
 
     torch.manual_seed(seed)
     opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
-    loss_fn = nn.SmoothL1Loss()
 
     best_state = None
     best_val = float("inf")
@@ -101,15 +147,23 @@ def train_mlp(
     for epoch in range(1, max_epochs + 1):
         model.train()
         epoch_loss = 0.0
+        n_seen = 0
         for xb, yb in loader:
             xb, yb = xb.to(dev), yb.to(dev)
             opt.zero_grad()
             pred = model(xb)
-            loss = loss_fn(pred, yb)
+            loss = gaze_regression_loss(
+                pred,
+                yb,
+                power=loss_power,
+                edge_weight=loss_edge_weight,
+                error_cap=loss_error_cap,
+            )
             loss.backward()
             opt.step()
             epoch_loss += loss.item() * len(xb)
-        epoch_loss /= len(x_t)
+            n_seen += len(xb)
+        epoch_loss /= max(n_seen, 1)
         history["train_loss"].append(epoch_loss)
 
         if x_val_t is not None and y_val_np is not None:
@@ -145,9 +199,14 @@ def train_mlp(
         "history": history,
         "best_epoch": best_epoch,
         "hidden_dims": hidden_dims,
+        "loss": {
+            "power": loss_power,
+            "edge_weight": loss_edge_weight,
+            "error_cap": loss_error_cap,
+        },
+        "rebalance_edge_power": rebalance_edge_power,
     }
     return TrainResult(model, scaler, feature_names, metrics, best_epoch)
-
 
 def save_checkpoint(result: TrainResult, ckpt_dir: Path, config: dict) -> None:
     ckpt_dir.mkdir(parents=True, exist_ok=True)

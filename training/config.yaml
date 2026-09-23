@@ -49,6 +49,12 @@ mlp:
   batch_size: 512
   max_epochs: 100
   patience: 12
+  # Neutral loss: mean Euclidean error (no edge upweight, no saturation, power=1).
+  loss_power: 1.0
+  loss_edge_weight: 0.0
+  loss_error_cap: 2.0
+  # 0 = uniform sampling (no peripheral rebalance)
+  rebalance_edge_power: 0.0
 
 extraction:
   eott_frame_stride: 1

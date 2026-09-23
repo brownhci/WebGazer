@@ -1,20 +1,14 @@
 /**
- * Head pose via iterative solvePnP (mirrors training/src/head_pose.py).
- * Same 3D face model (mm), pinhole camera (f = image width), Euler convention.
+ * Head pose from MediaPipe Face Mesh 3D (mirrors training/src/head_pose.py).
+ *
+ * No mm template / solvePnP. Orthonormal face frame from landmark 3D
+ * (eye line × nose–chin), Euler angles + nose offset / IPD.
  */
 
-/** MediaPipe indices — image-left / image-right when facing the camera. */
-export const POSE_LANDMARK_INDICES = [1, 152, 33, 263, 61, 291] as const;
-
-/** Generic adult face model in millimetres. */
-export const FACE_3D_MODEL_MM: ReadonlyArray<readonly [number, number, number]> = [
-  [0.0, 0.0, 0.0],
-  [0.0, -63.6, -12.5],
-  [-43.3, 32.7, -26.0],
-  [43.3, 32.7, -26.0],
-  [-28.9, -28.9, -24.1],
-  [28.9, -28.9, -24.1]
-];
+const NOSE_TIP = 1;
+const CHIN = 152;
+const EYE_OUTER_L = 33;
+const EYE_OUTER_R = 263;
 
 export type HeadPose = {
   yaw: number;
@@ -28,187 +22,95 @@ export type HeadPose = {
 type Vec3 = [number, number, number];
 type Mat3 = [Vec3, Vec3, Vec3];
 
-const rodrigues = (rvec: Vec3): Mat3 => {
-  const [rx, ry, rz] = rvec;
-  const theta = Math.hypot(rx, ry, rz);
-  if (theta < 1e-8) {
-    return [
-      [1, -rz, ry],
-      [rz, 1, -rx],
-      [-ry, rx, 1]
-    ];
-  }
-  const c = Math.cos(theta);
-  const s = Math.sin(theta);
-  const c1 = 1 - c;
-  const x = rx / theta;
-  const y = ry / theta;
-  const z = rz / theta;
-  return [
-    [c + x * x * c1, x * y * c1 - z * s, x * z * c1 + y * s],
-    [y * x * c1 + z * s, c + y * y * c1, y * z * c1 - x * s],
-    [z * x * c1 - y * s, z * y * c1 + x * s, c + z * z * c1]
-  ];
+const sub = (a: Vec3, b: Vec3): Vec3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const add = (a: Vec3, b: Vec3): Vec3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+const scale = (a: Vec3, s: number): Vec3 => [a[0] * s, a[1] * s, a[2] * s];
+const dot = (a: Vec3, b: Vec3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const cross = (a: Vec3, b: Vec3): Vec3 => [
+  a[1] * b[2] - a[2] * b[1],
+  a[2] * b[0] - a[0] * b[2],
+  a[0] * b[1] - a[1] * b[0]
+];
+const norm = (a: Vec3): number => Math.hypot(a[0], a[1], a[2]);
+const normalize = (a: Vec3): Vec3 | null => {
+  const n = norm(a);
+  if (n < 1e-6) return null;
+  return scale(a, 1 / n);
 };
 
-const matVec = (R: Mat3, v: Vec3): Vec3 => [
-  R[0][0] * v[0] + R[0][1] * v[1] + R[0][2] * v[2],
-  R[1][0] * v[0] + R[1][1] * v[1] + R[1][2] * v[2],
-  R[2][0] * v[0] + R[2][1] * v[1] + R[2][2] * v[2]
-];
+const lm3 = (mesh: [number, number, number][], idx: number): Vec3 | null => {
+  const p = mesh[idx];
+  if (!p || !p.every(Number.isFinite)) return null;
+  return [p[0], p[1], p[2]];
+};
 
 export const rotationMatrixToEuler = (R: Mat3): [number, number, number] => {
   const sy = Math.hypot(R[0][0], R[1][0]);
   if (sy > 1e-6) {
-    const pitch = Math.atan2(-R[2][0], sy);
-    const yaw = Math.atan2(R[1][0], R[0][0]);
-    const roll = Math.atan2(R[2][1], R[2][2]);
-    return [yaw, pitch, roll];
+    return [
+      Math.atan2(R[1][0], R[0][0]),
+      Math.atan2(-R[2][0], sy),
+      Math.atan2(R[2][1], R[2][2])
+    ];
   }
-  const pitch = Math.atan2(-R[2][0], sy);
-  const yaw = Math.atan2(-R[0][1], R[1][1]);
-  return [yaw, pitch, 0];
+  return [
+    Math.atan2(-R[0][1], R[1][1]),
+    Math.atan2(-R[2][0], sy),
+    0
+  ];
 };
 
-const projectPoint = (
-  obj: readonly [number, number, number],
-  rvec: Vec3,
-  tvec: Vec3,
-  focal: number,
-  cx: number,
-  cy: number
-): [number, number] | null => {
-  const R = rodrigues(rvec);
-  const Xc = matVec(R, [obj[0], obj[1], obj[2]]);
-  const x = Xc[0] + tvec[0];
-  const y = Xc[1] + tvec[1];
-  const z = Xc[2] + tvec[2];
-  if (Math.abs(z) < 1e-8) return null;
-  return [focal * (x / z) + cx, focal * (y / z) + cy];
-};
+const faceRotation = (mesh: [number, number, number][]): Mat3 | null => {
+  const le = lm3(mesh, EYE_OUTER_L);
+  const re = lm3(mesh, EYE_OUTER_R);
+  const nose = lm3(mesh, NOSE_TIP);
+  const chin = lm3(mesh, CHIN);
+  if (!le || !re || !nose || !chin) return null;
 
-/** Solve 6×6 symmetric positive system (normal equations) in-place. */
-const solveNormal6 = (A: number[], b: number[]): number[] | null => {
-  const n = 6;
-  const M = A.slice();
-  const x = b.slice();
-  for (let col = 0; col < n; col++) {
-    let pivot = col;
-    for (let row = col + 1; row < n; row++) {
-      if (Math.abs(M[row * n + col]) > Math.abs(M[pivot * n + col])) pivot = row;
-    }
-    if (Math.abs(M[pivot * n + col]) < 1e-12) return null;
-    if (pivot !== col) {
-      for (let j = 0; j < n; j++) {
-        const tmp = M[col * n + j];
-        M[col * n + j] = M[pivot * n + j];
-        M[pivot * n + j] = tmp;
-      }
-      const tb = x[col];
-      x[col] = x[pivot];
-      x[pivot] = tb;
-    }
-    const diag = M[col * n + col];
-    for (let row = col + 1; row < n; row++) {
-      const f = M[row * n + col] / diag;
-      x[row] -= f * x[col];
-      for (let j = col; j < n; j++) M[row * n + j] -= f * M[col * n + j];
-    }
-  }
-  for (let row = n - 1; row >= 0; row--) {
-    let sum = x[row];
-    for (let j = row + 1; j < n; j++) sum -= M[row * n + j] * x[j];
-    x[row] = sum / M[row * n + row];
-  }
-  return x;
+  const ipd = norm(sub(re, le));
+  if (ipd < 1e-6) return null;
+
+  const xAxis = scale(sub(re, le), 1 / ipd);
+  let yRaw = sub(nose, chin);
+  yRaw = sub(yRaw, scale(xAxis, dot(yRaw, xAxis)));
+  const yAxis = normalize(yRaw);
+  if (!yAxis) return null;
+  const zAxis = normalize(cross(xAxis, yAxis));
+  if (!zAxis) return null;
+  const yOrtho = cross(zAxis, xAxis);
+
+  return [
+    [xAxis[0], yOrtho[0], zAxis[0]],
+    [xAxis[1], yOrtho[1], zAxis[1]],
+    [xAxis[2], yOrtho[2], zAxis[2]]
+  ];
 };
 
 /**
- * Iterative solvePnP (Gauss–Newton), same camera model as OpenCV path in Python.
+ * @param imageW unused (API parity with old solvePnP)
+ * @param imageH unused
  */
 export const estimateHeadPose = (
   mesh: [number, number, number][],
-  imageW: number,
-  imageH: number
+  _imageW = 1,
+  _imageH = 1
 ): HeadPose | null => {
-  if (mesh.length < 292) return null;
-  const w = Math.max(imageW, 1);
-  const h = Math.max(imageH, 1);
-  const focal = w;
-  const cx = w * 0.5;
-  const cy = h * 0.5;
+  if (mesh.length < 264) return null;
+  const R = faceRotation(mesh);
+  if (!R) return null;
 
-  const imagePoints: [number, number][] = [];
-  for (const idx of POSE_LANDMARK_INDICES) {
-    const p = mesh[idx];
-    if (!p || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) return null;
-    imagePoints.push([p[0], p[1]]);
-  }
+  const le = lm3(mesh, EYE_OUTER_L);
+  const re = lm3(mesh, EYE_OUTER_R);
+  const nose = lm3(mesh, NOSE_TIP);
+  if (!le || !re || !nose) return null;
 
-  // Initial guess: frontal, depth ~ 0.8 * focal in model units.
-  const rvec: Vec3 = [0, 0, 0];
-  const tvec: Vec3 = [0, 0, focal * 0.75];
-  const params = [...rvec, ...tvec];
+  const ipd = norm(sub(re, le));
+  if (ipd < 1e-6) return null;
 
-  const residualAt = (p: number[]): number[] | null => {
-    const rv: Vec3 = [p[0], p[1], p[2]];
-    const tv: Vec3 = [p[3], p[4], p[5]];
-    const out: number[] = [];
-    for (let i = 0; i < FACE_3D_MODEL_MM.length; i++) {
-      const proj = projectPoint(FACE_3D_MODEL_MM[i], rv, tv, focal, cx, cy);
-      if (!proj) return null;
-      out.push(proj[0] - imagePoints[i][0], proj[1] - imagePoints[i][1]);
-    }
-    return out;
-  };
-
-  for (let iter = 0; iter < 30; iter++) {
-    const r = residualAt(params);
-    if (!r) return null;
-
-    // Finite-difference Jacobian (12 × 6)
-    const eps = 1e-4;
-    const J: number[][] = [];
-    for (let k = 0; k < 6; k++) {
-      const p2 = params.slice();
-      p2[k] += eps;
-      const r2 = residualAt(p2);
-      if (!r2) return null;
-      const col = r2.map((v, i) => (v - r[i]) / eps);
-      J.push(col);
-    }
-
-    // Normal equations: (J^T J) δ = -J^T r
-    const JTJ = new Array(36).fill(0);
-    const JTr = new Array(6).fill(0);
-    for (let i = 0; i < 12; i++) {
-      for (let k = 0; k < 6; k++) {
-        JTr[k] += J[k][i] * r[i];
-        for (let l = 0; l < 6; l++) JTJ[k * 6 + l] += J[k][i] * J[l][i];
-      }
-    }
-    const negJTr = JTr.map(v => -v);
-    // Dampen diagonal slightly for stability
-    for (let k = 0; k < 6; k++) JTJ[k * 6 + k] += 1e-3;
-
-    const delta = solveNormal6(JTJ, negJTr);
-    if (!delta) return null;
-
-    let maxStep = 0;
-    for (let k = 0; k < 6; k++) {
-      params[k] += delta[k];
-      maxStep = Math.max(maxStep, Math.abs(delta[k]));
-    }
-    if (maxStep < 1e-8) break;
-  }
-
-  const R = rodrigues([params[0], params[1], params[2]]);
+  const eyeMid = scale(add(le, re), 0.5);
+  const offset = scale(sub(nose, eyeMid), 1 / ipd);
   const [yaw, pitch, roll] = rotationMatrixToEuler(R);
-  const tzRaw = params[5];
-  if (Math.abs(tzRaw) < 1e-6) return null;
-  const tx = params[3] / focal;
-  const ty = params[4] / focal;
-  const tz = tzRaw / focal;
+  const [tx, ty, tz] = offset;
   if (![yaw, pitch, roll, tx, ty, tz].every(Number.isFinite)) return null;
   return { yaw, pitch, roll, tx, ty, tz };
 };

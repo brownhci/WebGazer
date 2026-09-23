@@ -1,6 +1,6 @@
 import { load, SupportedPackages } from '@tensorflow-models/face-landmarks-detection';
 import type { FaceLandmarksDetector } from '@tensorflow-models/face-landmarks-detection';
-import { getPupils, pupilCenterInPatch } from './pupil';
+import { getPupils, pupilCenterInPatch, eyelidPolygonFromArcs, fillPolygonMask, resetPupilSmoothing } from './pupil';
 import { getVideoContentMapping, mapVideoPointToElement } from './videoLayout';
 import {
   getEyeFeats,
@@ -147,6 +147,7 @@ export class TFFaceMesh {
     });
     if (!predictions.length) {
       this.clearFaceOverlay();
+      resetPupilSmoothing();
       return;
     }
 
@@ -186,7 +187,13 @@ export class TFFaceMesh {
       height = Math.max(1, Math.min(shrunk.height, videoH - y));
 
       const patch = ctx.getImageData(x, y, width, height);
-      return { imagex: x, imagey: y, width, height, patch };
+      const polyAbs = eyelidPolygonFromArcs(
+        topArc.map(p => [p[0], p[1]] as [number, number]),
+        bottomArc.map(p => [p[0], p[1]] as [number, number])
+      );
+      const polyLocal = polyAbs.map(([px, py]) => [px - x, py - y] as [number, number]);
+      const eyelidMask = fillPolygonMask(width, height, polyLocal);
+      return { imagex: x, imagey: y, width, height, patch, eyelidMask };
     };
 
     const left = makeEye(EYE_INDICES.leftEyeUpper0, EYE_INDICES.leftEyeLower0);

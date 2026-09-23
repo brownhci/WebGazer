@@ -47,6 +47,10 @@ def main() -> None:
         max_epochs=mlp_cfg["max_epochs"],
         patience=mlp_cfg["patience"],
         seed=config["training"]["random_seed"],
+        loss_power=float(mlp_cfg.get("loss_power", 2.5)),
+        loss_edge_weight=float(mlp_cfg.get("loss_edge_weight", 2.0)),
+        loss_error_cap=float(mlp_cfg.get("loss_error_cap", 0.35)),
+        rebalance_edge_power=float(mlp_cfg.get("rebalance_edge_power", 1.5)),
     )
 
     save_checkpoint(result, ckpt_dir, config)

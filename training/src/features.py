@@ -1,8 +1,9 @@
 """
-Feature extraction from MediaPipe Face Mesh + patch pupil + solvePnP head pose.
+Feature extraction from MediaPipe Face Mesh + masked patch pupil + 3D head pose.
 
-Iris/pupil offsets match the browser (src/facemesh.ts + src/pupil.ts).
-Head pose matches src/headPose.ts (solvePnP on 6 landmarks).
+Iris/pupil offsets match the browser (src/facemesh.ts + src/pupil.ts):
+search restricted to the eyelid-opening polygon.
+Head pose matches src/headPose.ts (MediaPipe 3D face frame).
 """
 
 from __future__ import annotations
@@ -13,7 +14,7 @@ from typing import Literal
 
 import numpy as np
 
-from pupil import detect_pupil_center
+from pupil import detect_pupil_center, eyelid_polygon_from_arcs, fill_polygon_mask
 from head_pose import estimate_head_pose
 
 TrackEye = Literal["left", "right", "both"]
@@ -128,10 +129,17 @@ def pupil_offset_from_image(
     eye = eye_patch_bounds_from_landmarks(landmarks, side, w, h)
     if eye is None:
         return None
+    arcs = EYE_ARCS[side]
+    upper = np.array([_lm(landmarks, i)[:2] for i in arcs["upper"]], dtype=np.float64)
+    lower = np.array([_lm(landmarks, i)[:2] for i in arcs["lower"]], dtype=np.float64)
+    poly_abs = eyelid_polygon_from_arcs(upper, lower)
+    poly_local = poly_abs.copy()
+    poly_local[:, 0] -= eye.x
+    poly_local[:, 1] -= eye.y
+    mask = fill_polygon_mask(eye.width, eye.height, poly_local)
+
     patch = image_bgr[eye.y : eye.y + eye.height, eye.x : eye.x + eye.width]
-    center_local = detect_pupil_center(patch)
-    if center_local is None:
-        return None
+    center_local = detect_pupil_center(patch, mask)
     abs_x = eye.x + center_local[0]
     abs_y = eye.y + center_local[1]
     return normalized_iris_offset(np.array([abs_x, abs_y], dtype=np.float64), eye)
@@ -196,7 +204,7 @@ def build_feature_vector(
 ) -> np.ndarray | None:
     """
     Build face feature vector. Pupil offsets from eye-patch search.
-    Head pose: solvePnP angles/translation + 2D proxies (both kept for the MLP).
+    Head pose: MediaPipe 3D face frame (yaw/pitch/roll + nose/IPD offsets) + 2D proxies.
     """
     left_off = pupil_offset_from_image(image_bgr, landmarks, "left")
     right_off = pupil_offset_from_image(image_bgr, landmarks, "right")
