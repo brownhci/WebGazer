@@ -705,11 +705,15 @@ webgazer.end = function() {
   //loop may run an extra time and fail due to removed elements
   paused = true;
 
-  //webgazer.stopVideo(); // uncomment if you want to stop the video from streaming
+  webgazer.stopVideo();
 
   //remove video element and canvas
-  videoContainerElement.remove();
-  gazeDot.remove();
+  if (videoContainerElement && videoContainerElement.parentNode) {
+    videoContainerElement.remove();
+  }
+  if (gazeDot && gazeDot.parentNode) {
+    gazeDot.remove();
+  }
 
   return webgazer;
 };
@@ -720,16 +724,23 @@ webgazer.end = function() {
  */
 webgazer.stopVideo = function() {
   // Stops the video from streaming
-  videoStream.getTracks()[0].stop();
+  if (videoStream) {
+    videoStream.getTracks().forEach(function(track) {
+      track.stop();
+    });
+  }
 
-  // Removes the outline of the face
-  videoContainerElement.removeChild( faceOverlay );
-
-  // Removes the box around the face
-  videoContainerElement.removeChild( faceFeedbackBox );
+  if (videoContainerElement) {
+    if (faceOverlay && faceOverlay.parentNode === videoContainerElement) {
+      videoContainerElement.removeChild(faceOverlay);
+    }
+    if (faceFeedbackBox && faceFeedbackBox.parentNode === videoContainerElement) {
+      videoContainerElement.removeChild(faceFeedbackBox);
+    }
+  }
 
   return webgazer;
-}
+};
 
 
 //PUBLIC FUNCTIONS - DEBUG
