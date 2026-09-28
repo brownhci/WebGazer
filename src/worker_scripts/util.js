@@ -378,6 +378,7 @@
       var P_p = add(mult(mult(this.F,this.P), transpose(this.F)), this.Q); //Predicted covaraince
 
       //Calculate the update values
+      z = transpose([z]);
       var y = sub(z, mult(this.H, X_p)); // This is the measurement error (between what we expect and the actual value)
       var S = add(mult(mult(this.H, P_p), transpose(this.H)), this.R); //This is the residual covariance (the error in the covariance)
 
