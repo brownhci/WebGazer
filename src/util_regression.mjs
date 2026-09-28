@@ -43,9 +43,7 @@ util_regression.InitRegression = function() {
   var Q = [ [1/4, 0,    1/2, 0],
     [0,   1/4,  0,   1/2],
     [1/2, 0,    1,   0],
-    [0,  1/2,  0,   1]];// * delta_t
-  var delta_t = 1/10; // The amount of time between frames
-  Q = mat.multScalar(Q, delta_t);
+    [0,  1/2,  0,   1]];
 
   var H = [ [1, 0, 0, 0],
     [0, 1, 0, 0]];
@@ -79,23 +77,40 @@ util_regression.KalmanFilter = function(F, H, Q, R, P_initial, X_initial) {
     this.R = R; // Measurement Noise
     this.P = P_initial; //Initial covariance matrix
     this.X = X_initial; //Initial guess of measurement
+    this.lastTime = null;
 };
 
 /**
  * Get Kalman next filtered value and update the internal state
  * @param {Array} z - the new measurement
+ * @param {Number} [timestamp] - optional timestamp of measurement (in ms)
  * @return {Array}
  */
-util_regression.KalmanFilter.prototype.update = function(z) {
+util_regression.KalmanFilter.prototype.update = function(z, timestamp) {
     // Here, we define all the different matrix operations we will need
     var {
-        add, sub, mult, inv, identity, transpose,
+        add, sub, mult, inv, identity, transpose, multScalar,
     } = mat;
     //TODO cache variables like the transpose of H
 
+    var currentTime = (typeof timestamp === 'number') ? timestamp : (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
+    var delta_t = 1/10; // Default time-step (100ms / 10 FPS) if first frame
+    if (this.lastTime !== null && this.lastTime !== undefined) {
+        delta_t = (currentTime - this.lastTime) / 1000;
+        if (delta_t < 0.005) {
+            delta_t = 0.005;
+        } else if (delta_t > 0.200) {
+            delta_t = 0.200;
+        }
+    }
+    this.lastTime = currentTime;
+
+    // Scale process noise dynamically with measured delta_t
+    var Q = multScalar(this.Q, delta_t);
+
     // prediction: X = F * X  |  P = F * P * F' + Q
     var X_p = mult(this.F, this.X); //Update state vector
-    var P_p = add(mult(mult(this.F,this.P), transpose(this.F)), this.Q); //Predicted covaraince
+    var P_p = add(mult(mult(this.F,this.P), transpose(this.F)), Q); //Predicted covaraince
 
     //Calculate the update values
     z = transpose([z])

@@ -59,9 +59,7 @@ reg.RidgeRegThreaded.prototype.init = function() {
     var Q = [ [1/4, 0,    1/2, 0],  
               [0,   1/4,  0,   1/2],    
               [1/2, 0,    1,   0],  
-              [0,  1/2,  0,   1]];// * delta_t  
-    var delta_t = 1/10; // The amount of time between frames    
-    Q = mat.multScalar(Q, delta_t);    
+              [0,  1/2,  0,   1]];    
 
     var H = [ [1, 0, 0, 0],
               [0, 1, 0, 0]];    
