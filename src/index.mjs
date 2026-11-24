@@ -775,6 +775,8 @@ function hideVideoElement(val) {
       (navigator.userAgent && navigator.userAgent.search("Firefox") > -1)) {
     val.style.opacity = webgazer.params.showVideo ? '1': '0';
     val.style.display = 'block';
+    // A transparent preview can still intercept calibration clicks.
+    val.style.pointerEvents = webgazer.params.showVideo ? '' : 'none';
   } else {
     val.style.display = webgazer.params.showVideo ? 'block' : 'none';
   }
